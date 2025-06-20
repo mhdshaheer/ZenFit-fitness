@@ -20,7 +20,7 @@
       </div>
 
       <!-- Login Form -->
-      <form [formGroup]="loginForm" class="space-y-6">
+      <form [formGroup]="loginForm" (ngSubmit)="onSubmit()" class="space-y-6">
         <!-- Email Field -->
         <div>
           <label
@@ -54,7 +54,7 @@
         </div>
 
         <!-- Password Field -->
-        <div>
+        <div class="relative">
           <label
             for="password"
             class="block text-sm font-medium text-green-950 mb-2"
@@ -62,13 +62,62 @@
             Password
           </label>
           <input
-            type="password"
+            [type]="showPassword ? 'text' : 'password'"
             id="password"
             name="password"
+            formControlName="password"
             class="w-full px-4 py-3 bg-white bg-opacity-20 backdrop-blur-sm border border-green-800 border-opacity-30 rounded-lg text-green-950 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-green-800 focus:border-transparent transition-all duration-300"
             placeholder="Enter your password"
+            [ngClass]="{
+              'border-red-500': submitted && f['password'].errors
+            }"
             required
           />
+          <button
+            type="button"
+            (click)="showPassword = !showPassword"
+            class="absolute right-3 top-11 text-green-800 focus:outline-none"
+          >
+            <svg
+              *ngIf="!showPassword"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                d="M10 3C5.454 3 1.732 6.113.333 10c1.4 3.887 5.12 7 9.667 7 4.546 0 8.267-3.113 9.667-7C18.267 6.113 14.546 3 10 3zm0 11a4 4 0 110-8 4 4 0 010 8z"
+              />
+              <path d="M10 7a3 3 0 100 6 3 3 0 000-6z" />
+            </svg>
+            <svg
+              *ngIf="showPassword"
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path
+                d="M4.293 4.293a1 1 0 011.414 0l10 10a1 1 0 01-1.414 1.414l-10-10a1 1 0 010-1.414zM10 3c4.546 0 8.267 3.113 9.667 7a9.992 9.992 0 01-1.507 2.445l-1.44-1.44A7.972 7.972 0 0018.06 10C16.67 6.113 12.946 3 10 3c-1.173 0-2.28.29-3.267.803l-1.43-1.43A9.953 9.953 0 0110 3z"
+              />
+            </svg>
+          </button>
+          <!-- Password Error Messages -->
+          <div
+            *ngIf="submitted && f['password'].errors"
+            class="text-red-500 text-sm mt-1"
+          >
+            <div *ngIf="f['password'].errors['required']">
+              Password is required
+            </div>
+            <div *ngIf="f['password'].errors['minlength']">
+              Password must be at least 8 characters long
+            </div>
+            <div *ngIf="f['password'].errors['pattern']">
+              Password must contain at least one uppercase letter, one lowercase
+              letter, one number, and one special character
+            </div>
+          </div>
         </div>
 
         <!-- Forgot Password Link -->
