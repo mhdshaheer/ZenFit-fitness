@@ -7,6 +7,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-signup-user',
@@ -18,7 +19,7 @@ export class SignupUserComponent {
   signupForm!: FormGroup;
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
-  constructor(private fb: FormBuilder) {
+  constructor(private fb: FormBuilder, private authService: AuthService) {
     this.signupForm = this.fb.group(
       {
         username: [
@@ -51,7 +52,7 @@ export class SignupUserComponent {
           ],
         ],
         confirmPassword: ['', [Validators.required]],
-        dob: ['', [Validators.required]],
+        dob: ['', [Validators.required, this.dobValidator]],
         gender: ['', [Validators.required]],
       },
       {
@@ -70,12 +71,48 @@ export class SignupUserComponent {
     const confirmPassword = group.get('confirmPassword')?.value;
     return password === confirmPassword ? null : { mismatch: true };
   }
+  dobValidator(control: AbstractControl) {
+    const dob = new Date(control.value);
+    const today = new Date();
+
+    if (isNaN(dob.getTime())) {
+      return { invalidDate: true }; // not a valid date
+    }
+
+    if (dob > today) {
+      return { futureDate: true }; // date is in the future
+    }
+
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+      age--;
+    }
+
+    if (age < 13) {
+      return { tooYoung: true };
+    }
+
+    if (age > 100) {
+      return { tooOld: true };
+    }
+
+    return null;
+  }
   get f() {
     return this.signupForm.controls;
   }
   onSubmit(): void {
     if (this.signupForm.valid) {
-      console.log(this.signupForm.value);
+      const formData = this.signupForm.value;
+      this.authService.signupUser(formData).subscribe({
+        next: (res) => {
+          console.log('Signup Successful : ', res);
+        },
+        error: (err) => {
+          console.error('Signup failed ', err);
+        },
+      });
     } else {
       this.signupForm.markAllAsTouched();
     }

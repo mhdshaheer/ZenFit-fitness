@@ -235,8 +235,25 @@
               *ngIf="f['dob'].touched && f['dob'].invalid"
               class="text-red-600 text-sm mt-1"
             >
-              <div *ngIf="f['dob'].errors?.['required']">
-                Date of Birth is required.
+              <div
+                *ngIf="f['dob'].touched && f['dob'].invalid"
+                class="text-red-600 text-sm"
+              >
+                <div *ngIf="f['dob'].errors?.['required']">
+                  Date of birth is required.
+                </div>
+                <div *ngIf="f['dob'].errors?.['invalidDate']">
+                  Please enter a valid date.
+                </div>
+                <div *ngIf="f['dob'].errors?.['futureDate']">
+                  Date of birth cannot be in the future.
+                </div>
+                <div *ngIf="f['dob'].errors?.['tooYoung']">
+                  You must be at least 13 years old.
+                </div>
+                <div *ngIf="f['dob'].errors?.['tooOld']">
+                  Please enter a realistic age (under 100).
+                </div>
               </div>
             </div>
           </div>

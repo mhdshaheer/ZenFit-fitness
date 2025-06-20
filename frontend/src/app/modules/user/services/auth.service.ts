@@ -3,8 +3,8 @@ import { Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
-export class authService {
-  private apiUri = 'http://localhost:3000/api/signup';
+export class AuthService {
+  private apiUri = 'http://localhost:5001/user/signup';
   constructor(private http: HttpClient) {}
   signupUser(userData: any): Observable<any> {
     return this.http.post<any>(this.apiUri, userData);
