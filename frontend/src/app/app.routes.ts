@@ -9,6 +9,14 @@ export const routes: Routes = [
     },
   },
   {
+    path: 'trainer',
+    loadChildren: () => {
+      return import('./modules/trainer/trainer.routes').then(
+        (m) => m.TRAINER_ROUTES
+      );
+    },
+  },
+  {
     path: 'admin',
     loadChildren: () => {
       return import('./modules/admin/admin.routes').then((m) => m.ADMIN_ROUTES);
