@@ -1,0 +1,19 @@
+@media (max-width: 640px) {
+    .otp-container {
+      padding: 1rem;
+    }
+    
+    .otp-card {
+      padding: 1.5rem;
+    }
+    
+    .otp-inputs {
+      gap: 0.5rem;
+    }
+    
+    .otp-input {
+      width: 2.5rem;
+      height: 2.5rem;
+      font-size: 1.125rem;
+    }
+  }
