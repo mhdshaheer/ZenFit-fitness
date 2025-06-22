@@ -1,21 +1,21 @@
-import { IUser } from "../../interfaces/user.interface";
-import { AuthRepository } from "../../repositories/implimentation/auth.repository";
-import { TempUserRepository } from "../../repositories/implimentation/tempUser.repository";
+import { ITrainer } from "../../interfaces/trainer.interface";
+import { TempTrainerRepository } from "../../repositories/implimentation/tempTrainer.repository";
+import { TrainerAuthRepository } from "../../repositories/implimentation/trainer-auth.repository";
 import { hashedPassword } from "../../utils/hash.util";
 import { sendOtpMail } from "../../utils/mail.util";
 import { generateOtp } from "../../utils/otp";
-import { IAuthService } from "../interface/auth.service.interface";
 import { Request, Response } from "express";
-export class AuthService implements IAuthService {
-  private tempRepository = new TempUserRepository();
-  private authRepository = new AuthRepository();
+import { ITrainerAuthService } from "../interface/trainer-auth.service.interface";
+export class TrainerAuthService implements ITrainerAuthService {
+  private tempTrainerRepository = new TempTrainerRepository();
+  private trainerAuthRepository = new TrainerAuthRepository();
 
-  async signup(userData: IUser): Promise<IUser> {
-    const { username, email, password, dob, gender, role } = userData;
-    if (!username || !email || !password || !dob || !gender) {
+  async signup(userData: ITrainer): Promise<ITrainer> {
+    const { name, email, password, experience, languages, role } = userData;
+    if (!name || !email || !password || !experience || !languages.length) {
       throw new Error("All fields are required");
     }
-    const existing = await this.authRepository.findByEmail(email);
+    const existing = await this.trainerAuthRepository.findByEmail(email);
     if (existing) {
       throw new Error("Email already exists");
     }
@@ -23,19 +23,20 @@ export class AuthService implements IAuthService {
     const isHashed = password.startsWith("$2b$");
     const finalPassword = isHashed ? password : await hashedPassword(password);
 
-    return await this.authRepository.createUser({
-      username,
+    return await this.trainerAuthRepository.createTrainer({
+      name,
       email,
       password: finalPassword,
-      dob,
-      gender,
+      languages,
+      experience,
       role,
     });
   }
   async sendOtp(req: Request, res: Response): Promise<void> {
-    const { username, email, password, dob, gender } = req.body.formData;
     console.log("data from the frontend: ", req.body);
-    if (!username || !email || !password || !dob || !gender) {
+    console.log("name :  ", req.body.name);
+    const { name, email, password, experience, languages } = req.body;
+    if (!name || !email || !password || !languages.length || !experience) {
       res.status(400).json({ error: "All fields are required" });
       return;
     }
@@ -45,15 +46,15 @@ export class AuthService implements IAuthService {
     const hashPassword = await hashedPassword(password);
 
     const userPayload = {
-      username,
+      name,
       email,
       password: hashPassword,
-      dob,
-      gender,
+      experience,
+      languages,
       otp,
       createdAt: Date.now(),
     };
-    await this.tempRepository.saveTempUser(email, otp, userPayload);
+    await this.tempTrainerRepository.saveTempTrainer(email, otp, userPayload);
 
     // TODO: Send OTP to email (you can integrate NodeMailer later)
 
@@ -69,7 +70,7 @@ export class AuthService implements IAuthService {
   async verifyOtp(req: Request, res: Response): Promise<void> {
     const { email, otp } = req.body;
 
-    const temp = await this.tempRepository.findByEmail(email);
+    const temp = await this.tempTrainerRepository.findByEmail(email);
     if (!temp) {
       res.status(400).json({ error: "OTP expired or not found" });
       return;
@@ -81,28 +82,28 @@ export class AuthService implements IAuthService {
     }
 
     // At this point payload is your IUser
-    const payload = temp.payload as IUser;
+    const payload = temp.payload as ITrainer;
 
     console.log("Payload before signup:", payload);
 
-    const { username, password, dob, gender } = payload;
+    const { name, password, languages, experience } = payload;
 
-    if (!username || !email || !password || !dob || !gender) {
-      res.status(400).json({ error: "Incomplete user data" });
+    if (!name || !email || !password || !experience || !languages.length) {
+      res.status(400).json({ error: "Incomplete trainer data" });
       return;
     }
 
     // Use signup() to create user with ensured role
     const createdUser = await this.signup({
       ...payload,
-      role: "user", // force assign role if missing
+      role: "trainer", // force assign role if missing
     });
 
     // clean up
-    await this.tempRepository.deleteByEmail(email);
+    await this.tempTrainerRepository.deleteByEmail(email);
 
     res.status(201).json({
-      message: "User created successfully",
+      message: "Trainer created successfully",
       user: createdUser,
     });
   }

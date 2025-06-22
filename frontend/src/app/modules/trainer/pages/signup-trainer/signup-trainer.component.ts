@@ -8,6 +8,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { TrainerAuthService } from '../../services/trainer-auth.service';
+import Swal from 'sweetalert2';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup-trainer',
@@ -21,7 +23,8 @@ export class SignupTrainerComponent {
   showConfirmPassword: boolean = false;
   constructor(
     private fb: FormBuilder,
-    private trainerAuthService: TrainerAuthService
+    private trainerAuthService: TrainerAuthService,
+    private router: Router
   ) {
     this.signupForm = this.fb.group(
       {
@@ -82,9 +85,20 @@ export class SignupTrainerComponent {
   onSubmit(): void {
     if (this.signupForm.valid) {
       let trainerFormData = this.signupForm.value;
-      this.trainerAuthService.signupTrainer(trainerFormData).subscribe({
+      this.trainerAuthService.sendOtp(trainerFormData).subscribe({
         next: (res) => {
           console.log('Trainer signup successfull ', res);
+          localStorage.setItem('trainerEmail', trainerFormData.email);
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Otp sent',
+            showConfirmButton: false,
+            timer: 1500,
+          }).then(() => {
+            // this.otpService.allowAccess();
+            this.router.navigate(['/trainer/otp']);
+          });
         },
         error: (err) => {
           console.log('Trainer signup failed ', err);

@@ -1,0 +1,10 @@
+<!-- <app-otp></app-otp> -->
+<app-otp
+  [email]="email"
+  context="signup"
+  (onVerify)="handleOtpSubmit($event)"
+  (onResend)="resendOtpRequest()"
+  [bgColor]="'from-red-800 via-red-900 to-red-700'"
+  [buttonColor]="'text-red-600 font-semibold'"
+  [textColor]="'text-red-600 font-semibold underline hover:text-red-700'"
+></app-otp>

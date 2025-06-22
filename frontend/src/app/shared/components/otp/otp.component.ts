@@ -17,7 +17,11 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./otp.component.css'],
 })
 export class OtpComponent {
-  @Input() email!: string;
+  @Input() bgColor = ' from-green-950 via-emerald-950 to-teal-700';
+  @Input() buttonColor = 'text-green-600 font-semibold';
+  @Input() textColor =
+    'text-green-600 font-semibold underline hover:text-green-700';
+  @Input() email: string = 'gmail';
   @Input() context: 'signup' | 'login' | 'reset' = 'signup';
   @Output() onVerify = new EventEmitter<string>();
   @Output() onResend = new EventEmitter<void>();
@@ -62,7 +66,7 @@ export class OtpComponent {
   }
 
   startTimer() {
-    this.timer = 30;
+    this.timer = 2;
     this.intervel = setInterval(() => {
       this.timer--;
       if (this.timer == 0) {

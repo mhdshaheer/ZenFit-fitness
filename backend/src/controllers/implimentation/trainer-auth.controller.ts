@@ -1,24 +1,24 @@
 import { HttpStatus } from "../../const/statuscode.const";
-import { AuthService } from "../../services/implimentation/auth.service";
+import { TrainerAuthService } from "../../services/implimentation/trainer-auth.service";
 import { IAuthController } from "../interface/auth.controller.interface";
 import { Request, Response } from "express";
 
-export class AuthController implements IAuthController {
-  private authService = new AuthService();
+export class TrainerAuthController implements IAuthController {
+  private trainerAuthService = new TrainerAuthService();
   public async signup(req: Request, res: Response): Promise<void> {
     try {
       console.log("request from frontend", req.body);
-      const { username, email, password, dob, gender, role } = req.body;
-      const user = await this.authService.signup({
-        username,
+      const { name, email, password, experience, languages, role } = req.body;
+      const user = await this.trainerAuthService.signup({
+        name,
         email,
         password,
-        dob,
-        gender,
+        experience,
+        languages,
         role,
       });
       res.status(201).json({
-        message: "User registered successfully",
+        message: "Trainer registered successfully",
         user,
       });
     } catch (error: any) {
@@ -36,10 +36,10 @@ export class AuthController implements IAuthController {
     }
   }
   async sendOtp(req: Request, res: Response): Promise<void> {
-    await this.authService.sendOtp(req, res);
+    await this.trainerAuthService.sendOtp(req, res);
   }
 
   async verifyOtp(req: Request, res: Response): Promise<void> {
-    await this.authService.verifyOtp(req, res);
+    await this.trainerAuthService.verifyOtp(req, res);
   }
 }
