@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import Swal from 'sweetalert2';
 import {
   AbstractControl,
   FormBuilder,
@@ -8,6 +9,8 @@ import {
   Validators,
 } from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+import { Router } from '@angular/router';
+import { OtpAccessService } from '../../services/otp-access.service';
 
 @Component({
   selector: 'app-signup-user',
@@ -16,10 +19,16 @@ import { AuthService } from '../../services/auth.service';
   styleUrl: './signup-user.component.css',
 })
 export class SignupUserComponent {
+  isLoading: boolean = false;
   signupForm!: FormGroup;
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
-  constructor(private fb: FormBuilder, private authService: AuthService) {
+  constructor(
+    private fb: FormBuilder,
+    private authService: AuthService,
+    private router: Router,
+    private otpService: OtpAccessService
+  ) {
     this.signupForm = this.fb.group(
       {
         username: [
@@ -103,14 +112,28 @@ export class SignupUserComponent {
     return this.signupForm.controls;
   }
   onSubmit(): void {
+    this.isLoading = true;
+    console.log('submitted...form', this.signupForm.valid);
     if (this.signupForm.valid) {
       const formData = this.signupForm.value;
-      this.authService.signupUser(formData).subscribe({
+      this.authService.sendOtp({ formData }).subscribe({
         next: (res) => {
-          console.log('Signup Successful : ', res);
+          this.isLoading = false;
+          console.log('from backend : ', res);
+          localStorage.setItem('signupEmail', formData.email);
+          Swal.fire({
+            position: 'top-end',
+            icon: 'success',
+            title: 'Otp sent',
+            showConfirmButton: false,
+            timer: 1500,
+          }).then(() => {
+            this.otpService.allowAccess();
+            this.router.navigate(['/user/otp']);
+          });
         },
         error: (err) => {
-          console.error('Signup failed ', err);
+          alert(err.error.message || 'Failed to send OTP');
         },
       });
     } else {

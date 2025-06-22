@@ -1,5 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component, ElementRef, QueryList, ViewChildren } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  Output,
+  QueryList,
+  ViewChildren,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
@@ -9,6 +17,11 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./otp.component.css'],
 })
 export class OtpComponent {
+  @Input() email!: string;
+  @Input() context: 'signup' | 'login' | 'reset' = 'signup';
+  @Output() onVerify = new EventEmitter<string>();
+  @Output() onResend = new EventEmitter<void>();
+
   otpDigits = new Array(6).fill('');
   timer: number = 30;
   intervel: any;
@@ -49,7 +62,7 @@ export class OtpComponent {
   }
 
   startTimer() {
-    this.timer = 5;
+    this.timer = 30;
     this.intervel = setInterval(() => {
       this.timer--;
       if (this.timer == 0) {
@@ -61,9 +74,12 @@ export class OtpComponent {
     this.startTimer();
   }
   resendOtp() {
+    this.onResend.emit();
     this.startTimer();
   }
   onSubmit() {
-    console.log(this.getOtp());
+    const otp = this.getOtp();
+    if (otp.length !== 6) return alert('Enter full 6-digit OTP');
+    this.onVerify.emit(otp);
   }
 }

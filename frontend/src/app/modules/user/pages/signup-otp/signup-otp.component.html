@@ -1,0 +1,6 @@
+<app-otp
+  [email]="email"
+  context="signup"
+  (onVerify)="handleOtpSubmit($event)"
+  (onResend)="resendOtpRequest()"
+></app-otp>

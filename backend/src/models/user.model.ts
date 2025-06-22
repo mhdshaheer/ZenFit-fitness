@@ -1,7 +1,8 @@
-import mongoose from "mongoose";
+import mongoose, { Model } from "mongoose";
+import { IUser } from "../interfaces/user.interface";
 const userSchema = new mongoose.Schema(
   {
-    name: {
+    username: {
       type: String,
     },
     email: {
@@ -12,23 +13,26 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
     },
-    age: {
-      type: Number,
-    },
     gender: {
       type: String,
     },
     phone: {
       type: Number,
     },
-    Dob: {
+    dob: {
       type: Date,
     },
     address: {
+      type: String,
+    },
+    role: {
       type: String,
     },
   },
   { timestamps: true }
 );
 
-export const User = mongoose.model("User", userSchema);
+export const UserModel: Model<IUser> = mongoose.model<IUser>(
+  "User",
+  userSchema
+);

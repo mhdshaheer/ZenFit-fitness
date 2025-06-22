@@ -1,12 +1,7 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 
 export interface IAuthController {
-  signup(req: Request, res: Response, next: NextFunction): Promise<void>;
-  login(req: Request, res: Response, next: NextFunction): Promise<void>;
-  forgotPassword(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): Promise<void>;
-  logout(req: Request, res: Response, next: NextFunction): Promise<void>;
+  signup(req: Request, res: Response): Promise<void>;
+  sendOtp(req: Request, res: Response): Promise<void>;
+  verifyOtp(req: Request, res: Response): Promise<void>;
 }
