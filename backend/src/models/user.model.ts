@@ -27,6 +27,18 @@ const userSchema = new mongoose.Schema(
     },
     role: {
       type: String,
+      enum: ["admin", "user", "trainer"],
+    },
+    experience: {
+      type: Number,
+    },
+    languages: {
+      type: [String],
+    },
+    status: {
+      type: String,
+      enum: ["inactive", "pending", "active", "blocked"],
+      default: "active",
     },
   },
   { timestamps: true }

@@ -16,4 +16,16 @@ export class AuthRepository
   async createUser(user: IUser): Promise<IUser> {
     return await this.create(user);
   }
+  async findAll(): Promise<IUser[]> {
+    return await UserModel.find();
+  }
+  async findById(id: string): Promise<IUser | null> {
+    return await UserModel.findById(id);
+  }
+  async updateStatus(
+    id: string,
+    status: "active" | "blocked" | "pending" | "inactive"
+  ): Promise<IUser | null> {
+    return await UserModel.findByIdAndUpdate(id, { status }, { new: true });
+  }
 }

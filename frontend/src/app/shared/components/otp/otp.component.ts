@@ -12,6 +12,7 @@ import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-otp',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './otp.component.html',
   styleUrls: ['./otp.component.css'],

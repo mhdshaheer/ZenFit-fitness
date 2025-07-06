@@ -5,3 +5,14 @@ export interface User {
   dob: string;
   age: number;
 }
+export interface SignupPayload {
+  username: string;
+  email: string;
+  password: string;
+}
+export interface AuthState {
+  user: any | null;
+  loading: boolean;
+  error: string | null;
+  token: string | null;
+}

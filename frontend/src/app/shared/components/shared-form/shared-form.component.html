@@ -1,0 +1,130 @@
+<div class="relative">
+  <label class="block text-sm font-medium text-gray-700 mb-2">
+    {{ label }}
+  </label>
+  <input
+    [type]="inputType"
+    [formControl]="control"
+    [placeholder]="placeholder"
+    class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors placeholder-gray-400"
+    [class.border-red-500]="control.touched && control.invalid"
+    [class.border-gray-300]="!control.touched || control.valid"
+  />
+  <button
+    *ngIf="type == 'password'"
+    type="button"
+    (click)="togglePasswordVisibility()"
+    class="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+  >
+    <svg
+      *ngIf="!showPassword"
+      class="h-5 w-5"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zm-3 8V7a3 3 0 116 0v3H9zm3 5a1 1 0 110 2 1 1 0 010-2z"
+      />
+    </svg>
+
+    <svg
+      *ngIf="showPassword"
+      class="h-5 w-5"
+      fill="currentColor"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="M17 8h-1V6a5 5 0 00-10 0h2a3 3 0 016 0v2H7a2 2 0 00-2 2v8a2 2 0 002 2h10a2 2 0 002-2v-8a2 2 0 00-2-2zm-5 7a1 1 0 110-2 1 1 0 010 2z"
+      />
+    </svg>
+  </button>
+
+  <!-- <div
+    class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
+    *ngIf="control?.touched && control?.invalid"
+  >
+    <span *ngIf="control?.errors?.['required']">{{ label }} is required</span>
+    <span *ngIf="control?.errors?.['minlength']">
+      {{ label }} must be at least
+      {{ control.errors?.['minlength'].requiredLength }} characters
+    </span>
+    <span *ngIf="control?.errors?.['maxlength']">
+      {{ label }} must not exceed
+      {{ control.errors?.['maxlength'].requiredLength }} characters
+    </span>
+    <span *ngIf="control?.errors?.['pattern']">
+      Invalid {{ label.toLowerCase() }} format
+    </span>
+  </div> -->
+</div>
+
+<!-- <div class="relative">
+  <label class="block text-sm font-medium text-gray-700 mb-2">
+    {{ label }}
+  </label>
+
+  <input
+    [type]="inputType"
+    [formControl]="control"
+    [placeholder]="placeholder"
+    class="w-full px-4 py-3 pr-10 border rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-colors placeholder-gray-400"
+    [class.border-red-500]="control.touched && control.invalid"
+    [class.border-gray-300]="!control.touched || control.valid"
+  />
+
+  <button
+  *ngIf="type === 'password'"
+  type="button"
+  (click)="toggleVisibility()"
+  class="absolute right-3 top-[42px] text-gray-500 hover:text-gray-700 focus:outline-none transition-colors"
+>
+  <svg
+    *ngIf="!showPassword"
+    class="h-5 w-5"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zm-3 8V7a3 3 0 116 0v3H9zm3 5a1 1 0 110 2 1 1 0 010-2z"
+    />
+  </svg>
+
+
+  <svg
+    *ngIf="showPassword"
+    class="h-5 w-5"
+    fill="currentColor"
+    viewBox="0 0 24 24"
+  >
+    <path
+      d="M17 8h-1V6a5 5 0 00-10 0h2a3 3 0 016 0v2H7a2 2 0 00-2 2v8a2 2 0 002 2h10a2 2 0 002-2v-8a2 2 0 00-2-2zm-5 7a1 1 0 110-2 1 1 0 010 2z"
+    />
+  </svg>
+</button>
+
+
+  <div
+    class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
+    *ngIf="control?.touched && control?.invalid"
+  >
+    <span *ngIf="control?.errors?.['required']">{{ label }} is required</span>
+    <span *ngIf="control?.errors?.['minlength']">
+      {{ label }} must be at least
+      {{ control.errors?.['minlength'].requiredLength }} characters
+    </span>
+    <span *ngIf="control?.errors?.['maxlength']">
+      {{ label }} must not exceed
+      {{ control.errors?.['maxlength'].requiredLength }} characters
+    </span>
+    <span *ngIf="control?.errors?.['pattern']">
+      Invalid {{ label.toLowerCase() }} format
+    </span>
+  </div>
+
+  <div
+    class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
+    *ngIf="controlName === 'confirmPassword' && formErrors?.['mismatch']"
+  >
+    Passwords do not match
+  </div>
+</div> -->

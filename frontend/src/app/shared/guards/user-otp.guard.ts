@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { OtpAccessService } from '../../modules/user/services/otp-access.service';
+import { OtpAccessService } from '../../core/services/otp-access.service';
 
 @Injectable({
   providedIn: 'root',

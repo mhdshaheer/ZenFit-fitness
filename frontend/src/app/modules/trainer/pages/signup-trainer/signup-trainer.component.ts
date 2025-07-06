@@ -13,6 +13,7 @@ import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-signup-trainer',
+  standalone: true,
   imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './signup-trainer.component.html',
   styleUrl: './signup-trainer.component.css',

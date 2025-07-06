@@ -1,21 +1,43 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'user/login', pathMatch: 'full' },
+  { path: '', redirectTo: 'auth/signup', pathMatch: 'full' },
   {
-    path: 'user',
+    path: 'auth',
     loadChildren: () => {
-      return import('./modules/user/user.routes').then((m) => m.USER_ROUTES);
-    },
-  },
-  {
-    path: 'trainer',
-    loadChildren: () => {
-      return import('./modules/trainer/trainer.routes').then(
-        (m) => m.TRAINER_ROUTES
+      return import('../app/features/auth/routes/auth.routes').then(
+        (m) => m.AUTH_ROUTES
       );
     },
   },
+  {
+    path: 'user',
+    loadChildren: () =>
+      import('../app/features/user/routes/user.routes').then(
+        (m) => m.USER_ROUTES
+      ),
+  },
+  // {
+  //   path: 'user',
+  //   loadChildren: () => {
+  //     return import('./modules/user/user.routes').then((m) => m.USER_ROUTES);
+  //   },
+  // },
+  {
+    path: 'trainer',
+    loadChildren: () =>
+      import('../app/features/trainer/routes/trainer.routes').then(
+        (m) => m.TRAINER_ROUTES
+      ),
+  },
+  // {
+  //   path: 'trainer',
+  //   loadChildren: () => {
+  //     return import('./modules/trainer/trainer.routes').then(
+  //       (m) => m.TRAINER_ROUTES
+  //     );
+  //   },
+  // },
   {
     path: 'admin',
     loadChildren: () => {

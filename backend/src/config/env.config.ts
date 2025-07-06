@@ -14,4 +14,13 @@ export const env = {
   get mail_password() {
     return process.env.MAIL_PASSWORD;
   },
+  get jwt_secret() {
+    return process.env.JWT_SECRET;
+  },
+  get jwt_access() {
+    return process.env.ACCESS_TOKEN_SECRET;
+  },
+  get jwt_refresh() {
+    return process.env.REFRESH_TOKEN_SECRET;
+  },
 };

@@ -10,6 +10,7 @@ export enum HttpResponse {
   INVALID_CREDENTIALS = "Invalid credentials",
   USER_CREATION_FAILED = "User creation failed",
   USER_CREATION_SUCCESS = "User created successfully",
+  LOGIN_SUCCESS = "Login successful",
   GOOGLE_LOGIN_SUCCESS = "Logged in with Google successfully",
   EMAIL_EXIST = "Email already exist",
   INVALID_EMAIL = "Invalid email address",

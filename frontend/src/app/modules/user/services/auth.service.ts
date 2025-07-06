@@ -7,7 +7,8 @@ export class AuthService {
   private apiUri = 'http://localhost:5001/user';
   constructor(private http: HttpClient) {}
   sendOtp(user: any): Observable<any> {
-    return this.http.post(`${this.apiUri}/send-otp`, user);
+    // return this.http.post(`${this.apiUri}/send-otp`, user);
+    return this.http.post(`${this.apiUri}/signup`, user);
   }
 
   verifyOtp(data: { email: string; otp: string }): Observable<any> {

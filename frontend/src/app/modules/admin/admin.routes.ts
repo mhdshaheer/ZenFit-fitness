@@ -1,16 +1,14 @@
 import { Routes } from '@angular/router';
-import { LoginAdminComponent } from './pages/login-admin/login-admin.component';
 import { AuthGuard } from '../../shared/guards/auth.guard';
+import { HomeAdminComponent } from './pages/home-admin/home-admin.component';
+import { UserManageComponent } from './pages/user-manage/user-manage.component';
 
 export const ADMIN_ROUTES: Routes = [
   {
-    path: 'login',
-    component: LoginAdminComponent,
+    path: 'home',
+    component: HomeAdminComponent,
+    // canActivate: [AuthGuard],
+    data: { role: 'admin' },
   },
-  // {
-  //   path: 'dashboard',
-  //   component: AdminComponent,
-  //   canActivate: [AuthGuard],
-  //   data: { role: 'admin' },
-  // },
+  { path: 'list', component: UserManageComponent },
 ];

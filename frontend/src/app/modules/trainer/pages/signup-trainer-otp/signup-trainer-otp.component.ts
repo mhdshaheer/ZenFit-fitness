@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 
 @Component({
   selector: 'app-signup-trainer-otp',
+  standalone: true,
   imports: [OtpComponent],
   templateUrl: './signup-trainer-otp.component.html',
   styleUrl: './signup-trainer-otp.component.css',
