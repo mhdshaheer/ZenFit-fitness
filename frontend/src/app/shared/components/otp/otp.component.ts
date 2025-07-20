@@ -67,7 +67,7 @@ export class OtpComponent {
   }
 
   startTimer() {
-    this.timer = 2;
+    this.timer = 30;
     this.intervel = setInterval(() => {
       this.timer--;
       if (this.timer == 0) {

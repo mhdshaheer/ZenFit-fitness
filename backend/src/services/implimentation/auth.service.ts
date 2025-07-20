@@ -2,6 +2,7 @@ import { HttpResponse } from "../../const/response_message.const";
 import { IUser } from "../../interfaces/user.interface";
 import { AuthRepository } from "../../repositories/implimentation/auth.repository";
 import { TempUserRepository } from "../../repositories/implimentation/tempUser.repository";
+import { googleClient } from "../../utils/google-client";
 import { comparePassword, hashedPassword } from "../../utils/hash.util";
 import {
   generateAccessToken,
@@ -23,8 +24,8 @@ export class AuthService implements IAuthService {
       throw new Error(HttpResponse.USER_EXIST);
     }
     // If password is already hashed, skip
-    const isHashed = password.startsWith("$2b$");
-    const finalPassword = isHashed ? password : await hashedPassword(password);
+    const isHashed = password!.startsWith("$2b$");
+    const finalPassword = isHashed ? password : await hashedPassword(password!);
 
     return await this.authRepository.createUser({
       username,
@@ -108,6 +109,13 @@ export class AuthService implements IAuthService {
       role,
     });
 
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000, // 15 minutes (adjust as needed)
+    });
+
     // Set refreshToken as HTTP-only cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -153,16 +161,96 @@ export class AuthService implements IAuthService {
     const user = await this.authRepository.findByEmail(email);
     if (!user) throw new Error("Invalid credentials");
 
-    const match = await comparePassword(password, user.password);
-    if (!match) throw new Error("Invalid credentials");
-    if (user.role == "admin") {
-      const token = generateToken({ id: user._id, role: "admin" });
-      return { user, token };
-    } else {
-      const token = generateToken({ id: user._id, role: "user" });
-      return { user, token };
+    const isMatch = await comparePassword(password, user.password!);
+    if (!isMatch) throw new Error("Invalid credentials");
+
+    const accessToken = generateAccessToken({
+      id: user._id!.toString(),
+      role: user.role!,
+    });
+    const refreshToken = generateRefreshToken({
+      id: user._id!.toString(),
+      role: user.role!,
+    });
+
+    return { user, accessToken, refreshToken };
+  }
+
+  // ================================================
+  async sendForgotPasswordOtp(req: Request, res: Response): Promise<void> {
+    const { email } = req.body;
+    const user = await this.authRepository.findByEmail(email);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const otp = generateOtp();
+    console.log("forgot password otp is : ", otp);
+    await this.tempRepository.saveTempUser(email, otp, {});
+
+    try {
+      await sendOtpMail(email, otp);
+      res.status(200).json({ message: "OTP sent to email for password reset" });
+      return;
+    } catch (err) {
+      console.error("Failed to send OTP mail:", err);
+      res.status(500).json({ message: "Failed to send OTP email" });
+      return;
     }
   }
+
+  async verifyForgotOtp(req: Request, res: Response): Promise<void> {
+    const { email, otp } = req.body;
+    const temp = await this.tempRepository.findByEmail(email);
+
+    if (!temp || temp.otp !== otp) {
+      res.status(401).json({ message: "Invalid or expired OTP" });
+      return;
+    }
+
+    res.status(200).json({ message: "OTP verified successfully" });
+    return;
+  }
+
+  async resetPassword(req: Request, res: Response): Promise<void> {
+    const { email, newPassword } = req.body;
+    const temp = await this.tempRepository.findByEmail(email);
+
+    if (!temp) {
+      res
+        .status(400)
+        .json({ message: "Reset password request not found or expired" });
+      return;
+    }
+
+    const user = await this.authRepository.findByEmail(email);
+    if (!user) {
+      res.status(404).json({ message: "User not found" });
+      return;
+    }
+
+    const hashedNewPassword = await hashedPassword(newPassword);
+    await this.authRepository.updatePassword(email, hashedNewPassword);
+    await this.tempRepository.deleteByEmail(email);
+
+    res.status(200).json({ message: "Password reset successful" });
+  }
+
+  async handleGoogleLogin(profile: any) {
+    let user = await this.authRepository.findByGoogleId(profile.id);
+    if (!user) {
+      user = await this.authRepository.createGoogleUser({
+        googleId: profile.id,
+        email: profile.emails[0].value,
+        username: profile.displayName,
+        role: "user",
+      });
+    }
+    return user;
+  }
+  // ================================================
+
   async getAllUsers(): Promise<IUser[]> {
     return await this.authRepository.findAll();
   }
@@ -176,5 +264,18 @@ export class AuthService implements IAuthService {
     const user = await this.authRepository.findById(id);
     if (!user) throw new Error("User not found");
     return await this.authRepository.updateStatus(id, "active");
+  }
+
+  async logout(res: Response): Promise<void> {
+    res.clearCookie("refreshToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
+    res.clearCookie("accessToken", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+    });
   }
 }

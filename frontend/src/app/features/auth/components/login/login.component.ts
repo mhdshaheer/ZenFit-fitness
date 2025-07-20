@@ -1,40 +1,42 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { Router, RouterModule } from '@angular/router';
+import { RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
-import {
-  selectError,
-  selectLoading,
-  selectRole,
-  selectToken,
-} from '../../../store/auth/auth.selectors';
-import { Observable } from 'rxjs';
-import { login } from '../../../store/auth/auth.actions';
+import { selectAuthError, selectAuthLoading } from '../../store/auth.selectors';
+import { login } from '../../store/auth.actions';
+import { SharedFormComponent } from '../../../../shared/components/shared-form/shared-form.component';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, RouterModule],
+  imports: [
+    ReactiveFormsModule,
+    CommonModule,
+    RouterModule,
+    SharedFormComponent,
+  ],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
+  private fb = inject(FormBuilder);
+  private store = inject(Store);
   loginForm!: FormGroup;
-  submitted: boolean = false;
-  showPassword: boolean = false;
-  error$!: Observable<string | null>;
-  loading$!: Observable<boolean>;
-  constructor(
-    private fb: FormBuilder,
-    private store: Store,
-    private router: Router
-  ) {
+  submitted = signal(false);
+  showPassword = signal(false);
+  error = toSignal(this.store.select(selectAuthError), { initialValue: null });
+  isLoading = toSignal(this.store.select(selectAuthLoading), {
+    initialValue: false,
+  });
+
+  constructor() {
     this.loginForm = this.fb.group({
       email: [
         '',
@@ -54,38 +56,19 @@ export class LoginComponent {
           ),
         ],
       ],
-      role: ['', Validators.required],
     });
   }
-  ngOnInit(): void {
-    this.error$ = this.store.select(selectError);
-    this.loading$ = this.store.select(selectLoading);
 
-    // Handle redirection based on token role
-    this.store.select(selectToken).subscribe((token) => {
-      if (token) {
-        this.store.select(selectRole).subscribe((role) => {
-          if (role == 'admin') {
-            this.router.navigate(['/admin/home']);
-          } else if (role == 'user') {
-            this.router.navigate(['/user/home']);
-          } else if (role == 'trainer') {
-            this.router.navigate(['/trainer/home']);
-          }
-        });
-      }
-    });
-  }
   get f() {
     return this.loginForm.controls;
   }
+
   onSubmit(): void {
-    this.submitted = true;
-    if (this.loginForm.invalid) {
-      return;
-    }
-    const { email, password, role } = this.loginForm.value;
-    this.store.dispatch(login({ email, password, role }));
-    console.log('Form submitted : ', this.loginForm.value);
+    this.submitted.set(true);
+    if (this.loginForm.invalid) return;
+
+    const { email, password } = this.loginForm.value;
+    this.store.dispatch(login({ payload: { email, password } }));
+    console.log('Login submitted: ', this.loginForm.value);
   }
 }

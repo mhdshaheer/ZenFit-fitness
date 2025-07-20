@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { SignupPayload } from './auth.model';
+import { LoginPayload, SignupPayload } from './auth.model';
 
 export const signup = createAction(
   '[Auth] Signup',
@@ -29,17 +29,34 @@ export const refreshAccessTokenFailure = createAction(
 );
 
 // Login
-// export const login = createAction(
-//   '[Auth] Login',
-//   props<{ email: string; password: string; role: string }>()
-// );
+export const login = createAction(
+  '[Auth] Login',
+  props<{ payload: LoginPayload }>()
+);
 
-// export const loginSuccess = createAction(
-//   '[Auth] Login Success',
-//   props<{ token: string; role: 'admin' | 'user' | 'trainer' }>()
-// );
+export const loginSuccess = createAction(
+  '[Auth] Login Success',
+  props<{ accessToken: string; role: string }>()
+);
 
-// export const loginFailure = createAction(
-//   '[Auth] Login Failure',
-//   props<{ error: string }>()
-// );
+export const loginFailure = createAction(
+  '[Auth] Login Failure',
+  props<{ error: string }>()
+);
+
+// google signup
+
+export const googleSignup = createAction(
+  '[Auth] Google Signup',
+  props<{ payload: { idToken: string; email: string; username: string } }>()
+);
+
+export const googleSignupSuccess = createAction(
+  '[Auth] Google Signup Success',
+  props<{ accessToken: string; refreshToken: string; role: string }>()
+);
+
+export const googleSignupFailure = createAction(
+  '[Auth] Google Signup Failure',
+  props<{ error: string }>()
+);

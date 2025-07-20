@@ -1,0 +1,27 @@
+.animation-delay-200 {
+      animation-delay: 0.2s;
+    }
+    .animation-delay-300 {
+      animation-delay: 0.3s;
+    }
+    .animation-delay-400 {
+      animation-delay: 0.4s;
+    }
+    .animation-delay-500 {
+      animation-delay: 0.5s;
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 53%, 80%, 100% {
+        transform: translate3d(0,0,0) rotate(12deg);
+      }
+      40%, 43% {
+        transform: translate3d(0,-8px,0) rotate(12deg);
+      }
+      70% {
+        transform: translate3d(0,-4px,0) rotate(12deg);
+      }
+      90% {
+        transform: translate3d(0,-2px,0) rotate(12deg);
+      }
+    }

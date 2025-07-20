@@ -1,12 +1,15 @@
+import { env } from "../../config/env.config";
 import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
 import { AuthService } from "../../services/implimentation/auth.service";
-// import { TrainerAuthService } from "../../services/implimentation/trainer-auth.service";
+import {
+  generateAccessToken,
+  generateRefreshToken,
+} from "../../utils/jwt.util";
 import { IAuthController } from "../interface/auth.controller.interface";
 import { Request, Response } from "express";
 
 export class AuthController implements IAuthController {
-  // private trainerAuthService = new TrainerAuthService();
   private authService = new AuthService();
   public async signup(req: Request, res: Response): Promise<void> {
     try {
@@ -52,52 +55,115 @@ export class AuthController implements IAuthController {
   async login(req: Request, res: Response): Promise<void> {
     try {
       const { email, password } = req.body;
-      const { user, token } = await this.authService.login(email, password);
+      const { user, accessToken, refreshToken } = await this.authService.login(
+        email,
+        password
+      );
 
-      let response = {
-        message: HttpResponse.LOGIN_SUCCESS,
-        trainer: {
+      console.log("this is loggin controller");
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: false,
+        sameSite: "lax",
+        maxAge: 15 * 60 * 1000, // 15 minutes (adjust as needed)
+      });
+      console.log("this is loggin controller 1");
+
+      // Set refresh token in HTTP-only cookie
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: false, // ✅ false in dev
+        sameSite: "lax", // allow dev frontend access
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      });
+
+      console.log("cookies: ", req.cookies);
+      res.status(200).json({
+        message: "Login successful",
+        accessToken,
+        role: user.role,
+        user: {
           id: user._id,
-          name: user.username,
+          username: user.username,
           email: user.email,
         },
-        token,
-        role: user.role,
-      };
-
-      res.status(HttpStatus.OK).json(response);
+      });
     } catch (err: any) {
-      res.status(401).json({ message: err.message });
+      res.status(401).json({ message: err.message || "Login failed" });
     }
   }
-  // public async signupTrainer(req: Request, res: Response): Promise<void> {
+  async sendForgotPasswordOtp(req: Request, res: Response): Promise<void> {
+    return this.authService.sendForgotPasswordOtp(req, res);
+  }
+  async verifyForgotOtp(req: Request, res: Response): Promise<void> {
+    return this.authService.verifyForgotOtp(req, res);
+  }
+  async resetPassword(req: Request, res: Response): Promise<void> {
+    return this.authService.resetPassword(req, res);
+  }
+
+  // async googleSignupController(req: Request, res: Response) {
+  //   const { idToken, email, username } = req.body;
+
   //   try {
-  //     console.log("request from frontend", req.body);
-  //     const { name, email, password, experience, languages, role } = req.body;
-  //     const user = await this.trainerAuthService.signup({
-  //       name,
+  //     const result = await this.authService.signupWithGoogle(
+  //       idToken,
   //       email,
-  //       password,
-  //       experience,
-  //       languages,
-  //       role,
-  //     });
-  //     res.status(201).json({
-  //       message: "Trainer registered successfully",
-  //       user,
-  //     });
+  //       username
+  //     );
+  //     res.status(200).json(result);
   //   } catch (error: any) {
-  //     const message = error.message || "Server error";
-
-  //     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-
-  //     if (message === "Email already exists") {
-  //       status = HttpStatus.CONFLICT;
-  //     } else if (message === "All fields are required") {
-  //       status = HttpStatus.BAD_REQUEST;
-  //     }
-
-  //     res.status(status).json({ error: message });
+  //     res
+  //       .status(401)
+  //       .json({ message: error.message || "Authentication failed" });
   //   }
   // }
+
+  async googleCallback(req: Request, res: Response) {
+    console.log("i am on google controller...");
+    const user = req.user as any;
+    console.log(user);
+    const accessToken = generateAccessToken({
+      id: user._id,
+      role: user.role,
+    });
+    const refreshToken = generateRefreshToken({
+      id: user._id,
+      role: user.role,
+    });
+
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 15 * 60 * 1000, // 15 minutes (adjust as needed)
+    });
+
+    // Store refresh token on cookie:
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: false, // ✅ false in dev
+      sameSite: "lax", // allow dev frontend access
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    });
+
+    res.redirect(
+      `${env.frontend_url}/user/dashboard?accessToken=${accessToken}&refreshToken=${refreshToken}`
+    );
+
+    // res.status(200).json({
+    //   message: "Login successful",
+    //   accessToken,
+    //   role: user.role,
+    //   user: {
+    //     id: user._id,
+    //     username: user.username,
+    //     email: user.email,
+    //   },
+    // });
+  }
+  async logOut(req: Request, res: Response) {
+    await this.authService.logout;
+    res.status(HttpStatus.OK).json({ message: HttpResponse.LOGOUT_SUCCESS });
+  }
 }

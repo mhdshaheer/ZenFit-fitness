@@ -11,21 +11,25 @@ const initialState: AuthState = {
 
 export const authReducer = createReducer(
   initialState,
-  on(AuthActions.signup, (state) => ({
+  on(AuthActions.signup, AuthActions.login, (state) => ({
     ...state,
     loading: true,
     error: null,
   })),
-  on(AuthActions.signupSuccess, (state) => ({
+  on(AuthActions.signupSuccess, AuthActions.loginSuccess, (state) => ({
     ...state,
     loading: false,
     error: null,
   })),
-  on(AuthActions.signupFailure, (state, { error }) => ({
-    ...state,
-    loading: false,
-    error,
-  })),
+  on(
+    AuthActions.signupFailure,
+    AuthActions.loginFailure,
+    (state, { error }) => ({
+      ...state,
+      loading: false,
+      error,
+    })
+  ),
   on(AuthActions.refreshAccessTokenSuccess, (state, { accessToken }) => ({
     ...state,
     accessToken,
@@ -34,5 +38,29 @@ export const authReducer = createReducer(
     ...state,
     error,
     accessToken: null,
+  })),
+
+  // google
+  on(AuthActions.googleSignup, (state) => ({
+    ...state,
+    signupLoading: true,
+    error: null,
+  })),
+
+  on(
+    AuthActions.googleSignupSuccess,
+    (state, { accessToken, refreshToken, role }) => ({
+      ...state,
+      signupLoading: false,
+      accessToken,
+      refreshToken,
+      user: { role },
+    })
+  ),
+
+  on(AuthActions.googleSignupFailure, (state, { error }) => ({
+    ...state,
+    signupLoading: false,
+    error,
   }))
 );

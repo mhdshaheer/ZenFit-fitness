@@ -1,4 +1,6 @@
 import { Routes } from '@angular/router';
+import { AuthGuard } from '../../../shared/guards/auth.guard';
+import { OtpGuard } from '../../../core/guards/otp.guard';
 
 export const AUTH_ROUTES: Routes = [
   {
@@ -13,6 +15,21 @@ export const AUTH_ROUTES: Routes = [
     loadComponent: () =>
       import('../components/signup-otp/signup-otp.component').then(
         (m) => m.SignupOtpComponent
+      ),
+    canActivate: [OtpGuard],
+  },
+  {
+    path: 'login',
+    loadComponent: () =>
+      import('../components/login/login.component').then(
+        (m) => m.LoginComponent
+      ),
+  },
+  {
+    path: 'forgot-password',
+    loadComponent: () =>
+      import('../components/forgot-password/forgot-password.component').then(
+        (m) => m.ForgotPasswordComponent
       ),
   },
 ];

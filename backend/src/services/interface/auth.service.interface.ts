@@ -5,4 +5,5 @@ export interface IAuthService {
   signup(userData: IUser): Promise<IUser>;
   verifyOtp(req: Request, res: Response): Promise<void>;
   resendOtp(req: Request, res: Response): Promise<void>;
+  logout(res: Response): Promise<void>;
 }

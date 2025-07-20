@@ -1,0 +1,14 @@
+
+<div class="container mx-auto px-4 py-8">
+  <app-table
+    [title]="'User Management'"
+    [subtitle]="'Manage system users and their permissions'"
+    [entityName]="'User'"
+    [columns]="userColumns"
+    [data]="(users$ | async) || []"
+    [actions]="userActions"
+    [pageSize]="10"
+    (actionClicked)="onUserAction($event)"
+    (addNewClicked)="onAddUser()"
+  ></app-table>
+</div>

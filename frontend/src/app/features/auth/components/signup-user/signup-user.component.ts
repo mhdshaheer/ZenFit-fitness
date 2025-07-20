@@ -12,6 +12,14 @@ import { SharedFormComponent } from '../../../../shared/components/shared-form/s
 import { Store } from '@ngrx/store';
 import { selectAuthLoading } from '../../../../features/auth/store/auth.selectors';
 import * as AuthActions from '../../../../features/auth/store/auth.actions';
+import {
+  GoogleLoginProvider,
+  SocialAuthService,
+  SocialUser,
+} from '@abacritt/angularx-social-login';
+import { OtpAccessService } from '../../../../core/services/otp-access.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-signup-user',
@@ -23,6 +31,9 @@ import * as AuthActions from '../../../../features/auth/store/auth.actions';
 export class SignupUserComponent {
   private fb = inject(FormBuilder);
   private store = inject(Store);
+  private socialAuthService = inject(SocialAuthService);
+  private otpAccessService = inject(OtpAccessService);
+  private logger = inject(LoggerService);
 
   signupForm!: FormGroup;
   showPassword = false;
@@ -88,10 +99,33 @@ export class SignupUserComponent {
     return this.signupForm.controls;
   }
 
+  // onGoogleSignup() {
+  // this.socialAuthService
+  //   .signIn(GoogleLoginProvider.PROVIDER_ID)
+  //   .then((user: SocialUser) => {
+  //     this.store.dispatch(
+  //       AuthActions.googleSignup({
+  //         payload: {
+  //           idToken: user.idToken,
+  //           email: user.email,
+  //           username: user.name,
+  //         },
+  //       })
+  //     );
+  //   })
+  //   .catch((err) => this.logger.error('Google sign-in error:', err));
+  // }
+  loginWithGoogle() {
+    this.logger.info('clicked google login..');
+    window.location.href = `${environment.apiUrl}/auth/google`; // backend URL
+    this.logger.info('after google login : page - signup-user');
+  }
+
   onSubmit(): void {
     if (this.signupForm.valid) {
+      this.otpAccessService.allowAccess();
       const formData = this.signupForm.value;
-      console.log('Data is submitted...', formData);
+      this.logger.info('Data is submitted...', formData);
       this.store.dispatch(
         AuthActions.signup({
           payload: {

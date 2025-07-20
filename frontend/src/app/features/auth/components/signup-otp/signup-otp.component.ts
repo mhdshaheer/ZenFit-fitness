@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { OtpComponent } from '../../../../shared/components/otp/otp.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
@@ -6,6 +6,7 @@ import { OtpAccessService } from '../../../../core/services/otp-access.service';
 import Swal from 'sweetalert2';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'app-signup-otp',
@@ -16,6 +17,7 @@ import { takeUntil } from 'rxjs/operators';
 })
 export class SignupOtpComponent {
   private destroy$ = new Subject<void>();
+  private logger = inject(LoggerService);
 
   email = localStorage.getItem('signupEmail') || '';
 
@@ -27,7 +29,7 @@ export class SignupOtpComponent {
 
   handleOtpSubmit(otp: string) {
     if (!this.email) {
-      console.error('Email is missing.');
+      this.logger.error('Email is missing.');
       return;
     }
 
@@ -52,11 +54,12 @@ export class SignupOtpComponent {
             icon: 'success',
             draggable: true,
           }).then(() => {
+            this.otpService.clearAccess();
             this.router.navigate([`/${res.role}/dashboard`]);
           });
         },
         error: (err) => {
-          console.error('Invalid OTP', err);
+          this.logger.error('Invalid OTP', err);
           Swal.fire({
             title: 'Invalid OTP',
             text: err.error?.error || 'Please try again.',

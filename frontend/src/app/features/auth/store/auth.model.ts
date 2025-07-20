@@ -5,6 +5,11 @@ export interface SignupPayload {
   role: string;
 }
 
+export interface LoginPayload {
+  email: string;
+  password: string;
+}
+
 export interface AuthState {
   user: any | null;
   accessToken: string | null;

@@ -4,7 +4,6 @@ export enum HttpResponse {
   PAGE_NOT_FOUND = "Route not found",
   USER_NOT_FOUND = "User not found",
   PASSWORD_INCORRECT = "Incorrect password, try again",
-  NO_TOKEN = "Token not provided",
   OTP_INCORRECT = "Incorrect otp, try again",
   OTP_NOT_FOUND = "Otp not found",
   INVALID_CREDENTIALS = "Invalid credentials",
@@ -16,7 +15,6 @@ export enum HttpResponse {
   INVALID_EMAIL = "Invalid email address",
   UNEXPECTED_KEY_FOUND = "Unexpected key found",
   RESET_PASS_LINK = "Link for resetting password is sended to email",
-  TOKEN_EXPIRED = "Token not valid or expired!",
   PASSWORD_CHANGE_SUCCESS = "Password changed successfully!",
   UNAUTHORIZED = "Unauthorized access!",
   USERNAME_EXIST = "Username Already Exist",
@@ -26,9 +24,12 @@ export enum HttpResponse {
   RESOURCE_FOUND = "Resource found.",
   RESOURCE_UPDATED = "Resource updated.",
   PROFILE_PICTURE_CHANGED = "Profile picture changed successfully",
-  LOGOUT_SUCCESS = "User Logout successfully",
-  BLOG_NOT_FOUND = "Blog not found",
+  LOGOUT_SUCCESS = "Logged out successfully",
   INVALID_ID = "Invalid ID format",
   REQUIRED_AUTHOR_ID = "Author ID is required",
   REQUIRED_AUTHOR_NAME = "Author name is required",
+
+  // Token
+  NO_TOKEN = "Access Denied: No token provided",
+  TOKEN_EXPIRED = "Invalid or expired token",
 }

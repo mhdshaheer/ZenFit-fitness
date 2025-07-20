@@ -28,4 +28,30 @@ export class AuthRepository
   ): Promise<IUser | null> {
     return await UserModel.findByIdAndUpdate(id, { status }, { new: true });
   }
+
+  async updatePassword(
+    email: string,
+    newPassword: string
+  ): Promise<IUser | null> {
+    return await this.model.findOneAndUpdate(
+      { email },
+      { password: newPassword },
+      { new: true }
+    );
+  }
+
+  // =========== Google signup ==========
+
+  async createGoogleUser(userData: {
+    email: string;
+    username: string;
+    role: string;
+    googleId?: string;
+  }) {
+    const user = new UserModel(userData);
+    return await user.save();
+  }
+  async findByGoogleId(googleId: string) {
+    return await UserModel.findOne({ googleId });
+  }
 }

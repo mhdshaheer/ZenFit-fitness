@@ -1,0 +1,120 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Sidebar Component -->
+  <app-side-bar
+    [config]="sidebarConfig"
+    [isOpen]="isSidebarOpen"
+    [activeItemId]="activeMenuItem"
+    (itemClick)="onMenuItemClick($event)"
+    (sidebarToggle)="onSidebarToggle($event)"
+    (settingsClick)="onSettingsClick()"
+  >
+    <!-- Mobile toggle button slot -->
+    <button
+      slot="mobile-toggle"
+      class="lg:hidden fixed top-4 left-4 z-30 p-2 rounded-lg bg-white shadow-md hover:bg-gray-50"
+      (click)="toggleSidebar()"
+    >
+      <svg
+        class="w-6 h-6 text-gray-600"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M4 6h16M4 12h16M4 18h16"
+        ></path>
+      </svg>
+    </button>
+  </app-side-bar>
+
+  <!-- Main Content Area -->
+  <div class="lg:ml-64 min-h-screen transition-all duration-300">
+    <!-- Top Bar -->
+    <header
+      class="bg-white shadow-sm border-b p-4 flex items-center justify-between"
+    >
+      <!-- Mobile menu button -->
+      <button
+        class="lg:hidden p-2 rounded-lg hover:bg-gray-100"
+        (click)="toggleSidebar()"
+      >
+        <svg
+          class="w-6 h-6"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M4 6h16M4 12h16M4 18h16"
+          ></path>
+        </svg>
+      </button>
+
+      <h1 class="text-xl font-semibold text-gray-800">
+        {{ getPageTitle() }}
+      </h1>
+
+      <!-- User menu or other actions -->
+      <div class="flex items-center space-x-4">
+        <button class="p-2 rounded-lg hover:bg-gray-100">
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 17h5l-5 5-5-5h5v-7h0z"
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="p-6">
+      <div class="max-w-7xl mx-auto">
+        <!-- Your page content here -->
+        <div class="bg-white rounded-lg shadow-sm p-6">
+          <h2 class="text-2xl font-bold text-gray-900 mb-4">
+            Welcome to {{ activeMenuItem || "Dashboard" }}
+          </h2>
+          <p class="text-gray-600 mb-4">
+            Current active menu:
+            <strong>{{ activeMenuItem || "None selected" }}</strong>
+          </p>
+          <p class="text-gray-600">
+            This sidebar component is fully responsive and reusable. Customize
+            the configuration object to change menu items, sections, and
+            behavior.
+          </p>
+
+          <!-- Demo buttons -->
+          <div class="mt-6 space-x-4">
+            <button
+              class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              (click)="toggleSidebar()"
+            >
+              Toggle Sidebar
+            </button>
+            <button
+              class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+              (click)="changeTheme()"
+            >
+              Change Theme
+            </button>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>

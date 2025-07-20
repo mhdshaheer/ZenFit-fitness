@@ -1,7 +1,15 @@
 import { Routes } from '@angular/router';
 
 export const routes: Routes = [
-  { path: '', redirectTo: 'auth/signup', pathMatch: 'full' },
+  {
+    path: '',
+    loadComponent: () => {
+      return import(
+        '../app/features/user/component/landing-page/landing-page.component'
+      ).then((m) => m.LandingPageComponent);
+    },
+    pathMatch: 'full',
+  },
   {
     path: 'auth',
     loadChildren: () => {
@@ -17,12 +25,7 @@ export const routes: Routes = [
         (m) => m.USER_ROUTES
       ),
   },
-  // {
-  //   path: 'user',
-  //   loadChildren: () => {
-  //     return import('./modules/user/user.routes').then((m) => m.USER_ROUTES);
-  //   },
-  // },
+
   {
     path: 'trainer',
     loadChildren: () =>
@@ -30,18 +33,20 @@ export const routes: Routes = [
         (m) => m.TRAINER_ROUTES
       ),
   },
-  // {
-  //   path: 'trainer',
-  //   loadChildren: () => {
-  //     return import('./modules/trainer/trainer.routes').then(
-  //       (m) => m.TRAINER_ROUTES
-  //     );
-  //   },
-  // },
+
   {
     path: 'admin',
-    loadChildren: () => {
-      return import('./modules/admin/admin.routes').then((m) => m.ADMIN_ROUTES);
-    },
+    loadChildren: () =>
+      import('./features/admin/routes/admin.routes').then(
+        (m) => m.ADMIN_ROUTES
+      ),
   },
+  // {
+  //   path: '**',
+  //   // path: 'not-authorized',
+  //   loadComponent: () =>
+  //     import('../app/shared/components/not-found/not-found.component').then(
+  //       (m) => m.NotFoundComponent
+  //     ),
+  // },
 ];

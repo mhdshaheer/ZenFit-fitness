@@ -3,13 +3,18 @@ import { Injectable } from '@angular/core';
 @Injectable({ providedIn: 'root' })
 export class OtpAccessService {
   private allowed = false;
-  allowAccess() {
+
+  allowAccess(): void {
     this.allowed = true;
+    sessionStorage.setItem('canAccessOtp', 'true');
   }
-  canAccess() {
-    return this.allowed;
+
+  canAccess(): boolean {
+    return this.allowed || sessionStorage.getItem('canAccessOtp') === 'true';
   }
-  clearAccess() {
+
+  clearAccess(): void {
     this.allowed = false;
+    sessionStorage.removeItem('canAccessOtp');
   }
 }

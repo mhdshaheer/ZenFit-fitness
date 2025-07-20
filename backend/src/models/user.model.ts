@@ -40,6 +40,13 @@ const userSchema = new mongoose.Schema(
       enum: ["inactive", "pending", "active", "blocked"],
       default: "active",
     },
+    googleId: {
+      type: String,
+      index: true,
+    },
+    profileImage: {
+      type: String,
+    },
   },
   { timestamps: true }
 );
