@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { AuthService } from "../../services/implimentation/auth.service";
 import { AdminService } from "../../services/implimentation/admin.service";
+import { HttpStatus } from "../../const/statuscode.const";
 
 export class AdminController {
   private userService: AuthService;
@@ -11,34 +12,28 @@ export class AdminController {
     this.adminService = new AdminService();
   }
 
-  public getAllUsers = async (req: Request, res: Response): Promise<void> => {
+  async getUsers(req: Request, res: Response): Promise<void> {
     try {
-      const users = await this.userService.getAllUsers();
-      res.status(200).json(users);
-    } catch (error) {
-      console.error("Error in getAllUsers:", error);
-      res.status(500).json({ message: "Failed to fetch users" });
-    }
-  };
+      const page = parseInt(req.query.page as string) || 1;
+      const pageSize = parseInt(req.query.pageSize as string) || 10;
+      const search = (req.query.search as string) || "";
+      const sortBy = (req.query.sortBy as string) || "createdAt";
+      const sortOrder = (req.query.sortOrder as string) === "desc" ? -1 : 1;
 
-  blockUser = async (req: Request, res: Response) => {
-    try {
-      const userId = req.params.id;
-      const user = await this.userService.blockUser(userId);
-      res.status(200).json({ message: "User unblocked successfully", user });
-    } catch (err: any) {
-      res.status(400).json({ message: err.message });
+      const result = await this.adminService.getUsers({
+        page,
+        pageSize,
+        search,
+        sortBy,
+        sortOrder,
+      });
+
+      console.log("result is :", result);
+      res.status(200).json(result);
+    } catch (error: any) {
+      res.status(500).json({ message: error.message });
     }
-  };
-  unblockUser = async (req: Request, res: Response) => {
-    try {
-      const userId = req.params.id;
-      const user = await this.userService.unblockUser(userId);
-      res.status(200).json({ message: "User unblocked successfully", user });
-    } catch (err: any) {
-      res.status(400).json({ message: err.message });
-    }
-  };
+  }
 
   async updateUserStatus(req: Request, res: Response) {
     try {
@@ -46,18 +41,21 @@ export class AdminController {
       const { status } = req.body;
 
       if (!["active", "blocked"].includes(status)) {
-        return res
-          .status(400)
+        res
+          .status(HttpStatus.BAD_REQUEST)
           .json({ message: 'Invalid status: must be "active" or "blocked"' });
+        return;
       }
 
       const user = await this.adminService.updateUserStatus(id, status);
-      res.status(200).json({
+      res.status(HttpStatus.OK).json({
         message: `User status updated to ${status}`,
         user,
       });
+      return;
     } catch (error: any) {
-      res.status(404).json({ message: error.message });
+      res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      return;
     }
   }
 }

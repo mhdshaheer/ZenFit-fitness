@@ -21,13 +21,16 @@ import {
   SocialLoginModule,
 } from '@abacritt/angularx-social-login';
 import { ErrorInterceptor } from './core/interceptors/error.interceptor';
+import { adminReducer } from './features/admin/store/admin.reducer';
+import { AdminEffects } from './features/admin/store/admin.effects';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
     provideHttpClient(withInterceptors([AuthInterceptor, ErrorInterceptor])),
-    provideStore({ auth: authReducer }),
-    provideEffects([AuthEffects]),
+    provideStore({ auth: authReducer, admin: adminReducer }),
+    provideEffects([AuthEffects, AdminEffects]),
 
     importProvidersFrom(SocialLoginModule),
     {

@@ -78,41 +78,22 @@
           </svg>
         </button>
       </div>
+      <div>
+        <button
+          (click)="logOutUser()"
+          class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-all duration-300 ease-in-out"
+        >
+          Logout
+        </button>
+      </div>
     </header>
 
     <!-- Main Content -->
+
     <main class="p-6">
       <div class="max-w-7xl mx-auto">
-        <!-- Your page content here -->
-        <div class="bg-white rounded-lg shadow-sm p-6">
-          <h2 class="text-2xl font-bold text-gray-900 mb-4">
-            Welcome to {{ activeMenuItem || "Dashboard" }}
-          </h2>
-          <p class="text-gray-600 mb-4">
-            Current active menu:
-            <strong>{{ activeMenuItem || "None selected" }}</strong>
-          </p>
-          <p class="text-gray-600">
-            This sidebar component is fully responsive and reusable. Customize
-            the configuration object to change menu items, sections, and
-            behavior.
-          </p>
-
-          <!-- Demo buttons -->
-          <div class="mt-6 space-x-4">
-            <button
-              class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
-              (click)="toggleSidebar()"
-            >
-              Toggle Sidebar
-            </button>
-            <button
-              class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-              (click)="changeTheme()"
-            >
-              Change Theme
-            </button>
-          </div>
+        <div *ngIf="activeMenuItem === 'members'">
+          <app-user-manage></app-user-manage>
         </div>
       </div>
     </main>

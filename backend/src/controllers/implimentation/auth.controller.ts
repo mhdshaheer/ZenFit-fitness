@@ -6,6 +6,7 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../../utils/jwt.util";
+import logger from "../../utils/logger";
 import { IAuthController } from "../interface/auth.controller.interface";
 import { Request, Response } from "express";
 
@@ -59,25 +60,22 @@ export class AuthController implements IAuthController {
         email,
         password
       );
-
-      console.log("this is loggin controller");
       res.cookie("accessToken", accessToken, {
         httpOnly: true,
         secure: false,
         sameSite: "lax",
         maxAge: 15 * 60 * 1000, // 15 minutes (adjust as needed)
+        path: "/",
       });
-      console.log("this is loggin controller 1");
 
       // Set refresh token in HTTP-only cookie
       res.cookie("refreshToken", refreshToken, {
         httpOnly: true,
-        secure: false, // ✅ false in dev
+        secure: false,
         sameSite: "lax", // allow dev frontend access
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        path: "/",
       });
-
-      console.log("cookies: ", req.cookies);
       res.status(200).json({
         message: "Login successful",
         accessToken,
@@ -101,23 +99,6 @@ export class AuthController implements IAuthController {
   async resetPassword(req: Request, res: Response): Promise<void> {
     return this.authService.resetPassword(req, res);
   }
-
-  // async googleSignupController(req: Request, res: Response) {
-  //   const { idToken, email, username } = req.body;
-
-  //   try {
-  //     const result = await this.authService.signupWithGoogle(
-  //       idToken,
-  //       email,
-  //       username
-  //     );
-  //     res.status(200).json(result);
-  //   } catch (error: any) {
-  //     res
-  //       .status(401)
-  //       .json({ message: error.message || "Authentication failed" });
-  //   }
-  // }
 
   async googleCallback(req: Request, res: Response) {
     console.log("i am on google controller...");
@@ -162,8 +143,14 @@ export class AuthController implements IAuthController {
     //   },
     // });
   }
-  async logOut(req: Request, res: Response) {
-    await this.authService.logout;
+  async logOut(req: Request, res: Response): Promise<void> {
+    await this.authService.logout(res);
     res.status(HttpStatus.OK).json({ message: HttpResponse.LOGOUT_SUCCESS });
+    return;
+  }
+
+  async refreshAccessToken(req: Request, res: Response) {
+    const { refreshToken } = req.cookies;
+    return this.authService.handleRefreshToken(refreshToken, res);
   }
 }

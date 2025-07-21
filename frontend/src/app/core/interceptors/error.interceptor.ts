@@ -4,28 +4,41 @@ import { inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { LoggerService } from '../services/logger.service'; // optional
-import { catchError } from 'rxjs';
+import { catchError, switchMap, throwError } from 'rxjs';
+import { AuthService } from '../services/auth.service';
 
 export const ErrorInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const logger = inject(LoggerService);
+  const authService = inject(AuthService);
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       logger.error('HTTP Error:', error);
 
       if (error.status === 401) {
-        router.navigate(['/auth/login']);
-      } else if (error.status === 403) {
-        alert('You do not have permission to perform this action.');
-      } else if (error.status === 404) {
-        alert('Resource not found.');
-      } else if (error.status >= 500) {
-        alert('A server error occurred. Please try again later.');
-      } else {
-        alert(error?.error?.message || 'An unexpected error occurred.');
+        return authService.refreshToken().pipe(
+          switchMap((success: boolean) => {
+            if (success) {
+              const retryReq = req.clone({
+                withCredentials: true,
+              });
+              return next(retryReq);
+            } else {
+              // Refresh token invalid, logout
+              authService.logout();
+              router.navigate(['/auth/login']);
+              return throwError(() => error);
+            }
+          }),
+          catchError(() => {
+            authService.logout();
+            router.navigate(['/auth/login']);
+            return throwError(() => error);
+          })
+        );
       }
-      throw error;
+      return throwError(() => error);
     })
   );
 };

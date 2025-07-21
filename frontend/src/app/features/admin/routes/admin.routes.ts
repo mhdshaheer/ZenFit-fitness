@@ -22,13 +22,6 @@ export const ADMIN_ROUTES: Routes = [
             (m) => m.UserManageComponent
           ),
       },
-      {
-        path: 'trainer-manage',
-        loadComponent: () =>
-          import('../components/trainer-manage/trainer-manage.component').then(
-            (m) => m.TrainerManageComponent
-          ),
-      },
     ],
   },
 ];

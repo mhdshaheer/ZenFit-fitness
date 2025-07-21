@@ -6,7 +6,7 @@ import {
 } from '../../features/auth/store/auth.model';
 import { environment } from '../../../environments/environment';
 import { Router } from '@angular/router';
-import { firstValueFrom } from 'rxjs';
+import { catchError, firstValueFrom, map, of } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -22,11 +22,20 @@ export class AuthService {
   }
 
   refreshToken() {
-    return this.http.post<{ accessToken: string }>(
-      `${environment.apiUrl}/auth/refresh-token`,
-      {},
-      { withCredentials: true }
-    );
+    return this.http
+      .post<{ accessToken: string }>(
+        `${environment.apiUrl}/auth/refresh-token`,
+        {},
+        { withCredentials: true }
+      )
+      .pipe(
+        map((res) => {
+          return true;
+        }),
+        catchError(() => {
+          return of(false);
+        })
+      );
   }
 
   verifyOtp(email: string, otp: string) {
@@ -48,6 +57,14 @@ export class AuthService {
     return this.http.post<{ accessToken: string; role: string }>(
       `${environment.apiUrl}/auth/login`,
       payload,
+      { withCredentials: true }
+    );
+  }
+
+  logout() {
+    return this.http.post<{ message: string }>(
+      `${environment.apiUrl}/auth/logout`,
+      {},
       { withCredentials: true }
     );
   }
@@ -118,10 +135,5 @@ export class AuthService {
     } catch (error) {
       return null;
     }
-  }
-
-  logout(): void {
-    localStorage.removeItem('accessToken');
-    this.router.navigate(['/auth/login']);
   }
 }

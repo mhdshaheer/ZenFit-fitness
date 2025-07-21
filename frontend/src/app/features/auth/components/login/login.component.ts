@@ -12,6 +12,8 @@ import { selectAuthError, selectAuthLoading } from '../../store/auth.selectors';
 import { login } from '../../store/auth.actions';
 import { SharedFormComponent } from '../../../../shared/components/shared-form/shared-form.component';
 import { toSignal } from '@angular/core/rxjs-interop';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { environment } from '../../../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -28,6 +30,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 export class LoginComponent {
   private fb = inject(FormBuilder);
   private store = inject(Store);
+  private logger = inject(LoggerService);
   loginForm!: FormGroup;
   submitted = signal(false);
   showPassword = signal(false);
@@ -70,5 +73,10 @@ export class LoginComponent {
     const { email, password } = this.loginForm.value;
     this.store.dispatch(login({ payload: { email, password } }));
     console.log('Login submitted: ', this.loginForm.value);
+  }
+  loginWithGoogle() {
+    this.logger.info('clicked google login..');
+    window.location.href = `${environment.apiUrl}/auth/google`;
+    this.logger.info('after google login : page - signup-user');
   }
 }

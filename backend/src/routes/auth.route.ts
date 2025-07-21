@@ -8,7 +8,6 @@ import authMiddleware from "../middlewares/verifyToken.middleware";
 
 const authRouter = Router();
 const controller = new AuthController();
-const userController = new AdminController();
 
 authRouter.post("/signup", controller.sendOtp.bind(controller));
 authRouter.post(
@@ -28,13 +27,7 @@ authRouter.post(
 );
 
 authRouter.post("/login", controller.login.bind(controller));
-authRouter.get("/users", userController.getAllUsers);
-authRouter.patch("/users/:id/block", userController.blockUser);
-authRouter.patch(
-  "/users/:id/unblock",
-
-  userController.unblockUser
-);
+authRouter.post("/logout", controller.logOut.bind(controller));
 
 // Google signup
 
@@ -50,7 +43,11 @@ authRouter.get(
 );
 
 authRouter.get("/protected", authMiddleware, (req, res) => {
-  console.log("cookies on the route: ", req.cookies);
   res.json({ message: "Welcome to dashboard" });
 });
+authRouter.post(
+  "/refresh-token",
+  controller.refreshAccessToken.bind(controller)
+);
+
 export default authRouter;

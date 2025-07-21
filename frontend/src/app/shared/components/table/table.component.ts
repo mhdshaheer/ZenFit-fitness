@@ -36,8 +36,13 @@ export class TableComponent {
   @Input() columns: TableColumn[] = [];
   @Input() data: any[] = [];
   @Input() actions: TableAction[] = [];
-  @Input() pageSize: number = 10;
   @Input() showAddButton: boolean = true;
+
+  // Pagination
+  @Input() pageSize: number = 10;
+  @Input() totalItems: number = 0;
+  @Input() currentPage: number = 0;
+  @Output() pageChanged = new EventEmitter<number>();
 
   @Output() actionClicked = new EventEmitter<ActionEvent>();
   @Output() addNewClicked = new EventEmitter<void>();
@@ -45,13 +50,14 @@ export class TableComponent {
   searchTerm: string = '';
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
-  currentPage: number = 0;
 
   filteredData: any[] = [];
   paginatedData: any[] = [];
 
   ngOnInit() {
+    console.log(this.data);
     this.filteredData = [...this.data];
+    console.log(this.filteredData);
     this.updatePaginatedData();
   }
 
@@ -109,17 +115,29 @@ export class TableComponent {
     );
   }
 
+  // Pagination
+
+  // previousPage() {
+  //   if (this.currentPage > 0) {
+  //     this.currentPage--;
+  //     this.updatePaginatedData();
+  //   }
+  // }
   previousPage() {
     if (this.currentPage > 0) {
-      this.currentPage--;
-      this.updatePaginatedData();
+      this.pageChanged.emit(this.currentPage - 1);
     }
   }
 
+  // nextPage() {
+  //   if (this.currentPage < this.totalPages - 1) {
+  //     this.currentPage++;
+  //     this.updatePaginatedData();
+  //   }
+  // }
   nextPage() {
     if (this.currentPage < this.totalPages - 1) {
-      this.currentPage++;
-      this.updatePaginatedData();
+      this.pageChanged.emit(this.currentPage + 1);
     }
   }
 
@@ -133,8 +151,11 @@ export class TableComponent {
     return this.currentPage * this.pageSize;
   }
 
+  // get totalPages(): number {
+  //   return Math.ceil(this.filteredData.length / this.pageSize);
+  // }
   get totalPages(): number {
-    return Math.ceil(this.filteredData.length / this.pageSize);
+    return Math.ceil(this.totalItems / this.pageSize);
   }
 
   Math = Math;

@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 import { User } from '../../shared/models/user.model';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 
@@ -9,23 +9,61 @@ export class AdminService {
   private apiUrl = environment.apiUrl;
   private http = inject(HttpClient);
 
-  getUsers(): Observable<User[]> {
-    return this.http.get<User[]>(`${this.apiUrl}/auth/users`);
+  // getUsers(): Observable<User[]> {
+  //   return this.http.get<User[]>(`${this.apiUrl}/admin/users`);
+  // }
+  updateUserStatus(id: string, status: 'active' | 'blocked') {
+    return this.http.patch(`${this.apiUrl}/admin/users/${id}/status`, {
+      status,
+    });
   }
 
-  createUser(user: Partial<User>): Observable<User> {
-    return this.http.post<User>(`${this.apiUrl}/auth/users`, user);
-  }
+  // getUsers(params: {
+  //   page: number;
+  //   pageSize: number;
+  //   search?: string;
+  //   sortBy?: string;
+  //   sortOrder?: 'asc' | 'desc';
+  // }): Observable<any> {
+  //   let httpParams = new HttpParams()
+  //     .set('page', params.page)
+  //     .set('pageSize', params.pageSize)
+  //     .set('sortBy', params.sortBy || 'createdAt')
+  //     .set('sortOrder', params.sortOrder || 'asc');
 
-  updateUser(user: User): Observable<User> {
-    return this.http.put<User>(`${this.apiUrl}/auth/users/${user._id}`, user);
-  }
+  //   if (params.search) {
+  //     httpParams = httpParams.set('search', params.search);
+  //   }
 
-  blockUser(id: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}//auth/users/block`, {});
-  }
+  //   return this.http.get(`${this.apiUrl}/admin/users`, {
+  //     params: httpParams,
+  //     withCredentials: true,
+  //   });
+  // }
 
-  unblockUser(id: string): Observable<any> {
-    return this.http.patch(`${this.apiUrl}/${id}/auth/users/unblock`, {});
+  getUsers(params: {
+    page: number;
+    pageSize: number;
+    search?: string;
+    sortBy?: string;
+    sortOrder?: 'asc' | 'desc';
+  }): Observable<{ data: User[]; total: number }> {
+    let httpParams = new HttpParams()
+      .set('page', params.page.toString())
+      .set('pageSize', params.pageSize.toString())
+      .set('sortBy', params.sortBy || 'createdAt')
+      .set('sortOrder', params.sortOrder || 'asc');
+
+    if (params.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+
+    return this.http.get<{ data: User[]; total: number }>(
+      `${this.apiUrl}/admin/users`,
+      {
+        params: httpParams,
+        withCredentials: true,
+      }
+    );
   }
 }

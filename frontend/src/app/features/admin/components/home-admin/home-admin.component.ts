@@ -6,17 +6,22 @@ import {
   SideBarComponent,
   SidebarConfig,
 } from '../../../../shared/components/side-bar/side-bar.component';
+import { UserManageComponent } from '../user-manage/user-manage.component';
+import { AuthService } from '../../../../core/services/auth.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'app-home-admin',
   standalone: true,
-  imports: [CommonModule, SideBarComponent],
+  imports: [CommonModule, SideBarComponent, UserManageComponent],
   templateUrl: './home-admin.component.html',
   styleUrl: './home-admin.component.css',
 })
 export class HomeAdminComponent {
   showSidebar: boolean = false;
   private router = inject(Router);
+  private authService = inject(AuthService);
+  private logger = inject(LoggerService);
 
   // ==================================
   isSidebarOpen: boolean = false;
@@ -161,5 +166,17 @@ export class HomeAdminComponent {
     if (section) {
       section.items.push(newItem);
     }
+  }
+
+  logOutUser() {
+    this.authService.logout().subscribe({
+      next: (res) => {
+        this.logger.info(res.message);
+        this.router.navigate(['/auth/login']);
+      },
+      error: (err) => {
+        this.logger.error(err);
+      },
+    });
   }
 }

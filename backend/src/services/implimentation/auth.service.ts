@@ -1,4 +1,5 @@
 import { HttpResponse } from "../../const/response_message.const";
+import { HttpStatus } from "../../const/statuscode.const";
 import { IUser } from "../../interfaces/user.interface";
 import { AuthRepository } from "../../repositories/implimentation/auth.repository";
 import { TempUserRepository } from "../../repositories/implimentation/tempUser.repository";
@@ -8,7 +9,9 @@ import {
   generateAccessToken,
   generateRefreshToken,
   generateToken,
+  verifyRefreshToken,
 } from "../../utils/jwt.util";
+import logger from "../../utils/logger";
 import { sendOtpMail } from "../../utils/mail.util";
 import { generateOtp } from "../../utils/otp";
 import { IAuthService } from "../interface/auth.service.interface";
@@ -20,6 +23,7 @@ export class AuthService implements IAuthService {
   async signup(userData: IUser): Promise<IUser> {
     const { username, email, password, dob, role } = userData;
     const existing = await this.authRepository.findByEmail(email);
+    console.log("user :", existing);
     if (existing) {
       throw new Error(HttpResponse.USER_EXIST);
     }
@@ -114,6 +118,7 @@ export class AuthService implements IAuthService {
       secure: false,
       sameSite: "lax",
       maxAge: 15 * 60 * 1000, // 15 minutes (adjust as needed)
+      path: "/",
     });
 
     // Set refreshToken as HTTP-only cookie
@@ -122,6 +127,7 @@ export class AuthService implements IAuthService {
       secure: false, // ✅ false in development
       sameSite: "lax", // or 'strict' if you prefer
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      path: "/",
     });
 
     res.status(200).json({
@@ -251,31 +257,57 @@ export class AuthService implements IAuthService {
   }
   // ================================================
 
-  async getAllUsers(): Promise<IUser[]> {
-    return await this.authRepository.findAll();
-  }
-  async blockUser(id: string): Promise<IUser | null> {
-    const user = await this.authRepository.findById(id);
-    if (!user) throw new Error("User not found");
-    return await this.authRepository.updateStatus(id, "blocked");
-  }
-
-  async unblockUser(id: string): Promise<IUser | null> {
-    const user = await this.authRepository.findById(id);
-    if (!user) throw new Error("User not found");
-    return await this.authRepository.updateStatus(id, "active");
-  }
+  // async getAllUsers(): Promise<IUser[]> {
+  //   return await this.authRepository.findAll();
+  // }
 
   async logout(res: Response): Promise<void> {
     res.clearCookie("refreshToken", {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
+      path: "/",
     });
     res.clearCookie("accessToken", {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
+      path: "/",
     });
+    return;
+  }
+
+  async handleRefreshToken(
+    refreshToken: string | undefined,
+    res: Response
+  ): Promise<void> {
+    if (!refreshToken) {
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: "Refresh token not found or expired" });
+      return;
+    }
+    try {
+      const decoded = verifyRefreshToken(refreshToken);
+      const payload = {
+        id: decoded?.id || null,
+        role: decoded?.role || null,
+      };
+      const accessToken = generateAccessToken(payload);
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        sameSite: "lax",
+        secure: false,
+        maxAge: 15 * 60 * 1000,
+        path: "/",
+      });
+      res.json({ message: "Access token refreshed" });
+      return;
+    } catch (error) {
+      res
+        .status(HttpStatus.FORBIDDEN)
+        .json({ message: "Invalid refresh token" });
+      return;
+    }
   }
 }

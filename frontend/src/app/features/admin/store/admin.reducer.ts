@@ -18,9 +18,10 @@ export const adminReducer = createReducer(
   initialState,
 
   on(AdminActions.loadUsers, (state) => ({ ...state, loading: true })),
-  on(AdminActions.loadUsersSuccess, (state, { users }) => ({
+  on(AdminActions.loadUsersSuccess, (state, { users, total }) => ({
     ...state,
     users,
+    total,
     loading: false,
   })),
   on(AdminActions.loadUsersFailure, (state, { error }) => ({
@@ -38,14 +39,11 @@ export const adminReducer = createReducer(
     users: state.users.map((u) => (u._id === user._id ? user : u)),
   })),
 
-  on(AdminActions.blockUserSuccess, (state, { id }) => ({
+  //Update user status
+  on(AdminActions.updateUserStatusSuccess, (state, { id, status }) => ({
     ...state,
-    users: state.users.map((u) =>
-      u._id === id ? { ...u, status: 'blocked' } : u
+    users: state.users.map((user) =>
+      user._id === id ? { ...user, status } : user
     ),
-  })),
-  on(AdminActions.unblockUserSuccess, (s, { id }) => ({
-    ...s,
-    users: s.users.map((u) => (u._id === id ? { ...u, status: 'active' } : u)),
   }))
 );

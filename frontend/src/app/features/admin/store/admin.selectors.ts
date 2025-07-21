@@ -1,11 +1,10 @@
 import { createFeatureSelector, createSelector } from '@ngrx/store';
 import { UserState } from '../store/admin.reducer';
 
-export const selectUserState = createFeatureSelector<UserState>('user');
+export const selectUserState = createFeatureSelector<UserState>('admin');
 
-export const selectAllUsers = createSelector(
-  selectUserState,
-  (state) => state.users
+export const selectAllUsers = createSelector(selectUserState, (state) =>
+  state ? state.users : []
 );
 export const selectUserLoading = createSelector(
   selectUserState,

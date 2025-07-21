@@ -1,5 +1,6 @@
-import jwt from "jsonwebtoken";
+import jwt, { JwtPayload } from "jsonwebtoken";
 import { env } from "../config/env.config";
+import logger from "./logger";
 
 interface TokenPayload {
   id: string;
@@ -23,4 +24,17 @@ export function generateRefreshToken(payload: TokenPayload): string {
   return jwt.sign(payload, REFRESH_TOKEN_SECRET, {
     expiresIn: "7d",
   });
+}
+
+export function verifyRefreshToken(token: string): JwtPayload | null {
+  try {
+    const decoded = jwt.verify(token, env.jwt_refresh!);
+    if (typeof decoded === "object" && decoded !== null) {
+      return decoded as JwtPayload;
+    }
+    return null;
+  } catch (error) {
+    logger.error("Invalid refresh token", error);
+    return null;
+  }
 }

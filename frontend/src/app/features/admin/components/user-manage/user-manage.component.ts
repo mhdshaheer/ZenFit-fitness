@@ -1,17 +1,12 @@
-import { Component } from '@angular/core';
-import { TableComponent } from '../../../../shared/components/table/table.component';
-import { Store } from '@ngrx/store';
-import { map, Observable } from 'rxjs';
-import { User } from '../../../../shared/models/user.model';
-import {
-  loadUsers,
-  blockUser,
-  unblockUser,
-  createUser,
-  updateUser,
-} from '../../store/admin.actions';
-import { selectAllUsers, selectUserLoading } from '../../store/admin.selectors';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { Store } from '@ngrx/store';
+import { Observable } from 'rxjs';
+
+import { TableComponent } from '../../../../shared/components/table/table.component';
+import { User } from '../../../../shared/models/user.model';
+import { loadUsers, updateUserStatus } from '../../store/admin.actions';
+import { selectAllUsers, selectUserLoading } from '../../store/admin.selectors';
 
 export interface TableColumn {
   key: string;
@@ -43,18 +38,61 @@ export interface ActionEvent {
   styleUrl: './user-manage.component.css',
 })
 export class UserManageComponent {
+  private store = inject(Store);
+
   users$!: Observable<User[]>;
   loading$!: Observable<boolean>;
 
-  constructor(private store: Store) {}
+  // Pagination and filtering state
+  page = 1;
+  pageSize = 10;
+  totalUsers: number = 0;
+  search = '';
+  sortBy = 'createdAt';
+  sortOrder: 'asc' | 'desc' = 'asc';
 
   ngOnInit(): void {
-    this.users$ = this.store
-      .select(selectAllUsers)
-      .pipe(map((users) => users.filter((user) => user.role === 'user')));
+    this.users$ = this.store.select(selectAllUsers);
+    this.store.select(selectAllUsers).subscribe((users) => {
+      this.totalUsers = users.length;
+    });
     this.loading$ = this.store.select(selectUserLoading);
-    this.store.dispatch(loadUsers());
-    console.log(this.users$);
+    this.loadUsersFromBackend();
+  }
+
+  loadUsersFromBackend(): void {
+    this.store.dispatch(
+      loadUsers({
+        page: this.page,
+        pageSize: this.pageSize,
+        search: this.search,
+        sortBy: this.sortBy,
+        sortOrder: this.sortOrder,
+      })
+    );
+  }
+
+  onSearchChanged(search: string) {
+    this.search = search;
+    this.page = 1; // reset page
+    this.loadUsersFromBackend();
+  }
+
+  onPageChanged(page: number) {
+    this.page = page + 1;
+    this.loadUsersFromBackend();
+  }
+
+  onSortChanged({
+    sortBy,
+    sortOrder,
+  }: {
+    sortBy: string;
+    sortOrder: 'asc' | 'desc';
+  }) {
+    this.sortBy = sortBy;
+    this.sortOrder = sortOrder;
+    this.loadUsersFromBackend();
   }
 
   userColumns: TableColumn[] = [
@@ -66,14 +104,7 @@ export class UserManageComponent {
       sortable: true,
       width: '220px',
     },
-    {
-      key: 'dob',
-      label: 'Date of Birth',
-      type: 'date',
-      sortable: true,
-      width: '140px',
-    },
-    { key: 'gender', label: 'Gender', sortable: true, width: '100px' },
+    { key: 'role', label: 'Role', sortable: true, width: '100px' },
     {
       key: 'status',
       label: 'Status',
@@ -85,7 +116,6 @@ export class UserManageComponent {
 
   userActions: TableAction[] = [
     { label: 'View', icon: 'view', color: 'blue', action: 'view' },
-    { label: 'Edit', icon: 'edit', color: 'green', action: 'edit' },
     {
       label: 'Block',
       icon: 'block',
@@ -100,48 +130,23 @@ export class UserManageComponent {
       action: 'unblock',
       condition: (row) => row.status === 'blocked',
     },
-    { label: 'Delete', icon: 'delete', color: 'red', action: 'delete' },
   ];
 
   onUserAction(event: ActionEvent) {
     switch (event.action) {
-      case 'edit':
-        console.log('Editing user:', event.row);
-        this.store.dispatch(updateUser({ user: event.row }));
-        break;
-
       case 'block':
-        console.log('Blocking user:', event.row);
-        this.store.dispatch(blockUser({ id: event.row._id }));
-        break;
-
       case 'unblock':
-        console.log('Unblocking user:', event.row);
-        this.store.dispatch(unblockUser({ id: event.row._id }));
+        const newStatus = event.row.status === 'active' ? 'blocked' : 'active';
+        this.store.dispatch(
+          updateUserStatus({
+            id: event.row._id,
+            status: newStatus,
+          })
+        );
         break;
-
-      case 'delete':
-        console.log('Deleting user:', event.row);
-        if (confirm('Are you sure you want to delete this user?')) {
-          // Implement delete action if required
-        }
-        break;
-
       case 'view':
         console.log('Viewing user:', event.row);
         break;
     }
-  }
-
-  onAddUser() {
-    console.log('Adding new user');
-    const newUser: Partial<User> = {
-      username: 'newuser',
-      email: 'new@example.com',
-      dob: '2000-01-01',
-      gender: 'Male',
-      status: 'active',
-    };
-    this.store.dispatch(createUser({ user: newUser }));
   }
 }

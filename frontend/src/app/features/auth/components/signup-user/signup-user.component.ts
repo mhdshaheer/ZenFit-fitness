@@ -99,25 +99,9 @@ export class SignupUserComponent {
     return this.signupForm.controls;
   }
 
-  // onGoogleSignup() {
-  // this.socialAuthService
-  //   .signIn(GoogleLoginProvider.PROVIDER_ID)
-  //   .then((user: SocialUser) => {
-  //     this.store.dispatch(
-  //       AuthActions.googleSignup({
-  //         payload: {
-  //           idToken: user.idToken,
-  //           email: user.email,
-  //           username: user.name,
-  //         },
-  //       })
-  //     );
-  //   })
-  //   .catch((err) => this.logger.error('Google sign-in error:', err));
-  // }
   loginWithGoogle() {
     this.logger.info('clicked google login..');
-    window.location.href = `${environment.apiUrl}/auth/google`; // backend URL
+    window.location.href = `${environment.apiUrl}/auth/google`;
     this.logger.info('after google login : page - signup-user');
   }
 
