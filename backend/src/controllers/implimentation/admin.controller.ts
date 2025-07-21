@@ -4,11 +4,9 @@ import { AdminService } from "../../services/implimentation/admin.service";
 import { HttpStatus } from "../../const/statuscode.const";
 
 export class AdminController {
-  private userService: AuthService;
   private adminService: AdminService;
 
   constructor() {
-    this.userService = new AuthService();
     this.adminService = new AdminService();
   }
 
