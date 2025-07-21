@@ -1,5 +1,4 @@
 import { Request, Response } from "express";
-import { AuthService } from "../../services/implimentation/auth.service";
 import { AdminService } from "../../services/implimentation/admin.service";
 import { HttpStatus } from "../../const/statuscode.const";
 
