@@ -10,6 +10,7 @@ export class AdminController {
     this.adminService = new AdminService();
   }
 
+  // get all users
   async getUsers(req: Request, res: Response): Promise<void> {
     try {
       const page = parseInt(req.query.page as string) || 1;
