@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import { env } from "../../config/env.config";
 import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
@@ -6,15 +7,20 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../../utils/jwt.util";
-import logger from "../../utils/logger";
 import { IAuthController } from "../interface/auth.controller.interface";
 import { Request, Response } from "express";
+import { TYPES } from "../../types/inversify.types";
 
+@injectable()
 export class AuthController implements IAuthController {
-  private authService = new AuthService();
+  // private authService = new AuthService();
+
+  constructor(
+    @inject(TYPES.AuthController) private authService: AuthController
+  ) {}
+
   public async signup(req: Request, res: Response): Promise<void> {
     try {
-      console.log("request from frontend", req.body);
       const { username, email, password, dob, gender, role } = req.body;
       const user = await this.authService.signup({
         username,
@@ -100,7 +106,7 @@ export class AuthController implements IAuthController {
     return this.authService.resetPassword(req, res);
   }
 
-  async googleCallback(req: Request, res: Response) {
+  async googleCallback(req: Request, res: Response): Promise<void> {
     console.log("i am on google controller...");
     const user = req.user as any;
     console.log(user);
@@ -142,6 +148,7 @@ export class AuthController implements IAuthController {
     //     email: user.email,
     //   },
     // });
+    return;
   }
   async logOut(req: Request, res: Response): Promise<void> {
     await this.authService.logout(res);

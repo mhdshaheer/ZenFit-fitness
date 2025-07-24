@@ -1,13 +1,17 @@
 import { Request, Response } from "express";
 import { AdminService } from "../../services/implimentation/admin.service";
 import { HttpStatus } from "../../const/statuscode.const";
+import { IAdminController } from "../interface/admin.controller.interface";
+import { inject, injectable } from "inversify";
+import { TYPES } from "../../types/inversify.types";
 
 // admin controller
-export class AdminController {
-  private adminService: AdminService;
+@injectable()
+export class AdminController implements IAdminController {
+  // private adminService: AdminService;
 
-  constructor() {
-    this.adminService = new AdminService();
+  constructor(@inject(TYPES.AdminService) private adminService: AdminService) {
+    // this.adminService = new AdminService();
   }
 
   // get all users
@@ -34,7 +38,7 @@ export class AdminController {
     }
   }
 
-  async updateUserStatus(req: Request, res: Response) {
+  async updateUserStatus(req: Request, res: Response): Promise<void> {
     try {
       const id = req.params.id;
       const { status } = req.body;

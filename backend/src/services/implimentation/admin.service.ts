@@ -2,6 +2,7 @@ import { AdminRepository } from "../../repositories/implimentation/admin.reposit
 import { IUser } from "../../interfaces/user.interface";
 import { AuthRepository } from "../../repositories/implimentation/auth.repository";
 import { UserModel } from "../../models/user.model";
+import { injectable } from "inversify";
 
 interface GetUsersParams {
   page: number;
@@ -10,7 +11,7 @@ interface GetUsersParams {
   sortBy?: string;
   sortOrder?: 1 | -1;
 }
-
+@injectable()
 export class AdminService {
   private adminRepository = new AdminRepository();
   private authRepository = new AuthRepository();
