@@ -1,17 +1,16 @@
 import { Request, Response } from "express";
-import { AuthService } from "../../services/implimentation/auth.service";
 import { AdminService } from "../../services/implimentation/admin.service";
 import { HttpStatus } from "../../const/statuscode.const";
 
+// admin controller
 export class AdminController {
-  private userService: AuthService;
   private adminService: AdminService;
 
   constructor() {
-    this.userService = new AuthService();
     this.adminService = new AdminService();
   }
 
+  // get all users
   async getUsers(req: Request, res: Response): Promise<void> {
     try {
       const page = parseInt(req.query.page as string) || 1;
