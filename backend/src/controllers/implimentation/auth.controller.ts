@@ -15,9 +15,7 @@ import { TYPES } from "../../types/inversify.types";
 export class AuthController implements IAuthController {
   // private authService = new AuthService();
 
-  constructor(
-    @inject(TYPES.AuthController) private authService: AuthController
-  ) {}
+  constructor(@inject(TYPES.AuthService) private authService: AuthService) {}
 
   public async signup(req: Request, res: Response): Promise<void> {
     try {
@@ -30,7 +28,7 @@ export class AuthController implements IAuthController {
         gender,
         role,
       });
-      res.status(201).json({
+      res.status(HttpStatus.OK).json({
         message: HttpResponse.USER_CREATION_SUCCESS,
         user,
       });
@@ -48,7 +46,7 @@ export class AuthController implements IAuthController {
       res.status(status).json({ error: message });
     }
   }
-  async sendOtp(req: Request, res: Response): Promise<void> {
+  public async sendOtp(req: Request, res: Response): Promise<void> {
     await this.authService.sendOtp(req, res);
   }
 
@@ -93,7 +91,9 @@ export class AuthController implements IAuthController {
         },
       });
     } catch (err: any) {
-      res.status(401).json({ message: err.message || "Login failed" });
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: err.message || "Login failed" });
     }
   }
   async sendForgotPasswordOtp(req: Request, res: Response): Promise<void> {

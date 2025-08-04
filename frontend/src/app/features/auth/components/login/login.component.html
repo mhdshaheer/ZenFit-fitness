@@ -68,13 +68,25 @@
             <span *ngIf="f['password'].errors?.['required']"
               >Password is required</span
             >
-            <span *ngIf="f['password'].errors?.['minlength']"
-              >Password must be at least 8 characters long</span
+            <ng-container
+              *ngIf="f['password'].errors?.['passwordStrength'] as strength"
             >
-            <span *ngIf="f['password'].errors?.['pattern']"
-              >Password must contain at least one uppercase letter, one
-              lowercase letter, one digit, and one special character</span
-            >
+              <span *ngIf="!strength.hasUpperCase"
+                >Must contain an uppercase letter<br
+              /></span>
+              <span *ngIf="!strength.hasLowerCase"
+                >Must contain a lowercase letter<br
+              /></span>
+              <span *ngIf="!strength.hasNumber"
+                >Must contain a number<br
+              /></span>
+              <span *ngIf="!strength.hasSpecialChar"
+                >Must contain a special character<br
+              /></span>
+              <span *ngIf="!strength.isLongEnough"
+                >Minimum length must be 8<br
+              /></span>
+            </ng-container>
           </div>
         </div>
 

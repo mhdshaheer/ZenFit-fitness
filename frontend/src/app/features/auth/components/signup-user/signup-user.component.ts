@@ -12,14 +12,10 @@ import { SharedFormComponent } from '../../../../shared/components/shared-form/s
 import { Store } from '@ngrx/store';
 import { selectAuthLoading } from '../../../../features/auth/store/auth.selectors';
 import * as AuthActions from '../../../../features/auth/store/auth.actions';
-import {
-  GoogleLoginProvider,
-  SocialAuthService,
-  SocialUser,
-} from '@abacritt/angularx-social-login';
 import { OtpAccessService } from '../../../../core/services/otp-access.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { environment } from '../../../../../environments/environment';
+import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
 
 @Component({
   selector: 'app-signup-user',
@@ -31,7 +27,6 @@ import { environment } from '../../../../../environments/environment';
 export class SignupUserComponent {
   private fb = inject(FormBuilder);
   private store = inject(Store);
-  private socialAuthService = inject(SocialAuthService);
   private otpAccessService = inject(OtpAccessService);
   private logger = inject(LoggerService);
 
@@ -65,16 +60,7 @@ export class SignupUserComponent {
             ),
           ],
         ],
-        password: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(8),
-            Validators.pattern(
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/
-            ),
-          ],
-        ],
+        password: ['', [Validators.required, passwordStrengthValidator]],
         confirmPassword: ['', [Validators.required]],
         role: ['', [Validators.required]],
       },

@@ -6,6 +6,10 @@ export const selectUserState = createFeatureSelector<UserState>('admin');
 export const selectAllUsers = createSelector(selectUserState, (state) =>
   state ? state.users : []
 );
+export const selectTotalUsers = createSelector(
+  selectUserState,
+  (state) => state.total
+);
 export const selectUserLoading = createSelector(
   selectUserState,
   (state) => state.loading

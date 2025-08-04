@@ -4,17 +4,13 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { IAdminController } from "../interface/admin.controller.interface";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversify.types";
+import { mapToUserDto, mapToUserStatusDto } from "../../mapper/user.mapper";
 
 // admin controller
 @injectable()
 export class AdminController implements IAdminController {
-  // private adminService: AdminService;
+  constructor(@inject(TYPES.AdminService) private adminService: AdminService) {}
 
-  constructor(@inject(TYPES.AdminService) private adminService: AdminService) {
-    // this.adminService = new AdminService();
-  }
-
-  // get all users
   async getUsers(req: Request, res: Response): Promise<void> {
     try {
       const page = parseInt(req.query.page as string) || 1;
@@ -30,11 +26,11 @@ export class AdminController implements IAdminController {
         sortBy,
         sortOrder,
       });
-
-      console.log("result is :", result);
-      res.status(200).json(result);
+      res.status(HttpStatus.OK).json(result);
     } catch (error: any) {
-      res.status(500).json({ message: error.message });
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: error.message });
     }
   }
 
@@ -51,9 +47,9 @@ export class AdminController implements IAdminController {
       }
 
       const user = await this.adminService.updateUserStatus(id, status);
+      const responseDto = mapToUserStatusDto(user!, status);
       res.status(HttpStatus.OK).json({
-        message: `User status updated to ${status}`,
-        user,
+        responseDto,
       });
       return;
     } catch (error: any) {

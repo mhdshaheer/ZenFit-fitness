@@ -1,5 +1,6 @@
 import { createAction, props } from '@ngrx/store';
 import { User } from '../../../shared/models/user.model';
+import { HttpErrorResponse } from '@angular/common/http';
 
 // export const loadUsers = createAction('[User] Load Users');
 export const loadUsers = createAction(
@@ -19,7 +20,7 @@ export const loadUsersSuccess = createAction(
 );
 export const loadUsersFailure = createAction(
   '[User] Load Users Failure',
-  props<{ error: any }>()
+  props<{ error: HttpErrorResponse }>()
 );
 
 export const createUser = createAction(
@@ -32,7 +33,7 @@ export const createUserSuccess = createAction(
 );
 export const createUserFailure = createAction(
   '[User] Create User Failure',
-  props<{ error: any }>()
+  props<{ error: HttpErrorResponse }>()
 );
 
 export const updateUser = createAction(
@@ -45,7 +46,7 @@ export const updateUserSuccess = createAction(
 );
 export const updateUserFailure = createAction(
   '[User] Update User Failure',
-  props<{ error: any }>()
+  props<{ error: HttpErrorResponse }>()
 );
 
 // update user status
@@ -61,31 +62,5 @@ export const updateUserStatusSuccess = createAction(
 
 export const updateUserStatusFailure = createAction(
   '[User] Update User Status Failure',
-  props<{ error: any }>()
+  props<{ error: HttpErrorResponse }>()
 );
-
-// export const blockUser = createAction(
-//   '[User] Block User',
-//   props<{ id: string }>()
-// );
-// export const blockUserSuccess = createAction(
-//   '[User] Block User Success',
-//   props<{ id: string }>()
-// );
-// export const blockUserFailure = createAction(
-//   '[User] Block User Failure',
-//   props<{ error: any }>()
-// );
-
-// export const unblockUser = createAction(
-//   '[User] Unblock User',
-//   props<{ id: string }>()
-// );
-// export const unblockUserSuccess = createAction(
-//   '[User] Unblock User Success',
-//   props<{ id: string }>()
-// );
-// export const unblockUserFailure = createAction(
-//   '[User] Unblock User Failure',
-//   props<{ error: any }>()
-// );

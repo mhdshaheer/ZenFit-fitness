@@ -1,31 +1,30 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import {
   MenuItem,
   SideBarComponent,
   SidebarConfig,
 } from '../../../../shared/components/side-bar/side-bar.component';
-import { UserManageComponent } from '../user-manage/user-manage.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'app-home-admin',
   standalone: true,
-  imports: [CommonModule, SideBarComponent, UserManageComponent],
+  imports: [CommonModule, SideBarComponent, RouterModule],
   templateUrl: './home-admin.component.html',
   styleUrl: './home-admin.component.css',
 })
 export class HomeAdminComponent {
-  showSidebar: boolean = false;
   private router = inject(Router);
   private authService = inject(AuthService);
   private logger = inject(LoggerService);
+  private route = inject(ActivatedRoute);
 
   // ==================================
-  isSidebarOpen: boolean = false;
-  activeMenuItem: string = 'general';
+  isSidebarOpen = false;
+  activeMenuItem = 'general';
 
   // Customizable sidebar configuration
   sidebarConfig: SidebarConfig = {
@@ -63,25 +62,28 @@ export class HomeAdminComponent {
   };
 
   // Handle menu item clicks
+  // onMenuItemClick(item: MenuItem): void {
+  //   console.log('Menu item clicked:', item);
+  //   this.activeMenuItem = item.id;
+
+  //   // Or handle specific actions
+  //   switch (item.id) {
+  //     case 'billing':
+  //       this.handleBilling();
+  //       break;
+  //     case 'members':
+  //       this.handleMembers();
+  //       break;
+  //     // Add more cases as needed
+  //     default:
+  //       this.handleDefaultNavigation(item);
+  //   }
+  // }
   onMenuItemClick(item: MenuItem): void {
-    console.log('Menu item clicked:', item);
-    this.activeMenuItem = item.id;
-
-    // Add your routing logic here
-    // this.router.navigate([`/${item.id}`]);
-
-    // Or handle specific actions
-    switch (item.id) {
-      case 'billing':
-        this.handleBilling();
-        break;
-      case 'members':
-        this.handleMembers();
-        break;
-      // Add more cases as needed
-      default:
-        this.handleDefaultNavigation(item);
-    }
+    console.log('Navigating to:', item.id);
+    console.log('Item is :', item);
+    console.log('Route is :', this.route);
+    this.router.navigate([item.id], { relativeTo: this.route }); // Relative navigation
   }
 
   // Handle sidebar toggle
@@ -94,8 +96,6 @@ export class HomeAdminComponent {
   onSettingsClick(): void {
     console.log('Settings clicked');
     this.activeMenuItem = 'settings';
-    // Navigate to settings or open settings modal
-    // this.router.navigate(['/settings']);
   }
 
   // Toggle sidebar programmatically
@@ -105,7 +105,21 @@ export class HomeAdminComponent {
 
   // Get page title based on active menu item
   getPageTitle(): string {
-    const titles: { [key: string]: string } = {
+    // const titles: { [key: string]: string } = {
+    //   general: 'General Settings',
+    //   members: 'Team Members',
+    //   teams: 'Teams Management',
+    //   'custom-fields': 'Custom Fields',
+    //   billing: 'Billing & Subscription',
+    //   security: 'Security Settings',
+    //   integrations: 'Integrations',
+    //   profile: 'User Profile',
+    //   password: 'Password Settings',
+    //   apis: 'API Management',
+    //   'danger-zone': 'Danger Zone',
+    //   settings: 'Settings',
+    // };
+    const titles: Record<string, string> = {
       general: 'General Settings',
       members: 'Team Members',
       teams: 'Teams Management',
@@ -119,7 +133,6 @@ export class HomeAdminComponent {
       'danger-zone': 'Danger Zone',
       settings: 'Settings',
     };
-
     return titles[this.activeMenuItem] || 'Dashboard';
   }
 
@@ -137,35 +150,6 @@ export class HomeAdminComponent {
   private handleDefaultNavigation(item: MenuItem): void {
     console.log('Default navigation for:', item.label);
     // Implement default navigation logic
-  }
-
-  // Example method for changing theme
-  changeTheme(): void {
-    console.log('Theme change requested');
-    // Implement theme switching logic
-    // You could emit an event or use a service to change the theme
-  }
-
-  // Method to update menu badges dynamically
-  updateMemberCount(newCount: number): void {
-    const membersItem = this.sidebarConfig.sections
-      .find((section) => section.title === 'Company')
-      ?.items.find((item) => item.id === 'members');
-
-    if (membersItem) {
-      membersItem.badge = newCount;
-    }
-  }
-
-  // Method to add new menu items dynamically
-  addCustomMenuItem(sectionTitle: string, newItem: MenuItem): void {
-    const section = this.sidebarConfig.sections.find(
-      (s) => s.title === sectionTitle
-    );
-
-    if (section) {
-      section.items.push(newItem);
-    }
   }
 
   logOutUser() {
