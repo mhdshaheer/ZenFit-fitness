@@ -68,7 +68,7 @@ export class AuthController implements IAuthController {
         httpOnly: true,
         secure: false,
         sameSite: "lax",
-        maxAge: 15 * 60 * 1000, // 15 minutes (adjust as needed)
+        maxAge: 15 * 60 * 1000,
         path: "/",
       });
 
@@ -80,8 +80,8 @@ export class AuthController implements IAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         path: "/",
       });
-      res.status(200).json({
-        message: "Login successful",
+      res.status(HttpStatus.OK).json({
+        message: HttpResponse.LOGIN_SUCCESS,
         accessToken,
         role: user.role,
         user: {

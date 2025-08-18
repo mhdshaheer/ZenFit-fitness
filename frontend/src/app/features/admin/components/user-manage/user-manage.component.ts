@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
+import Swal from 'sweetalert2';
 
 import { TableComponent } from '../../../../shared/components/table/table.component';
 import { User } from '../../../../shared/models/user.model';

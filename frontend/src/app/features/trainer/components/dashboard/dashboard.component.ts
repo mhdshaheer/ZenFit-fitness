@@ -1,6 +1,7 @@
 import { Component, inject } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -11,7 +12,7 @@ import { Router } from '@angular/router';
 export class DashboardComponent {
   authService = inject(AuthService);
   router = inject(Router);
-  logger: any;
+  logger = inject(LoggerService);
   logOutUser() {
     this.authService.logout().subscribe({
       next: (res) => {
