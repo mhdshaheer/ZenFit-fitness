@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IUser } from "../../interfaces/user.interface";
@@ -16,6 +17,7 @@ import { sendOtpMail } from "../../utils/mail.util";
 import { generateOtp } from "../../utils/otp";
 import { IAuthService } from "../interface/auth.service.interface";
 import { Request, Response } from "express";
+@injectable()
 export class AuthService implements IAuthService {
   private tempRepository = new TempUserRepository();
   private authRepository = new AuthRepository();
@@ -23,7 +25,6 @@ export class AuthService implements IAuthService {
   async signup(userData: IUser): Promise<IUser> {
     const { username, email, password, dob, role } = userData;
     const existing = await this.authRepository.findByEmail(email);
-    console.log("user :", existing);
     if (existing) {
       throw new Error(HttpResponse.USER_EXIST);
     }
@@ -40,11 +41,11 @@ export class AuthService implements IAuthService {
     });
   }
   async sendOtp(req: Request, res: Response): Promise<void> {
-    console.log("data from the frontend: ", req.body);
     const { username, email, password, role } = req.body;
 
     const otp = generateOtp();
-    console.log("otp is :", otp);
+    console.log("Otp is [console] : ", otp);
+    logger.info("otp is :", otp);
     const hashPassword = await hashedPassword(password);
 
     const userPayload = {
@@ -59,10 +60,12 @@ export class AuthService implements IAuthService {
 
     try {
       await sendOtpMail(email, otp);
-      res.status(200).json({ message: "OTP sent successfully to email" });
+      res.status(HttpStatus.OK).json({ message: HttpResponse.OTP_SUCCESS });
     } catch (err) {
-      console.error("Mail send error:", err);
-      res.status(500).json({ error: "Failed to send OTP email" });
+      logger.error("Mail send error:", err);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: HttpResponse.OTP_FAILED });
     }
   }
 
@@ -72,14 +75,18 @@ export class AuthService implements IAuthService {
     // 1. Check if temp user exists
     const temp = await this.tempRepository.findByEmail(email);
     if (!temp) {
-      res.status(400).json({ error: "OTP expired or not found" });
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ error: HttpResponse.OTP_NOT_FOUND });
       return;
     }
 
     // 2. Validate OTP
     if (temp.otp !== otp) {
-      console.log("otp not matching...");
-      res.status(401).json({ error: "Invalid OTP" });
+      logger.info("otp not matching...");
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ error: HttpResponse.OTP_INVALID });
       return;
     }
 
@@ -88,7 +95,9 @@ export class AuthService implements IAuthService {
     const { username, password, role } = payload;
 
     if (!username || !email || !password || !role) {
-      res.status(400).json({ error: "Incomplete user data" });
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ error: HttpResponse.USER_DATA_INCOMPLETE });
       return;
     }
 
@@ -99,7 +108,9 @@ export class AuthService implements IAuthService {
     await this.tempRepository.deleteByEmail(email);
 
     if (!createdUser._id) {
-      res.status(500).json({ error: "User ID not found after registration" });
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: HttpResponse.USER_NOT_FOUND });
       return;
     }
 
@@ -130,7 +141,7 @@ export class AuthService implements IAuthService {
       path: "/",
     });
 
-    res.status(200).json({
+    res.status(HttpStatus.OK).json({
       message: "OTP verified and user registered",
       accessToken,
       email,
@@ -143,8 +154,9 @@ export class AuthService implements IAuthService {
     const { email } = req.body;
     const temp = await this.tempRepository.findByEmail(email);
     if (!temp) {
-      console.log("tmp user not found");
-      res.status(404).json({ error: "No signup request found for this email" });
+      res
+        .status(HttpStatus.NOT_FOUND)
+        .json({ error: "No signup request found for this email" });
       return;
     }
     const newOtp = generateOtp();
@@ -153,12 +165,17 @@ export class AuthService implements IAuthService {
     await this.tempRepository.updateOtp(email, newOtp);
     try {
       await sendOtpMail(email, newOtp);
-      console.log("Resend otp is :", newOtp);
-      res.status(200).json({ message: "OTP resent successfully" });
+      console.log("resent otp [console.log:] : ", newOtp);
+      logger.info("Resend otp is :", newOtp);
+      res
+        .status(HttpStatus.OK)
+        .json({ message: HttpResponse.OTP_RESENT_SUCCESS });
       return;
     } catch (error) {
-      console.error("Resend OTP error:", error);
-      res.status(500).json({ error: "Failed to resend OTP email" });
+      logger.error("Resend OTP error:", error);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ error: HttpResponse.OTP_RESENT_FAILED });
       return;
     }
   }
@@ -187,21 +204,26 @@ export class AuthService implements IAuthService {
     const { email } = req.body;
     const user = await this.authRepository.findByEmail(email);
     if (!user) {
-      res.status(404).json({ message: "User not found" });
+      res
+        .status(HttpStatus.NOT_FOUND)
+        .json({ message: HttpResponse.USER_NOT_FOUND });
       return;
     }
 
     const otp = generateOtp();
-    console.log("forgot password otp is : ", otp);
+    console.log("forgot password otp is[console] : ", otp);
+    logger.info(`forgot password otp is : ${otp}`);
     await this.tempRepository.saveTempUser(email, otp, {});
 
     try {
       await sendOtpMail(email, otp);
-      res.status(200).json({ message: "OTP sent to email for password reset" });
+      res.status(HttpStatus.OK).json({ message: HttpResponse.OTP_SUCCESS });
       return;
     } catch (err) {
-      console.error("Failed to send OTP mail:", err);
-      res.status(500).json({ message: "Failed to send OTP email" });
+      logger.error("Failed to send OTP mail:", err);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: HttpResponse.OTP_FAILED });
       return;
     }
   }
@@ -211,11 +233,15 @@ export class AuthService implements IAuthService {
     const temp = await this.tempRepository.findByEmail(email);
 
     if (!temp || temp.otp !== otp) {
-      res.status(401).json({ message: "Invalid or expired OTP" });
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: HttpResponse.OTP_EXPIRED });
       return;
     }
 
-    res.status(200).json({ message: "OTP verified successfully" });
+    res
+      .status(HttpStatus.OK)
+      .json({ message: HttpResponse.OTP_VERIFIED_SUCCESS });
     return;
   }
 
@@ -225,14 +251,16 @@ export class AuthService implements IAuthService {
 
     if (!temp) {
       res
-        .status(400)
-        .json({ message: "Reset password request not found or expired" });
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ message: HttpResponse.RESET_PASSWORD_FAILED });
       return;
     }
 
     const user = await this.authRepository.findByEmail(email);
     if (!user) {
-      res.status(404).json({ message: "User not found" });
+      res
+        .status(HttpStatus.NOT_FOUND)
+        .json({ message: HttpResponse.USER_NOT_FOUND });
       return;
     }
 
@@ -240,7 +268,9 @@ export class AuthService implements IAuthService {
     await this.authRepository.updatePassword(email, hashedNewPassword);
     await this.tempRepository.deleteByEmail(email);
 
-    res.status(200).json({ message: "Password reset successful" });
+    res
+      .status(HttpStatus.OK)
+      .json({ message: HttpResponse.RESET_PASSWORD_SUCCESS });
   }
 
   async handleGoogleLogin(profile: any) {
@@ -256,10 +286,6 @@ export class AuthService implements IAuthService {
     return user;
   }
   // ================================================
-
-  // async getAllUsers(): Promise<IUser[]> {
-  //   return await this.authRepository.findAll();
-  // }
 
   async logout(res: Response): Promise<void> {
     res.clearCookie("refreshToken", {
@@ -284,7 +310,7 @@ export class AuthService implements IAuthService {
     if (!refreshToken) {
       res
         .status(HttpStatus.UNAUTHORIZED)
-        .json({ message: "Refresh token not found or expired" });
+        .json({ message: HttpResponse.REFRESH_TOKEN_EXPIRED });
       return;
     }
     try {
@@ -301,12 +327,12 @@ export class AuthService implements IAuthService {
         maxAge: 15 * 60 * 1000,
         path: "/",
       });
-      res.json({ message: "Access token refreshed" });
+      res.json({ message: HttpResponse.ACCESS_TOKEN_REFRESHED });
       return;
     } catch (error) {
       res
         .status(HttpStatus.FORBIDDEN)
-        .json({ message: "Invalid refresh token" });
+        .json({ message: HttpResponse.REFRESH_TOKEN_INVALID });
       return;
     }
   }

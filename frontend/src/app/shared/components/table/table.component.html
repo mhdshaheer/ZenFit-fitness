@@ -34,7 +34,7 @@
           <input
             type="text"
             [(ngModel)]="searchTerm"
-            (input)="onSearch()"
+            (input)="onSearch($event)"
             placeholder="Search..."
             class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
           />
@@ -92,10 +92,7 @@
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr
-          *ngFor="let row of paginatedData; let i = index"
-          class="hover:bg-gray-50"
-        >
+        <tr *ngFor="let row of data; let i = index" class="hover:bg-gray-50">
           <td
             *ngFor="let column of columns"
             class="px-6 py-4 whitespace-nowrap text-sm"
@@ -198,7 +195,7 @@
         </tr>
 
         <!-- Empty State -->
-        <tr *ngIf="paginatedData.length === 0">
+        <tr *ngIf="data.length === 0">
           <td
             [attr.colspan]="columns.length + 1"
             class="px-6 py-12 text-center text-sm text-gray-500"
@@ -229,56 +226,28 @@
   </div>
 
   <!-- Pagination -->
-  <!-- <div class="px-6 py-3 border-t border-gray-200 bg-gray-50">
-    <div class="flex items-center justify-between">
-      <div class="text-sm text-gray-700">
-        Showing {{ startIndex + 1 }} to
-        {{ Math.min(startIndex + pageSize, filteredData.length) }} of
-        {{ filteredData.length }} results
-      </div>
-      <div class="flex items-center space-x-2">
-        <button
-          (click)="previousPage()"
-          [disabled]="currentPage === 0"
-          class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Previous
-        </button>
-        <span class="text-sm text-gray-700">
-          Page {{ currentPage + 1 }} of {{ totalPages }}
-        </span>
-        <button
-          (click)="nextPage()"
-          [disabled]="currentPage >= totalPages - 1"
-          class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          Next
-        </button>
-      </div>
-    </div>
-  </div> -->
+
   <div class="px-6 py-3 border-t border-gray-200 bg-gray-50">
     <div class="flex items-center justify-between">
       <div class="text-sm text-gray-700">
         <!-- ✅ Pagination Summary -->
-        Showing {{ startIndex + 1 }} to
-        {{ Math.min(startIndex + pageSize, totalItems) }} of
+        Showing {{ startIndex + 1 }} to {{ Math.min(startIndex + pageSize) }} of
         {{ totalItems }} results
       </div>
       <div class="flex items-center space-x-2">
         <button
           (click)="previousPage()"
-          [disabled]="currentPage === 0"
+          [disabled]="currentPage == 1"
           class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Previous
         </button>
         <span class="text-sm text-gray-700">
-          Page {{ currentPage + 1 }} of {{ totalPages }}
+          Page {{ currentPage }} of {{ totalPages }}
         </span>
         <button
           (click)="nextPage()"
-          [disabled]="currentPage >= totalPages - 1"
+          [disabled]="currentPage == totalPages"
           class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           Next

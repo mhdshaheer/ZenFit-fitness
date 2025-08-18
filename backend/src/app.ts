@@ -5,6 +5,7 @@ import adminRouter from "./routes/admin.routes";
 import passport from "passport";
 import "./config/passport";
 import cookieParser from "cookie-parser";
+import "reflect-metadata";
 // import trainerAuthRouter from "./routes/trainer-auth.route";
 
 const app = express();

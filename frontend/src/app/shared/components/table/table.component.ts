@@ -41,64 +41,41 @@ export class TableComponent {
   // Pagination
   @Input() pageSize: number = 10;
   @Input() totalItems: number = 0;
-  @Input() currentPage: number = 0;
+  @Input() currentPage: number = 1;
   @Output() pageChanged = new EventEmitter<number>();
 
   @Output() actionClicked = new EventEmitter<ActionEvent>();
   @Output() addNewClicked = new EventEmitter<void>();
 
+  // Search
   searchTerm: string = '';
+  @Output() searchChanged = new EventEmitter<string>();
+
+  // Sort
   sortColumn: string = '';
   sortDirection: 'asc' | 'desc' = 'asc';
+  @Output() sortChanged = new EventEmitter<{
+    sortBy: string;
+    sortOrder: 'asc' | 'desc';
+  }>();
 
-  filteredData: any[] = [];
-  paginatedData: any[] = [];
-
-  ngOnInit() {
-    console.log(this.data);
-    this.filteredData = [...this.data];
-    console.log(this.filteredData);
-    this.updatePaginatedData();
-  }
-
-  ngOnChanges() {
-    this.filteredData = [...this.data];
-    this.onSearch();
-  }
-
-  onSearch() {
-    if (!this.searchTerm.trim()) {
-      this.filteredData = [...this.data];
-    } else {
-      const searchLower = this.searchTerm.toLowerCase();
-      this.filteredData = this.data.filter((row) =>
-        this.columns.some((column) =>
-          row[column.key]?.toString().toLowerCase().includes(searchLower)
-        )
-      );
-    }
-    this.currentPage = 0;
-    this.updatePaginatedData();
+  onSearch(event: Event) {
+    const input = (event.target as HTMLInputElement).value;
+    this.searchChanged.emit(input);
   }
 
   onSort(columnKey: string) {
+    console.log('Sort : ', columnKey, this.sortDirection);
     if (this.sortColumn === columnKey) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
       this.sortColumn = columnKey;
       this.sortDirection = 'asc';
     }
-
-    this.filteredData.sort((a, b) => {
-      const aValue = a[columnKey];
-      const bValue = b[columnKey];
-
-      if (aValue < bValue) return this.sortDirection === 'asc' ? -1 : 1;
-      if (aValue > bValue) return this.sortDirection === 'asc' ? 1 : -1;
-      return 0;
+    this.sortChanged.emit({
+      sortBy: this.sortColumn,
+      sortOrder: this.sortDirection,
     });
-
-    this.updatePaginatedData();
   }
 
   onAction(action: string, row: any, index: number) {
@@ -109,6 +86,9 @@ export class TableComponent {
     this.addNewClicked.emit();
   }
 
+  ngOnInit() {
+    console.log(this.pageSize, this.currentPage, this.totalItems);
+  }
   getAvailableActions(row: any): TableAction[] {
     return this.actions.filter(
       (action) => !action.condition || action.condition(row)
@@ -117,45 +97,29 @@ export class TableComponent {
 
   // Pagination
 
-  // previousPage() {
-  //   if (this.currentPage > 0) {
-  //     this.currentPage--;
-  //     this.updatePaginatedData();
-  //   }
-  // }
   previousPage() {
-    if (this.currentPage > 0) {
+    if (this.currentPage > 1) {
       this.pageChanged.emit(this.currentPage - 1);
     }
   }
 
-  // nextPage() {
-  //   if (this.currentPage < this.totalPages - 1) {
-  //     this.currentPage++;
-  //     this.updatePaginatedData();
-  //   }
-  // }
   nextPage() {
-    if (this.currentPage < this.totalPages - 1) {
+    if (this.currentPage < this.totalPages) {
       this.pageChanged.emit(this.currentPage + 1);
     }
   }
-
-  updatePaginatedData() {
-    const start = this.currentPage * this.pageSize;
-    const end = start + this.pageSize;
-    this.paginatedData = this.filteredData.slice(start, end);
-  }
-
   get startIndex(): number {
-    return this.currentPage * this.pageSize;
+    return (this.currentPage - 1) * this.pageSize;
   }
 
-  // get totalPages(): number {
-  //   return Math.ceil(this.filteredData.length / this.pageSize);
-  // }
   get totalPages(): number {
     return Math.ceil(this.totalItems / this.pageSize);
+  }
+
+  goToPage(page: number) {
+    if (page >= 1 && page <= this.totalPages) {
+      this.pageChanged.emit(page);
+    }
   }
 
   Math = Math;

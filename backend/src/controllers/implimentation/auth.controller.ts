@@ -1,3 +1,4 @@
+import { inject, injectable } from "inversify";
 import { env } from "../../config/env.config";
 import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
@@ -6,15 +7,18 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../../utils/jwt.util";
-import logger from "../../utils/logger";
 import { IAuthController } from "../interface/auth.controller.interface";
 import { Request, Response } from "express";
+import { TYPES } from "../../types/inversify.types";
 
+@injectable()
 export class AuthController implements IAuthController {
-  private authService = new AuthService();
+  // private authService = new AuthService();
+
+  constructor(@inject(TYPES.AuthService) private authService: AuthService) {}
+
   public async signup(req: Request, res: Response): Promise<void> {
     try {
-      console.log("request from frontend", req.body);
       const { username, email, password, dob, gender, role } = req.body;
       const user = await this.authService.signup({
         username,
@@ -24,7 +28,7 @@ export class AuthController implements IAuthController {
         gender,
         role,
       });
-      res.status(201).json({
+      res.status(HttpStatus.OK).json({
         message: HttpResponse.USER_CREATION_SUCCESS,
         user,
       });
@@ -42,7 +46,7 @@ export class AuthController implements IAuthController {
       res.status(status).json({ error: message });
     }
   }
-  async sendOtp(req: Request, res: Response): Promise<void> {
+  public async sendOtp(req: Request, res: Response): Promise<void> {
     await this.authService.sendOtp(req, res);
   }
 
@@ -64,7 +68,7 @@ export class AuthController implements IAuthController {
         httpOnly: true,
         secure: false,
         sameSite: "lax",
-        maxAge: 15 * 60 * 1000, // 15 minutes (adjust as needed)
+        maxAge: 15 * 60 * 1000,
         path: "/",
       });
 
@@ -76,8 +80,8 @@ export class AuthController implements IAuthController {
         maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
         path: "/",
       });
-      res.status(200).json({
-        message: "Login successful",
+      res.status(HttpStatus.OK).json({
+        message: HttpResponse.LOGIN_SUCCESS,
         accessToken,
         role: user.role,
         user: {
@@ -87,7 +91,9 @@ export class AuthController implements IAuthController {
         },
       });
     } catch (err: any) {
-      res.status(401).json({ message: err.message || "Login failed" });
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: err.message || "Login failed" });
     }
   }
   async sendForgotPasswordOtp(req: Request, res: Response): Promise<void> {
@@ -100,7 +106,7 @@ export class AuthController implements IAuthController {
     return this.authService.resetPassword(req, res);
   }
 
-  async googleCallback(req: Request, res: Response) {
+  async googleCallback(req: Request, res: Response): Promise<void> {
     console.log("i am on google controller...");
     const user = req.user as any;
     console.log(user);
@@ -142,6 +148,7 @@ export class AuthController implements IAuthController {
     //     email: user.email,
     //   },
     // });
+    return;
   }
   async logOut(req: Request, res: Response): Promise<void> {
     await this.authService.logout(res);

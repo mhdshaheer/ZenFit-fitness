@@ -7,9 +7,11 @@
     [data]="(users$ | async) || []"
     [actions]="userActions"
     (actionClicked)="onUserAction($event)"
-    [currentPage]="page - 1"
-    [pageSize]="5"
+    [currentPage]="page"
+    [pageSize]="pageSize"
     [totalItems]="totalUsers"
     (pageChanged)="onPageChanged($event)"
+    (searchChanged)="onSearchChanged($event)"
+    (sortChanged)="onSortChanged($event)"
   ></app-table>
 </div>
