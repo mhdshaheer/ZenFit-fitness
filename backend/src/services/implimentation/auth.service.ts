@@ -2,7 +2,6 @@ import { inject, injectable } from "inversify";
 import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IUser } from "../../interfaces/user.interface";
-import { AuthRepository } from "../../repositories/implimentation/auth.repository";
 import { TempUserRepository } from "../../repositories/implimentation/tempUser.repository";
 import { googleClient } from "../../utils/google-client";
 import { comparePassword, hashedPassword } from "../../utils/hash.util";
@@ -17,14 +16,15 @@ import { sendOtpMail } from "../../utils/mail.util";
 import { generateOtp } from "../../utils/otp";
 import { IAuthService } from "../interface/auth.service.interface";
 import { Request, Response } from "express";
+import { UserRepository } from "../../repositories/implimentation/user.repository";
 @injectable()
 export class AuthService implements IAuthService {
   private tempRepository = new TempUserRepository();
-  private authRepository = new AuthRepository();
+  private userRepository = new UserRepository();
 
   async signup(userData: IUser): Promise<IUser> {
     const { username, email, password, dob, role } = userData;
-    const existing = await this.authRepository.findByEmail(email);
+    const existing = await this.userRepository.findByEmail(email);
     if (existing) {
       throw new Error(HttpResponse.USER_EXIST);
     }
@@ -32,7 +32,7 @@ export class AuthService implements IAuthService {
     const isHashed = password!.startsWith("$2b$");
     const finalPassword = isHashed ? password : await hashedPassword(password!);
 
-    return await this.authRepository.createUser({
+    return await this.userRepository.createUser({
       username,
       email,
       password: finalPassword,
@@ -181,7 +181,7 @@ export class AuthService implements IAuthService {
   }
 
   async login(email: string, password: string) {
-    const user = await this.authRepository.findByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
     if (!user) throw new Error("Invalid credentials");
 
     const isMatch = await comparePassword(password, user.password!);
@@ -202,7 +202,7 @@ export class AuthService implements IAuthService {
   // ================================================
   async sendForgotPasswordOtp(req: Request, res: Response): Promise<void> {
     const { email } = req.body;
-    const user = await this.authRepository.findByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
     if (!user) {
       res
         .status(HttpStatus.NOT_FOUND)
@@ -256,7 +256,7 @@ export class AuthService implements IAuthService {
       return;
     }
 
-    const user = await this.authRepository.findByEmail(email);
+    const user = await this.userRepository.findByEmail(email);
     if (!user) {
       res
         .status(HttpStatus.NOT_FOUND)
@@ -265,7 +265,7 @@ export class AuthService implements IAuthService {
     }
 
     const hashedNewPassword = await hashedPassword(newPassword);
-    await this.authRepository.updatePassword(email, hashedNewPassword);
+    await this.userRepository.updatePassword(email, hashedNewPassword);
     await this.tempRepository.deleteByEmail(email);
 
     res
@@ -274,9 +274,9 @@ export class AuthService implements IAuthService {
   }
 
   async handleGoogleLogin(profile: any) {
-    let user = await this.authRepository.findByGoogleId(profile.id);
+    let user = await this.userRepository.findByGoogleId(profile.id);
     if (!user) {
-      user = await this.authRepository.createGoogleUser({
+      user = await this.userRepository.createGoogleUser({
         googleId: profile.id,
         email: profile.emails[0].value,
         username: profile.displayName,

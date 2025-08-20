@@ -41,10 +41,6 @@ const authMiddleware = async (
       (req as any).user = decoded;
       next();
     }
-    // (req as any).user = decoded;
-    // console.log("decoded : ", decoded);
-    // const currUser = await authRepository.findById(decoded?.id);
-    // next();
   } catch (error) {
     logger.error(error);
     res

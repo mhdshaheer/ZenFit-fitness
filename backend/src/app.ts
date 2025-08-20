@@ -6,7 +6,8 @@ import passport from "passport";
 import "./config/passport";
 import cookieParser from "cookie-parser";
 import "reflect-metadata";
-// import trainerAuthRouter from "./routes/trainer-auth.route";
+import router from "./routes/file.routes";
+import userRouter from "./routes/user.routes";
 
 const app = express();
 app.use(
@@ -21,6 +22,7 @@ app.use(cookieParser());
 app.use(passport.initialize());
 app.use("/auth", authRouter);
 app.use("/admin", adminRouter);
-// app.use("/trainer", trainerAuthRouter);
+app.use("/file", router);
+app.use("/user", userRouter);
 
 export default app;

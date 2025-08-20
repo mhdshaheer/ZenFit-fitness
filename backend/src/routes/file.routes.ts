@@ -9,10 +9,14 @@ const upload = multer();
 
 const fileController = container.get<IFileController>(TYPES.FileController);
 
-router.post("/upload", upload.single("file"), (req, res) =>
+router.post("/profile/upload", upload.single("file"), (req, res) =>
   fileController.upload(req, res)
 );
-router.get("/:key", (req, res) => fileController.getFile(req, res));
-router.delete("/:key", (req, res) => fileController.deleteFile(req, res));
+router.get("/user/profile/:key", (req, res) =>
+  fileController.getFile(req, res)
+);
+router.delete("/profile/:key", (req, res) =>
+  fileController.deleteFile(req, res)
+);
 
 export default router;

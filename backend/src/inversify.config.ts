@@ -9,6 +9,7 @@ import { IFileService } from "./services/interface/s3.service.interface";
 import { IFileController } from "./controllers/interface/s3.controller.interface";
 import { FileService } from "./services/implimentation/s3.service";
 import { FileController } from "./controllers/implimentation/s3.controller";
+import { IProfileController } from "./controllers/interface/profile.controller.interface";
 
 const container = new Container();
 
@@ -23,4 +24,7 @@ container.bind<AdminController>(TYPES.AdminController).to(AdminController);
 // S3 bucket
 container.bind<IFileService>(TYPES.FileService).to(FileService);
 container.bind<IFileController>(TYPES.FileController).to(FileController);
+
+// profile
+// container.bind<IProfileController>(Types.)
 export { container };

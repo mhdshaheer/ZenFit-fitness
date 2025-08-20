@@ -17,8 +17,9 @@ export class FileService implements IFileService {
     id: string,
     file: Express.Multer.File
   ): Promise<string> {
+    console.log("Upload service 1");
     const folderMap: Record<string, string> = {
-      profile: "profile-images",
+      profile: "profile",
       resume: "resumes",
       thumbnail: "thumbnails",
       material: "materials",
@@ -27,8 +28,11 @@ export class FileService implements IFileService {
 
     const folder = folderMap[type] || "misc";
     const key = `${role}/${folder}/${id}-${Date.now()}`;
+    // const key = `${folder}/${id}-${Date.now()}`;
 
+    console.log("Upload service 2-key : ", key);
     await this.s3Repository.uploadFile(key, file.buffer, file.mimetype);
+    console.log("Upload service 3-key :", key);
     return key;
   }
 

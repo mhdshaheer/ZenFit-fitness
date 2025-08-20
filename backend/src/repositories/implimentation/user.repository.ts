@@ -1,11 +1,11 @@
 import { IUser } from "../../interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
 import { BaseRepository } from "../base.repository";
-import { IAuthRepository } from "../interface/auth.repository.interface";
+import { IUserRepository } from "../interface/user.repository.interface";
 
-export class AuthRepository
+export class UserRepository
   extends BaseRepository<IUser>
-  implements IAuthRepository
+  implements IUserRepository
 {
   constructor() {
     super(UserModel);

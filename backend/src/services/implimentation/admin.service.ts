@@ -1,10 +1,9 @@
-import { AdminRepository } from "../../repositories/implimentation/admin.repository";
 import { IUser } from "../../interfaces/user.interface";
-import { AuthRepository } from "../../repositories/implimentation/auth.repository";
 import { UserModel } from "../../models/user.model";
 import { injectable } from "inversify";
 import { UserDto } from "../../dtos/user.dtos";
 import { mapToUserDto } from "../../mapper/user.mapper";
+import { UserRepository } from "../../repositories/implimentation/user.repository";
 
 interface GetUsersParams {
   page: number;
@@ -15,16 +14,15 @@ interface GetUsersParams {
 }
 @injectable()
 export class AdminService {
-  private adminRepository = new AdminRepository();
-  private authRepository = new AuthRepository();
+  private userRepository = new UserRepository();
 
   async updateUserStatus(
     id: string,
     status: "active" | "blocked"
   ): Promise<IUser | null> {
-    const user = await this.authRepository.findById(id);
+    const user = await this.userRepository.findById(id);
     if (!user) throw new Error("User not found");
-    return await this.adminRepository.updateStatus(id, status);
+    return await this.userRepository.updateStatus(id, status);
   }
 
   async getUsers({

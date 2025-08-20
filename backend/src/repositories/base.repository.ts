@@ -8,4 +8,7 @@ export abstract class BaseRepository<T> {
   async findOne(filter: Partial<T>): Promise<T | null> {
     return await this.model.findOne(filter);
   }
+  async update(userId: string, data: Partial<T>): Promise<T | null> {
+    return await this.model.findByIdAndUpdate(userId, data, { new: true });
+  }
 }

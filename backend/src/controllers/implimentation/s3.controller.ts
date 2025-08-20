@@ -15,6 +15,8 @@ export class FileController implements IFileController {
 
   async upload(req: Request, res: Response): Promise<void> {
     try {
+      console.log("request for upload:", req);
+      console.log("request for upload:", req.user);
       const { role, type, id } = req.body;
       const file = req.file as Express.Multer.File;
 
@@ -34,7 +36,10 @@ export class FileController implements IFileController {
   async getFile(req: Request, res: Response): Promise<void> {
     try {
       const { key } = req.params;
-      const url = await this.fileService.getUrl(key);
+      let newKey = `user/profile/${key}`;
+      console.log("key from the frontend: ", key);
+      console.log("newkey : ", newKey);
+      const url = await this.fileService.getUrl(newKey);
       res.status(200).json({ url });
     } catch (error) {
       console.error(error);

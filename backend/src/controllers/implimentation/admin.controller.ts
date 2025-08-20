@@ -4,7 +4,7 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { IAdminController } from "../interface/admin.controller.interface";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../types/inversify.types";
-import { mapToUserDto, mapToUserStatusDto } from "../../mapper/user.mapper";
+import { mapToUserStatusDto } from "../../mapper/user.mapper";
 
 // admin controller
 @injectable()
