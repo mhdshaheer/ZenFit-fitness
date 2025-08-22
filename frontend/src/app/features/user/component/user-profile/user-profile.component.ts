@@ -1,7 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import { ProfileService } from '../../../../core/services/profile.service';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {
+  FormBuilder,
+  FormGroup,
+  ReactiveFormsModule,
+  Validators,
+} from '@angular/forms';
+import { optionalPhoneValidator } from '../../../../shared/validators/phone.validator';
+import { CustomValidators } from '../../../../shared/validators/custom.validator';
+import { getErrorMessages } from '../../../../shared/utils.ts/form-error.util';
 
 interface ProfileUser {
   fullName: string;
@@ -15,7 +23,7 @@ interface ProfileUser {
 
 @Component({
   selector: 'app-user-profile',
-  imports: [CommonModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css',
 })
@@ -44,7 +52,6 @@ export class UserProfileComponent implements OnInit {
       .subscribe({
         next: (res) => {
           this.profileImageUrl = res.key;
-          console.log('Response:', res);
           this.isUploading = false;
           this.profileService.getFile(res.key).subscribe((fileRes) => {
             console.log('url from the backend :', fileRes.url);
@@ -72,28 +79,36 @@ export class UserProfileComponent implements OnInit {
   }
   loadProfile() {
     this.profileService.getProfile().subscribe((res) => {
-      console.log(res);
+      console.log('Response of profile: ', res);
       this.profileData = res;
       this.profileForm = this.fb.group({
         fullName: [res.fullName],
-        username: [res.username],
-        dob: [res.dob],
+        username: [res.username, Validators.required],
+        dob: [res.dob ? res.dob.split('T')[0] : ''],
         gender: [res.gender],
-        email: [res.email],
-        phone: [res.phone],
-        role: [res.role],
+        email: [res.email, [CustomValidators.email()]],
+        phone: [res.phone, optionalPhoneValidator],
+        role: [res.role, Validators.required],
       });
     });
   }
 
   saveProfile() {
     if (this.profileForm.valid) {
+      console.log('profile data:', this.profileForm.value);
       this.profileService
         .updateProfile(this.profileForm.value)
         .subscribe((res) => {
+          console.log('response from the backend :', res);
           this.profileData = res;
+          console.log('Profile data :', this.profileData);
           this.isEditMode = false;
         });
+    } else {
+      this.profileForm.markAllAsTouched();
     }
+  }
+  getError(field: string): string {
+    return getErrorMessages(this.profileForm, field);
   }
 }

@@ -10,6 +10,9 @@ import { IFileController } from "./controllers/interface/s3.controller.interface
 import { FileService } from "./services/implimentation/s3.service";
 import { FileController } from "./controllers/implimentation/s3.controller";
 import { IProfileController } from "./controllers/interface/profile.controller.interface";
+import { ProfileController } from "./controllers/implimentation/profile.controller";
+import { IProfileService } from "./services/interface/profile.service.interface";
+import { ProfileService } from "./services/implimentation/profile.service";
 
 const container = new Container();
 
@@ -26,5 +29,9 @@ container.bind<IFileService>(TYPES.FileService).to(FileService);
 container.bind<IFileController>(TYPES.FileController).to(FileController);
 
 // profile
-// container.bind<IProfileController>(Types.)
+container.bind<IProfileService>(TYPES.ProfileService).to(ProfileService);
+container
+  .bind<IProfileController>(TYPES.ProfileController)
+  .to(ProfileController);
+
 export { container };

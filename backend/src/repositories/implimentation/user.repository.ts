@@ -17,16 +17,16 @@ export class UserRepository
     return await this.create(user);
   }
   async findAll(): Promise<IUser[]> {
-    return await UserModel.find();
+    return await this.model.find();
   }
   async findById(id: string): Promise<IUser | null> {
-    return await UserModel.findById(id);
+    return await this.model.findById(id);
   }
   async updateStatus(
     id: string,
     status: "active" | "blocked" | "pending" | "inactive"
   ): Promise<IUser | null> {
-    return await UserModel.findByIdAndUpdate(id, { status }, { new: true });
+    return await this.model.findByIdAndUpdate(id, { status }, { new: true });
   }
 
   async updatePassword(
@@ -48,10 +48,10 @@ export class UserRepository
     role: string;
     googleId?: string;
   }) {
-    const user = new UserModel(userData);
+    const user = new this.model(userData);
     return await user.save();
   }
   async findByGoogleId(googleId: string) {
-    return await UserModel.findOne({ googleId });
+    return await this.model.findOne({ googleId });
   }
 }

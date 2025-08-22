@@ -40,6 +40,6 @@ export class ProfileService {
   }
 
   updateProfile(data: any) {
-    return this.http.put<any>(`${this.apiUrl}/file/me`, data);
+    return this.http.put<any>(`${this.apiUrl}/user/profile`, data);
   }
 }

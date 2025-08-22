@@ -7,4 +7,7 @@ export const TYPES = {
 
   FileController: Symbol.for("FileController"),
   FileService: Symbol.for("FileService"),
+
+  ProfileController: Symbol.for("ProfileController"),
+  ProfileService: Symbol.for("ProfileService"),
 };

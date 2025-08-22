@@ -1,9 +1,10 @@
 export interface UserDto {
   id: string;
   username: string;
+  fullName?: string;
   email: string;
   gender?: string;
-  phone?: number;
+  phone?: string;
   dob?: Date;
   address?: string;
   role: "admin" | "user" | "trainer";

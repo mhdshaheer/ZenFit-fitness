@@ -92,18 +92,20 @@
             </div>
 
             <!-- Profile Info -->
-            <div class="text-center sm:text-left flex-1 min-w-0">
+            <div
+              class="text-center sm:text-left flex-1 min-w-0"
+              *ngIf="profileData"
+            >
               <h2
                 class="text-lg sm:text-xl font-semibold text-gray-900 truncate"
               >
-                John Smith
+                {{ profileData.username || "None" }}
               </h2>
               <p class="text-gray-500 text-sm sm:text-base">
-                Fitness Enthusiast
+                {{ profileData.email || "None" }}
               </p>
-              <p class="text-xs sm:text-sm text-gray-400">
-                New York, United States
-              </p>
+              <!-- Membership plan -->
+              <p class="text-xs sm:text-sm text-gray-400">Basic plan</p>
             </div>
 
             <!-- Edit Button -->
@@ -134,7 +136,11 @@
           </div>
 
           <!-- ================================= -->
-          <form *ngIf="isEditMode">
+          <form
+            *ngIf="isEditMode"
+            [formGroup]="profileForm"
+            (ngSubmit)="saveProfile()"
+          >
             <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
               <div>
                 <label class="text-sm font-medium text-gray-900"
@@ -182,6 +188,15 @@
                   formControlName="email"
                   class="border p-2 rounded w-full text-gray-900"
                 />
+                <div
+                  class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
+                  *ngIf="
+                    profileForm.get('email')?.dirty &&
+                    profileForm.get('email')?.invalid
+                  "
+                >
+                  {{ getError("email") }}
+                </div>
               </div>
               <div>
                 <label class="text-sm font-medium text-gray-900">Phone</label>
@@ -189,7 +204,17 @@
                   formControlName="phone"
                   class="border p-2 rounded w-full text-gray-900"
                 />
+                <div
+                  class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
+                  *ngIf="
+                    profileForm.get('phone')?.dirty &&
+                    profileForm.get('phone')?.invalid
+                  "
+                >
+                  {{ getError("phone") }}
+                </div>
               </div>
+
               <div>
                 <label class="text-sm font-medium text-gray-900"
                   >User Role</label
@@ -210,7 +235,7 @@
           <!-- ================================= -->
           <div
             class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"
-            *ngIf="!isEditMode"
+            *ngIf="!isEditMode && profileData"
           >
             <!-- Full Name -->
             <div class="space-y-1">
@@ -218,17 +243,7 @@
                 >Full Name</label
               >
               <div class="text-sm sm:text-base text-gray-900 break-words">
-                John Smith
-              </div>
-            </div>
-
-            <!-- Username -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm font-medium text-gray-700"
-                >Username</label
-              >
-              <div class="text-sm sm:text-base text-gray-900 break-words">
-                johnsmith_fit
+                {{ profileData.fullName || "None" }}
               </div>
             </div>
 
@@ -238,7 +253,13 @@
                 >Date of Birth</label
               >
               <!-- <div class="text-sm sm:text-base text-gray-900">15-08-1990</div> -->
-              <div class="text-sm sm:text-base text-gray-900">None</div>
+              <div class="text-sm sm:text-base text-gray-900">
+                {{
+                  profileData.dob
+                    ? (profileData.dob | date : "dd/MM/yyyy")
+                    : "None"
+                }}
+              </div>
             </div>
 
             <!-- Gender -->
@@ -247,19 +268,8 @@
                 >Gender</label
               >
               <!-- <div class="text-sm sm:text-base text-gray-900">Male</div> -->
-              <div class="text-sm sm:text-base text-gray-900">None</div>
-            </div>
-
-            <!-- Email Address -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm font-medium text-gray-700"
-                >Email Address</label
-              >
-              <!-- <div class="text-sm sm:text-base text-gray-900 break-all">
-                john.smithfittracker.com
-              </div> -->
-              <div class="text-sm sm:text-base text-gray-900 break-all">
-                None
+              <div class="text-sm sm:text-base text-gray-900">
+                {{ profileData.gender || "None" }}
               </div>
             </div>
 
@@ -271,7 +281,9 @@
               <!-- <div class="text-sm sm:text-base text-gray-900">
                 (+1) 555-123-4567
               </div> -->
-              <div class="text-sm sm:text-base text-gray-900">None</div>
+              <div class="text-sm sm:text-base text-gray-900">
+                {{ profileData.phone || "None" }}
+              </div>
             </div>
 
             <!-- User Role -->
@@ -282,7 +294,9 @@
               <!-- <div class="text-sm sm:text-base text-gray-900">
                 Premium Member
               </div> -->
-              <div class="text-sm sm:text-base text-gray-900">None</div>
+              <div class="text-sm sm:text-base text-gray-900">
+                {{ profileData.role || "None" }}
+              </div>
             </div>
           </div>
         </div>

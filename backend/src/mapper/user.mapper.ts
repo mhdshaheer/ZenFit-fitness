@@ -10,6 +10,9 @@ export const mapToUserDto = (user: IUser): UserDto => {
     gender: user.gender,
     role: user.role ?? "user",
     status: user.status!,
+    profileImage: user.profileImage!,
+    phone: user.phone!,
+    fullName: user.fullName,
   };
 };
 
