@@ -2,7 +2,6 @@ import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
-import Swal from 'sweetalert2';
 
 import { TableComponent } from '../../../../shared/components/table/table.component';
 import { User } from '../../../../shared/models/user.model';
@@ -12,6 +11,9 @@ import {
   selectTotalUsers,
   selectUserLoading,
 } from '../../store/admin.selectors';
+
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 export interface TableColumn {
   key: string;
@@ -44,6 +46,7 @@ export interface ActionEvent {
 })
 export class UserManageComponent implements OnInit {
   private store = inject(Store);
+  private dialog = inject(MatDialog);
 
   users$!: Observable<User[]>;
   loading$!: Observable<boolean>;
@@ -147,12 +150,25 @@ export class UserManageComponent implements OnInit {
     if (action == 'block' || action == 'unblock') {
       const updatedStatus = row.status == 'active' ? 'blocked' : 'active';
       const user_Id = row._id || row.id;
-      this.store.dispatch(
-        updateUserStatus({
-          id: user_Id,
-          status: updatedStatus,
-        })
-      );
+
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        width: '350px',
+        data: {
+          title: action === 'block' ? 'Block User' : 'Unblock User',
+          message: `Are you sure you want to ${action} this user?`,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if (confirmed) {
+          this.store.dispatch(
+            updateUserStatus({
+              id: user_Id,
+              status: updatedStatus,
+            })
+          );
+        }
+      });
     }
   }
 }
