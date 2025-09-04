@@ -89,6 +89,7 @@ export class AuthService {
   }
 
   verifyForgotOtp(email: string, otp: string) {
+    console.log('this verify forgot otp page');
     return this.http
       .post<{ message: string }>(
         `${environment.apiUrl}/auth/verify-forgot-otp`,

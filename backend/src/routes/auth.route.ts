@@ -21,12 +21,9 @@ authRouter.post("/resent-otp", controller.resendOtp.bind(controller));
 authRouter.post("/send-otp", controller.sendForgotPasswordOtp.bind(controller));
 authRouter.post(
   "/verify-forgot-otp",
-  controller.sendForgotPasswordOtp.bind(controller)
+  controller.verifyForgotOtp.bind(controller)
 );
-authRouter.post(
-  "/reset-password",
-  controller.sendForgotPasswordOtp.bind(controller)
-);
+authRouter.post("/reset-password", controller.resetPassword.bind(controller));
 
 authRouter.post("/login", controller.login.bind(controller));
 authRouter.post("/logout", controller.logOut.bind(controller));

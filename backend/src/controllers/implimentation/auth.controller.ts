@@ -97,13 +97,35 @@ export class AuthController implements IAuthController {
     }
   }
   async sendForgotPasswordOtp(req: Request, res: Response): Promise<void> {
-    return this.authService.sendForgotPasswordOtp(req, res);
+    try {
+      const { email } = req.body;
+
+      const result = await this.authService.sendForgotPasswordOtp(email);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error: any) {
+      res.status(error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: error.message || "Something went wrong",
+      });
+    }
   }
   async verifyForgotOtp(req: Request, res: Response): Promise<void> {
-    return this.authService.verifyForgotOtp(req, res);
+    try {
+      console.log("verify forgot otp message", req.body);
+      const { email, otp } = req.body;
+      const result = await this.authService.verifyForgotOtp(email, otp);
+      console.log("result from service :", result);
+      res.status(HttpStatus.OK).json(result);
+    } catch (error: any) {
+      res.status(error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: error.message || "Something went wrong",
+      });
+    }
   }
   async resetPassword(req: Request, res: Response): Promise<void> {
-    return this.authService.resetPassword(req, res);
+    console.log("reset password controller");
+    await this.authService.resetPassword(req, res);
+    console.log("reset password buisness done controller");
+    return;
   }
 
   async googleCallback(req: Request, res: Response): Promise<void> {
