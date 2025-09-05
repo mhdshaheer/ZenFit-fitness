@@ -22,7 +22,6 @@ export class FileController implements IFileController {
 
   async upload(req: Request, res: Response): Promise<void> {
     try {
-      // console.log("request for upload:", (req as any).user);
       const { role, type } = req.body;
       const { id } = (req as any).user;
 

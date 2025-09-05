@@ -21,7 +21,18 @@ export class FileService implements IFileService {
     id: string,
     file: Express.Multer.File
   ): Promise<string> {
-    console.log("Upload service 1");
+    const user = await this.userRepository.findById(id);
+    console.log("Cureent user on upload file :", user);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (user.profileImage) {
+      console.log("Deleting old image from S3:", user.profileImage);
+      await this.s3Repository.deleteFile(user.profileImage);
+    }
+
     const folderMap: Record<string, string> = {
       profile: "profile",
       resume: "resumes",
