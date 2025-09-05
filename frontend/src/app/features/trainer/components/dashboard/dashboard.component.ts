@@ -9,19 +9,4 @@ import { LoggerService } from '../../../../core/services/logger.service';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
-export class DashboardComponent {
-  authService = inject(AuthService);
-  router = inject(Router);
-  logger = inject(LoggerService);
-  logOutUser() {
-    this.authService.logout().subscribe({
-      next: (res) => {
-        this.logger.info(res.message);
-        this.router.navigate(['/auth/login']);
-      },
-      error: (err) => {
-        this.logger.error(err);
-      },
-    });
-  }
-}
+export class DashboardComponent {}

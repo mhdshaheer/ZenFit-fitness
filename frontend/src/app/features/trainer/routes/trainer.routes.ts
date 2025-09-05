@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from '../../../core/guards/auth.guard';
 import { RoleGuard } from '../../../core/guards/role.guard';
+import { TrainerLayoutComponent } from '../components/trainer-layout/trainer-layout.component';
 
 export const TRAINER_ROUTES: Routes = [
   {
     path: '',
+    component: TrainerLayoutComponent,
     canActivate: [AuthGuard, RoleGuard],
     data: { role: 'trainer' },
     children: [
