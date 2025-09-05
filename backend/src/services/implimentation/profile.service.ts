@@ -27,4 +27,12 @@ export class ProfileService implements IProfileService {
       throw new Error("User not found");
     }
   }
+
+  async updateProfileImage(id: string, key: string) {
+    return this.userRepository.update(id, { profileImage: key });
+  }
+
+  async removeProfileImage(id: string) {
+    return this.userRepository.update(id, { profileImage: "" });
+  }
 }

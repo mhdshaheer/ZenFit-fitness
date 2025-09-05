@@ -5,6 +5,6 @@ export interface IFileService {
     id: string,
     file: Express.Multer.File
   ): Promise<string>;
-  getUrl(key: string): Promise<string>;
+  getSignedUrl(userId: string): Promise<string>;
   delete(key: string): Promise<void>;
 }

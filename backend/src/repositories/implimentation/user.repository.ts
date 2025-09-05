@@ -28,6 +28,9 @@ export class UserRepository
   ): Promise<IUser | null> {
     return await this.model.findByIdAndUpdate(id, { status }, { new: true });
   }
+  async updateById(id: string, data: Partial<IUser>): Promise<IUser | null> {
+    return await this.update(id, data);
+  }
 
   async updatePassword(
     email: string,

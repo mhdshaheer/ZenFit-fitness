@@ -47,22 +47,22 @@ export class UserProfileComponent implements OnInit {
     const file: File = input.files[0];
     this.isUploading = true;
 
-    this.profileService
-      .uploadProfileImage(file, 'user', 'profile', '1234')
-      .subscribe({
-        next: (res) => {
-          this.profileImageUrl = res.key;
-          this.isUploading = false;
-          this.profileService.getFile(res.key).subscribe((fileRes) => {
-            console.log('url from the backend :', fileRes.url);
-            this.profileImageUrl = fileRes.url;
-          });
-        },
-        error: () => {
-          alert('Image upload failed');
-          this.isUploading = false;
-        },
-      });
+    this.profileService.uploadProfileImage(file, 'user', 'profile').subscribe({
+      next: (res) => {
+        this.profileImageUrl = res.key;
+        this.isUploading = false;
+        this.profileImageUrl = res.url;
+        console.log('Image url from : ', this.profileImageUrl);
+        // this.profileService.getFile(res.key).subscribe((fileRes) => {
+        //   console.log('url from the backend :', fileRes.url);
+        //   this.profileImageUrl = fileRes.url;
+        // });
+      },
+      error: () => {
+        alert('Image upload failed');
+        this.isUploading = false;
+      },
+    });
   }
 
   get displayImage(): string {
@@ -81,6 +81,13 @@ export class UserProfileComponent implements OnInit {
     this.profileService.getProfile().subscribe((res) => {
       console.log('Response of profile: ', res);
       this.profileData = res;
+
+      if (res.profileImage) {
+        this.profileService.getFile(res.profileImage).subscribe((fileRes) => {
+          this.profileImageUrl = fileRes.url;
+        });
+      }
+
       this.profileForm = this.fb.group({
         fullName: [res.fullName],
         username: [res.username, Validators.required],

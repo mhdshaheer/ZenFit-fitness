@@ -4,4 +4,6 @@ import { IUser } from "../../interfaces/user.interface";
 export interface IProfileService {
   getProfile(id: string): Promise<UserDto>;
   updateProfile(id: string, data: IUser): Promise<UserDto>;
+  updateProfileImage(id: string, key: string): void;
+  removeProfileImage(id: string): void;
 }

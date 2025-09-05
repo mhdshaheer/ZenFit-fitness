@@ -13,22 +13,22 @@ export class ProfileService {
   uploadProfileImage(
     file: File,
     role: string,
-    type: string,
-    id: string
-  ): Observable<{ key: string }> {
+    type: string
+  ): Observable<{ key: string; url: string }> {
     const formData = new FormData();
     formData.append('file', file);
     formData.append('role', role);
     formData.append('type', type);
-    formData.append('id', id);
 
-    return this.http.post<{ key: string }>(
+    return this.http.post<{ key: string; url: string }>(
       `${this.apiUrl}/file/profile/upload`,
       formData
     );
   }
   getFile(key: string) {
-    return this.http.get<{ url: string }>(`${this.apiUrl}/file/${key}`);
+    return this.http.get<{ url: string }>(
+      `${this.apiUrl}/file/profile/image?key=${encodeURIComponent(key)}`
+    );
   }
   deleteFile(key: string) {
     return this.http.delete<{ message: string }>(`${this.apiUrl}/file/${key}`);

@@ -46,4 +46,7 @@ export const env = {
   get aws_secret_access_key() {
     return process.env.AWS_SECRET_ACCESS_KEY;
   },
+  get aws_s3_bucket() {
+    return process.env.AWS_S3_BUCKET;
+  },
 };
