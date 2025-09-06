@@ -300,47 +300,6 @@
             </div>
           </div>
         </div>
-
-        <!-- Location Section -->
-        <!-- <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
-          <div
-            class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 space-y-2 sm:space-y-0"
-          >
-            <h3 class="text-lg font-semibold text-gray-900">Location</h3>
-            <button
-              class="px-3 py-1 bg-orange-500 text-white text-sm rounded-md hover:bg-orange-600 transition-colors"
-            >
-              Edit
-            </button>
-          </div>
-
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
-          >
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm font-medium text-gray-700"
-                >Country</label
-              >
-              <div class="text-sm sm:text-base text-gray-900">
-                United States
-              </div>
-            </div>
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm font-medium text-gray-700"
-                >City</label
-              >
-              <div class="text-sm sm:text-base text-gray-900">New York</div>
-            </div>
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm font-medium text-gray-700"
-                >Postal Code</label
-              >
-              <div class="text-sm sm:text-base text-gray-900">NY 10001</div>
-            </div>
-          </div>
-        </div> -->
-        <!-- ======================= -->
-        <!-- PDF Upload Section -->
         <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
           <div
             class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 space-y-2 sm:space-y-0"
@@ -474,11 +433,11 @@
                     <!-- File Details -->
                     <div class="min-w-0 flex-1">
                       <p class="text-sm font-medium text-gray-900 truncate">
-                        {{ selectedFileName }}
+                        Your resume
                       </p>
                       <p class="text-xs text-gray-500">
-                        {{ formatFileSize(uploadedFile.size) }} • Uploaded
-                        {{ formatUploadTime(uploadedFile.uploadedAt) }}
+                        {{ formatFileSize(uploadedFile.size!) }} • Uploaded
+                        {{ formatUploadTime(uploadedFile.uploadedAt!) }}
                       </p>
                     </div>
                   </div>
@@ -604,10 +563,32 @@
                 </span>
               </div>
               <span class="text-sm text-green-600">
-                {{ formatFileSize(uploadedFile.size) }}
+                {{ formatFileSize(uploadedFile.size!) }}
               </span>
             </div>
             }
+
+            <!-- Verification -->
+            <div
+              class="flex items-center justify-between p-3 bg-green-50 rounded-lg border border-green-200"
+            >
+              <div class="flex items-center">
+                <svg
+                  class="w-5 h-5 text-orange-600 mr-2"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    fill-rule="evenodd"
+                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                    clip-rule="evenodd"
+                  ></path>
+                </svg>
+                <span class="text-sm font-medium text-orange-700">
+                  Verification Pending
+                </span>
+              </div>
+            </div>
           </div>
         </div>
         <!-- ======================= -->

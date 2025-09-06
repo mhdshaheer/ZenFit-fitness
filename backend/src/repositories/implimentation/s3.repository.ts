@@ -2,6 +2,7 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   DeleteObjectCommand,
+  HeadObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3Client, { S3_BUCKET } from "../../config/s3.config";
@@ -39,5 +40,19 @@ export class S3Repository implements IS3Repository {
         Key: key,
       })
     );
+  }
+  async getFileDetails(key: string) {
+    const command = new HeadObjectCommand({
+      Bucket: S3_BUCKET,
+      Key: key,
+    });
+    const response = await s3Client.send(command);
+    const details = JSON.stringify({
+      name: key.split("/").pop(),
+      size: response.ContentLength,
+      type: response.ContentType,
+      uploadedAt: response.LastModified,
+    });
+    return details;
   }
 }

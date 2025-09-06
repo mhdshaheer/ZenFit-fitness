@@ -62,7 +62,10 @@ export class FileService implements IFileService {
     if (type == "profile") {
       return this.s3Repository.getFileUrl(user.profileImage, 3600);
     } else if (type == "resumes") {
-      return this.s3Repository.getFileUrl(user.resume!, 3600);
+      const res = await this.s3Repository.getFileDetails(user.resume!);
+      const obj = JSON.parse(res);
+      obj.url = await this.s3Repository.getFileUrl(user.resume!, 3600);
+      return JSON.stringify(obj);
     }
     return "";
   }

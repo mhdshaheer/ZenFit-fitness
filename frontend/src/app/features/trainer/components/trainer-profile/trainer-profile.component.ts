@@ -13,11 +13,11 @@ import { getErrorMessages } from '../../../../shared/utils.ts/form-error.util';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 
 interface UploadFile {
-  name: string;
-  size: number;
-  type: string;
+  name?: string;
+  size?: number;
+  type?: string;
   file: File;
-  uploadedAt: Date;
+  uploadedAt?: Date;
   id?: string;
 }
 
@@ -67,17 +67,6 @@ export class TrainerProfileComponent implements OnInit {
     const file: File = input.files[0];
     this.isUploading = true;
 
-    // this.profileService.uploadfile(file, 'profile').subscribe({
-    //   next: (res) => {
-    //     this.profileImageUrl = res.key;
-    //     this.isUploading = false;
-    //     this.profileImageUrl = res.url;
-    //   },
-    //   error: () => {
-    //     alert('Image upload failed');
-    //     this.isUploading = false;
-    //   },
-    // });
     this.profileService.uploadfile(file, 'profile').subscribe({
       next: (event) => {
         if (event.type === HttpEventType.UploadProgress && event.total) {
@@ -117,6 +106,24 @@ export class TrainerProfileComponent implements OnInit {
       if (res.profileImage) {
         this.profileService.getFile(res.profileImage).subscribe((fileRes) => {
           this.profileImageUrl = fileRes.url;
+        });
+      }
+      if (res.resume) {
+        this.profileService.getFile(res.resume).subscribe(async (fileRes) => {
+          let fileDetails = JSON.parse(fileRes.url);
+          const response = await fetch(fileDetails.url);
+          const blob = await response.blob();
+          const file = new File([blob], fileDetails.name || 'resume.pdf', {
+            type: fileDetails.type,
+          });
+
+          this.uploadedFile = {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            file,
+            uploadedAt: new Date(fileDetails.uploadedAt),
+          };
         });
       }
 

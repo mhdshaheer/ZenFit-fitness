@@ -13,6 +13,7 @@ export const mapToUserDto = (user: IUser): UserDto => {
     profileImage: user.profileImage!,
     phone: user.phone!,
     fullName: user.fullName,
+    resume: user.resume,
   };
 };
 
