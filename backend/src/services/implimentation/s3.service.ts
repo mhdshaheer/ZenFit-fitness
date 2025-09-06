@@ -22,15 +22,19 @@ export class FileService implements IFileService {
     file: Express.Multer.File
   ): Promise<string> {
     const user = await this.userRepository.findById(id);
-    console.log("Cureent user on upload file :", user);
 
     if (!user) {
       throw new Error("User not found");
     }
 
-    if (user.profileImage) {
+    if (user.profileImage && type == "profile") {
       console.log("Deleting old image from S3:", user.profileImage);
       await this.s3Repository.deleteFile(user.profileImage);
+    }
+    if (user.resume && type == "resume") {
+      console.log("Deleting old resume from S3:", user.resume);
+      await this.s3Repository.deleteFile(user.resume);
+      // logic for delete already existing resume
     }
 
     const folderMap: Record<string, string> = {
@@ -47,14 +51,20 @@ export class FileService implements IFileService {
     return key;
   }
 
-  async getSignedUrl(userId: string): Promise<string> {
+  async getSignedUrl(
+    userId: string,
+    type: string | undefined
+  ): Promise<string> {
     const user = await this.userRepository.findById(userId);
     if (!user || !user.profileImage) {
       throw new Error("Profile image not found");
     }
-
-    // Generate signed URL
-    return this.s3Repository.getFileUrl(user.profileImage, 3600);
+    if (type == "profile") {
+      return this.s3Repository.getFileUrl(user.profileImage, 3600);
+    } else if (type == "resumes") {
+      return this.s3Repository.getFileUrl(user.resume!, 3600);
+    }
+    return "";
   }
 
   async delete(key: string): Promise<void> {

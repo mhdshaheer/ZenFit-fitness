@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 
@@ -10,20 +10,30 @@ export class ProfileService {
   private apiUrl = environment.apiUrl;
   private http = inject(HttpClient);
 
-  uploadProfileImage(
+  uploadfile(
     file: File,
-    role: string,
-    type: string
-  ): Observable<{ key: string; url: string }> {
+    type: 'profile' | 'resume'
+  ): Observable<HttpEvent<{ key: string; url: string }>> {
     const formData = new FormData();
     formData.append('file', file);
-    formData.append('role', role);
     formData.append('type', type);
 
-    return this.http.post<{ key: string; url: string }>(
+    // return this.http.post<{ key: string; url: string }>(
+    //   `${this.apiUrl}/file/profile/upload`,
+    //   formData,
+    //   { reportProgress: true }
+    // );
+    const req = new HttpRequest(
+      'POST',
       `${this.apiUrl}/file/profile/upload`,
-      formData
+      formData,
+      {
+        reportProgress: true,
+        responseType: 'json',
+      }
     );
+
+    return this.http.request<{ key: string; url: string }>(req);
   }
   getFile(key: string) {
     return this.http.get<{ url: string }>(
@@ -42,4 +52,20 @@ export class ProfileService {
   updateProfile(data: any) {
     return this.http.put<any>(`${this.apiUrl}/user/profile`, data);
   }
+
+  // Trainer side pdf upload
+  // uploadPdf(file: File, type: string) {
+  //   const formData = new FormData();
+  //   formData.append('file', file);
+  //   formData.append('type', type);
+
+  //   const req = new HttpRequest(
+  //     'POST',
+  //     `${this.apiUrl}/file/profile/cv`,
+  //     formData,
+  //     { reportProgress: true }
+  //   );
+
+  //   return this.http.request(req);
+  // }
 }

@@ -35,4 +35,11 @@ export class ProfileService implements IProfileService {
   async removeProfileImage(id: string) {
     return this.userRepository.update(id, { profileImage: "" });
   }
+
+  async updateResumePdf(id: string, key: string) {
+    return this.userRepository.update(id, { resume: key });
+  }
+  async removeResumePdf(id: string) {
+    return this.userRepository.update(id, { resume: "" });
+  }
 }

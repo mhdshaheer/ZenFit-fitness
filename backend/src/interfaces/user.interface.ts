@@ -12,4 +12,5 @@ export interface IUser {
   role?: "admin" | "trainer" | "user";
   status?: string;
   profileImage?: string;
+  resume?: string;
 }

@@ -6,4 +6,6 @@ export interface IProfileService {
   updateProfile(id: string, data: IUser): Promise<UserDto>;
   updateProfileImage(id: string, key: string): void;
   removeProfileImage(id: string): void;
+  updateResumePdf(id: string, key: string): void;
+  removeResumePdf(id: string): void;
 }

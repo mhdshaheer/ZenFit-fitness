@@ -81,7 +81,7 @@ export class TrainerLayoutComponent {
   ];
 
   userMenuItems: NavMenuItem[] = [
-    { label: 'My Profile', route: '/user/profile', icon: 'fas fa-user' },
+    { label: 'My Profile', route: '/trainer/profile', icon: 'fas fa-user' },
     // { label: 'Account Settings', route: '', icon: 'fas fa-cog' },
     // {
     //   label: 'Subscription',

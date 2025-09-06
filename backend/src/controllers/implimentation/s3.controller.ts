@@ -22,8 +22,8 @@ export class FileController implements IFileController {
 
   async upload(req: Request, res: Response): Promise<void> {
     try {
-      const { role, type } = req.body;
-      const { id } = (req as any).user;
+      const { type } = req.body;
+      const { id, role } = (req as any).user;
 
       const file = req.file as Express.Multer.File;
 
@@ -34,8 +34,12 @@ export class FileController implements IFileController {
 
       const key = await this.fileService.upload(role, type, id, file);
 
-      await this.profileService.updateProfileImage(id, key);
-      const signedUrl = await this.fileService.getSignedUrl(id);
+      if (type == "profile") {
+        await this.profileService.updateProfileImage(id, key);
+      } else if (type == "resume") {
+        await this.profileService.updateResumePdf(id, key);
+      }
+      const signedUrl = await this.fileService.getSignedUrl(id, type);
       res.status(HttpStatus.OK).json({ key, url: signedUrl });
     } catch (error) {
       console.error(error);
@@ -46,8 +50,9 @@ export class FileController implements IFileController {
   async getFile(req: Request, res: Response): Promise<void> {
     try {
       const userId = (req as any).user.id;
-      console.log("get file url :", userId);
-      const signedUrl = await this.fileService.getSignedUrl(userId);
+      const { key } = req.query;
+      const type = key?.toString().split("/")[1];
+      const signedUrl = await this.fileService.getSignedUrl(userId, type!);
       res.status(HttpStatus.OK).json({ url: signedUrl });
     } catch (error: any) {
       console.error(error);

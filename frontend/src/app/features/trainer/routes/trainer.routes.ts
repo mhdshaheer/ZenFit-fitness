@@ -17,6 +17,14 @@ export const TRAINER_ROUTES: Routes = [
             (m) => m.DashboardComponent
           ),
       },
+      {
+        path: 'profile',
+        loadComponent: () => {
+          return import(
+            '../components/trainer-profile/trainer-profile.component'
+          ).then((m) => m.TrainerProfileComponent);
+        },
+      },
     ],
   },
 ];

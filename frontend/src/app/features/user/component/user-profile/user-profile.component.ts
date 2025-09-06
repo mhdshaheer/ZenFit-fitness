@@ -10,6 +10,7 @@ import {
 import { optionalPhoneValidator } from '../../../../shared/validators/phone.validator';
 import { CustomValidators } from '../../../../shared/validators/custom.validator';
 import { getErrorMessages } from '../../../../shared/utils.ts/form-error.util';
+import { HttpEventType } from '@angular/common/http';
 
 interface ProfileUser {
   fullName: string;
@@ -47,20 +48,32 @@ export class UserProfileComponent implements OnInit {
     const file: File = input.files[0];
     this.isUploading = true;
 
-    this.profileService.uploadProfileImage(file, 'user', 'profile').subscribe({
-      next: (res) => {
-        this.profileImageUrl = res.key;
-        this.isUploading = false;
-        this.profileImageUrl = res.url;
-        console.log('Image url from : ', this.profileImageUrl);
-        // this.profileService.getFile(res.key).subscribe((fileRes) => {
-        //   console.log('url from the backend :', fileRes.url);
-        //   this.profileImageUrl = fileRes.url;
-        // });
+    // this.profileService.uploadfile(file, 'profile').subscribe({
+    //   next: (res) => {
+    //     this.profileImageUrl = res.key;
+    //     this.isUploading = false;
+    //     this.profileImageUrl = res.url;
+    //   },
+    //   error: () => {
+    //     alert('Image upload failed');
+    //     this.isUploading = false;
+    //   },
+    // });
+    this.profileService.uploadfile(file, 'profile').subscribe({
+      next: (event) => {
+        if (event.type === HttpEventType.UploadProgress && event.total) {
+          // this.progress = Math.round((100 * event.loaded) / event.total);
+        } else if (event.type === HttpEventType.Response) {
+          this.profileImageUrl = event.body?.url ?? null;
+          this.isUploading = false;
+          console.log('Profile image uploaded, key:', event.body?.key);
+          // this.progress = 0; // reset after upload
+        }
       },
       error: () => {
         alert('Image upload failed');
         this.isUploading = false;
+        // this.progress = 0;
       },
     });
   }
