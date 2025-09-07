@@ -13,4 +13,5 @@ export interface IUser {
   status?: string;
   profileImage?: string;
   resume?: string;
+  resumeVerified?: boolean;
 }

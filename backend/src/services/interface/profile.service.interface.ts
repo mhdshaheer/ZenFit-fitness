@@ -8,4 +8,5 @@ export interface IProfileService {
   removeProfileImage(id: string): void;
   updateResumePdf(id: string, key: string): void;
   removeResumePdf(id: string): void;
+  verifyResume(id: string): Promise<boolean>;
 }

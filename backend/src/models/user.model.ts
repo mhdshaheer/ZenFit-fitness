@@ -51,6 +51,10 @@ const userSchema = new mongoose.Schema(
     profileImage: {
       type: String,
     },
+    resumeVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

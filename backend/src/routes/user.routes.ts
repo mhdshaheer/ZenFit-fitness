@@ -21,4 +21,10 @@ userRouter.put(
   profileController.updateProfile.bind(profileController)
 );
 
+userRouter.put(
+  "/resume",
+  authMiddleware,
+  profileController.verifyResume.bind(profileController)
+);
+
 export default userRouter;

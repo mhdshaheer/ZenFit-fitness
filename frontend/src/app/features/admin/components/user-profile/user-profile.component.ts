@@ -11,7 +11,9 @@ interface TrainerProfile {
   phone: string;
   languages: string[];
   gender: string;
+  role?: string;
   dob: string;
+  isVerified?: boolean;
   resume?: {
     fileName: string;
     fileSize: number;
@@ -105,21 +107,14 @@ export class UserProfileComponent {
     }
   }
 
-  // verifyResume() {
-  //   if (this.trainer.resume) {
-  //     this.trainer.resume.isVerified = true;
-  //     // Here you would typically make an API call to update the verification status
-  //     console.log('Resume verified for trainer:', this.trainer.id);
-  //   }
-  // }
-
-  // unverifyResume() {
-  //   if (this.trainer.resume) {
-  //     this.trainer.resume.isVerified = false;
-  //     // Here you would typically make an API call to update the verification status
-  //     console.log('Resume unverified for trainer:', this.trainer.id);
-  //   }
-  // }
+  verifyResume() {
+    if (this.uploadedFile && this.trainer) {
+      this.profileService.verifyResume(this.trainer.id).subscribe((res) => {
+        this.trainer!.isVerified = res.isVerified;
+        console.log('response from verify :', res);
+      });
+    }
+  }
 
   editProfile() {
     console.log('Edit profile for trainer:', this.trainer?.id);
@@ -180,7 +175,9 @@ export class UserProfileComponent {
         dob: res.dob,
         gender: res.gender,
         languages: [],
+        role: res.role,
         phone: res.phone,
+        isVerified: res.resumeVerified,
       };
       console.log('pdf :', this.uploadedFile);
     });

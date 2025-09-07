@@ -10,7 +10,8 @@ export interface UserDto {
   role: "admin" | "user" | "trainer";
   status: string;
   profileImage?: string;
-  resume?:string
+  resume?: string;
+  resumeVerified?: boolean;
 }
 
 export interface UserStatusDto {

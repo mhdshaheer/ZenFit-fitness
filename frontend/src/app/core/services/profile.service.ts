@@ -55,19 +55,11 @@ export class ProfileService {
     return this.http.put<any>(`${this.apiUrl}/user/profile`, data);
   }
 
-  // Trainer side pdf upload
-  // uploadPdf(file: File, type: string) {
-  //   const formData = new FormData();
-  //   formData.append('file', file);
-  //   formData.append('type', type);
-
-  //   const req = new HttpRequest(
-  //     'POST',
-  //     `${this.apiUrl}/file/profile/cv`,
-  //     formData,
-  //     { reportProgress: true }
-  //   );
-
-  //   return this.http.request(req);
-  // }
+  // Admin side Profie
+  verifyResume(id: string) {
+    return this.http.put<{ isVerified: boolean }>(
+      `${this.apiUrl}/user/resume`,
+      { id }
+    );
+  }
 }

@@ -265,6 +265,7 @@
     </div>
 
     <!-- Resume Section -->
+    @if(uploadedFile?.file){
 
     <div class="space-y-3">
       <h4 class="text-sm font-medium text-gray-700">Resume Document</h4>
@@ -356,17 +357,16 @@
         </div>
 
         <!-- Verification Status -->
-        <!-- <div
+        <div
           class="flex items-center justify-between p-3 rounded-lg border"
           [ngClass]="{
-            'bg-green-50 border-green-200': trainer.resume.isVerified,
-            'bg-yellow-50 border-yellow-200': !trainer.resume.isVerified
+            'bg-green-50 border-green-200': trainer?.isVerified,
+            'bg-yellow-50 border-yellow-200': !trainer?.isVerified
           }"
         >
           <div class="flex items-center">
-         
             <svg
-              *ngIf="trainer.resume.isVerified"
+              *ngIf="trainer?.isVerified"
               class="w-5 h-5 text-green-600 mr-2"
               fill="currentColor"
               viewBox="0 0 20 20"
@@ -379,7 +379,7 @@
             </svg>
 
             <svg
-              *ngIf="!trainer.resume.isVerified"
+              *ngIf="!trainer?.isVerified"
               class="w-5 h-5 text-orange-600 mr-2"
               fill="currentColor"
               viewBox="0 0 20 20"
@@ -394,20 +394,18 @@
             <span
               class="text-sm font-medium"
               [ngClass]="{
-                'text-green-700': trainer.resume.isVerified,
-                'text-orange-700': !trainer.resume.isVerified
+                'text-green-700': trainer?.isVerified,
+                'text-orange-700': !trainer?.isVerified
               }"
             >
               {{
-                trainer.resume.isVerified
-                  ? "Resume Verified"
-                  : "Verification Pending"
+                trainer?.isVerified ? "Resume Verified" : "Verification Pending"
               }}
             </span>
           </div>
 
           <button
-            *ngIf="!trainer.resume.isVerified"
+            *ngIf="!trainer?.isVerified"
             (click)="verifyResume()"
             class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors"
           >
@@ -415,18 +413,19 @@
           </button>
 
           <button
-            *ngIf="trainer.resume.isVerified"
-            (click)="unverifyResume()"
+            *ngIf="trainer?.isVerified"
+            (click)="verifyResume()"
             class="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-md hover:bg-orange-700 transition-colors"
           >
             Mark as Unverified
           </button>
-        </div> -->
+        </div>
       </div>
     </div>
+    }
 
     <!-- No Resume Message -->
-    @if(!uploadedFile?.file){
+    @if(!uploadedFile?.file && trainer?.role=='trainer'){
 
     <div class="text-center py-8">
       <svg
@@ -444,7 +443,7 @@
       </svg>
       <p class="text-gray-500 text-sm">No resume uploaded yet</p>
     </div>
-
+    }
     <!-- Action Buttons -->
     <div class="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
       <button
@@ -460,6 +459,5 @@
         Deactivate
       </button>
     </div>
-    }
   </div>
 </div>

@@ -30,4 +30,12 @@ export class ProfileController implements IProfileController {
     res.status(HttpStatus.OK).json(updatedProfile);
     return;
   }
+
+  async verifyResume(req: Request, res: Response): Promise<void> {
+    console.log("requested user id :", req.body);
+    const userId = req.body.id;
+    const resumeVerified = await this.profileService.verifyResume(userId);
+    res.status(HttpStatus.OK).json({ isVerified: resumeVerified });
+    return;
+  }
 }
