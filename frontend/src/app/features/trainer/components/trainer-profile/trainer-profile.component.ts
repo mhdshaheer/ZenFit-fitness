@@ -46,6 +46,7 @@ export class TrainerProfileComponent implements OnInit {
 
   // ========= CV UPLOAD ========
   uploadedFile: UploadFile | null = null;
+  resumeVerified!: boolean;
   errorMessage: string = '';
   isDragging = false;
   isCvUploading = false;
@@ -126,6 +127,7 @@ export class TrainerProfileComponent implements OnInit {
           };
         });
       }
+      this.resumeVerified = res.resumeVerified;
 
       this.profileForm = this.fb.group({
         fullName: [res.fullName],
