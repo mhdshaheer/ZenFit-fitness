@@ -49,7 +49,8 @@ export class FileController implements IFileController {
 
   async getFile(req: Request, res: Response): Promise<void> {
     try {
-      const userId = (req as any).user.id;
+      const userId = req.query.id || (req as any).user.id;
+      console.log("user id ", userId, req.query.id);
       const { key } = req.query;
       const type = key?.toString().split("/")[1];
       const signedUrl = await this.fileService.getSignedUrl(userId, type!);

@@ -12,7 +12,8 @@ export class ProfileController implements IProfileController {
   ) {}
 
   async getProfile(req: Request, res: Response): Promise<void> {
-    const userId = (req as any).user.id;
+    const userId = req.query.id || (req as any).user.id;
+    console.log("id from the query ", req.query);
     let profile = await this.profileService.getProfile(userId);
     res.status(HttpStatus.OK).json(profile);
     return;

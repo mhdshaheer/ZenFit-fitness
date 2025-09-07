@@ -35,9 +35,11 @@ export class ProfileService {
 
     return this.http.request<{ key: string; url: string }>(req);
   }
-  getFile(key: string) {
+  getFile(key: string, id: string = '') {
     return this.http.get<{ url: string }>(
-      `${this.apiUrl}/file/profile/image?key=${encodeURIComponent(key)}`
+      `${this.apiUrl}/file/profile/image?key=${encodeURIComponent(
+        key
+      )}&id=${id}`
     );
   }
   deleteFile(key: string) {
@@ -45,8 +47,8 @@ export class ProfileService {
   }
 
   // Personal information
-  getProfile() {
-    return this.http.get<any>(`${this.apiUrl}/user/profile`);
+  getProfile(id: string = '') {
+    return this.http.get<any>(`${this.apiUrl}/user/profile?id=${id}`);
   }
 
   updateProfile(data: any) {

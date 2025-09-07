@@ -22,6 +22,14 @@ export const ADMIN_ROUTES: Routes = [
                 (m) => m.UserManageComponent
               ),
           },
+          {
+            path: 'profile/:id',
+            loadComponent: () => {
+              return import(
+                '../components/user-profile/user-profile.component'
+              ).then((m) => m.UserProfileComponent);
+            },
+          },
           // {
           //   path: '',
           //   pathMatch: 'full',

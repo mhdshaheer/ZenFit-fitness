@@ -230,11 +230,8 @@ export class TrainerProfileComponent implements OnInit {
     this.uploadProgress = 0;
     this.selectedFileName = file.name;
 
-    // Option 1: Simulated upload (for demo purposes)
     this.simulateUpload(file);
 
-    // Option 2: Real HTTP upload (uncomment for actual implementation)
-    // this.performHttpUpload(file);
     this.profileService.uploadfile(file, 'resume').subscribe({
       next: (event) => {
         if (event.type === HttpEventType.UploadProgress && event.total) {

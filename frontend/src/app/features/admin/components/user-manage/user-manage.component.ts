@@ -14,6 +14,7 @@ import {
 
 import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { Router } from '@angular/router';
 
 export interface TableColumn {
   key: string;
@@ -47,6 +48,7 @@ export interface ActionEvent {
 export class UserManageComponent implements OnInit {
   private store = inject(Store);
   private dialog = inject(MatDialog);
+  private router = inject(Router);
 
   users$!: Observable<User[]>;
   loading$!: Observable<boolean>;
@@ -144,7 +146,8 @@ export class UserManageComponent implements OnInit {
   onUserAction(event: ActionEvent) {
     const { action, row } = event;
     if (action == 'view') {
-      console.log('viewing user info..');
+      console.log('clicked view option ', row.id);
+      this.router.navigate(['/admin/dashboard/profile', row.id]);
       return;
     }
     if (action == 'block' || action == 'unblock') {
