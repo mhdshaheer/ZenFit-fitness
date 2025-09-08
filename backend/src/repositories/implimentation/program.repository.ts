@@ -15,4 +15,7 @@ export class ProgramRepositoy
   ): Promise<IProgram | null> {
     return await this.updateCondition(condition, program);
   }
+  async getPrograms(id: string): Promise<IProgram[]> {
+    return this.model.find({ trainerId: id });
+  }
 }

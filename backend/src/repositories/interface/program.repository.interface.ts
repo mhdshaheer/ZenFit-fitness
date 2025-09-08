@@ -5,4 +5,6 @@ export interface IProgramRepository {
     condition: Partial<IProgram>,
     program: Partial<IProgram>
   ): Promise<IProgram | null>;
+
+  getPrograms(id: string): Promise<IProgram[]>;
 }

@@ -33,6 +33,14 @@ export const TRAINER_ROUTES: Routes = [
           ).then((m) => m.ProgramCreateComponent);
         },
       },
+      {
+        path: 'programs',
+        loadComponent: () => {
+          return import(
+            '../components/program-list/program-list.component'
+          ).then((m) => m.ProgramListComponent);
+        },
+      },
     ],
   },
 ];

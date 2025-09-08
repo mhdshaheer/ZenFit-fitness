@@ -10,14 +10,19 @@ const programController = container.get<IProgramController>(
 );
 
 programRouter.post(
+  "/",
+  authMiddleware,
+  programController.saveProgram.bind(programController)
+);
+programRouter.post(
   "/draft",
   authMiddleware,
   programController.saveProgramDraft.bind(programController)
 );
-programRouter.post(
+programRouter.get(
   "/",
   authMiddleware,
-  programController.saveProgram.bind(programController)
+  programController.getPrograms.bind(programController)
 );
 
 export default programRouter;

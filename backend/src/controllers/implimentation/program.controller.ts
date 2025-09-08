@@ -86,4 +86,18 @@ export class ProgramController implements IProgramController {
       });
     }
   }
+
+  async getPrograms(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = (req as any)?.user?.id;
+      const programs = await this.programService.getPrograms(userId);
+      res.status(HttpStatus.OK).json({ programs });
+    } catch (error) {
+      console.error("Error fetching programs:", error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: "Failed to fetch programs",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
 }
