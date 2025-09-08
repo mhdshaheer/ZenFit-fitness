@@ -14,4 +14,7 @@ export class ProgramService {
       data
     );
   }
+  saveProgram(data: Program) {
+    return this.http.post<{ message: string }>(`${this.apiUrl}/program`, data);
+  }
 }

@@ -81,21 +81,18 @@ export class ProgramCreateComponent implements OnInit {
         status: 'active',
       };
 
-      // Simulate API call delay
-      setTimeout(() => {
-        console.log('Program created successfully:', programData);
-
-        // Show success message (you can implement a toast service)
-        alert('Program created successfully!');
-
-        // Reset form
-        this.resetForm();
-
-        this.isSubmitting = false;
-
-        // In real app, you would navigate to program list or details page
-        // this.router.navigate(['/trainer/programs']);
-      }, 1500);
+      this.programService.saveProgram(programData).subscribe({
+        next: (res) => {
+          console.log('Training Program saved successfully:', res);
+          this.toastService.success('Training Program saved successfully');
+          this.isSubmitting = false;
+        },
+        error: (err) => {
+          console.error('Error saving Training Program:', err);
+          this.toastService.error('Failed to save Training Program');
+          this.isSubmitting = false;
+        },
+      });
     } else {
       this.markFormGroupTouched();
       console.log('Form is invalid');

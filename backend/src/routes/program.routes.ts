@@ -14,5 +14,10 @@ programRouter.post(
   authMiddleware,
   programController.saveProgramDraft.bind(programController)
 );
+programRouter.post(
+  "/",
+  authMiddleware,
+  programController.saveProgram.bind(programController)
+);
 
 export default programRouter;
