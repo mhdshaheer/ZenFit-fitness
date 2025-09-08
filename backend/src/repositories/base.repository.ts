@@ -15,4 +15,18 @@ export abstract class BaseRepository<T> {
       { new: true, runValidators: true }
     );
   }
+  async updateCondition(
+    condition: Partial<T>,
+    data: Partial<T>
+  ): Promise<T | null> {
+    return await this.model.findOneAndUpdate(
+      condition,
+      { $set: data },
+      {
+        new: true,
+        runValidators: true,
+        upsert: true,
+      }
+    );
+  }
 }

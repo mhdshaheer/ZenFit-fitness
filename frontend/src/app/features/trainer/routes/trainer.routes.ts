@@ -25,6 +25,14 @@ export const TRAINER_ROUTES: Routes = [
           ).then((m) => m.TrainerProfileComponent);
         },
       },
+      {
+        path: 'program-create',
+        loadComponent: () => {
+          return import(
+            '../components/program-create/program-create.component'
+          ).then((m) => m.ProgramCreateComponent);
+        },
+      },
     ],
   },
 ];

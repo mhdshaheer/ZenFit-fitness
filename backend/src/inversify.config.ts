@@ -13,6 +13,10 @@ import { IProfileController } from "./controllers/interface/profile.controller.i
 import { ProfileController } from "./controllers/implimentation/profile.controller";
 import { IProfileService } from "./services/interface/profile.service.interface";
 import { ProfileService } from "./services/implimentation/profile.service";
+import { IProgramService } from "./services/interface/program.service.interface";
+import { ProgramService } from "./services/implimentation/program.service";
+import { IProgramController } from "./controllers/interface/program.controller.interface";
+import { ProgramController } from "./controllers/implimentation/program.controller";
 
 const container = new Container();
 
@@ -33,5 +37,11 @@ container.bind<IProfileService>(TYPES.ProfileService).to(ProfileService);
 container
   .bind<IProfileController>(TYPES.ProfileController)
   .to(ProfileController);
+
+// Program
+container.bind<IProgramService>(TYPES.ProgramService).to(ProgramService);
+container
+  .bind<IProgramController>(TYPES.ProgramController)
+  .to(ProgramController);
 
 export { container };

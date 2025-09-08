@@ -1,14 +1,17 @@
 import express from "express";
 import cors from "cors";
-import authRouter from "./routes/auth.route";
-import adminRouter from "./routes/admin.routes";
 import passport from "passport";
 import "./config/passport";
 import cookieParser from "cookie-parser";
 import "reflect-metadata";
+import rateLimit from "express-rate-limit";
+
+// Routers
+import authRouter from "./routes/auth.route";
+import adminRouter from "./routes/admin.routes";
 import router from "./routes/file.routes";
 import userRouter from "./routes/user.routes";
-import rateLimit from "express-rate-limit";
+import programRouter from "./routes/program.routes";
 
 const app = express();
 app.use(
@@ -35,5 +38,6 @@ app.use("/auth", authRouter);
 app.use("/admin", adminRouter);
 app.use("/file", router);
 app.use("/user", userRouter);
+app.use("/program", programRouter);
 
 export default app;

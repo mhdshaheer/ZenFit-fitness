@@ -1,4 +1,4 @@
-import { Document, model, ObjectId, Schema } from "mongoose";
+import { Document, model, ObjectId, Schema, Types } from "mongoose";
 
 export interface IProgram extends Document {
   programId: string;
@@ -8,10 +8,10 @@ export interface IProgram extends Document {
   difficultyLevel: "Beginner" | "Intermediate" | "Advanced";
   price: number;
   duration: string; // e.g., "12 weeks"
-  trainerId: ObjectId; // reference User._id
+  trainerId: string | Types.ObjectId; // reference User._id
   status: "active" | "inactive" | "draft";
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const ProgramSchema = new Schema<IProgram>(

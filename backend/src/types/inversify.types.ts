@@ -10,4 +10,7 @@ export const TYPES = {
 
   ProfileController: Symbol.for("ProfileController"),
   ProfileService: Symbol.for("ProfileService"),
+
+  ProgramController: Symbol.for("ProgramController"),
+  ProgramService: Symbol.for("ProgramService"),
 };
