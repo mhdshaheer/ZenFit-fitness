@@ -17,6 +17,10 @@ import { IProgramService } from "./services/interface/program.service.interface"
 import { ProgramService } from "./services/implimentation/program.service";
 import { IProgramController } from "./controllers/interface/program.controller.interface";
 import { ProgramController } from "./controllers/implimentation/program.controller";
+import { ISessionService } from "./services/interface/session.service.interface";
+import { SessionService } from "./services/implimentation/session.service";
+import { ISessionController } from "./controllers/interface/session.controller.interface";
+import { SessionController } from "./controllers/implimentation/session.controller";
 
 const container = new Container();
 
@@ -43,5 +47,11 @@ container.bind<IProgramService>(TYPES.ProgramService).to(ProgramService);
 container
   .bind<IProgramController>(TYPES.ProgramController)
   .to(ProgramController);
+
+// Session
+container.bind<ISessionService>(TYPES.SessionService).to(SessionService);
+container
+  .bind<ISessionController>(TYPES.SessionController)
+  .to(SessionController);
 
 export { container };

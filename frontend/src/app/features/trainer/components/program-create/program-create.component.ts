@@ -10,6 +10,11 @@ import { ProgramService } from '../../../../core/services/program.service';
 import { Program } from '../../store/trainer.model';
 import { ToastService } from '../../../../core/services/toast.service';
 
+export interface Category {
+  value: string;
+  label: string;
+}
+
 @Component({
   selector: 'app-program-create',
   imports: [ReactiveFormsModule],
@@ -23,6 +28,17 @@ export class ProgramCreateComponent implements OnInit {
   characterCount = 0;
   isSubmitting = false;
   currentTrainerId = '';
+
+  categories: Category[] = [
+    { value: 'strength', label: 'Strength Training' },
+    { value: 'cardio', label: 'Cardio & Endurance' },
+    { value: 'flexibility', label: 'Flexibility & Mobility' },
+    { value: 'weight-loss', label: 'Weight Loss' },
+    { value: 'muscle-gain', label: 'Muscle Gain' },
+    { value: 'sports-specific', label: 'Sports Specific' },
+    { value: 'rehabilitation', label: 'Rehabilitation' },
+    { value: 'general-fitness', label: 'General Fitness' },
+  ];
 
   constructor(private fb: FormBuilder) {}
 

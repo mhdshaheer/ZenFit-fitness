@@ -142,14 +142,11 @@
                 class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white"
               >
                 <option value="">Select Category</option>
-                <option value="strength">Strength Training</option>
-                <option value="cardio">Cardio & Endurance</option>
-                <option value="flexibility">Flexibility & Mobility</option>
-                <option value="weight-loss">Weight Loss</option>
-                <option value="muscle-gain">Muscle Gain</option>
-                <option value="sports-specific">Sports Specific</option>
-                <option value="rehabilitation">Rehabilitation</option>
-                <option value="general-fitness">General Fitness</option>
+                @for (category of categories; track category) {
+                <option [value]="category.value">
+                  {{ category.label }}
+                </option>
+                }
               </select>
             </div>
 

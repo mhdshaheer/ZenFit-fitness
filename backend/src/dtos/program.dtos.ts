@@ -11,3 +11,10 @@ export interface ProgramDto {
   price: number;
   status: "active" | "inactive" | "draft";
 }
+export interface ProgramSlotDto {
+  id: string;
+  title: string;
+  category: string;
+  duration: string;
+  entrolledCount?: number;
+}

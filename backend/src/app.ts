@@ -12,6 +12,7 @@ import adminRouter from "./routes/admin.routes";
 import router from "./routes/file.routes";
 import userRouter from "./routes/user.routes";
 import programRouter from "./routes/program.routes";
+import sessionRouter from "./routes/session.routes";
 
 const app = express();
 app.use(
@@ -39,5 +40,6 @@ app.use("/admin", adminRouter);
 app.use("/file", router);
 app.use("/user", userRouter);
 app.use("/program", programRouter);
+app.use("/session", sessionRouter);
 
 export default app;

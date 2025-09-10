@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { Program } from '../../features/trainer/store/trainer.model';
+import {
+  Program,
+  ProgramCategory,
+} from '../../features/trainer/store/trainer.model';
 
 @Injectable({ providedIn: 'root' })
 export class ProgramService {
@@ -20,5 +23,10 @@ export class ProgramService {
 
   getPrograms() {
     return this.http.get<{ programs: Program[] }>(`${this.apiUrl}/program`);
+  }
+  getProgramCategory() {
+    return this.http.get<{ programs: ProgramCategory[] }>(
+      `${this.apiUrl}/program/category`
+    );
   }
 }

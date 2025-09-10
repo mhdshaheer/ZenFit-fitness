@@ -10,7 +10,7 @@ export class ToastService {
   private showToast(
     message: string,
     icon: SweetAlertIcon = 'success',
-    duration: number = 3000
+    duration: number = 2000
   ) {
     Swal.fire({
       position: 'top-end',

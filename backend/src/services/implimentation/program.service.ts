@@ -1,5 +1,8 @@
-import { ProgramDto } from "../../dtos/program.dtos";
-import { mapToProgramDto } from "../../mapper/program.mapper";
+import { ProgramDto, ProgramSlotDto } from "../../dtos/program.dtos";
+import {
+  mapToProgramDto,
+  mapToProgramSlotDto,
+} from "../../mapper/program.mapper";
 import { IProgram } from "../../models/program.model";
 import { ProgramRepositoy } from "../../repositories/implimentation/program.repository";
 import { IProgramService } from "../interface/program.service.interface";
@@ -20,6 +23,12 @@ export class ProgramService implements IProgramService {
   async getPrograms(id: string): Promise<ProgramDto[]> {
     const result = await this.programRepository.getPrograms(id);
     const mappedResult = result.map(mapToProgramDto);
+    return mappedResult;
+  }
+
+  async getProgramsCategories(id: string): Promise<ProgramSlotDto[]> {
+    const result = await this.programRepository.getPrograms(id);
+    const mappedResult = result.map(mapToProgramSlotDto);
     return mappedResult;
   }
 }

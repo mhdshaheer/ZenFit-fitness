@@ -92,4 +92,8 @@ export class ProgramListComponent {
   createProgram() {
     this.router.navigate([`/trainer/program-create`]);
   }
+
+  createSlot() {
+    this.router.navigate(['/trainer/slot-create']);
+  }
 }

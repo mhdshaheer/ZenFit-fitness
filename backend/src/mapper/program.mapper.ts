@@ -1,4 +1,4 @@
-import { ProgramDto } from "../dtos/program.dtos";
+import { ProgramDto, ProgramSlotDto } from "../dtos/program.dtos";
 import { IProgram } from "../models/program.model";
 
 export const mapToProgramDto = (programs: IProgram): ProgramDto => {
@@ -14,5 +14,15 @@ export const mapToProgramDto = (programs: IProgram): ProgramDto => {
     //   image?: programs;
     //   enrolledCount?: programs.entrolledCount,
     //   rating?: number;
+  };
+};
+
+export const mapToProgramSlotDto = (programs: IProgram): ProgramSlotDto => {
+  return {
+    id: programs._id,
+    title: programs.title,
+    category: programs.category,
+    duration: programs.duration,
+    // entrolledCount:programs.entrolledCount
   };
 };

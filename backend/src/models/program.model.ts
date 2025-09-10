@@ -1,6 +1,7 @@
-import { Document, model, ObjectId, Schema, Types } from "mongoose";
+import { Document, model, Schema, Types } from "mongoose";
 
 export interface IProgram extends Document {
+  _id: string;
   programId: string;
   title: string;
   description: string;

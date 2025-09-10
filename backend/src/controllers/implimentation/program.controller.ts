@@ -3,7 +3,6 @@ import { IProgramController } from "../interface/program.controller.interface";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IProgramService } from "../../services/interface/program.service.interface";
 import { inject } from "inversify";
-import { ProgramService } from "../../services/implimentation/program.service";
 import { TYPES } from "../../types/inversify.types";
 
 export class ProgramController implements IProgramController {
@@ -96,6 +95,20 @@ export class ProgramController implements IProgramController {
       console.error("Error fetching programs:", error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         message: "Failed to fetch programs",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  async getProgramsCategories(req: Request, res: Response): Promise<void> {
+    try {
+      const userId = (req as any)?.user?.id;
+      const programs = await this.programService.getProgramsCategories(userId);
+      res.status(HttpStatus.OK).json({ programs });
+    } catch (error) {
+      console.error("Error fetching program category:", error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: "Failed to fetch program category",
         error: error instanceof Error ? error.message : String(error),
       });
     }

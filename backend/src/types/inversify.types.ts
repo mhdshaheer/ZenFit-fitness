@@ -13,4 +13,7 @@ export const TYPES = {
 
   ProgramController: Symbol.for("ProgramController"),
   ProgramService: Symbol.for("ProgramService"),
+
+  SessionController: Symbol.for("SessionController"),
+  SessionService: Symbol.for("SessionService"),
 };

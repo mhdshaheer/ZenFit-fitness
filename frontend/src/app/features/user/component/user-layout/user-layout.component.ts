@@ -8,6 +8,7 @@ import {
   NavMenuItem,
   UserProfile,
 } from '../../../../shared/components/header/header.component';
+import { ProfileService } from '../../../../core/services/profile.service';
 
 interface Menu {
   label: string;
@@ -26,6 +27,7 @@ export class UserLayoutComponent {
   authService = inject(AuthService);
   logger = inject(LoggerService);
   router = inject(Router);
+  profileService = inject(ProfileService);
 
   // Sidebar
   userMenu: Menu[] = [
@@ -58,15 +60,36 @@ export class UserLayoutComponent {
       },
     });
   }
+  ngOnInit() {
+    this.getUserProfile();
+  }
 
   // =================================================
   currentUser: UserProfile = {
-    name: 'John Smith',
-    email: 'john.smith@example.com',
-    role: 'Fitness Enthusiast',
-    avatar:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
+    name: '',
+    email: '',
+    role: '',
+    avatar: '',
   };
+  getUserProfile() {
+    let userData = {
+      name: '',
+      email: '',
+      role: '',
+      avatar: '',
+    };
+    this.profileService.getProfile().subscribe((res) => {
+      if (res.profileImage) {
+        this.profileService.getFile(res.profileImage).subscribe((fileRes) => {
+          userData.avatar = fileRes.url;
+        });
+      }
+      userData.name = res.fullName;
+      userData.email = res.email;
+      userData.role = res.role;
+      this.currentUser = userData;
+    });
+  }
 
   navItems: NavMenuItem[] = [
     {
@@ -82,14 +105,8 @@ export class UserLayoutComponent {
 
   userMenuItems: NavMenuItem[] = [
     { label: 'My Profile', route: '/user/profile', icon: 'fas fa-user' },
-    // { label: 'Account Settings', route: '', icon: 'fas fa-cog' },
-    // {
-    //   label: 'Subscription',
-    //   route: '/subscription',
-    //   icon: 'fas fa-credit-card',
-    // },
+
     { label: 'Help & Support', route: '/help', icon: 'fas fa-question-circle' },
-    // { label: 'Privacy Policy', route: '/privacy', icon: 'fas fa-shield-alt' },
   ];
 
   recentActivity = [

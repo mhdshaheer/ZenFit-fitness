@@ -24,5 +24,10 @@ programRouter.get(
   authMiddleware,
   programController.getPrograms.bind(programController)
 );
+programRouter.get(
+  "/category",
+  authMiddleware,
+  programController.getProgramsCategories.bind(programController)
+);
 
 export default programRouter;

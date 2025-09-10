@@ -41,6 +41,14 @@ export const TRAINER_ROUTES: Routes = [
           ).then((m) => m.ProgramListComponent);
         },
       },
+      {
+        path: 'slot-create',
+        loadComponent: () => {
+          return import('../components/slot-create/slot-create.component').then(
+            (m) => m.SlotCreateComponent
+          );
+        },
+      },
     ],
   },
 ];
