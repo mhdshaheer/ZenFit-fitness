@@ -11,6 +11,7 @@ import { optionalPhoneValidator } from '../../../../shared/validators/phone.vali
 import { CustomValidators } from '../../../../shared/validators/custom.validator';
 import { getErrorMessages } from '../../../../shared/utils.ts/form-error.util';
 import { HttpEventType } from '@angular/common/http';
+import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
 
 interface ProfileUser {
   fullName: string;
@@ -89,6 +90,7 @@ export class UserProfileComponent implements OnInit {
 
   ngOnInit() {
     this.loadProfile();
+    this.initializePasswordForm();
   }
   loadProfile() {
     this.profileService.getProfile().subscribe((res) => {
@@ -113,6 +115,10 @@ export class UserProfileComponent implements OnInit {
     });
   }
 
+  get f() {
+    return this.passwordForm.controls;
+  }
+
   saveProfile() {
     if (this.profileForm.valid) {
       console.log('profile data:', this.profileForm.value);
@@ -130,5 +136,46 @@ export class UserProfileComponent implements OnInit {
   }
   getError(field: string): string {
     return getErrorMessages(this.profileForm, field);
+  }
+
+  // New
+  activeTab: 'personal' | 'security' = 'personal';
+  passwordForm!: FormGroup;
+  showCurrentPassword = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
+  mobileMenuOpen = false;
+  onPasswordSubmit(): void {
+    if (this.passwordForm.valid) {
+      // Add your password change logic here
+      console.log('Changing password:', {
+        currentPassword: this.passwordForm.get('currentPassword')?.value,
+        newPassword: this.passwordForm.get('newPassword')?.value,
+      });
+
+      // Reset form after successful change
+      this.resetPasswordForm();
+
+      // Show success message
+      alert('Password changed successfully!');
+    }
+  }
+  initializePasswordForm() {
+    this.passwordForm = this.fb.group({
+      currentPassword: ['', [Validators.required]],
+      newPassword: ['', [Validators.required, passwordStrengthValidator]],
+      confirmPassword: ['', [Validators.required]],
+    });
+  }
+
+  resetPasswordForm(): void {
+    this.passwordForm.reset();
+    this.showCurrentPassword = false;
+    this.showNewPassword = false;
+    this.showConfirmPassword = false;
+  }
+
+  setActiveTab(tab: 'personal' | 'security'): void {
+    this.activeTab = tab;
   }
 }
