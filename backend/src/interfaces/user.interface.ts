@@ -15,3 +15,8 @@ export interface IUser {
   resume?: string;
   resumeVerified?: boolean;
 }
+
+export interface IPassword {
+  currentPassword: string;
+  newPassword: string;
+}

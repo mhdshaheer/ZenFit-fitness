@@ -18,11 +18,6 @@ export class ProfileService {
     formData.append('file', file);
     formData.append('type', type);
 
-    // return this.http.post<{ key: string; url: string }>(
-    //   `${this.apiUrl}/file/profile/upload`,
-    //   formData,
-    //   { reportProgress: true }
-    // );
     const req = new HttpRequest(
       'POST',
       `${this.apiUrl}/file/profile/upload`,
@@ -55,6 +50,12 @@ export class ProfileService {
     return this.http.put<any>(`${this.apiUrl}/user/profile`, data);
   }
 
+  changePassword(data: { currentPassword: string; newPassword: string }) {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}/user/password`,
+      data
+    );
+  }
   // Admin side Profie
   verifyResume(id: string) {
     return this.http.put<{ isVerified: boolean }>(

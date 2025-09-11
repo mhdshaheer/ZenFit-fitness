@@ -1,9 +1,10 @@
 import { injectable } from "inversify";
-import { IUser } from "../../interfaces/user.interface";
+import { IPassword, IUser } from "../../interfaces/user.interface";
 import { IProfileService } from "../interface/profile.service.interface";
 import { UserRepository } from "../../repositories/implimentation/user.repository";
 import { mapToUserDto } from "../../mapper/user.mapper";
 import { UserDto } from "../../dtos/user.dtos";
+import { comparePassword, hashedPassword } from "../../utils/hash.util";
 
 @injectable()
 export class ProfileService implements IProfileService {
@@ -49,5 +50,23 @@ export class ProfileService implements IProfileService {
       resumeVerified: !user?.resumeVerified,
     });
     return updated?.resumeVerified!;
+  }
+  async changePassword(id: string, passwords: IPassword): Promise<boolean> {
+    const user = await this.userRepository.findById(id);
+    const { currentPassword, newPassword } = passwords;
+
+    const isPasswordValid = await comparePassword(
+      currentPassword,
+      user?.password!
+    );
+    if (!isPasswordValid) {
+      throw new Error("Invalid credentials");
+    }
+
+    const hashedNewPassword = await hashedPassword(newPassword);
+    const updatedUser = await this.userRepository.update(id, {
+      password: hashedNewPassword,
+    });
+    return !!updatedUser;
   }
 }

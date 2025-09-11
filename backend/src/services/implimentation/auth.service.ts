@@ -243,8 +243,6 @@ export class AuthService implements IAuthService {
     const { email, newPassword } = req.body;
     const temp = await this.tempRepository.findByEmail(email);
 
-    console.log("forgot password controller", email, newPassword);
-
     if (!temp) {
       res
         .status(HttpStatus.BAD_REQUEST)
@@ -252,7 +250,6 @@ export class AuthService implements IAuthService {
       return;
     }
 
-    console.log("...2...");
     const user = await this.userRepository.findByEmail(email);
     if (!user) {
       res
@@ -260,11 +257,8 @@ export class AuthService implements IAuthService {
         .json({ message: HttpResponse.USER_NOT_FOUND });
       return;
     }
-    console.log("...3...");
 
     const hashedNewPassword = await hashedPassword(newPassword);
-    console.log("current pass:", newPassword);
-    console.log("hashed password:", hashedNewPassword);
     const updatedUser = await this.userRepository.updatePassword(
       email,
       hashedNewPassword
