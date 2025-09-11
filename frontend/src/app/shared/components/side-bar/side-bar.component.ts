@@ -74,7 +74,7 @@ export class SideBarComponent {
         title: 'Company',
         items: [
           { id: 'general', label: 'General', icon: 'settings' },
-          { id: 'members', label: 'Members', icon: 'users', badge: 16 },
+          { id: 'users', label: 'Users', icon: 'users', badge: 16 },
           { id: 'teams', label: 'Teams', icon: 'user-group', badge: 10 },
           { id: 'custom-fields', label: 'Custom fields', icon: 'document' },
           {

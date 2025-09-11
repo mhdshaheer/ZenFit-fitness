@@ -5,12 +5,14 @@ import { User } from '../../../shared/models/user.model';
 export interface UserState {
   users: User[];
   loading: boolean;
-  error: any;
+  total: number;
+  error: unknown;
 }
 
 export const initialState: UserState = {
   users: [],
   loading: false,
+  total: 0,
   error: null,
 };
 
@@ -43,7 +45,7 @@ export const adminReducer = createReducer(
   on(AdminActions.updateUserStatusSuccess, (state, { id, status }) => ({
     ...state,
     users: state.users.map((user) =>
-      user._id === id ? { ...user, status } : user
+      user._id === id || user.id === id ? { ...user, status } : user
     ),
   }))
 );

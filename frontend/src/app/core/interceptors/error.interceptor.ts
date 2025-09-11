@@ -1,4 +1,3 @@
-// src/app/core/interceptors/error.interceptor.ts
 import { HttpInterceptorFn } from '@angular/common/http';
 import { inject } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
@@ -15,8 +14,11 @@ export const ErrorInterceptor: HttpInterceptorFn = (req, next) => {
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
       logger.error('HTTP Error:', error);
-
-      if (error.status === 401) {
+      if (
+        error.status === 401 &&
+        !req.url.includes('/auth/login') &&
+        !req.url.includes('/auth/refresh-token')
+      ) {
         return authService.refreshToken().pipe(
           switchMap((success: boolean) => {
             if (success) {
@@ -25,7 +27,6 @@ export const ErrorInterceptor: HttpInterceptorFn = (req, next) => {
               });
               return next(retryReq);
             } else {
-              // Refresh token invalid, logout
               authService.logout();
               router.navigate(['/auth/login']);
               return throwError(() => error);

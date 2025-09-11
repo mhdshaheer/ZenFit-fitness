@@ -1,11 +1,11 @@
 import { IUser } from "../../interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
 import { BaseRepository } from "../base.repository";
-import { IAuthRepository } from "../interface/auth.repository.interface";
+import { IUserRepository } from "../interface/user.repository.interface";
 
-export class AuthRepository
+export class UserRepository
   extends BaseRepository<IUser>
-  implements IAuthRepository
+  implements IUserRepository
 {
   constructor() {
     super(UserModel);
@@ -17,16 +17,19 @@ export class AuthRepository
     return await this.create(user);
   }
   async findAll(): Promise<IUser[]> {
-    return await UserModel.find();
+    return await this.model.find();
   }
   async findById(id: string): Promise<IUser | null> {
-    return await UserModel.findById(id);
+    return await this.model.findById(id);
   }
   async updateStatus(
     id: string,
     status: "active" | "blocked" | "pending" | "inactive"
   ): Promise<IUser | null> {
-    return await UserModel.findByIdAndUpdate(id, { status }, { new: true });
+    return await this.model.findByIdAndUpdate(id, { status }, { new: true });
+  }
+  async updateById(id: string, data: Partial<IUser>): Promise<IUser | null> {
+    return await this.update(id, data);
   }
 
   async updatePassword(
@@ -48,10 +51,10 @@ export class AuthRepository
     role: string;
     googleId?: string;
   }) {
-    const user = new UserModel(userData);
+    const user = new this.model(userData);
     return await user.save();
   }
   async findByGoogleId(googleId: string) {
-    return await UserModel.findOne({ googleId });
+    return await this.model.findOne({ googleId });
   }
 }

@@ -1,0 +1,16 @@
+<app-header
+  [logoText]="'FitTracker'"
+  [userProfile]="currentUser"
+  [navigationItems]="navItems"
+  [userMenuItems]="userMenuItems"
+  [searchPlaceholder]="'Search exercises, workouts, nutrition...'"
+  [showDateBanner]="true"
+  (searchChange)="handleSearchChange($event)"
+  (searchSubmit)="handleSearchSubmit($event)"
+  (userMenuClick)="handleUserMenuClick($event)"
+  (logout)="handleLogout()"
+  (mobileMenuToggle)="handleMobileMenuToggle($event)"
+></app-header>
+<div class="p-4">
+  <router-outlet></router-outlet>
+</div>

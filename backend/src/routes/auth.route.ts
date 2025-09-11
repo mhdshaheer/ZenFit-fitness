@@ -1,13 +1,15 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/implimentation/auth.controller";
-import { AdminController } from "../controllers/implimentation/admin.controller";
 import passport from "passport";
 import { blockUserMiddleware } from "../middlewares/blockuser.middleware";
 import { adminMiddleware } from "../middlewares/isAdmin.middleware";
 import authMiddleware from "../middlewares/verifyToken.middleware";
+import { container } from "../inversify.config";
+import { TYPES } from "../types/inversify.types";
 
 const authRouter = Router();
-const controller = new AuthController();
+// const controller = new AuthController();
+const controller = container.get<AuthController>(TYPES.AuthController);
 
 authRouter.post("/signup", controller.sendOtp.bind(controller));
 authRouter.post(
@@ -19,12 +21,9 @@ authRouter.post("/resent-otp", controller.resendOtp.bind(controller));
 authRouter.post("/send-otp", controller.sendForgotPasswordOtp.bind(controller));
 authRouter.post(
   "/verify-forgot-otp",
-  controller.sendForgotPasswordOtp.bind(controller)
+  controller.verifyForgotOtp.bind(controller)
 );
-authRouter.post(
-  "/reset-password",
-  controller.sendForgotPasswordOtp.bind(controller)
-);
+authRouter.post("/reset-password", controller.resetPassword.bind(controller));
 
 authRouter.post("/login", controller.login.bind(controller));
 authRouter.post("/logout", controller.logOut.bind(controller));

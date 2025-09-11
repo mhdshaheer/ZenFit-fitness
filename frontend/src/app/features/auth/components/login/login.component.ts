@@ -14,6 +14,7 @@ import { SharedFormComponent } from '../../../../shared/components/shared-form/s
 import { toSignal } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { environment } from '../../../../../environments/environment';
+import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
 
 @Component({
   selector: 'app-login',
@@ -49,16 +50,7 @@ export class LoginComponent {
           Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
         ],
       ],
-      password: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(8),
-          Validators.pattern(
-            '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$'
-          ),
-        ],
-      ],
+      password: ['', [Validators.required, passwordStrengthValidator]],
     });
   }
 

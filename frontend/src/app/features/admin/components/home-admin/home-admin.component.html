@@ -90,11 +90,16 @@
 
     <!-- Main Content -->
 
-    <main class="p-6">
+    <!-- <main class="p-6">
       <div class="max-w-7xl mx-auto">
         <div *ngIf="activeMenuItem === 'members'">
           <app-user-manage></app-user-manage>
         </div>
+      </div>
+    </main> -->
+    <main class="p-6">
+      <div class="max-w-7xl mx-auto">
+        <router-outlet></router-outlet>
       </div>
     </main>
   </div>

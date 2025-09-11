@@ -6,7 +6,11 @@ export class TempUserRepository {
     otp: string,
     payload: object
   ): Promise<ITempUser> {
-    return await TempUserModel.create({ email, otp, payload });
+    return await TempUserModel.findOneAndUpdate(
+      { email },
+      { email, otp, payload },
+      { new: true, upsert: true }
+    );
   }
 
   async findByEmail(email: string): Promise<ITempUser | null> {

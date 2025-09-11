@@ -1,0 +1,463 @@
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+  <!-- Header -->
+  <div class="bg-gradient-to-r from-green-800 to-green-700 px-6 py-4">
+    <h2 class="text-xl font-semibold text-white">Trainer Profile</h2>
+  </div>
+
+  <!-- Profile Content -->
+  <div class="p-6">
+    <!-- Basic Information -->
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
+      <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
+        <svg
+          class="w-5 h-5 text-green-900 mr-2"
+          fill="currentColor"
+          viewBox="0 0 20 20"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+            clip-rule="evenodd"
+          ></path>
+        </svg>
+        Personal Information
+      </h3>
+
+      <div class="flex flex-col lg:flex-row gap-8">
+        <!-- Profile Image Section -->
+        <div class="flex flex-col items-center lg:items-start">
+          <div class="relative group">
+            <div
+              class="w-36 h-36 rounded-2xl overflow-hidden ring-4 ring-gray-100 shadow-md"
+            >
+              <img
+                [src]="profileImage"
+                alt="profile-image"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+            <div
+              class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white shadow-sm flex items-center justify-center"
+            >
+              <div class="w-2 h-2 bg-white rounded-full"></div>
+            </div>
+          </div>
+          <div class="mt-4 text-center lg:text-left">
+            <h4 class="text-xl font-bold text-gray-900">{{ trainer?.name }}</h4>
+            <p class="text-sm text-gray-500 mt-1">Fitness Trainer</p>
+          </div>
+        </div>
+
+        <!-- Personal Details Grid -->
+        <div class="flex-1">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Full Name -->
+            <div class="space-y-2">
+              <label
+                class="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                >Full Name</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  value="Shaheer"
+                  placeholder="Not Updated"
+                  readonly
+                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-900 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <!-- Email -->
+            <div class="space-y-2">
+              <label
+                class="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                >Email Address</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+                    ></path>
+                    <path
+                      d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"
+                    ></path>
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  value="{{ trainer?.email }}"
+                  placeholder="Not Updated"
+                  readonly
+                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <!-- Phone -->
+            <div class="space-y-2">
+              <label
+                class="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                >Phone Number</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z"
+                    ></path>
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  value="{{ trainer?.phone }}"
+                  placeholder="Not Updated"
+                  readonly
+                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <!-- Gender -->
+            <div class="space-y-2">
+              <label
+                class="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                >Gender</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zM8 6a2 2 0 114 0v1H8V6z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  value="{{ trainer?.gender }}"
+                  readonly
+                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none capitalize"
+                />
+              </div>
+            </div>
+
+            <!-- Date of Birth -->
+            <div class="space-y-2">
+              <label
+                class="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                >Date of Birth</label
+              >
+              <div class="relative">
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <svg
+                    class="w-4 h-4 text-gray-400"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fill-rule="evenodd"
+                      d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
+                      clip-rule="evenodd"
+                    ></path>
+                  </svg>
+                </div>
+                <input
+                  type="text"
+                  [value]="
+                    trainer?.dob ? (trainer?.dob | date : 'dd/MM/yyyy') : 'none'
+                  "
+                  readonly
+                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none"
+                />
+              </div>
+            </div>
+
+            <!-- Languages -->
+            <div class="space-y-2">
+              <label
+                class="text-xs font-semibold text-gray-500 uppercase tracking-wide"
+                >Languages</label
+              >
+              <div class="p-3 bg-gray-50 border border-gray-200 rounded-lg">
+                <div class="flex flex-wrap gap-2">
+                  @if(trainer?.languages?.length){
+                  <!--itration for languages  -->
+                  @for (language of trainer?.languages; track language) {
+
+                  <span
+                    class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-medium rounded-full shadow-sm"
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                    {{ language }}
+                  </span>
+                  } }@else {
+                  <span
+                    class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-medium rounded-full shadow-sm"
+                  >
+                    <svg
+                      class="w-3 h-3 mr-1"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clip-rule="evenodd"
+                      ></path>
+                    </svg>
+                    Not Updated
+                  </span>
+                  }
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Resume Section -->
+    @if(uploadedFile?.file){
+
+    <div class="space-y-3">
+      <h4 class="text-sm font-medium text-gray-700">Resume Document</h4>
+
+      <div class="grid gap-3">
+        <!-- Resume File -->
+        <div
+          class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
+        >
+          <!-- File Info -->
+          <div class="flex items-center space-x-3 min-w-0 flex-1">
+            <!-- PDF Icon -->
+            <div class="flex-shrink-0">
+              <div
+                class="w-8 h-8 bg-red-100 rounded flex items-center justify-center"
+              >
+                <svg
+                  class="w-4 h-4 text-red-600"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path d="M4 18h12V6l-4-4H4v16zm8-10v1h3l-3-3v2z" />
+                </svg>
+              </div>
+            </div>
+
+            <!-- File Details -->
+            <div class="min-w-0 flex-1">
+              <p class="text-sm font-medium text-gray-900 truncate">
+                {{ uploadedFile?.name! || "" }}
+              </p>
+              <p class="text-xs text-gray-500">
+                {{ formatFileSize(uploadedFile?.size!) }} • Uploaded
+                {{ formatUploadTime(uploadedFile?.uploadedAt!) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- File Actions -->
+          <div class="flex items-center space-x-2 ml-3">
+            <!-- Preview Button -->
+            <button
+              (click)="previewFile()"
+              class="p-1 text-gray-400 hover:text-orange-600 transition-colors"
+              title="Preview"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                ></path>
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                ></path>
+              </svg>
+            </button>
+
+            <!-- Download Button -->
+            <button
+              (click)="downloadFile()"
+              class="p-1 text-gray-400 hover:text-green-600 transition-colors"
+              title="Download"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <!-- Verification Status -->
+        <div
+          class="flex items-center justify-between p-3 rounded-lg border"
+          [ngClass]="{
+            'bg-green-50 border-green-200': trainer?.isVerified,
+            'bg-yellow-50 border-yellow-200': !trainer?.isVerified
+          }"
+        >
+          <div class="flex items-center">
+            <svg
+              *ngIf="trainer?.isVerified"
+              class="w-5 h-5 text-green-600 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+
+            <svg
+              *ngIf="!trainer?.isVerified"
+              class="w-5 h-5 text-orange-600 mr-2"
+              fill="currentColor"
+              viewBox="0 0 20 20"
+            >
+              <path
+                fill-rule="evenodd"
+                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
+                clip-rule="evenodd"
+              ></path>
+            </svg>
+
+            <span
+              class="text-sm font-medium"
+              [ngClass]="{
+                'text-green-700': trainer?.isVerified,
+                'text-orange-700': !trainer?.isVerified
+              }"
+            >
+              {{
+                trainer?.isVerified ? "Resume Verified" : "Verification Pending"
+              }}
+            </span>
+          </div>
+
+          <button
+            *ngIf="!trainer?.isVerified"
+            (click)="verifyResume()"
+            class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors"
+          >
+            Verify Resume
+          </button>
+
+          <button
+            *ngIf="trainer?.isVerified"
+            (click)="verifyResume()"
+            class="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-md hover:bg-orange-700 transition-colors"
+          >
+            Mark as Unverified
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- No Resume Message -->
+    @if(!uploadedFile?.file && trainer?.role=='trainer'){
+
+    <div class="text-center py-8">
+      <svg
+        class="w-16 h-16 text-gray-300 mx-auto mb-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="1"
+          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+        ></path>
+      </svg>
+      <p class="text-gray-500 text-sm">No resume uploaded yet</p>
+    </div>
+    }
+    <!-- Action Buttons -->
+    <div class="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
+      <button
+        (click)="editProfile()"
+        class="px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 transition-colors"
+      >
+        Edit Profile
+      </button>
+      <button
+        (click)="deactivateProfile()"
+        class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors"
+      >
+        Deactivate
+      </button>
+    </div>
+  </div>
+</div>

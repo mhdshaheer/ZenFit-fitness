@@ -4,14 +4,14 @@ import { HttpStatus } from "../const/statuscode.const";
 import { HttpResponse } from "../const/response_message.const";
 import { env } from "../config/env.config";
 import logger from "../utils/logger";
-import { AuthRepository } from "../repositories/implimentation/auth.repository";
+import { UserRepository } from "../repositories/implimentation/user.repository";
 
 const authMiddleware = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
-  const authRepository = new AuthRepository();
+  const userRepository = new UserRepository();
   const { accessToken } = req.cookies;
 
   if (!accessToken) {
@@ -23,8 +23,9 @@ const authMiddleware = async (
 
   try {
     const decoded = jwt.verify(accessToken, env.jwt_access!);
+    console.log("decoded on auth middleware ", decoded);
     if (typeof decoded === "object" && "id" in decoded) {
-      const user = await authRepository.findById(decoded.id);
+      const user = await userRepository.findById(decoded.id);
 
       if (!user) {
         res.status(HttpStatus.NOT_FOUND).json({ message: "User not found" });
@@ -37,14 +38,9 @@ const authMiddleware = async (
           .json({ message: "Your account has been blocked." });
         return;
       }
-
       (req as any).user = decoded;
       next();
     }
-    // (req as any).user = decoded;
-    // console.log("decoded : ", decoded);
-    // const currUser = await authRepository.findById(decoded?.id);
-    // next();
   } catch (error) {
     logger.error(error);
     res

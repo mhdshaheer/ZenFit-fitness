@@ -19,19 +19,28 @@ import { Router } from '@angular/router';
   styleUrls: ['./forgot-password.component.css'],
 })
 export class ForgotPasswordComponent implements OnInit {
-  step: number = 1;
+  step = 1;
   form!: FormGroup;
   otpForm!: FormGroup;
   resetForm!: FormGroup;
   submitted = false;
   email = '';
   router = inject(Router);
+  fb = inject(FormBuilder);
+  authService = inject(AuthService);
+  timer!: number;
+  intervel: any;
+
+  // ========= Styles ========
+  buttonColor = 'text-green-600 font-semibold';
+  textColor = 'text-green-600 font-semibold underline hover:text-green-700';
+  // ========= *Styles ========
 
   isLoading = signal(false);
 
-  constructor(private fb: FormBuilder, private authService: AuthService) {}
-
   ngOnInit() {
+    this.startTimer();
+
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });
@@ -96,7 +105,7 @@ export class ForgotPasswordComponent implements OnInit {
     this.authService
       .verifyForgotOtp(this.email, this.otpForm.value.otp)
       .subscribe({
-        next: (res) => {
+        next: () => {
           Swal.fire('OTP Verified', 'success');
           this.step = 3;
           this.submitted = false;
@@ -120,7 +129,7 @@ export class ForgotPasswordComponent implements OnInit {
     this.authService
       .resetPassword(this.email, this.resetForm.value.password)
       .subscribe({
-        next: (res) => {
+        next: () => {
           this.isLoading.set(false);
           Swal.fire({
             icon: 'success',
@@ -142,5 +151,33 @@ export class ForgotPasswordComponent implements OnInit {
           });
         },
       });
+  }
+
+  resendOtp() {
+    this.startTimer();
+    this.authService.sendOtp(this.email).subscribe({
+      next: (res) => {
+        this.email = this.form.value.email;
+        Swal.fire('Success', res.message, 'success');
+        this.step = 2;
+      },
+      error: (err) => {
+        this.isLoading.set(false);
+        Swal.fire(
+          'Error',
+          err.error?.message || 'Failed to resend OTP',
+          'error'
+        );
+      },
+    });
+  }
+  startTimer() {
+    this.timer = 30;
+    this.intervel = setInterval(() => {
+      this.timer--;
+      if (this.timer == 0) {
+        clearInterval(this.intervel);
+      }
+    }, 1000);
   }
 }

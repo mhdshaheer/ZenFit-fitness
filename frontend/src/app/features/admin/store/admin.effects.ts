@@ -8,19 +8,7 @@ import { catchError, map, mergeMap, of, switchMap } from 'rxjs';
 export class AdminEffects {
   private actions$ = inject(Actions);
   private adminService = inject(AdminService);
-  constructor() {}
 
-  // loadUsers$ = createEffect(() =>
-  //   this.actions$.pipe(
-  //     ofType(AdminActions.loadUsers),
-  //     mergeMap(() =>
-  //       this.adminService.getUsers().pipe(
-  //         map((users) => AdminActions.loadUsersSuccess({ users })),
-  //         catchError((error) => of(AdminActions.loadUsersFailure({ error })))
-  //       )
-  //     )
-  //   )
-  // );
   loadUsers$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.loadUsers),

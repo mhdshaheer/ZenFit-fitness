@@ -5,6 +5,9 @@ const userSchema = new mongoose.Schema(
     username: {
       type: String,
     },
+    fullName: {
+      type: String,
+    },
     email: {
       type: String,
       unique: true,
@@ -17,7 +20,7 @@ const userSchema = new mongoose.Schema(
       type: String,
     },
     phone: {
-      type: Number,
+      type: String,
     },
     dob: {
       type: Date,
@@ -32,6 +35,7 @@ const userSchema = new mongoose.Schema(
     experience: {
       type: Number,
     },
+    resume: { type: String },
     languages: {
       type: [String],
     },
@@ -46,6 +50,10 @@ const userSchema = new mongoose.Schema(
     },
     profileImage: {
       type: String,
+    },
+    resumeVerified: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true }

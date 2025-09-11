@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
@@ -6,7 +6,15 @@ import { Observable } from 'rxjs';
 import { TableComponent } from '../../../../shared/components/table/table.component';
 import { User } from '../../../../shared/models/user.model';
 import { loadUsers, updateUserStatus } from '../../store/admin.actions';
-import { selectAllUsers, selectUserLoading } from '../../store/admin.selectors';
+import {
+  selectAllUsers,
+  selectTotalUsers,
+  selectUserLoading,
+} from '../../store/admin.selectors';
+
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { Router } from '@angular/router';
 
 export interface TableColumn {
   key: string;
@@ -21,12 +29,12 @@ export interface TableAction {
   icon: string;
   color: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'gray';
   action: string;
-  condition?: (row: any) => boolean;
+  condition?: (row: User) => boolean;
 }
 
 export interface ActionEvent {
   action: string;
-  row: any;
+  row: User;
   index: number;
 }
 
@@ -37,24 +45,27 @@ export interface ActionEvent {
   templateUrl: './user-manage.component.html',
   styleUrl: './user-manage.component.css',
 })
-export class UserManageComponent {
+export class UserManageComponent implements OnInit {
   private store = inject(Store);
+  private dialog = inject(MatDialog);
+  private router = inject(Router);
 
   users$!: Observable<User[]>;
   loading$!: Observable<boolean>;
 
   // Pagination and filtering state
   page = 1;
-  pageSize = 10;
-  totalUsers: number = 0;
+  pageSize = 5;
+  totalUsers = 0;
   search = '';
   sortBy = 'createdAt';
   sortOrder: 'asc' | 'desc' = 'asc';
 
   ngOnInit(): void {
     this.users$ = this.store.select(selectAllUsers);
-    this.store.select(selectAllUsers).subscribe((users) => {
-      this.totalUsers = users.length;
+    this.store.select(selectTotalUsers).subscribe((total) => {
+      console.log('total users: ', total);
+      this.totalUsers = total;
     });
     this.loading$ = this.store.select(selectUserLoading);
     this.loadUsersFromBackend();
@@ -79,7 +90,7 @@ export class UserManageComponent {
   }
 
   onPageChanged(page: number) {
-    this.page = page + 1;
+    this.page = page;
     this.loadUsersFromBackend();
   }
 
@@ -133,20 +144,34 @@ export class UserManageComponent {
   ];
 
   onUserAction(event: ActionEvent) {
-    switch (event.action) {
-      case 'block':
-      case 'unblock':
-        const newStatus = event.row.status === 'active' ? 'blocked' : 'active';
-        this.store.dispatch(
-          updateUserStatus({
-            id: event.row._id,
-            status: newStatus,
-          })
-        );
-        break;
-      case 'view':
-        console.log('Viewing user:', event.row);
-        break;
+    const { action, row } = event;
+    if (action == 'view') {
+      console.log('clicked view option ', row.id);
+      this.router.navigate(['/admin/dashboard/profile', row.id]);
+      return;
+    }
+    if (action == 'block' || action == 'unblock') {
+      const updatedStatus = row.status == 'active' ? 'blocked' : 'active';
+      const user_Id = row._id || row.id;
+
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        width: '350px',
+        data: {
+          title: action === 'block' ? 'Block User' : 'Unblock User',
+          message: `Are you sure you want to ${action} this user?`,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if (confirmed) {
+          this.store.dispatch(
+            updateUserStatus({
+              id: user_Id,
+              status: updatedStatus,
+            })
+          );
+        }
+      });
     }
   }
 }

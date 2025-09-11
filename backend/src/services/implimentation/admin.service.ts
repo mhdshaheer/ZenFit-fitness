@@ -1,7 +1,9 @@
-import { AdminRepository } from "../../repositories/implimentation/admin.repository";
 import { IUser } from "../../interfaces/user.interface";
-import { AuthRepository } from "../../repositories/implimentation/auth.repository";
 import { UserModel } from "../../models/user.model";
+import { injectable } from "inversify";
+import { UserDto } from "../../dtos/user.dtos";
+import { mapToUserDto } from "../../mapper/user.mapper";
+import { UserRepository } from "../../repositories/implimentation/user.repository";
 
 interface GetUsersParams {
   page: number;
@@ -10,21 +12,17 @@ interface GetUsersParams {
   sortBy?: string;
   sortOrder?: 1 | -1;
 }
-
+@injectable()
 export class AdminService {
-  private adminRepository = new AdminRepository();
-  private authRepository = new AuthRepository();
+  private userRepository = new UserRepository();
 
   async updateUserStatus(
     id: string,
     status: "active" | "blocked"
   ): Promise<IUser | null> {
-    const user = await this.authRepository.findById(id);
+    const user = await this.userRepository.findById(id);
     if (!user) throw new Error("User not found");
-    return await this.adminRepository.updateStatus(id, status);
-  }
-  async getAllUsers(): Promise<IUser[]> {
-    return await this.authRepository.findAll();
+    return await this.userRepository.updateStatus(id, status);
   }
 
   async getUsers({
@@ -33,7 +31,7 @@ export class AdminService {
     search = "",
     sortBy = "createdAt",
     sortOrder = 1,
-  }: GetUsersParams): Promise<{ data: IUser[]; total: number }> {
+  }: GetUsersParams): Promise<{ data: UserDto[]; total: number }> {
     const filter: any = {
       role: { $ne: "admin" },
     };
@@ -53,7 +51,8 @@ export class AdminService {
       .skip((page - 1) * pageSize)
       .limit(pageSize);
 
-    return { data: users, total };
+    const userDtos = users.map(mapToUserDto);
+    return { data: userDtos, total };
   }
 }
 

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { OtpComponent } from '../../../../shared/components/otp/otp.component';
 import { AuthService } from '../../../../core/services/auth.service';
 import { Router } from '@angular/router';
@@ -15,17 +15,14 @@ import { LoggerService } from '../../../../core/services/logger.service';
   templateUrl: './signup-otp.component.html',
   styleUrl: './signup-otp.component.css',
 })
-export class SignupOtpComponent {
+export class SignupOtpComponent implements OnDestroy {
   private destroy$ = new Subject<void>();
   private logger = inject(LoggerService);
+  private authService = inject(AuthService);
+  private router = inject(Router);
+  private otpService = inject(OtpAccessService);
 
   email = localStorage.getItem('signupEmail') || '';
-
-  constructor(
-    private authService: AuthService,
-    private router: Router,
-    private otpService: OtpAccessService
-  ) {}
 
   handleOtpSubmit(otp: string) {
     if (!this.email) {

@@ -1,4 +1,4 @@
-import { inject, Inject, Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import * as AuthActions from './auth.actions';
 import { AuthService } from '../../../core/services/auth.service';
@@ -6,7 +6,6 @@ import { OtpAccessService } from '../../../core/services/otp-access.service';
 import { Router } from '@angular/router';
 import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs';
 import Swal from 'sweetalert2';
-import { LoginPayload } from './auth.model';
 
 @Injectable()
 export class AuthEffects {
