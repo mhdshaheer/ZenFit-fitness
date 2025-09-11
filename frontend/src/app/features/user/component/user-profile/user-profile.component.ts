@@ -12,6 +12,7 @@ import { CustomValidators } from '../../../../shared/validators/custom.validator
 import { getErrorMessages } from '../../../../shared/utils.ts/form-error.util';
 import { HttpEventType } from '@angular/common/http';
 import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
+import { ToastService } from '../../../../core/services/toast.service';
 
 interface ProfileUser {
   fullName: string;
@@ -34,6 +35,7 @@ export class UserProfileComponent implements OnInit {
   defaultImage = 'landing_page/user.png';
   isUploading = false;
   profileService = inject(ProfileService);
+  toastService = inject(ToastService);
   isEditMode = false;
 
   // ==============
@@ -48,18 +50,6 @@ export class UserProfileComponent implements OnInit {
 
     const file: File = input.files[0];
     this.isUploading = true;
-
-    // this.profileService.uploadfile(file, 'profile').subscribe({
-    //   next: (res) => {
-    //     this.profileImageUrl = res.key;
-    //     this.isUploading = false;
-    //     this.profileImageUrl = res.url;
-    //   },
-    //   error: () => {
-    //     alert('Image upload failed');
-    //     this.isUploading = false;
-    //   },
-    // });
     this.profileService.uploadfile(file, 'profile').subscribe({
       next: (event) => {
         if (event.type === HttpEventType.UploadProgress && event.total) {
@@ -68,11 +58,12 @@ export class UserProfileComponent implements OnInit {
           this.profileImageUrl = event.body?.url ?? null;
           this.isUploading = false;
           console.log('Profile image uploaded, key:', event.body?.key);
+          this.toastService.success('Profile image is updated successfully');
           // this.progress = 0; // reset after upload
         }
       },
       error: () => {
-        alert('Image upload failed');
+        this.toastService.error('Image upload failed');
         this.isUploading = false;
         // this.progress = 0;
       },
@@ -122,14 +113,23 @@ export class UserProfileComponent implements OnInit {
   saveProfile() {
     if (this.profileForm.valid) {
       console.log('profile data:', this.profileForm.value);
-      this.profileService
-        .updateProfile(this.profileForm.value)
-        .subscribe((res) => {
+      this.profileService.updateProfile(this.profileForm.value).subscribe({
+        next: (res) => {
           console.log('response from the backend :', res);
+          this.toastService.success('Profile data is updated Successfully');
           this.profileData = res;
-          console.log('Profile data :', this.profileData);
           this.isEditMode = false;
-        });
+        },
+        error: (err) => {
+          console.error('Error updating profile:', err);
+          this.toastService.error(
+            'Failed to update profile. Please try again later.'
+          );
+        },
+        complete: () => {
+          console.log('Profile update request completed.');
+        },
+      });
     } else {
       this.profileForm.markAllAsTouched();
     }
@@ -145,19 +145,26 @@ export class UserProfileComponent implements OnInit {
   showNewPassword = false;
   showConfirmPassword = false;
   mobileMenuOpen = false;
+
   onPasswordSubmit(): void {
     if (this.passwordForm.valid) {
-      // Add your password change logic here
-      console.log('Changing password:', {
+      let passwords = {
         currentPassword: this.passwordForm.get('currentPassword')?.value,
         newPassword: this.passwordForm.get('newPassword')?.value,
+      };
+      console.log('submitted data :', passwords);
+      this.profileService.changePassword(passwords).subscribe({
+        next: (res) => {
+          console.log(res);
+          this.toastService.success('Password changed successfully');
+          this.resetPasswordForm();
+          this.activeTab = 'personal';
+        },
+        error: (err) => {
+          console.log(err);
+          this.toastService.error('Failed to change password');
+        },
       });
-
-      // Reset form after successful change
-      this.resetPasswordForm();
-
-      // Show success message
-      alert('Password changed successfully!');
     }
   }
   initializePasswordForm() {

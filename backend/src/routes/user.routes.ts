@@ -27,4 +27,10 @@ userRouter.put(
   profileController.verifyResume.bind(profileController)
 );
 
+userRouter.post(
+  "/password",
+  authMiddleware,
+  profileController.changePassword.bind(profileController)
+);
+
 export default userRouter;
