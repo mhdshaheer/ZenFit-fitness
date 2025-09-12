@@ -34,7 +34,6 @@ export class FileService implements IFileService {
     if (user.resume && type == "resume") {
       console.log("Deleting old resume from S3:", user.resume);
       await this.s3Repository.deleteFile(user.resume);
-      // logic for delete already existing resume
     }
 
     const folderMap: Record<string, string> = {

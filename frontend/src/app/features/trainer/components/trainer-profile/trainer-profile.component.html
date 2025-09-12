@@ -15,7 +15,6 @@
             My Profile
           </h1>
         </div>
-
         <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
           <div
             class="flex flex-col sm:flex-row items-center sm:items-start space-y-4 sm:space-y-0 sm:space-x-6"
@@ -107,212 +106,537 @@
               <!-- Membership plan -->
               <p class="text-xs sm:text-sm text-gray-400">Basic plan</p>
             </div>
-
-            <!-- Edit Button -->
-            <!-- <div class="w-full sm:w-auto">
-              <button
-                class="w-full sm:w-auto px-4 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors text-sm sm:text-base"
-              >
-                Edit Profile
-              </button>
-            </div> -->
           </div>
         </div>
-
-        <!-- Personal Information Section -->
-        <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
+        <!-- Tab Navigation -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-200 mb-8">
+          <div class="border-b border-gray-200">
+            <nav class="flex space-x-8 px-6" aria-label="Tabs">
+              <button
+                *ngFor="let tab of tabs"
+                class="border-b-2 py-4 px-1 text-sm font-medium whitespace-nowrap transition-all duration-300"
+                [class.border-green-500]="activeTab === tab.key"
+                [class.text-green-600]="activeTab === tab.key"
+                [class.border-transparent]="activeTab !== tab.key"
+                [class.text-gray-500]="activeTab !== tab.key"
+                (click)="setActiveTab(tab.key)"
+              >
+                <div class="flex items-center space-x-2">
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      [attr.d]="tab.icon"
+                    ></path>
+                  </svg>
+                  <span>{{ tab.label }}</span>
+                </div>
+              </button>
+            </nav>
+          </div>
+        </div>
+        <!-- Personal Information Tab Content -->
+        <div *ngIf="activeTab === 'personal'" class="p-6 sm:p-8">
           <div
-            class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 space-y-2 sm:space-y-0"
+            class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 space-y-4 sm:space-y-0"
           >
-            <h3 class="text-lg font-semibold text-gray-900">
-              Personal Information
-            </h3>
+            <div class="flex items-center space-x-3">
+              <div
+                class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"
+              >
+                <svg
+                  class="w-5 h-5 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900">Personal Details</h3>
+            </div>
             <button
-              class="px-3 py-1 bg-orange-500 text-white text-sm rounded-md hover:bg-orange-600 transition-colors"
+              class="px-6 py-3 bg-green-600 text-white text-sm font-normal rounded-lg hover:bg-green-700 transition-all duration-300 shadow-sm hover:shadow-md"
               (click)="editToggle()"
             >
-              {{ isEditMode ? "Cancel" : "Edit" }}
+              <div class="flex items-center space-x-2">
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  ></path>
+                </svg>
+                <span>{{ isEditMode ? "Cancel" : "Edit Profile" }}</span>
+              </div>
             </button>
           </div>
 
-          <!-- ================================= -->
+          <!-- Edit Form -->
+          @if(isEditMode){
+
           <form
-            *ngIf="isEditMode"
             [formGroup]="profileForm"
             (ngSubmit)="saveProfile()"
+            class="space-y-6"
           >
-            <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
-              <div>
-                <label class="text-sm font-medium text-gray-900"
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700"
                   >Full Name</label
                 >
                 <input
                   formControlName="fullName"
-                  class="border p-2 rounded w-full text-gray-900"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 placeholder-gray-500"
+                  placeholder="Enter your full name"
                 />
               </div>
-              <div>
-                <label class="text-sm font-medium text-gray-900"
+
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700"
                   >Username</label
                 >
                 <input
                   formControlName="username"
-                  class="border p-2 rounded w-full text-gray-900"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 placeholder-gray-500"
+                  placeholder="Enter your username"
                 />
               </div>
-              <div>
-                <label class="text-sm font-medium text-gray-900"
+
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700"
+                  >Email Address</label
+                >
+                <input
+                  type="email"
+                  formControlName="email"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 placeholder-gray-500"
+                  placeholder="Enter your email"
+                />
+                @if(profileForm.get('email')?.dirty &&
+                profileForm.get('email')?.invalid){ }
+                <div class="text-red-500 text-sm mt-1">
+                  {{ getError("email") }}
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700"
+                  >Phone Number</label
+                >
+                <input
+                  formControlName="phone"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 placeholder-gray-500"
+                  placeholder="Enter your phone number"
+                />
+                @if(profileForm.get('phone')?.dirty &&
+                profileForm.get('phone')?.invalid){
+
+                <div class="text-red-500 text-sm mt-1">
+                  {{ getError("phone") }}
+                </div>
+                }
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700"
                   >Date of Birth</label
                 >
                 <input
                   type="date"
                   formControlName="dob"
-                  class="border p-2 rounded w-full text-gray-900"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 placeholder-gray-500"
                 />
               </div>
 
-              <div>
-                <label class="text-sm font-medium text-gray-900">Gender</label>
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700"
+                  >Gender</label
+                >
                 <select
                   formControlName="gender"
-                  class="border p-2 rounded w-full text-gray-900"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 placeholder-gray-500"
                 >
+                  <option value="">Select Gender</option>
                   <option value="Male">Male</option>
                   <option value="Female">Female</option>
                 </select>
               </div>
-              <div>
-                <label class="text-sm font-medium text-gray-900">Email</label>
-                <input
-                  type="email"
-                  formControlName="email"
-                  class="border p-2 rounded w-full text-gray-900"
-                />
-                <div
-                  class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
-                  *ngIf="
-                    profileForm.get('email')?.dirty &&
-                    profileForm.get('email')?.invalid
-                  "
-                >
-                  {{ getError("email") }}
-                </div>
-              </div>
-              <div>
-                <label class="text-sm font-medium text-gray-900">Phone</label>
-                <input
-                  formControlName="phone"
-                  class="border p-2 rounded w-full text-gray-900"
-                />
-                <div
-                  class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
-                  *ngIf="
-                    profileForm.get('phone')?.dirty &&
-                    profileForm.get('phone')?.invalid
-                  "
-                >
-                  {{ getError("phone") }}
-                </div>
-              </div>
 
-              <div>
-                <label class="text-sm font-medium text-gray-900"
-                  >User Role</label
+              <div class="space-y-2 md:col-span-2">
+                <label class="block text-sm font-semibold text-gray-700"
+                  >Role</label
                 >
                 <input
                   formControlName="role"
-                  class="border p-2 rounded w-full text-gray-900"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 placeholder-gray-500"
+                  placeholder="Enter your role"
                 />
               </div>
             </div>
-            <button
-              type="submit"
-              class="mt-4 px-4 py-2 bg-green-600 text-white rounded-md"
+
+            <div
+              class="flex justify-end space-x-4 pt-6 border-t border-gray-200"
             >
-              Save
-            </button>
+              <button
+                type="button"
+                class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-300"
+                (click)="editToggle()"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                class="px-8 py-3 bg-green-600 text-white font-normal rounded-lg hover:bg-green-700 transition-all duration-300 shadow-sm hover:shadow-md"
+              >
+                Save Changes
+              </button>
+            </div>
           </form>
-          <!-- ================================= -->
-          <div
-            class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6"
-            *ngIf="!isEditMode && profileData"
-          >
-            <!-- Full Name -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm font-medium text-gray-700"
+          }
+
+          <!-- Display Mode -->
+          @if(!isEditMode && profileData){
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div
+              class="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors duration-300"
+            >
+              <label
+                class="block text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide"
                 >Full Name</label
               >
-              <div class="text-sm sm:text-base text-gray-900 break-words">
-                {{ profileData.fullName || "None" }}
+              <div class="text-md font-medium text-gray-900">
+                {{ profileData.fullName || "Not provided" }}
               </div>
             </div>
 
-            <!-- Date of Birth -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm font-medium text-gray-700"
+            <div
+              class="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors duration-300"
+            >
+              <label
+                class="block text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide"
+                >Email</label
+              >
+              <div class="text-md font-medium text-gray-900 break-all">
+                {{ profileData.email || "Not provided" }}
+              </div>
+            </div>
+
+            <div
+              class="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors duration-300"
+            >
+              <label
+                class="block text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide"
+                >Phone</label
+              >
+              <div class="text-md font-medium text-gray-900">
+                {{ profileData.phone || "Not provided" }}
+              </div>
+            </div>
+
+            <div
+              class="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors duration-300"
+            >
+              <label
+                class="block text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide"
                 >Date of Birth</label
               >
-              <!-- <div class="text-sm sm:text-base text-gray-900">15-08-1990</div> -->
-              <div class="text-sm sm:text-base text-gray-900">
+              <div class="text-md font-medium text-gray-900">
                 {{
                   profileData.dob
-                    ? (profileData.dob | date : "dd/MM/yyyy")
-                    : "None"
+                    ? (profileData.dob | date : "MMM dd, yyyy")
+                    : "Not provided"
                 }}
               </div>
             </div>
 
-            <!-- Gender -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm font-medium text-gray-700"
+            <div
+              class="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors duration-300"
+            >
+              <label
+                class="block text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide"
                 >Gender</label
               >
-              <!-- <div class="text-sm sm:text-base text-gray-900">Male</div> -->
-              <div class="text-sm sm:text-base text-gray-900">
-                {{ profileData.gender || "None" }}
+              <div class="text-md font-medium text-gray-900">
+                {{ profileData.gender || "Not provided" }}
               </div>
             </div>
 
-            <!-- Phone Number -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm font-medium text-gray-700"
-                >Phone Number</label
+            <div
+              class="bg-gray-50 rounded-lg p-6 hover:bg-gray-100 transition-colors duration-300"
+            >
+              <label
+                class="block text-sm font-medium text-gray-500 mb-2 uppercase tracking-wide"
+                >Role</label
               >
-              <!-- <div class="text-sm sm:text-base text-gray-900">
-                (+1) 555-123-4567
-              </div> -->
-              <div class="text-sm sm:text-base text-gray-900">
-                {{ profileData.phone || "None" }}
-              </div>
-            </div>
-
-            <!-- User Role -->
-            <div class="space-y-1">
-              <label class="block text-xs sm:text-sm font-medium text-gray-700"
-                >User Role</label
-              >
-              <!-- <div class="text-sm sm:text-base text-gray-900">
-                Premium Member
-              </div> -->
-              <div class="text-sm sm:text-base text-gray-900">
-                {{ profileData.role || "None" }}
+              <div class="text-md font-medium text-gray-900">
+                {{ profileData.role || "Not provided" }}
               </div>
             </div>
           </div>
+          }
         </div>
+        <!-- Security Tab Content -->
+        @if(activeTab=='security'){
+
+        <div class="p-6 sm:p-8">
+          <div class="max-w-2xl">
+            <div class="flex items-center space-x-3 mb-8">
+              <div
+                class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center"
+              >
+                <svg
+                  class="w-5 h-5 text-green-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                  ></path>
+                </svg>
+              </div>
+              <h3 class="text-lg font-bold text-gray-900">Change Password</h3>
+            </div>
+
+            <div
+              class="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-8"
+            >
+              <div class="flex items-start space-x-3">
+                <svg
+                  class="w-5 h-5 text-amber-600 mt-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.732-.833-2.5 0L4.314 16.5c-.77.833.192 2.5 1.732 2.5z"
+                  ></path>
+                </svg>
+                <div>
+                  <h4 class="text-sm font-semibold text-amber-800">
+                    Password Security
+                  </h4>
+                  <p class="text-sm text-amber-700 mt-1">
+                    Make sure your password is strong and unique to keep your
+                    fitness account secure.
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <form
+              [formGroup]="passwordForm"
+              (ngSubmit)="onPasswordSubmit()"
+              class="space-y-6"
+            >
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700"
+                  >Current Password</label
+                >
+                <div class="relative">
+                  <input
+                    [type]="showCurrentPassword ? 'text' : 'password'"
+                    formControlName="currentPassword"
+                    class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 placeholder-gray-500"
+                    placeholder="Enter your current password"
+                  />
+                  <button
+                    type="button"
+                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+                    (click)="showCurrentPassword = !showCurrentPassword"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      ></path>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700"
+                  >New Password</label
+                >
+                <div class="relative">
+                  <input
+                    [type]="showNewPassword ? 'text' : 'password'"
+                    formControlName="newPassword"
+                    class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 placeholder-gray-500"
+                    placeholder="Enter your new password"
+                  />
+                  <button
+                    type="button"
+                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+                    (click)="showNewPassword = !showNewPassword"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      ></path>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      ></path>
+                    </svg>
+                  </button>
+                  @if(f['newPassword'].touched && f['newPassword'].invalid){
+
+                  <div
+                    class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
+                  >
+                    @if (f['newPassword'].errors?.['required']) {
+                    <span>Password is required</span>
+                    } @if (f['newPassword'].errors?.['passwordStrength']) { @if
+                    (!f['newPassword'].errors?.['passwordStrength'].hasUpperCase)
+                    {
+                    <span>Must contain an uppercase letter<br /></span>
+                    } @if
+                    (!f['newPassword'].errors?.['passwordStrength'].hasLowerCase)
+                    {
+                    <span>Must contain a lowercase letter<br /></span>
+                    } @if
+                    (!f['newPassword'].errors?.['passwordStrength'].hasNumber) {
+                    <span>Must contain a number<br /></span>
+                    } @if
+                    (!f['newPassword'].errors?.['passwordStrength'].hasSpecialChar)
+                    {
+                    <span>Must contain a special character<br /></span>
+                    } @if
+                    (!f['newPassword'].errors?.['passwordStrength'].isLongEnough)
+                    {
+                    <span>Minimum length must be 8<br /></span>
+                    } }
+                  </div>
+
+                  }
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <label class="block text-sm font-semibold text-gray-700"
+                  >Confirm New Password</label
+                >
+                <div class="relative">
+                  <input
+                    [type]="showConfirmPassword ? 'text' : 'password'"
+                    formControlName="confirmPassword"
+                    class="w-full px-4 py-3 pr-12 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all duration-300 placeholder-gray-500"
+                    placeholder="Confirm your new password"
+                  />
+                  <button
+                    type="button"
+                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600"
+                    (click)="showConfirmPassword = !showConfirmPassword"
+                  >
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      ></path>
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      ></path>
+                    </svg>
+                  </button>
+                </div>
+
+                @if(passwordForm.get('newPassword')?.value!=passwordForm.get('confirmPassword')?.value){
+                <div class="text-red-500 text-sm mt-1">
+                  Passwords do not match
+                </div>
+                }
+              </div>
+
+              <div
+                class="flex justify-end space-x-4 pt-6 border-t border-gray-200"
+              >
+                <button
+                  type="button"
+                  class="px-6 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-all duration-300"
+                  (click)="resetPasswordForm()"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  [disabled]="passwordForm.invalid"
+                  class="px-8 py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition-all duration-300 shadow-sm hover:shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  Update Password
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+        }
+        <!-- Document upload card -->
+        @if(activeTab=='upload'){
+
         <div class="bg-white rounded-lg shadow-sm p-4 sm:p-6 mb-4 sm:mb-6">
           <div
             class="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 space-y-2 sm:space-y-0"
           >
             <h3 class="text-lg font-semibold text-gray-900">Document Upload</h3>
-            @if(uploadedFile){
-            <button
-              class="px-3 py-1 bg-red-500 text-white text-sm rounded-md hover:bg-red-600 transition-colors"
-              (click)="clearFile()"
-            >
-              Clear All
-            </button>
-            }
           </div>
 
           <!-- Upload Area -->
@@ -409,7 +733,6 @@
               <h4 class="text-sm font-medium text-gray-700">Uploaded File</h4>
 
               <div class="grid gap-3">
-                <!-- File Item 1 -->
                 <div
                   class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border"
                 >
@@ -444,6 +767,8 @@
 
                   <!-- File Actions -->
                   <div class="flex items-center space-x-2 ml-3">
+                    @if(!isDeleting){
+
                     <!-- Preview Button -->
                     <button
                       (click)="previewFile()"
@@ -471,29 +796,9 @@
                       </svg>
                     </button>
 
-                    <!-- Download Button -->
-                    <button
-                      class="p-1 text-gray-400 hover:text-green-600 transition-colors"
-                      title="Download"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        ></path>
-                      </svg>
-                    </button>
-
                     <!-- Replace Button -->
                     <button
-                      (click)="replaceFile()"
+                      (click)="deleteFile()"
                       class="p-1 text-gray-400 hover:text-blue-600 transition-colors"
                       title="Replace CV"
                     >
@@ -507,10 +812,38 @@
                           stroke-linecap="round"
                           stroke-linejoin="round"
                           stroke-width="2"
-                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                          d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
                         ></path>
                       </svg>
                     </button>
+                    }
+                    <!-- loading for deleting -->
+                    @if(isDeleting){
+
+                    <div class="flex items-center space-x-2 text-red-500">
+                      <svg
+                        class="w-4 h-4 animate-spin"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                      >
+                        <circle
+                          class="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          stroke-width="2"
+                        ></circle>
+                        <path
+                          class="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+                        ></path>
+                      </svg>
+                      <p class="text-sm font-medium">Deleting...</p>
+                    </div>
+                    }
                   </div>
                 </div>
               </div>
@@ -616,6 +949,7 @@
             }
           </div>
         </div>
+        }
         <!-- ======================= -->
       </div>
     </div>

@@ -22,5 +22,8 @@ router.get("/profile/image", authMiddleware, (req, res) =>
 router.delete("/profile/:key", authMiddleware, (req, res) =>
   fileController.deleteFile(req, res)
 );
+router.delete("/resume/:key", authMiddleware, (req, res) =>
+  fileController.deleteFile(req, res)
+);
 
 export default router;

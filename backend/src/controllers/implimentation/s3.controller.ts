@@ -6,6 +6,7 @@ import { IFileService } from "../../services/interface/s3.service.interface";
 import { TYPES } from "../../types/inversify.types";
 import { IProfileService } from "../../services/interface/profile.service.interface";
 import { HttpStatus } from "../../const/statuscode.const";
+import { HttpResponse } from "../../const/response_message.const";
 
 @injectable()
 export class FileController implements IFileController {
@@ -50,7 +51,6 @@ export class FileController implements IFileController {
   async getFile(req: Request, res: Response): Promise<void> {
     try {
       const userId = req.query.id || (req as any).user.id;
-      console.log("user id ", userId, req.query.id);
       const { key } = req.query;
       const type = key?.toString().split("/")[1];
       const signedUrl = await this.fileService.getSignedUrl(userId, type!);
@@ -66,12 +66,21 @@ export class FileController implements IFileController {
   async deleteFile(req: Request, res: Response): Promise<void> {
     try {
       const { key } = req.params;
+      const userId = await (req as any).user.id;
+      const type = key?.toString().split("/")[1];
       await this.fileService.delete(key);
-      await this.profileService.removeProfileImage(req.body.id); // check id is valid or not
-      res.status(200).json({ message: "Deleted successfully" });
+      if (type == "profile") {
+        await this.profileService.removeProfileImage(userId);
+      } else if (type == "resumes") {
+        await this.profileService.removeResumePdf(userId);
+      }
+
+      res.status(HttpStatus.OK).json({ message: "Deleted successfully" });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Failed to delete file" });
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: "Failed to delete file" });
     }
   }
 }
