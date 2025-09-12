@@ -11,6 +11,8 @@ import { optionalPhoneValidator } from '../../../../shared/validators/phone.vali
 import { CustomValidators } from '../../../../shared/validators/custom.validator';
 import { getErrorMessages } from '../../../../shared/utils.ts/form-error.util';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
+import { ToastService } from '../../../../core/services/toast.service';
+import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
 
 interface UploadFile {
   name?: string;
@@ -30,7 +32,12 @@ interface ProfileUser {
   phone: string;
   role: string;
 }
-
+type TabKey = 'personal' | 'security' | 'upload';
+interface Tab {
+  key: TabKey;
+  label: string;
+  icon: string;
+}
 @Component({
   selector: 'app-trainer-profile',
   imports: [CommonModule, ReactiveFormsModule],
@@ -42,6 +49,7 @@ export class TrainerProfileComponent implements OnInit {
   defaultImage = 'landing_page/user.png';
   isUploading = false;
   profileService = inject(ProfileService);
+  toastService = inject(ToastService);
   isEditMode = false;
 
   // ========= CV UPLOAD ========
@@ -53,6 +61,8 @@ export class TrainerProfileComponent implements OnInit {
   uploadProgress = 0;
   selectedFileName = '';
   maxFileSize = 5 * 1024 * 1024;
+  resumeKey!: string;
+  isDeleting = false;
   // ========= *CV UPLOAD ========
 
   // ==============
@@ -98,6 +108,7 @@ export class TrainerProfileComponent implements OnInit {
 
   ngOnInit() {
     this.loadProfile();
+    this.initializePasswordForm();
   }
   loadProfile() {
     this.profileService.getProfile().subscribe((res) => {
@@ -110,6 +121,7 @@ export class TrainerProfileComponent implements OnInit {
         });
       }
       if (res.resume) {
+        this.resumeKey = res.resume;
         this.profileService.getFile(res.resume).subscribe(async (fileRes) => {
           let fileDetails = JSON.parse(fileRes.url);
           const response = await fetch(fileDetails.url);
@@ -144,14 +156,16 @@ export class TrainerProfileComponent implements OnInit {
   saveProfile() {
     if (this.profileForm.valid) {
       console.log('profile data:', this.profileForm.value);
-      this.profileService
-        .updateProfile(this.profileForm.value)
-        .subscribe((res) => {
+      this.profileService.updateProfile(this.profileForm.value).subscribe({
+        next: (res) => {
           console.log('response from the backend :', res);
           this.profileData = res;
-          console.log('Profile data :', this.profileData);
           this.isEditMode = false;
-        });
+        },
+        error: (err) => {
+          console.log('Failed to saved profile ', err);
+        },
+      });
     } else {
       this.profileForm.markAllAsTouched();
     }
@@ -161,17 +175,6 @@ export class TrainerProfileComponent implements OnInit {
   }
 
   // ============= CV UPLOAD ====================
-
-  clearFile(): void {
-    console.log('Clear button clicked..');
-    // Optional: Call API to delete file from server
-    if (this.uploadedFile?.id) {
-      // this.deleteFileFromServer(this.uploadedFile.id);
-    }
-
-    this.uploadedFile = null;
-    this.errorMessage = '';
-  }
 
   // Drag and drop event handlers
   onDragOver(event: DragEvent): void {
@@ -215,13 +218,6 @@ export class TrainerProfileComponent implements OnInit {
       this.errorMessage = 'File size exceeds 5MB limit';
       return false;
     }
-
-    // Check file name (optional - you can add CV-specific validation)
-    // const fileName = file.name.toLowerCase();
-    // if (!fileName.includes('cv') && !fileName.includes('resume')) {
-    //   // Optional warning - you can remove this if not needed
-    //   console.warn('File name doesn\'t contain "cv" or "resume"');
-    // }
 
     return true;
   }
@@ -291,7 +287,6 @@ export class TrainerProfileComponent implements OnInit {
     if (file) {
       this.processFile(file);
     }
-    // Reset input value
     event.target.value = '';
   }
 
@@ -303,13 +298,6 @@ export class TrainerProfileComponent implements OnInit {
     const i = Math.floor(Math.log(bytes) / Math.log(k));
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-  }
-
-  replaceFile(): void {
-    const fileInput = document.querySelector(
-      'input[type="file"]'
-    ) as HTMLInputElement;
-    fileInput?.click();
   }
 
   formatUploadTime(date: Date): string {
@@ -337,5 +325,97 @@ export class TrainerProfileComponent implements OnInit {
       }
     }
   }
+
+  resetUploadedFile() {
+    this.uploadedFile = null;
+  }
+
+  deleteFile() {
+    if (this.uploadedFile) {
+      this.isDeleting = true;
+      console.log('Uploaded file is : ', this.uploadedFile);
+      this.profileService.deleteS3File(this.resumeKey, 'resume').subscribe({
+        next: (res) => {
+          console.log('resume is deleted :', res);
+          this.toastService.success('Resume deleted Successfully');
+          this.resumeKey = '';
+          this.resetUploadedFile();
+          this.isDeleting = false;
+        },
+        error: (err) => {
+          console.log('Failed to delete resume :', err);
+          this.toastService.error('Failed to delete resume');
+          this.isDeleting = false;
+        },
+      });
+    }
+  }
   // ============= *CV UPLOAD ====================
+
+  activeTab: TabKey = 'personal';
+  passwordForm!: FormGroup;
+  showCurrentPassword = false;
+  showNewPassword = false;
+  showConfirmPassword = false;
+  mobileMenuOpen = false;
+
+  tabs: Tab[] = [
+    {
+      key: 'personal',
+      label: 'Personal Information',
+      icon: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+    },
+    {
+      key: 'security',
+      label: 'Security',
+      icon: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',
+    },
+    {
+      key: 'upload',
+      label: 'Upload Document',
+      icon: 'M3 16.5v2.25A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75V16.5m-13.5-9L12 3m0 0 4.5 4.5M12 3v13.5',
+    },
+  ];
+
+  onPasswordSubmit(): void {
+    if (this.passwordForm.valid) {
+      let passwords = {
+        currentPassword: this.passwordForm.get('currentPassword')?.value,
+        newPassword: this.passwordForm.get('newPassword')?.value,
+      };
+      console.log('submitted data :', passwords);
+      this.profileService.changePassword(passwords).subscribe({
+        next: (res) => {
+          console.log(res);
+          this.toastService.success('Password changed successfully');
+          this.resetPasswordForm();
+          this.activeTab = 'personal';
+        },
+        error: (err) => {
+          console.log(err);
+          this.toastService.error('Failed to change password');
+        },
+      });
+    }
+  }
+  initializePasswordForm() {
+    this.passwordForm = this.fb.group({
+      currentPassword: ['', [Validators.required]],
+      newPassword: ['', [Validators.required, passwordStrengthValidator]],
+      confirmPassword: ['', [Validators.required]],
+    });
+  }
+
+  resetPasswordForm(): void {
+    this.passwordForm.reset();
+    this.showCurrentPassword = false;
+    this.showNewPassword = false;
+    this.showConfirmPassword = false;
+  }
+  setActiveTab(tabKey: TabKey) {
+    this.activeTab = tabKey;
+  }
+  get f() {
+    return this.passwordForm.controls;
+  }
 }

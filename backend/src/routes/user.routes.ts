@@ -33,4 +33,6 @@ userRouter.post(
   profileController.changePassword.bind(profileController)
 );
 
+// userRouter.delete("/resume",authMiddleware,profileController.)
+
 export default userRouter;

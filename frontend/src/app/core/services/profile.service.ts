@@ -56,6 +56,12 @@ export class ProfileService {
       data
     );
   }
+
+  deleteS3File(key: string, type: string) {
+    return this.http.delete<{ message: string }>(
+      `${this.apiUrl}/file/${type}/${encodeURIComponent(key)}`
+    );
+  }
   // Admin side Profie
   verifyResume(id: string) {
     return this.http.put<{ isVerified: boolean }>(

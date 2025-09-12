@@ -41,7 +41,10 @@ export class ProfileService implements IProfileService {
     return this.userRepository.update(id, { resume: key });
   }
   async removeResumePdf(id: string) {
-    return this.userRepository.update(id, { resume: "" });
+    return this.userRepository.update(id, {
+      resumeVerified: false,
+      resume: "",
+    });
   }
   async verifyResume(id: string): Promise<boolean> {
     let user = await this.userRepository.findById(id);
