@@ -17,7 +17,7 @@ export class AuthController implements IAuthController {
 
   constructor(@inject(TYPES.AuthService) private authService: AuthService) {}
 
-  public async signup(req: Request, res: Response): Promise<void> {
+  async signup(req: Request, res: Response): Promise<void> {
     try {
       const { username, email, password, dob, gender, role } = req.body;
       const user = await this.authService.signup({
@@ -46,7 +46,7 @@ export class AuthController implements IAuthController {
       res.status(status).json({ error: message });
     }
   }
-  public async sendOtp(req: Request, res: Response): Promise<void> {
+  async sendOtp(req: Request, res: Response): Promise<void> {
     await this.authService.sendOtp(req, res);
   }
 
@@ -180,6 +180,7 @@ export class AuthController implements IAuthController {
 
   async refreshAccessToken(req: Request, res: Response) {
     const { refreshToken } = req.cookies;
-    return this.authService.handleRefreshToken(refreshToken, res);
+    await this.authService.handleRefreshToken(refreshToken, res);
+    return;
   }
 }
