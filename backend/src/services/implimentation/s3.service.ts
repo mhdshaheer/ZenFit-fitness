@@ -3,7 +3,6 @@ import { S3Repository } from "../../repositories/implimentation/s3.repository";
 import { IS3Repository } from "../../repositories/interface/s3.repository.interface";
 import { IFileService } from "../interface/s3.service.interface";
 import { UserRepository } from "../../repositories/implimentation/user.repository";
-import { env } from "../../config/env.config";
 import { v4 as uuid } from "uuid";
 
 @injectable()

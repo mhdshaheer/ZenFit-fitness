@@ -3,12 +3,10 @@ import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IUser } from "../../interfaces/user.interface";
 import { TempUserRepository } from "../../repositories/implimentation/tempUser.repository";
-import { googleClient } from "../../utils/google-client";
 import { comparePassword, hashedPassword } from "../../utils/hash.util";
 import {
   generateAccessToken,
   generateRefreshToken,
-  generateToken,
   verifyRefreshToken,
 } from "../../utils/jwt.util";
 import logger from "../../utils/logger";
@@ -280,7 +278,7 @@ export class AuthService implements IAuthService {
     return;
   }
 
-  async handleGoogleLogin(profile: any) {
+  async handleGoogleLogin(profile: any): Promise<IUser> {
     let user = await this.userRepository.findByGoogleId(profile.id);
     if (!user) {
       user = await this.userRepository.createGoogleUser({
