@@ -1,6 +1,7 @@
-import { ITempUser, TempUserModel } from "../../models/otp.model";
+import { ITempUser, TempUserModel } from "../../models/tempUser.model";
+import { ITempUserRepository } from "../interface/tempUser.repository.interface";
 
-export class TempUserRepository {
+export class TempUserRepository implements ITempUserRepository {
   async saveTempUser(
     email: string,
     otp: string,
@@ -21,15 +22,19 @@ export class TempUserRepository {
     await TempUserModel.deleteOne({ email });
   }
 
-  async updateOtp(email: string, newOtp: string) {
-    return await TempUserModel.updateOne(
+  async updateOtp(
+    email: string,
+    newOtp: string
+  ): Promise<Partial<ITempUser> | null> {
+    return await TempUserModel.findOneAndUpdate(
       { email },
       {
         $set: {
           otp: newOtp,
-          createdAt: Date.now(),
+          createdAt: new Date(),
         },
-      }
-    );
+      },
+      { new: true }
+    ).lean();
   }
 }
