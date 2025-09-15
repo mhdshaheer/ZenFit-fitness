@@ -1,9 +1,10 @@
 import { IUser } from "../../interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { UserDto } from "../../dtos/user.dtos";
 import { mapToUserDto } from "../../mapper/user.mapper";
-import { UserRepository } from "../../repositories/implimentation/user.repository";
+import { IUserRepository } from "../../repositories/interface/user.repository.interface";
+import { TYPES } from "../../types/inversify.types";
 
 interface GetUsersParams {
   page: number;
@@ -14,7 +15,8 @@ interface GetUsersParams {
 }
 @injectable()
 export class AdminService {
-  private userRepository = new UserRepository();
+  @inject(TYPES.UserRepository)
+  private userRepository!: IUserRepository;
 
   async updateUserStatus(
     id: string,

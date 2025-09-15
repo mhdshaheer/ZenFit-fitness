@@ -1,14 +1,19 @@
+import { inject } from "inversify";
 import { ProgramDto, ProgramSlotDto } from "../../dtos/program.dtos";
 import {
   mapToProgramDto,
   mapToProgramSlotDto,
 } from "../../mapper/program.mapper";
 import { IProgram } from "../../models/program.model";
-import { ProgramRepositoy } from "../../repositories/implimentation/program.repository";
+import { IProgramRepository } from "../../repositories/interface/program.repository.interface";
 import { IProgramService } from "../interface/program.service.interface";
+import { TYPES } from "../../types/inversify.types";
 
 export class ProgramService implements IProgramService {
-  programRepository = new ProgramRepositoy();
+  constructor(
+    @inject(TYPES.ProgramRespository)
+    private programRepository: IProgramRepository
+  ) {}
   async saveProgramDraft(data: IProgram): Promise<IProgram | null> {
     let condition = {
       trainerId: data.trainerId,

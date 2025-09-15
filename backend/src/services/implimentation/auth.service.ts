@@ -14,11 +14,17 @@ import { sendOtpMail } from "../../utils/mail.util";
 import { generateOtp } from "../../utils/otp";
 import { IAuthService } from "../interface/auth.service.interface";
 import { Request, Response } from "express";
-import { UserRepository } from "../../repositories/implimentation/user.repository";
+import { ITempUserRepository } from "../../repositories/interface/tempUser.repository.interface";
+import { TYPES } from "../../types/inversify.types";
+import { IUserRepository } from "../../repositories/interface/user.repository.interface";
 @injectable()
 export class AuthService implements IAuthService {
-  private tempRepository = new TempUserRepository();
-  private userRepository = new UserRepository();
+  // DI injection
+  @inject(TYPES.UserRepository)
+  private userRepository!: IUserRepository;
+  @inject(TYPES.TempUserRepository)
+  private tempRepository!: ITempUserRepository;
+  // ======================================
 
   async signup(userData: IUser): Promise<IUser> {
     const { username, email, password, dob, role } = userData;
