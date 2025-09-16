@@ -1,8 +1,8 @@
 import { inject, injectable } from "inversify";
 import { ISession } from "../../models/session.model";
 import { ISessionService } from "../interface/session.service.interface";
-import { TYPES } from "../../types/inversify.types";
 import { ISessionRepository } from "../../repositories/interface/session.repository.interface";
+import { TYPES } from "../../shared/types/inversify.types";
 
 @injectable()
 export class SessionService implements ISessionService {

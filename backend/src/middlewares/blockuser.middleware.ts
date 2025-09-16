@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import { AuthRepository } from "../repositories/implimentation/auth.repository"; // adjust path
+import { UserRepository } from "../repositories/implimentation/user.repository";
 
 export const blockUserMiddleware = async (
   req: Request,
@@ -14,7 +14,7 @@ export const blockUserMiddleware = async (
       return;
     }
 
-    const authRepo = new AuthRepository();
+    const authRepo = new UserRepository();
     const foundUser = await authRepo.findById(user.id);
 
     if (!foundUser) {

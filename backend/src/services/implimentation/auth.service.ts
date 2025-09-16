@@ -2,21 +2,20 @@ import { inject, injectable } from "inversify";
 import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IUser } from "../../interfaces/user.interface";
-import { TempUserRepository } from "../../repositories/implimentation/tempUser.repository";
-import { comparePassword, hashedPassword } from "../../utils/hash.util";
+import { comparePassword, hashedPassword } from "../../shared/utils/hash.util";
+import logger from "../../shared/services/logger";
+import { generateOtp } from "../../shared/utils/otp.util";
+import { IAuthService } from "../interface/auth.service.interface";
+import { Request, Response } from "express";
+import { ITempUserRepository } from "../../repositories/interface/tempUser.repository.interface";
+import { IUserRepository } from "../../repositories/interface/user.repository.interface";
+import { TYPES } from "../../shared/types/inversify.types";
 import {
   generateAccessToken,
   generateRefreshToken,
   verifyRefreshToken,
-} from "../../utils/jwt.util";
-import logger from "../../utils/logger";
-import { sendOtpMail } from "../../utils/mail.util";
-import { generateOtp } from "../../utils/otp";
-import { IAuthService } from "../interface/auth.service.interface";
-import { Request, Response } from "express";
-import { ITempUserRepository } from "../../repositories/interface/tempUser.repository.interface";
-import { TYPES } from "../../types/inversify.types";
-import { IUserRepository } from "../../repositories/interface/user.repository.interface";
+} from "../../shared/utils/jwt.util";
+import { sendOtpMail } from "../../shared/services/mail.util";
 @injectable()
 export class AuthService implements IAuthService {
   // DI injection
@@ -341,6 +340,7 @@ export class AuthService implements IAuthService {
       res.json({ message: HttpResponse.ACCESS_TOKEN_REFRESHED });
       return;
     } catch (error) {
+      console.log("Error :", error);
       res
         .status(HttpStatus.FORBIDDEN)
         .json({ message: HttpResponse.REFRESH_TOKEN_INVALID });

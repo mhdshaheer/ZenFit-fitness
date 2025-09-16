@@ -4,7 +4,7 @@ import { inject, injectable } from "inversify";
 import { UserDto } from "../../dtos/user.dtos";
 import { mapToUserDto } from "../../mapper/user.mapper";
 import { IUserRepository } from "../../repositories/interface/user.repository.interface";
-import { TYPES } from "../../types/inversify.types";
+import { TYPES } from "../../shared/types/inversify.types";
 
 interface GetUsersParams {
   page: number;

@@ -1,7 +1,7 @@
 import { Router } from "express";
 import { AdminController } from "../controllers/implimentation/admin.controller";
 import { container } from "../inversify.config";
-import { TYPES } from "../types/inversify.types";
+import { TYPES } from "../shared/types/inversify.types";
 
 const adminRouter = Router();
 const controller = container.get<AdminController>(TYPES.AdminController);

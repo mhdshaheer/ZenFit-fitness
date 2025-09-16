@@ -1,12 +1,10 @@
 import { Request, Response } from "express";
-import { FileService } from "../../services/implimentation/s3.service";
 import { IFileController } from "../interface/s3.controller.interface";
 import { inject, injectable } from "inversify";
 import { IFileService } from "../../services/interface/s3.service.interface";
-import { TYPES } from "../../types/inversify.types";
 import { IProfileService } from "../../services/interface/profile.service.interface";
 import { HttpStatus } from "../../const/statuscode.const";
-import { HttpResponse } from "../../const/response_message.const";
+import { TYPES } from "../../shared/types/inversify.types";
 
 @injectable()
 export class FileController implements IFileController {
@@ -55,11 +53,13 @@ export class FileController implements IFileController {
       const type = key?.toString().split("/")[1];
       const signedUrl = await this.fileService.getSignedUrl(userId, type!);
       res.status(HttpStatus.OK).json({ url: signedUrl });
-    } catch (error: any) {
-      console.error(error);
-      res
-        .status(HttpStatus.NOT_FOUND)
-        .json({ message: error.message || "Failed to fetch file" });
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error(error);
+        res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: error.message || "Failed to fetch file" });
+      }
     }
   }
 

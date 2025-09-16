@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { HttpStatus } from "../const/statuscode.const";
 import { HttpResponse } from "../const/response_message.const";
 import { env } from "../config/env.config";
-import logger from "../utils/logger";
+import logger from "../shared/services/logger";
 import { UserRepository } from "../repositories/implimentation/user.repository";
 
 const authMiddleware = async (

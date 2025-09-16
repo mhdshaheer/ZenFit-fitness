@@ -3,7 +3,7 @@ import { IProgramController } from "../interface/program.controller.interface";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IProgramService } from "../../services/interface/program.service.interface";
 import { inject } from "inversify";
-import { TYPES } from "../../types/inversify.types";
+import { TYPES } from "../../shared/types/inversify.types";
 
 export class ProgramController implements IProgramController {
   constructor(
@@ -38,13 +38,15 @@ export class ProgramController implements IProgramController {
         message: "Program draft is saved successfully",
       });
       return;
-    } catch (error: any) {
-      console.error("Error saving program draft:", error);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error saving program draft:", error);
 
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: "An error occurred while saving the program draft",
-        error: error.message || "Unexpected error",
-      });
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: "An error occurred while saving the program draft",
+          error: error.message || "Unexpected error",
+        });
+      }
     }
   }
 
@@ -76,13 +78,15 @@ export class ProgramController implements IProgramController {
         message: "Training Program is saved successfully",
       });
       return;
-    } catch (error: any) {
-      console.error("Error saving Training program:", error);
+    } catch (error) {
+      if (error instanceof Error) {
+        console.error("Error saving Training program:", error);
 
-      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: "An error occurred while saving the Training program",
-        error: error.message || "Unexpected error",
-      });
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: "An error occurred while saving the Training program",
+          error: error.message || "Unexpected error",
+        });
+      }
     }
   }
 

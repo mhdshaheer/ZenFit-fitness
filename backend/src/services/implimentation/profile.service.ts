@@ -3,9 +3,9 @@ import { IPassword, IUser } from "../../interfaces/user.interface";
 import { IProfileService } from "../interface/profile.service.interface";
 import { mapToUserDto } from "../../mapper/user.mapper";
 import { UserDto } from "../../dtos/user.dtos";
-import { comparePassword, hashedPassword } from "../../utils/hash.util";
+import { comparePassword, hashedPassword } from "../../shared/utils/hash.util";
 import { IUserRepository } from "../../repositories/interface/user.repository.interface";
-import { TYPES } from "../../types/inversify.types";
+import { TYPES } from "../../shared/types/inversify.types";
 
 @injectable()
 export class ProfileService implements IProfileService {
@@ -13,18 +13,18 @@ export class ProfileService implements IProfileService {
     @inject(TYPES.UserRepository) private userRepository: IUserRepository
   ) {}
   async getProfile(userId: string): Promise<UserDto> {
-    let user = await this.userRepository.findById(userId);
+    const user = await this.userRepository.findById(userId);
     if (user) {
-      let profileDto = mapToUserDto(user);
+      const profileDto = mapToUserDto(user);
       return profileDto;
     } else {
       throw new Error("User not found");
     }
   }
   async updateProfile(userId: string, userData: IUser): Promise<UserDto> {
-    let updateProfile = await this.userRepository.updateById(userId, userData);
+    const updateProfile = await this.userRepository.updateById(userId, userData);
     if (updateProfile) {
-      let profileDto = mapToUserDto(updateProfile);
+      const profileDto = mapToUserDto(updateProfile);
       console.log("update profile on service: ", profileDto);
       return profileDto;
     } else {
@@ -50,9 +50,9 @@ export class ProfileService implements IProfileService {
     });
   }
   async verifyResume(id: string): Promise<boolean> {
-    let user = await this.userRepository.findById(id);
+    const user = await this.userRepository.findById(id);
 
-    let updated = await this.userRepository.updateById(id, {
+    const updated = await this.userRepository.updateById(id, {
       resumeVerified: !user?.resumeVerified,
     });
     return updated?.resumeVerified!;

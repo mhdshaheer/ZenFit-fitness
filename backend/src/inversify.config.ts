@@ -1,5 +1,4 @@
 import { Container } from "inversify";
-import { TYPES } from "./types/inversify.types";
 
 import { AdminController } from "./controllers/implimentation/admin.controller";
 import { AdminService } from "./services/implimentation/admin.service";
@@ -29,6 +28,7 @@ import { IProgramRepository } from "./repositories/interface/program.repository.
 import { ProgramRepositoy } from "./repositories/implimentation/program.repository";
 import { ISessionRepository } from "./repositories/interface/session.repository.interface";
 import { SessionRepository } from "./repositories/implimentation/session.repository";
+import { TYPES } from "./shared/types/inversify.types";
 
 const container = new Container();
 

@@ -1,11 +1,11 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/implimentation/auth.controller";
 import passport from "passport";
-import { blockUserMiddleware } from "../middlewares/blockuser.middleware";
-import { adminMiddleware } from "../middlewares/isAdmin.middleware";
+// import { blockUserMiddleware } from "../middlewares/blockuser.middleware";
+// import { adminMiddleware } from "../middlewares/isAdmin.middleware";
 import authMiddleware from "../middlewares/verifyToken.middleware";
 import { container } from "../inversify.config";
-import { TYPES } from "../types/inversify.types";
+import { TYPES } from "../shared/types/inversify.types";
 
 const authRouter = Router();
 // const controller = new AuthController();

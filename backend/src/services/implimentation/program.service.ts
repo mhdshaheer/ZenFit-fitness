@@ -7,7 +7,7 @@ import {
 import { IProgram } from "../../models/program.model";
 import { IProgramRepository } from "../../repositories/interface/program.repository.interface";
 import { IProgramService } from "../interface/program.service.interface";
-import { TYPES } from "../../types/inversify.types";
+import { TYPES } from "../../shared/types/inversify.types";
 
 export class ProgramService implements IProgramService {
   constructor(
@@ -15,7 +15,7 @@ export class ProgramService implements IProgramService {
     private programRepository: IProgramRepository
   ) {}
   async saveProgramDraft(data: IProgram): Promise<IProgram | null> {
-    let condition = {
+    const condition = {
       trainerId: data.trainerId,
       programId: data.programId,
     };

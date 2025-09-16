@@ -1,5 +1,5 @@
 import { env } from "./config/env.config";
-import logger from "./utils/logger";
+import logger from "./shared/services/logger";
 const port = env.port;
 import app from "./app";
 import { mongoDb_connect } from "./config/db.config";
