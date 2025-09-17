@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
 import { env } from "../../config/env.config";
-import logger from "../services/logger";
+import logger from "../services/logger.service";
 
 interface TokenPayload {
   id: string;

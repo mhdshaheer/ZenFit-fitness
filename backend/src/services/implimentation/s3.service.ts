@@ -1,13 +1,16 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { IFileService } from "../interface/s3.service.interface";
-import { UserRepository } from "../../repositories/implimentation/user.repository";
 import { v4 as uuid } from "uuid";
-import { S3Service } from "../../shared/services/s3.repository";
+import { S3Service } from "../../shared/services/s3.service";
+import { TYPES } from "../../shared/types/inversify.types";
+import { IUserRepository } from "../../repositories/interface/user.repository.interface";
 
 @injectable()
 export class FileService implements IFileService {
   private s3Service = new S3Service();
-  private userRepository = new UserRepository();
+  constructor(
+    @inject(TYPES.UserRepository) private userRepository: IUserRepository
+  ) {}
 
   async upload(
     role: "user" | "trainer" | "admin" | "course",

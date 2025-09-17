@@ -3,7 +3,7 @@ import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IUser } from "../../interfaces/user.interface";
 import { comparePassword, hashedPassword } from "../../shared/utils/hash.util";
-import logger from "../../shared/services/logger";
+import logger from "../../shared/services/logger.service";
 import { generateOtp } from "../../shared/utils/otp.util";
 import { IAuthService } from "../interface/auth.service.interface";
 import { Request, Response } from "express";
@@ -15,7 +15,7 @@ import {
   generateRefreshToken,
   verifyRefreshToken,
 } from "../../shared/utils/jwt.util";
-import { sendOtpMail } from "../../shared/services/mail.util";
+import { sendOtpMail } from "../../shared/services/mail.service";
 @injectable()
 export class AuthService implements IAuthService {
   // DI injection

@@ -3,7 +3,7 @@ import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { UserModel } from "../models/user.model";
 import { env } from "./env.config";
 import { AuthService } from "../services/implimentation/auth.service";
-import logger from "../shared/services/logger";
+import logger from "../shared/services/logger.service";
 
 const authService = new AuthService();
 
