@@ -1,5 +1,5 @@
-import { IdTokenClient, OAuth2Client } from "google-auth-library";
-import { env } from "../config/env.config";
+import { OAuth2Client } from "google-auth-library";
+import { env } from "../../config/env.config";
 
 export const googleClient = new OAuth2Client(env.google_client_id);
 

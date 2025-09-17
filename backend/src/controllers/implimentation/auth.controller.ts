@@ -3,13 +3,14 @@ import { env } from "../../config/env.config";
 import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
 import { AuthService } from "../../services/implimentation/auth.service";
+
+import { IAuthController } from "../interface/auth.controller.interface";
+import { Request, Response } from "express";
+import { TYPES } from "../../shared/types/inversify.types";
 import {
   generateAccessToken,
   generateRefreshToken,
-} from "../../utils/jwt.util";
-import { IAuthController } from "../interface/auth.controller.interface";
-import { Request, Response } from "express";
-import { TYPES } from "../../types/inversify.types";
+} from "../../shared/utils/jwt.util";
 
 @injectable()
 export class AuthController implements IAuthController {
@@ -17,7 +18,7 @@ export class AuthController implements IAuthController {
 
   constructor(@inject(TYPES.AuthService) private authService: AuthService) {}
 
-  public async signup(req: Request, res: Response): Promise<void> {
+  async signup(req: Request, res: Response): Promise<void> {
     try {
       const { username, email, password, dob, gender, role } = req.body;
       const user = await this.authService.signup({
@@ -32,21 +33,23 @@ export class AuthController implements IAuthController {
         message: HttpResponse.USER_CREATION_SUCCESS,
         user,
       });
-    } catch (error: any) {
-      const message = error.message || "Server error";
+    } catch (error) {
+      if (error instanceof Error) {
+        const message = error.message || "Server error";
 
-      let status = HttpStatus.INTERNAL_SERVER_ERROR;
+        let status = HttpStatus.INTERNAL_SERVER_ERROR;
 
-      if (message === "Email already exists") {
-        status = HttpStatus.CONFLICT;
-      } else if (message === "All fields are required") {
-        status = HttpStatus.BAD_REQUEST;
+        if (message === "Email already exists") {
+          status = HttpStatus.CONFLICT;
+        } else if (message === "All fields are required") {
+          status = HttpStatus.BAD_REQUEST;
+        }
+
+        res.status(status).json({ error: message });
       }
-
-      res.status(status).json({ error: message });
     }
   }
-  public async sendOtp(req: Request, res: Response): Promise<void> {
+  async sendOtp(req: Request, res: Response): Promise<void> {
     await this.authService.sendOtp(req, res);
   }
 
@@ -90,10 +93,12 @@ export class AuthController implements IAuthController {
           email: user.email,
         },
       });
-    } catch (err: any) {
-      res
-        .status(HttpStatus.UNAUTHORIZED)
-        .json({ message: err.message || "Login failed" });
+    } catch (err) {
+      if (err instanceof Error) {
+        res
+          .status(HttpStatus.UNAUTHORIZED)
+          .json({ message: err.message || "Login failed" });
+      }
     }
   }
   async sendForgotPasswordOtp(req: Request, res: Response): Promise<void> {
@@ -102,10 +107,12 @@ export class AuthController implements IAuthController {
 
       const result = await this.authService.sendForgotPasswordOtp(email);
       res.status(HttpStatus.OK).json(result);
-    } catch (error: any) {
-      res.status(error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: error.message || "Something went wrong",
-      });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: error.message || "Something went wrong",
+        });
+      }
     }
   }
   async verifyForgotOtp(req: Request, res: Response): Promise<void> {
@@ -115,16 +122,17 @@ export class AuthController implements IAuthController {
       const result = await this.authService.verifyForgotOtp(email, otp);
       console.log("result from service :", result);
       res.status(HttpStatus.OK).json(result);
-    } catch (error: any) {
-      res.status(error.statusCode || HttpStatus.INTERNAL_SERVER_ERROR).json({
-        message: error.message || "Something went wrong",
-      });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+          message: error.message || "Something went wrong",
+        });
+      }
     }
   }
   async resetPassword(req: Request, res: Response): Promise<void> {
     console.log("reset password controller");
     await this.authService.resetPassword(req, res);
-    console.log("reset password buisness done controller");
     return;
   }
 
@@ -180,6 +188,7 @@ export class AuthController implements IAuthController {
 
   async refreshAccessToken(req: Request, res: Response) {
     const { refreshToken } = req.cookies;
-    return this.authService.handleRefreshToken(refreshToken, res);
+    await this.authService.handleRefreshToken(refreshToken, res);
+    return;
   }
 }

@@ -1,27 +1,30 @@
-import { injectable } from "inversify";
+import { inject, injectable } from "inversify";
 import { IPassword, IUser } from "../../interfaces/user.interface";
 import { IProfileService } from "../interface/profile.service.interface";
-import { UserRepository } from "../../repositories/implimentation/user.repository";
 import { mapToUserDto } from "../../mapper/user.mapper";
 import { UserDto } from "../../dtos/user.dtos";
-import { comparePassword, hashedPassword } from "../../utils/hash.util";
+import { comparePassword, hashedPassword } from "../../shared/utils/hash.util";
+import { IUserRepository } from "../../repositories/interface/user.repository.interface";
+import { TYPES } from "../../shared/types/inversify.types";
 
 @injectable()
 export class ProfileService implements IProfileService {
-  private userRepository = new UserRepository();
+  constructor(
+    @inject(TYPES.UserRepository) private userRepository: IUserRepository
+  ) {}
   async getProfile(userId: string): Promise<UserDto> {
-    let user = await this.userRepository.findById(userId);
+    const user = await this.userRepository.findById(userId);
     if (user) {
-      let profileDto = mapToUserDto(user);
+      const profileDto = mapToUserDto(user);
       return profileDto;
     } else {
       throw new Error("User not found");
     }
   }
   async updateProfile(userId: string, userData: IUser): Promise<UserDto> {
-    let updateProfile = await this.userRepository.update(userId, userData);
+    const updateProfile = await this.userRepository.updateById(userId, userData);
     if (updateProfile) {
-      let profileDto = mapToUserDto(updateProfile);
+      const profileDto = mapToUserDto(updateProfile);
       console.log("update profile on service: ", profileDto);
       return profileDto;
     } else {
@@ -30,26 +33,26 @@ export class ProfileService implements IProfileService {
   }
 
   async updateProfileImage(id: string, key: string) {
-    return this.userRepository.update(id, { profileImage: key });
+    return this.userRepository.updateById(id, { profileImage: key });
   }
 
   async removeProfileImage(id: string) {
-    return this.userRepository.update(id, { profileImage: "" });
+    return this.userRepository.updateById(id, { profileImage: "" });
   }
 
   async updateResumePdf(id: string, key: string) {
-    return this.userRepository.update(id, { resume: key });
+    return this.userRepository.updateById(id, { resume: key });
   }
   async removeResumePdf(id: string) {
-    return this.userRepository.update(id, {
+    return this.userRepository.updateById(id, {
       resumeVerified: false,
       resume: "",
     });
   }
   async verifyResume(id: string): Promise<boolean> {
-    let user = await this.userRepository.findById(id);
+    const user = await this.userRepository.findById(id);
 
-    let updated = await this.userRepository.update(id, {
+    const updated = await this.userRepository.updateById(id, {
       resumeVerified: !user?.resumeVerified,
     });
     return updated?.resumeVerified!;
@@ -67,7 +70,7 @@ export class ProfileService implements IProfileService {
     }
 
     const hashedNewPassword = await hashedPassword(newPassword);
-    const updatedUser = await this.userRepository.update(id, {
+    const updatedUser = await this.userRepository.updateById(id, {
       password: hashedNewPassword,
     });
     return !!updatedUser;

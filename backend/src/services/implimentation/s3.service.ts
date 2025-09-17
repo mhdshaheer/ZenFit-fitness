@@ -1,19 +1,16 @@
-import { injectable } from "inversify";
-import { S3Repository } from "../../repositories/implimentation/s3.repository";
-import { IS3Repository } from "../../repositories/interface/s3.repository.interface";
+import { inject, injectable } from "inversify";
 import { IFileService } from "../interface/s3.service.interface";
-import { UserRepository } from "../../repositories/implimentation/user.repository";
-import { env } from "../../config/env.config";
 import { v4 as uuid } from "uuid";
+import { S3Service } from "../../shared/services/s3.service";
+import { TYPES } from "../../shared/types/inversify.types";
+import { IUserRepository } from "../../repositories/interface/user.repository.interface";
 
 @injectable()
 export class FileService implements IFileService {
-  private s3Repository: IS3Repository;
-  private userRepository = new UserRepository();
-
-  constructor(s3Repository: IS3Repository = new S3Repository()) {
-    this.s3Repository = s3Repository;
-  }
+  private s3Service = new S3Service();
+  constructor(
+    @inject(TYPES.UserRepository) private userRepository: IUserRepository
+  ) {}
 
   async upload(
     role: "user" | "trainer" | "admin" | "course",
@@ -29,11 +26,11 @@ export class FileService implements IFileService {
 
     if (user.profileImage && type == "profile") {
       console.log("Deleting old image from S3:", user.profileImage);
-      await this.s3Repository.deleteFile(user.profileImage);
+      await this.s3Service.deleteFile(user.profileImage);
     }
     if (user.resume && type == "resume") {
       console.log("Deleting old resume from S3:", user.resume);
-      await this.s3Repository.deleteFile(user.resume);
+      await this.s3Service.deleteFile(user.resume);
     }
 
     const folderMap: Record<string, string> = {
@@ -46,7 +43,7 @@ export class FileService implements IFileService {
 
     const folder = folderMap[type] || "misc";
     const key = `${role}/${folder}/${id}/${uuid()}`;
-    await this.s3Repository.uploadFile(key, file.buffer, file.mimetype);
+    await this.s3Service.uploadFile(key, file.buffer, file.mimetype);
     return key;
   }
 
@@ -59,17 +56,17 @@ export class FileService implements IFileService {
       throw new Error("Profile image not found");
     }
     if (type == "profile") {
-      return this.s3Repository.getFileUrl(user.profileImage, 3600);
+      return this.s3Service.getFileUrl(user.profileImage, 3600);
     } else if (type == "resumes") {
-      const res = await this.s3Repository.getFileDetails(user.resume!);
+      const res = await this.s3Service.getFileDetails(user.resume!);
       const obj = JSON.parse(res);
-      obj.url = await this.s3Repository.getFileUrl(user.resume!, 3600);
+      obj.url = await this.s3Service.getFileUrl(user.resume!, 3600);
       return JSON.stringify(obj);
     }
     return "";
   }
 
   async delete(key: string): Promise<void> {
-    return this.s3Repository.deleteFile(key);
+    return this.s3Service.deleteFile(key);
   }
 }

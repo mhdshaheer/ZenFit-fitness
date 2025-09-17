@@ -1,8 +1,8 @@
 import { Router } from "express";
 import { container } from "../inversify.config";
 import { ISessionController } from "../controllers/interface/session.controller.interface";
-import { TYPES } from "../types/inversify.types";
 import authMiddleware from "../middlewares/verifyToken.middleware";
+import { TYPES } from "../shared/types/inversify.types";
 
 const sessionRouter = Router();
 

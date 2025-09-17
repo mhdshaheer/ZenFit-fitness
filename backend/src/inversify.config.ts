@@ -1,5 +1,4 @@
 import { Container } from "inversify";
-import { TYPES } from "./types/inversify.types";
 
 import { AdminController } from "./controllers/implimentation/admin.controller";
 import { AdminService } from "./services/implimentation/admin.service";
@@ -21,6 +20,15 @@ import { ISessionService } from "./services/interface/session.service.interface"
 import { SessionService } from "./services/implimentation/session.service";
 import { ISessionController } from "./controllers/interface/session.controller.interface";
 import { SessionController } from "./controllers/implimentation/session.controller";
+import { IUserRepository } from "./repositories/interface/user.repository.interface";
+import { UserRepository } from "./repositories/implimentation/user.repository";
+import { ITempUserRepository } from "./repositories/interface/tempUser.repository.interface";
+import { TempUserRepository } from "./repositories/implimentation/tempUser.repository";
+import { IProgramRepository } from "./repositories/interface/program.repository.interface";
+import { ProgramRepositoy } from "./repositories/implimentation/program.repository";
+import { ISessionRepository } from "./repositories/interface/session.repository.interface";
+import { SessionRepository } from "./repositories/implimentation/session.repository";
+import { TYPES } from "./shared/types/inversify.types";
 
 const container = new Container();
 
@@ -53,5 +61,17 @@ container.bind<ISessionService>(TYPES.SessionService).to(SessionService);
 container
   .bind<ISessionController>(TYPES.SessionController)
   .to(SessionController);
+
+// Repositories
+container.bind<IUserRepository>(TYPES.UserRepository).to(UserRepository);
+container
+  .bind<ITempUserRepository>(TYPES.TempUserRepository)
+  .to(TempUserRepository);
+container
+  .bind<IProgramRepository>(TYPES.ProgramRespository)
+  .to(ProgramRepositoy);
+container
+  .bind<ISessionRepository>(TYPES.SessionRepository)
+  .to(SessionRepository);
 
 export { container };

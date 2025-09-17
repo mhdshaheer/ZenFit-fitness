@@ -1,9 +1,15 @@
+import { inject, injectable } from "inversify";
 import { ISession } from "../../models/session.model";
-import { SessionRepository } from "../../repositories/implimentation/session.repository";
 import { ISessionService } from "../interface/session.service.interface";
+import { ISessionRepository } from "../../repositories/interface/session.repository.interface";
+import { TYPES } from "../../shared/types/inversify.types";
 
+@injectable()
 export class SessionService implements ISessionService {
-  sessionRepository = new SessionRepository();
+  constructor(
+    @inject(TYPES.SessionRepository)
+    private sessionRepository: ISessionRepository
+  ) {}
   async saveSession(
     id: string,
     slotStatus: "active" | "inactive" | "draft",

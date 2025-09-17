@@ -147,7 +147,7 @@ export class UserManageComponent implements OnInit {
     const { action, row } = event;
     if (action == 'view') {
       console.log('clicked view option ', row.id);
-      this.router.navigate(['/admin/dashboard/profile', row.id]);
+      this.router.navigate(['/admin/profile', row.id]);
       return;
     }
     if (action == 'block' || action == 'unblock') {

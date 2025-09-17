@@ -3,8 +3,8 @@ import { AdminService } from "../../services/implimentation/admin.service";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IAdminController } from "../interface/admin.controller.interface";
 import { inject, injectable } from "inversify";
-import { TYPES } from "../../types/inversify.types";
 import { mapToUserStatusDto } from "../../mapper/user.mapper";
+import { TYPES } from "../../shared/types/inversify.types";
 
 // admin controller
 @injectable()
@@ -27,10 +27,13 @@ export class AdminController implements IAdminController {
         sortOrder,
       });
       res.status(HttpStatus.OK).json(result);
-    } catch (error: any) {
-      res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: error.message });
+    } catch (error) {
+      if (error instanceof Error) {
+        res
+          .status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .json({ message: error.message });
+      }
+      return;
     }
   }
 
@@ -52,8 +55,10 @@ export class AdminController implements IAdminController {
         responseDto,
       });
       return;
-    } catch (error: any) {
-      res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+    } catch (error) {
+      if (error instanceof Error) {
+        res.status(HttpStatus.NOT_FOUND).json({ message: error.message });
+      }
       return;
     }
   }

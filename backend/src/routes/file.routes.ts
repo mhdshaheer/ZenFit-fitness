@@ -1,9 +1,9 @@
 import { Router } from "express";
 import multer from "multer";
 import { container } from "../inversify.config";
-import { TYPES } from "../types/inversify.types";
 import { IFileController } from "../controllers/interface/s3.controller.interface";
 import authMiddleware from "../middlewares/verifyToken.middleware";
+import { TYPES } from "../shared/types/inversify.types";
 
 const router = Router();
 const upload = multer();

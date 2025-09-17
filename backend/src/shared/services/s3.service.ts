@@ -6,9 +6,8 @@ import {
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import s3Client, { S3_BUCKET } from "../../config/s3.config";
-import { IS3Repository } from "../interface/s3.repository.interface";
 
-export class S3Repository implements IS3Repository {
+export class S3Service {
   async uploadFile(
     key: string,
     buffer: Buffer,

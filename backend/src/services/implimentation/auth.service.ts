@@ -2,25 +2,28 @@ import { inject, injectable } from "inversify";
 import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IUser } from "../../interfaces/user.interface";
-import { TempUserRepository } from "../../repositories/implimentation/tempUser.repository";
-import { googleClient } from "../../utils/google-client";
-import { comparePassword, hashedPassword } from "../../utils/hash.util";
+import { comparePassword, hashedPassword } from "../../shared/utils/hash.util";
+import logger from "../../shared/services/logger.service";
+import { generateOtp } from "../../shared/utils/otp.util";
+import { IAuthService } from "../interface/auth.service.interface";
+import { Request, Response } from "express";
+import { ITempUserRepository } from "../../repositories/interface/tempUser.repository.interface";
+import { IUserRepository } from "../../repositories/interface/user.repository.interface";
+import { TYPES } from "../../shared/types/inversify.types";
 import {
   generateAccessToken,
   generateRefreshToken,
-  generateToken,
   verifyRefreshToken,
-} from "../../utils/jwt.util";
-import logger from "../../utils/logger";
-import { sendOtpMail } from "../../utils/mail.util";
-import { generateOtp } from "../../utils/otp";
-import { IAuthService } from "../interface/auth.service.interface";
-import { Request, Response } from "express";
-import { UserRepository } from "../../repositories/implimentation/user.repository";
+} from "../../shared/utils/jwt.util";
+import { sendOtpMail } from "../../shared/services/mail.service";
 @injectable()
 export class AuthService implements IAuthService {
-  private tempRepository = new TempUserRepository();
-  private userRepository = new UserRepository();
+  // DI injection
+  @inject(TYPES.UserRepository)
+  private userRepository!: IUserRepository;
+  @inject(TYPES.TempUserRepository)
+  private tempRepository!: ITempUserRepository;
+  // ======================================
 
   async signup(userData: IUser): Promise<IUser> {
     const { username, email, password, dob, role } = userData;
@@ -280,7 +283,7 @@ export class AuthService implements IAuthService {
     return;
   }
 
-  async handleGoogleLogin(profile: any) {
+  async handleGoogleLogin(profile: any): Promise<IUser> {
     let user = await this.userRepository.findByGoogleId(profile.id);
     if (!user) {
       user = await this.userRepository.createGoogleUser({
@@ -337,6 +340,7 @@ export class AuthService implements IAuthService {
       res.json({ message: HttpResponse.ACCESS_TOKEN_REFRESHED });
       return;
     } catch (error) {
+      console.log("Error :", error);
       res
         .status(HttpStatus.FORBIDDEN)
         .json({ message: HttpResponse.REFRESH_TOKEN_INVALID });

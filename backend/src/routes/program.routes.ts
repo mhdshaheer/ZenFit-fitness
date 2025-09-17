@@ -1,8 +1,8 @@
 import { Router } from "express";
-import { TYPES } from "../types/inversify.types";
 import { container } from "../inversify.config";
 import { IProgramController } from "../controllers/interface/program.controller.interface";
 import authMiddleware from "../middlewares/verifyToken.middleware";
+import { TYPES } from "../shared/types/inversify.types";
 
 const programRouter = Router();
 const programController = container.get<IProgramController>(
