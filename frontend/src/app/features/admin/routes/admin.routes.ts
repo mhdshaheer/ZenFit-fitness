@@ -25,6 +25,13 @@ export const ADMIN_ROUTES: Routes = [
           ),
       },
       {
+        path: 'category',
+        loadComponent: () =>
+          import('../components/category-list/category-list.component').then(
+            (m) => m.CategoryListComponent
+          ),
+      },
+      {
         path: 'profile/:id',
         loadComponent: () => {
           return import(

@@ -30,6 +30,14 @@ export const USER_ROUTES: Routes = [
         redirectTo: 'dashboard',
         pathMatch: 'full',
       },
+      {
+        path: 'testing',
+        loadComponent: () => {
+          return import(
+            '../component/program-category-list/program-category-list.component'
+          ).then((m) => m.ProgramCategoryListComponent);
+        },
+      },
     ],
   },
 ];
