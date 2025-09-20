@@ -6,4 +6,8 @@ export interface ICategoryController {
     req: Request,
     res: Response
   ): Promise<Response<CategoryDto[]>>;
+  findAllSubCategory(
+    req: Request,
+    res: Response
+  ): Promise<Response<CategoryDto>>;
 }

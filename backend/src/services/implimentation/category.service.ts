@@ -1,5 +1,4 @@
 import { inject } from "inversify";
-import { ICategory } from "../../models/category.model";
 import { ICategoryService } from "../interface/category.service.interface";
 import { ICategoryRepository } from "../../repositories/interface/category.repository.interface";
 import { TYPES } from "../../shared/types/inversify.types";
@@ -26,6 +25,22 @@ export class CategoryService implements ICategoryService {
     } catch (error) {
       logger.error("Error fetching categories:", error);
       throw new Error("Failed to fetch categories");
+    }
+  }
+  async findALlSubCategory(): Promise<CategoryDto[]> {
+    try {
+      const subCategories = await this.categoryRepository.findAllCategory({
+        parantId: { $ne: null },
+      });
+      if (subCategories == null) {
+        throw new Error("No sub categories found.");
+      }
+      const subCategoryDto = subCategories?.map(mapToCategoryDto);
+
+      return subCategoryDto;
+    } catch (error) {
+      logger.error("Error fetching sub categories:", error);
+      throw new Error("Failed to fetch sub categories");
     }
   }
 }

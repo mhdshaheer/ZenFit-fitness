@@ -18,4 +18,7 @@ export class CategoryService {
   getCategories(): Observable<ICategory[]> {
     return this.http.get<ICategory[]>(`${this.api}`);
   }
+  getSubcateories(): Observable<ICategory[]> {
+    return this.http.get<ICategory[]>(`${this.api}/subcategories`);
+  }
 }

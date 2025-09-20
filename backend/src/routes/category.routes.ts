@@ -9,5 +9,8 @@ const controller = container.get<ICategoryController>(TYPES.CategoryController);
 categoryRouter.get("/", (req, res, next) => {
   controller.findAllCategory(req, res).catch(next);
 });
+categoryRouter.get("/subcategories", (req, res, next) => {
+  controller.findAllSubCategory(req, res).catch(next);
+});
 
 export default categoryRouter;

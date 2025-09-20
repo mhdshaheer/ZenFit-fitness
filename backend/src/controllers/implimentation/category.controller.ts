@@ -26,4 +26,20 @@ export class CategoryController implements ICategoryController {
         .json({ message: "Failed to fetch categories" });
     }
   }
+  async findAllSubCategory(
+    _req: Request,
+    res: Response
+  ): Promise<Response<CategoryDto>> {
+    try {
+      const subCategories: CategoryDto[] =
+        await this.categoryService.findALlSubCategory();
+
+      return res.status(HttpStatus.OK).json(subCategories);
+    } catch (error) {
+      console.error("Error fetching sub categories:", error);
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: "Failed to fetch sub categories" });
+    }
+  }
 }
