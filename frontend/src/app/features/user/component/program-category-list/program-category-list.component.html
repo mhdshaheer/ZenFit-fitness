@@ -13,8 +13,9 @@
 
     <!-- Category Cards Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      @for(card of categoryCards;track card){
+
       <div
-        *ngFor="let card of categoryCards; trackBy: trackByCard"
         class="category-card group cursor-pointer border-2 border-gray-200 rounded-2xl p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-emerald-400"
         (click)="onCardClick(card)"
       >
@@ -40,6 +41,7 @@
           </p>
         </div>
       </div>
+      }
     </div>
   </div>
 </div>

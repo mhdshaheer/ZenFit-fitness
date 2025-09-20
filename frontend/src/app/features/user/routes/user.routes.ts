@@ -39,7 +39,7 @@ export const USER_ROUTES: Routes = [
         },
       },
       {
-        path: 'testing',
+        path: 'programs/:id',
         loadComponent: () =>
           import('../component/program-list/program-list.component').then(
             (m) => m.ProgramListComponent

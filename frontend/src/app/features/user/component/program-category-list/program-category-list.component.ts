@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import {
   CategoryService,
   ICategory,
 } from '../../../../core/services/category.service';
+import { Router } from '@angular/router';
 interface CategoryCard {
   id: string;
   title: string;
@@ -20,32 +21,9 @@ interface CategoryCard {
 })
 export class ProgramCategoryListComponent implements OnInit {
   categories: ICategory[] = [];
+  categoryCards: CategoryCard[] = [];
+  router = inject(Router);
   constructor(private categoryService: CategoryService) {}
-  categoryCards: CategoryCard[] = [
-    // {
-    //   id: 'goal-based',
-    //   title: 'Goal-Based Categories',
-    //   icon: '📊',
-    //   color: 'blue',
-    //   description:
-    //     'Create tasks, track time, and update progress all in one place',
-    // },
-    // {
-    //   id: 'lifestyle-wellness',
-    //   title: 'Lifestyle & Wellness Categories',
-    //   icon: '🕐',
-    //   color: 'purple',
-    //   description:
-    //     'Discover how much time your team is spending on their work.',
-    // },
-    // {
-    //   id: 'specialized',
-    //   title: 'Specialized Categories',
-    //   icon: '📅',
-    //   color: 'orange',
-    //   description: 'Monitor how your resources are utilized across projects.',
-    // },
-  ];
 
   categoryExtras: Record<string, { icon: string; color: string }> = {
     'Goal-Based': { icon: '📊', color: 'blue' },
@@ -76,9 +54,6 @@ export class ProgramCategoryListComponent implements OnInit {
       },
     });
   }
-  trackByCard(index: number, card: CategoryCard): string {
-    return card.id;
-  }
 
   getIconBgClass(color: string): string {
     const colorMap: Record<string, string> = {
@@ -92,7 +67,6 @@ export class ProgramCategoryListComponent implements OnInit {
 
   onCardClick(card: CategoryCard): void {
     console.log('Category card clicked:', card);
-    // Handle card click - navigate to specific category page
-    // Example: this.router.navigate(['/categories', card.id]);
+    this.router.navigate(['/user/programs', card.id]);
   }
 }
