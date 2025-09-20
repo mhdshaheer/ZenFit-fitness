@@ -1,5 +1,9 @@
 import { Request, Response } from "express";
+import { CategoryDto } from "../../dtos/category.dtos";
 
 export interface ICategoryController {
-  findAllCategory(req: Request, res: Response): Promise<void>;
+  findAllCategory(
+    req: Request,
+    res: Response
+  ): Promise<Response<CategoryDto[]>>;
 }
