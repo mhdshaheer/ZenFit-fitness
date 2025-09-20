@@ -4,7 +4,7 @@ import { ProgramService } from '../../../../core/services/program.service';
 import { Router } from '@angular/router';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
 
-interface FitnessProgram {
+export interface FitnessProgram {
   id?: string;
   _id?: string;
   title: string;

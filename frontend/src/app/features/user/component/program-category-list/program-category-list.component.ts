@@ -42,15 +42,6 @@ export class ProgramCategoryListComponent {
       color: 'orange',
       description: 'Monitor how your resources are utilized across projects.',
     },
-    {
-      id: 'audience-based',
-      title: 'Audience-Based Categories',
-      icon: '💲',
-      programCount: 2,
-      color: 'green',
-      description:
-        'Save time by invoicing based on reported time for accurate billing.',
-    },
   ];
 
   trackByCard(index: number, card: CategoryCard): string {
@@ -71,11 +62,5 @@ export class ProgramCategoryListComponent {
     console.log('Category card clicked:', card);
     // Handle card click - navigate to specific category page
     // Example: this.router.navigate(['/categories', card.id]);
-  }
-
-  viewAllFeatures(): void {
-    console.log('View all features clicked');
-    // Handle view all features click
-    // Example: this.router.navigate(['/features']);
   }
 }

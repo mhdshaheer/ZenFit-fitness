@@ -31,12 +31,19 @@ export const USER_ROUTES: Routes = [
         pathMatch: 'full',
       },
       {
-        path: 'testing',
+        path: 'workouts',
         loadComponent: () => {
           return import(
             '../component/program-category-list/program-category-list.component'
           ).then((m) => m.ProgramCategoryListComponent);
         },
+      },
+      {
+        path: 'testing',
+        loadComponent: () =>
+          import('../component/program-list/program-list.component').then(
+            (m) => m.ProgramListComponent
+          ),
       },
     ],
   },

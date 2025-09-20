@@ -97,10 +97,10 @@ export class UserLayoutComponent {
       route: '/user/dashboard',
       icon: 'fas fa-tachometer-alt',
     },
-    { label: 'Workouts', route: '/workouts', icon: 'fas fa-dumbbell' },
-    { label: 'Progress', route: '/progress', icon: 'fas fa-chart-line' },
-    { label: 'Nutrition', route: '/nutrition', icon: 'fas fa-apple-alt' },
-    { label: 'Community', route: '/community', icon: 'fas fa-users' },
+    { label: 'Workouts', route: '/user/workouts', icon: 'fas fa-dumbbell' },
+    { label: 'Progress', route: '/user/progress', icon: 'fas fa-chart-line' },
+    { label: 'Nutrition', route: '/user/nutrition', icon: 'fas fa-apple-alt' },
+    { label: 'Community', route: '/user/community', icon: 'fas fa-users' },
   ];
 
   userMenuItems: NavMenuItem[] = [
