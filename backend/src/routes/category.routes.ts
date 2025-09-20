@@ -6,6 +6,8 @@ import { ICategoryController } from "../controllers/interface/category.controlle
 const categoryRouter = Router();
 const controller = container.get<ICategoryController>(TYPES.CategoryController);
 
-categoryRouter.get("/", controller.findAllCategory.bind(controller));
+categoryRouter.get("/", (req, res, next) => {
+  controller.findAllCategory(req, res).catch(next);
+});
 
 export default categoryRouter;

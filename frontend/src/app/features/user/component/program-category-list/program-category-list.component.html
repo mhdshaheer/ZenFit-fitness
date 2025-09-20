@@ -22,7 +22,7 @@
         <div class="flex justify-center mb-6">
           <div
             class="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-            [ngClass]="getIconBgClass(card.color)"
+            [ngClass]="getIconBgClass(card.color!)"
           >
             <span class="text-2xl">{{ card.icon }}</span>
           </div>

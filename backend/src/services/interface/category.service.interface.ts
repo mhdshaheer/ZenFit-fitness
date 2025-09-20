@@ -1,5 +1,5 @@
-import { ICategory } from "../../models/category.model";
+import { CategoryDto } from "../../dtos/category.dtos";
 
 export interface ICategoryService {
-  findAllCategory(): Promise<ICategory[] | null>;
+  findAllCategory(): Promise<CategoryDto[]>;
 }
