@@ -19,35 +19,7 @@ export class ProgramListComponent {
   ngOnInit() {
     this.getSubCategory();
   }
-  programs: FitnessProgram[] = [
-    {
-      _id: 'dfsd',
-      category: 'kkkk',
-      description: 'ddd',
-      difficultyLevel: 'easy',
-      duration: '8',
-      price: 3333,
-      title: 'hai',
-    },
-    {
-      _id: 'dfsd',
-      category: 'kkkk',
-      description: 'ddd',
-      difficultyLevel: 'easy',
-      duration: '8',
-      price: 3333,
-      title: 'hai',
-    },
-    {
-      _id: 'dfsd',
-      category: 'kkkk',
-      description: 'ddd',
-      difficultyLevel: 'easy',
-      duration: '8',
-      price: 3333,
-      title: 'hai',
-    },
-  ];
+  programs: FitnessProgram[] = [];
 
   getSubCategory() {
     const id = this.route.snapshot.paramMap.get('id');
