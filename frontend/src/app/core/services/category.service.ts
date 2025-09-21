@@ -15,6 +15,7 @@ export class CategoryService {
   private api = environment.apiUrl + '/category';
 
   constructor(private http: HttpClient) {}
+
   getCategories(): Observable<ICategory[]> {
     return this.http.get<ICategory[]>(`${this.api}`);
   }

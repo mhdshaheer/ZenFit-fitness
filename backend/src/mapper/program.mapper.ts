@@ -6,7 +6,7 @@ export const mapToProgramDto = (programs: IProgram): ProgramDto => {
     id: programs.id,
     title: programs.title,
     duration: programs.duration,
-    category: programs.category,
+    category: JSON.stringify(programs.category),
     description: programs.description,
     difficultyLevel: programs.difficultyLevel,
     price: programs.price,
@@ -21,7 +21,7 @@ export const mapToProgramSlotDto = (programs: IProgram): ProgramSlotDto => {
   return {
     id: programs._id,
     title: programs.title,
-    category: programs.category,
+    category: JSON.stringify(programs.category),
     duration: programs.duration,
     // entrolledCount:programs.entrolledCount
   };

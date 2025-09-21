@@ -1,7 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { FitnessProgram } from '../../../trainer/components/program-list/program-list.component';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { ProgramService } from '../../../../core/services/program.service';
+import { Program } from '../../../trainer/store/trainer.model';
 
 @Component({
   selector: 'app-program-list',
@@ -10,6 +13,12 @@ import { CommonModule } from '@angular/common';
   styleUrl: './program-list.component.css',
 })
 export class ProgramListComponent {
+  programService = inject(ProgramService);
+  route = inject(ActivatedRoute);
+
+  ngOnInit() {
+    this.getSubCategory();
+  }
   programs: FitnessProgram[] = [
     {
       _id: 'dfsd',
@@ -19,7 +28,6 @@ export class ProgramListComponent {
       duration: '8',
       price: 3333,
       title: 'hai',
-      enrolledCount: 90,
     },
     {
       _id: 'dfsd',
@@ -29,7 +37,6 @@ export class ProgramListComponent {
       duration: '8',
       price: 3333,
       title: 'hai',
-      enrolledCount: 90,
     },
     {
       _id: 'dfsd',
@@ -39,9 +46,29 @@ export class ProgramListComponent {
       duration: '8',
       price: 3333,
       title: 'hai',
-      enrolledCount: 90,
     },
   ];
+
+  getSubCategory() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return; // safety check
+
+    this.programService.getProgramsByParantId(id).subscribe({
+      next: (res: { programs: Program[] }) => {
+        console.log('Programs response:', res.programs);
+        this.programs = res.programs.map((item) => {
+          let category = JSON.parse(item.category).name;
+          console.log('Category :', category);
+          return { ...item, category: category };
+        });
+      },
+      error: (err) => {
+        console.error('Error fetching programs:', err);
+        this.programs = [];
+      },
+    });
+  }
+
   onViewProgram(programId: string): void {
     console.log('Viewing program with ID:', programId);
   }

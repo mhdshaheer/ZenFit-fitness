@@ -5,7 +5,7 @@ export interface IProgram extends Document {
   programId: string;
   title: string;
   description: string;
-  category: string;
+  category: string | Types.ObjectId;
   difficultyLevel: "Beginner" | "Intermediate" | "Advanced";
   price: number;
   duration: string; // e.g., "12 weeks"
@@ -20,7 +20,7 @@ const ProgramSchema = new Schema<IProgram>(
     programId: { type: String, required: true, unique: true },
     title: { type: String, required: true },
     description: { type: String },
-    category: { type: String },
+    category: { type: Schema.Types.ObjectId, ref: "Category" },
     difficultyLevel: {
       type: String,
       enum: ["Beginner", "Intermediate", "Advanced"],

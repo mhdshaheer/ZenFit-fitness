@@ -34,7 +34,10 @@ export class ProgramListComponent {
     this.programService.getPrograms().subscribe({
       next: (res) => {
         console.log('Programs response:', res);
-        this.fitnessPrograms = res?.programs ?? [];
+        this.fitnessPrograms = res.programs.map((item) => {
+          let category = JSON.parse(item.category).name;
+          return { ...item, category: category };
+        });
       },
       error: (err) => {
         console.error('Error fetching programs:', err);

@@ -8,11 +8,14 @@ import { IProgram } from "../../models/program.model";
 import { IProgramRepository } from "../../repositories/interface/program.repository.interface";
 import { IProgramService } from "../interface/program.service.interface";
 import { TYPES } from "../../shared/types/inversify.types";
+import { ICategoryRepository } from "../../repositories/interface/category.repository.interface";
 
 export class ProgramService implements IProgramService {
   constructor(
     @inject(TYPES.ProgramRespository)
-    private programRepository: IProgramRepository
+    private programRepository: IProgramRepository,
+    @inject(TYPES.CategoryRepository)
+    private categoryRepository: ICategoryRepository
   ) {}
   async saveProgramDraft(data: IProgram): Promise<IProgram | null> {
     const condition = {
@@ -34,6 +37,21 @@ export class ProgramService implements IProgramService {
   async getProgramsCategories(id: string): Promise<ProgramSlotDto[]> {
     const result = await this.programRepository.getPrograms(id);
     const mappedResult = result.map(mapToProgramSlotDto);
+    return mappedResult;
+  }
+  async getProgramsByParentId(id: string): Promise<ProgramDto[]> {
+    const subCategories = await this.categoryRepository.findAllCategory({
+      parantId: id,
+    });
+    if (subCategories == null) {
+      throw new Error("No sub categories found.");
+    }
+    const subCategoryIds = subCategories.map((cat) => cat._id);
+    const programs = await this.programRepository.getProgramsFilter({
+      category: { $in: subCategoryIds },
+    });
+    const mappedResult = programs.map(mapToProgramDto);
+
     return mappedResult;
   }
 }

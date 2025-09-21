@@ -117,4 +117,18 @@ export class ProgramController implements IProgramController {
       });
     }
   }
+
+  async getProgramsByParantId(req: Request, res: Response): Promise<void> {
+    try {
+      const id = req.params.id;
+      const programs = await this.programService.getProgramsByParentId(id);
+      res.status(HttpStatus.OK).json({ programs });
+    } catch (error) {
+      console.error("Error fetching program category:", error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: "Failed to fetch program category",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
 }
