@@ -34,5 +34,8 @@ programRouter.get(
   authMiddleware,
   programController.getProgramsByParantId.bind(programController)
 );
+programRouter.get("/:id", (req, res, next) => {
+  programController.findProgram(req, res).catch(next);
+});
 
 export default programRouter;

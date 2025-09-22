@@ -37,4 +37,8 @@ export class ProgramService {
       `${this.apiUrl}/program/category/${categoryId}`
     );
   }
+
+  getProgramByProgramId(programId: string) {
+    return this.http.get<Program>(`${this.apiUrl}/program/${programId}`);
+  }
 }

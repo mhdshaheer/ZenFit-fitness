@@ -10,9 +10,9 @@ export class CategoryRepository
   constructor() {
     super(CategoryModel);
   }
-  findAllCategory(
+  async findAllCategory(
     conditon: FilterQuery<ICategory>
   ): Promise<ICategory[] | null> {
-    return this.model.find(conditon);
+    return this.model.find(conditon).exec();
   }
 }

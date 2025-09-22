@@ -50,6 +50,15 @@ export const TRAINER_ROUTES: Routes = [
         },
       },
       {
+        path: 'slot/:id',
+        loadComponent: () => {
+          return import('../components/slot-create/slot-create.component').then(
+            (m) => m.SlotCreateComponent
+          );
+        },
+      },
+
+      {
         path: 'testing',
         loadComponent: () => {
           return import(

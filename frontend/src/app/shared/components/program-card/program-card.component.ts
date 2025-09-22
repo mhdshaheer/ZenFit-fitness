@@ -25,6 +25,7 @@ export class ProgramCardComponent {
   //Parant to child
   @Input() program!: Program;
   @Input() defaultImage: string = 'trainer/fitness_program.jpg';
+  @Input() button2Labal: string = 'Edit';
 
   //Child to parant
   @Output() viewProgram = new EventEmitter<string>();
@@ -68,7 +69,7 @@ export class ProgramCardComponent {
     this.viewProgram.emit(id);
   }
 
-  onEditProgram(id: string) {
+  onViewProgramSlot(id: string) {
     this.editProgram.emit(id);
   }
 }

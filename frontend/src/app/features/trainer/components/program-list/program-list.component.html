@@ -110,7 +110,8 @@
       @for(program of fitnessPrograms;track program){
       <app-program-card
         [program]="program"
-        (editProgram)="onEditProgram($event)"
+        [button2Labal]="'Slot'"
+        (editProgram)="onProgramSlot($event)"
         (viewProgram)="onViewProgram($event)"
       ></app-program-card>
       }

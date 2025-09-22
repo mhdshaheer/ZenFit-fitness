@@ -12,5 +12,4 @@ categoryRouter.get("/", (req, res, next) => {
 categoryRouter.get("/subcategories", (req, res, next) => {
   controller.findAllSubCategory(req, res).catch(next);
 });
-
 export default categoryRouter;

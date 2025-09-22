@@ -54,8 +54,9 @@ export class ProgramListComponent {
     console.log('Viewing program with ID:', programId);
   }
 
-  onEditProgram(programId: string): void {
-    console.log('Editing program with ID:', programId);
+  onProgramSlot(programId: string): void {
+    console.log('Program ID:', programId);
+    this.router.navigate(['/trainer/slot', programId]);
   }
 
   createProgram() {

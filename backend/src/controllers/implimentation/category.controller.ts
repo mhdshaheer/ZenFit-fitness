@@ -5,6 +5,7 @@ import { TYPES } from "../../shared/types/inversify.types";
 import { ICategoryService } from "../../services/interface/category.service.interface";
 import { HttpStatus } from "../../const/statuscode.const";
 import { CategoryDto } from "../../dtos/category.dtos";
+import { HttpResponse } from "../../const/response_message.const";
 
 export class CategoryController implements ICategoryController {
   constructor(

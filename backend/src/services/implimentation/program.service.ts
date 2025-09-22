@@ -9,6 +9,7 @@ import { IProgramRepository } from "../../repositories/interface/program.reposit
 import { IProgramService } from "../interface/program.service.interface";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ICategoryRepository } from "../../repositories/interface/category.repository.interface";
+import logger from "../../shared/services/logger.service";
 
 export class ProgramService implements IProgramService {
   constructor(
@@ -53,5 +54,19 @@ export class ProgramService implements IProgramService {
     const mappedResult = programs.map(mapToProgramDto);
 
     return mappedResult;
+  }
+
+  async findProgram(id: string): Promise<ProgramDto> {
+    try {
+      const program = await this.programRepository.findProgramById(id);
+      if (!program) {
+        throw new Error("No category is found");
+      }
+      const programDto = mapToProgramDto(program);
+      return programDto;
+    } catch (error) {
+      logger.error("Error fetching category :", error);
+      throw new Error("Failed to fetch category");
+    }
   }
 }

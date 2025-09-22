@@ -25,4 +25,7 @@ export class ProgramRepositoy
   ): Promise<IProgram[]> {
     return this.model.find(condition).populate("category");
   }
+  async findProgramById(programId: string): Promise<IProgram | null> {
+    return this.model.findById(programId).populate("category").exec();
+  }
 }
