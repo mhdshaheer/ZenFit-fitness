@@ -4,6 +4,8 @@ import { ISessionService } from "../../services/interface/session.service.interf
 import { inject } from "inversify";
 import { HttpStatus } from "../../const/statuscode.const";
 import { TYPES } from "../../shared/types/inversify.types";
+import { ISession } from "../../models/session.model";
+import { HttpResponse } from "../../const/response_message.const";
 
 export class SessionController implements ISessionController {
   constructor(
@@ -95,6 +97,17 @@ export class SessionController implements ISessionController {
           error: error.message || "Unexpected error",
         });
       }
+    }
+  }
+  async getSession(req: Request, res: Response): Promise<Response<ISession>> {
+    try {
+      const { id } = req.params;
+      const session = await this.sessionService.getSession(id);
+      return res.status(HttpStatus.OK).json(session);
+    } catch (error) {
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json(HttpResponse.SERVER_ERROR);
     }
   }
 }

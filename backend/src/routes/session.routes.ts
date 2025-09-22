@@ -21,4 +21,8 @@ sessionRouter.post(
   sessionController.saveDraftSession.bind(sessionController)
 );
 
+sessionRouter.get("/:id", (req, res, next) => {
+  sessionController.getSession(req, res).catch(next);
+});
+
 export default sessionRouter;
