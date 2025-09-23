@@ -6,20 +6,22 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ProgramCategory } from '../../store/trainer.model';
+import { IProgramSlot, ProgramCategory } from '../../store/trainer.model';
 import { ProgramService } from '../../../../core/services/program.service';
 import { SessionService } from '../../../../core/services/session.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { CategoryService } from '../../../../core/services/category.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
-interface TimeSlot {
+export interface ITimeSlot {
+  _id?: string;
   date: string;
   startTime: string;
   endTime: string;
-  displayDate: string;
-  displayStartTime: string;
-  displayEndTime: string;
+  displayDate?: string;
+  displayStartTime?: string;
+  displayEndTime?: string;
 }
 
 @Component({
@@ -44,11 +46,13 @@ export class SlotCreateComponent {
   toastService = inject(ToastService);
   router = inject(Router);
   route = inject(ActivatedRoute);
+  logger = inject(LoggerService);
 
   programs: ProgramCategory[] = [];
-  timeSlots: TimeSlot[] = [];
+  timeSlots: ITimeSlot[] = [];
   programId!: string;
   categoryName!: string;
+  isEditMode: boolean = false;
 
   constructor(private fb: FormBuilder) {
     // Get CategoryId from params
@@ -96,6 +100,7 @@ export class SlotCreateComponent {
 
   ngOnInit(): void {
     this.getProgramCategory(this.programId);
+    this.getSession(this.programId);
   }
 
   updateEndTime(): void {
@@ -152,7 +157,7 @@ export class SlotCreateComponent {
       }
 
       // Add new time slot
-      const newSlot: TimeSlot = {
+      const newSlot: ITimeSlot = {
         date: formValue.date,
         startTime: formValue.startTime,
         endTime: formValue.endTime,
@@ -276,6 +281,25 @@ export class SlotCreateComponent {
     });
   }
 
+  getSession(programId: string) {
+    this.sessionService.getSession(programId).subscribe({
+      next: (res: IProgramSlot) => {
+        this.logger.info('Session is :', res);
+        this.timeSlots = res.timeSlots.map((item) => {
+          return {
+            ...item,
+            displayDate: this.formatDate(item.date),
+            displayStartTime: this.formatTime12Hour(item.startTime),
+            displayEndTime: this.formatTime12Hour(item.endTime),
+          };
+        });
+      },
+      error: (error) => {
+        this.logger.error('Failed to fetch session :', error);
+      },
+    });
+  }
+
   onBack(): void {
     if (this.timeSlots.length > 0 || this.slotForm.dirty) {
       if (
@@ -335,5 +359,9 @@ export class SlotCreateComponent {
       if (field.errors['max']) return `${fieldName} is too high`;
     }
     return '';
+  }
+
+  onEditSlot() {
+    this.isEditMode = true;
   }
 }

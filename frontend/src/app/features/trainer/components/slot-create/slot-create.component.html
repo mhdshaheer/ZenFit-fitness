@@ -6,6 +6,7 @@
         <div
           class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
         >
+          @if(isEditMode){
           <div>
             <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
               Create Training Slots
@@ -14,6 +15,15 @@
               Schedule new fitness sessions for your programs
             </p>
           </div>
+          }@else {
+          <div>
+            <h1 class="text-2xl sm:text-3xl font-bold text-gray-900">
+              Program Slots
+            </h1>
+            <p class="mt-2 text-gray-600">Current program session slots</p>
+          </div>
+
+          }
           <button
             type="button"
             (click)="onBack()"
@@ -90,25 +100,8 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           <div class="lg:col-span-1">
             <label class="block text-sm font-semibold text-gray-700 mb-2">
-              Select Program <span class="text-red-500">*</span>
+              Current Program
             </label>
-            <!-- <select
-              formControlName="programId"
-              class="w-full px-3 sm:px-4 py-2 sm:py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-sm sm:text-base transition-colors"
-              [class.border-red-500]="isFieldInvalid('programId')"
-              [class.border-gray-300]="!isFieldInvalid('programId')"
-            >
-              <option value="">Choose a program...</option>
-              <option *ngFor="let program of programs" [value]="program._id">
-                {{ program.title }} ({{ program.category }})
-              </option>
-            </select>
-            <p
-              *ngIf="isFieldInvalid('programId')"
-              class="mt-1 text-sm text-red-600"
-            >
-              {{ getFieldError("programId") }}
-            </p> -->
             <input
               type="text"
               [value]="categoryName"
@@ -118,9 +111,12 @@
           </div>
 
           <div>
+            @if(isEditMode){
+
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               Duration (minutes) <span class="text-red-500">*</span>
             </label>
+
             <input
               type="number"
               formControlName="duration"
@@ -137,9 +133,23 @@
             >
               Duration must be between 15-480 minutes
             </p>
+            }@else{
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              Duration (minutes)
+            </label>
+
+            <input
+              type="number"
+              value="60"
+              class="w-full px-3 sm:px-4 py-2 sm:py-3 border-gray-900 rounded-lg bg-gray-100 text-sm sm:text-base"
+              readonly
+            />
+            }
           </div>
 
           <div>
+            @if(isEditMode){
+
             <label class="block text-sm font-semibold text-gray-700 mb-2">
               Capacity <span class="text-red-500">*</span>
             </label>
@@ -159,12 +169,26 @@
             >
               Capacity must be between 1-100
             </p>
+            }@else {
+            <label class="block text-sm font-semibold text-gray-700 mb-2">
+              Capacity
+            </label>
+            <input
+              type="number"
+              value="10"
+              class="w-full px-3 sm:px-4 py-2 sm:py-3 border-gray-900 rounded-lg bg-gray-100 text-sm sm:text-base"
+              readonly
+            />
+
+            }
           </div>
         </div>
       </form>
     </div>
 
     <!-- Time Slot Input Card -->
+    @if(isEditMode){
+
     <div
       class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8"
     >
@@ -259,7 +283,7 @@
         </div>
       </form>
     </div>
-
+    }
     <!-- Added Slots Display -->
     <div
       class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 mb-6 sm:mb-8"
@@ -293,10 +317,9 @@
         class="flex flex-wrap gap-2 min-h-[100px] p-4 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200"
       >
         <!-- Empty State -->
-        <div
-          *ngIf="!hasTimeSlots"
-          class="w-full text-center text-gray-500 py-8"
-        >
+        @if(!hasTimeSlots){
+
+        <div class="w-full text-center text-gray-500 py-8">
           <svg
             class="w-12 h-12 mx-auto mb-3 text-gray-400"
             fill="none"
@@ -315,10 +338,12 @@
             Add slots using the form above
           </p>
         </div>
+        }
 
         <!-- Time Slot Badges -->
+        @for (slot of timeSlots; track $index;let i = $index) {
+
         <div
-          *ngFor="let slot of timeSlots; let i = index"
           class="flex items-center bg-gradient-to-r from-green-600 to-emerald-600 text-white px-3 py-2 rounded-full text-sm font-medium shadow-md hover:shadow-lg transform hover:scale-105 transition-all duration-200 animate-slide-in"
         >
           <div class="flex flex-col sm:flex-row sm:items-center">
@@ -349,14 +374,18 @@
             </svg>
           </button>
         </div>
+        }
+        <!-- == -->
       </div>
     </div>
 
     <!-- Submit Actions -->
+
     <div
       class="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6"
     >
       <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end">
+        @if(isEditMode){
         <button
           type="button"
           (click)="onSaveAsDraft()"
@@ -395,6 +424,15 @@
           </svg>
           {{ isLoading ? "Creating Slots..." : "Create Training Slots" }}
         </button>
+        }@else {
+        <button
+          type="button"
+          (click)="onEditSlot()"
+          class="w-full sm:w-auto inline-flex items-center justify-center px-6 py-3 text-sm font-medium text-white bg-gradient-to-r from-green-600 to-emerald-600 border border-transparent rounded-lg hover:from-green-700 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-all order-1 sm:order-2"
+        >
+          Create / Edit
+        </button>
+        }
       </div>
     </div>
   </div>
