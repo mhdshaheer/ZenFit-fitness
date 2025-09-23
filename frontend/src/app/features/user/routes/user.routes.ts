@@ -30,6 +30,21 @@ export const USER_ROUTES: Routes = [
         redirectTo: 'dashboard',
         pathMatch: 'full',
       },
+      {
+        path: 'workouts',
+        loadComponent: () => {
+          return import(
+            '../component/program-category-list/program-category-list.component'
+          ).then((m) => m.ProgramCategoryListComponent);
+        },
+      },
+      {
+        path: 'programs/:id',
+        loadComponent: () =>
+          import('../component/program-list/program-list.component').then(
+            (m) => m.ProgramListComponent
+          ),
+      },
     ],
   },
 ];

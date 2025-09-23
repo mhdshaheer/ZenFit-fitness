@@ -1,0 +1,50 @@
+import { inject } from "inversify";
+import { ICategoryService } from "../interface/category.service.interface";
+import { ICategoryRepository } from "../../repositories/interface/category.repository.interface";
+import { TYPES } from "../../shared/types/inversify.types";
+import logger from "../../shared/services/logger.service";
+import { mapToCategoryDto } from "../../mapper/category.mapper";
+import { CategoryDto } from "../../dtos/category.dtos";
+import { ProgramRepositoy } from "../../repositories/implimentation/program.repository";
+import { IProgramRepository } from "../../repositories/interface/program.repository.interface";
+
+export class CategoryService implements ICategoryService {
+  constructor(
+    @inject(TYPES.CategoryRepository)
+    private categoryRepository: ICategoryRepository,
+    @inject(TYPES.ProgramRespository)
+    private programRepository: IProgramRepository
+  ) {}
+  async findAllCategory(): Promise<CategoryDto[]> {
+    try {
+      const categories = await this.categoryRepository.findAllCategory({
+        parantId: null,
+      });
+      if (categories == null) {
+        throw new Error("No categories found.");
+      }
+      const categoryDto = categories?.map(mapToCategoryDto);
+
+      return categoryDto;
+    } catch (error) {
+      logger.error("Error fetching categories:", error);
+      throw new Error("Failed to fetch categories");
+    }
+  }
+  async findALlSubCategory(): Promise<CategoryDto[]> {
+    try {
+      const subCategories = await this.categoryRepository.findAllCategory({
+        parantId: { $ne: null },
+      });
+      if (subCategories == null) {
+        throw new Error("No sub categories found.");
+      }
+      const subCategoryDto = subCategories?.map(mapToCategoryDto);
+
+      return subCategoryDto;
+    } catch (error) {
+      logger.error("Error fetching sub categories:", error);
+      throw new Error("Failed to fetch sub categories");
+    }
+  }
+}

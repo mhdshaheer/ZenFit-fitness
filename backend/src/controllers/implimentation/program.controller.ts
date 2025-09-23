@@ -4,6 +4,8 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { IProgramService } from "../../services/interface/program.service.interface";
 import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
+import { ProgramDto } from "../../dtos/program.dtos";
+import { HttpResponse } from "../../const/response_message.const";
 
 export class ProgramController implements IProgramController {
   constructor(
@@ -115,6 +117,36 @@ export class ProgramController implements IProgramController {
         message: "Failed to fetch program category",
         error: error instanceof Error ? error.message : String(error),
       });
+    }
+  }
+
+  async getProgramsByParantId(req: Request, res: Response): Promise<void> {
+    try {
+      const id = req.params.id;
+      const programs = await this.programService.getProgramsByParentId(id);
+      res.status(HttpStatus.OK).json({ programs });
+    } catch (error) {
+      console.error("Error fetching program category:", error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        message: "Failed to fetch program category",
+        error: error instanceof Error ? error.message : String(error),
+      });
+    }
+  }
+
+  async findProgram(
+    req: Request,
+    res: Response
+  ): Promise<Response<ProgramDto>> {
+    try {
+      const { id } = req.params;
+      const program = await this.programService.findProgram(id);
+      return res.status(HttpStatus.OK).json(program);
+    } catch (error) {
+      console.error("Error in fetching category:", error);
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json(HttpResponse.SERVER_ERROR);
     }
   }
 }

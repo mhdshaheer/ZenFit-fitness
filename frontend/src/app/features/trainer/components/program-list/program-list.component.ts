@@ -4,7 +4,7 @@ import { ProgramService } from '../../../../core/services/program.service';
 import { Router } from '@angular/router';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
 
-interface FitnessProgram {
+export interface FitnessProgram {
   id?: string;
   _id?: string;
   title: string;
@@ -34,7 +34,10 @@ export class ProgramListComponent {
     this.programService.getPrograms().subscribe({
       next: (res) => {
         console.log('Programs response:', res);
-        this.fitnessPrograms = res?.programs ?? [];
+        this.fitnessPrograms = res.programs.map((item) => {
+          let category = JSON.parse(item.category).name;
+          return { ...item, category: category };
+        });
       },
       error: (err) => {
         console.error('Error fetching programs:', err);
@@ -49,17 +52,15 @@ export class ProgramListComponent {
 
   onViewProgram(programId: string): void {
     console.log('Viewing program with ID:', programId);
+    this.router.navigate(['/trainer/program', programId]);
   }
 
-  onEditProgram(programId: string): void {
-    console.log('Editing program with ID:', programId);
+  onProgramSlot(programId: string): void {
+    console.log('Program ID:', programId);
+    this.router.navigate(['/trainer/slot', programId]);
   }
 
   createProgram() {
     this.router.navigate([`/trainer/program-create`]);
-  }
-
-  createSlot() {
-    this.router.navigate(['/trainer/slot-create']);
   }
 }

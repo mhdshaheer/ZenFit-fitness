@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -9,6 +8,11 @@ import {
 import { ProgramService } from '../../../../core/services/program.service';
 import { Program } from '../../store/trainer.model';
 import { ToastService } from '../../../../core/services/toast.service';
+import {
+  CategoryService,
+  ICategory,
+} from '../../../../core/services/category.service';
+import { Router } from '@angular/router';
 
 export interface Category {
   value: string;
@@ -24,27 +28,37 @@ export interface Category {
 export class ProgramCreateComponent implements OnInit {
   programService = inject(ProgramService);
   toastService = inject(ToastService);
+  router = inject(Router);
   programForm!: FormGroup;
   characterCount = 0;
   isSubmitting = false;
   currentTrainerId = '';
+  categoryService = inject(CategoryService);
 
-  categories: Category[] = [
-    { value: 'strength', label: 'Strength Training' },
-    { value: 'cardio', label: 'Cardio & Endurance' },
-    { value: 'flexibility', label: 'Flexibility & Mobility' },
-    { value: 'weight-loss', label: 'Weight Loss' },
-    { value: 'muscle-gain', label: 'Muscle Gain' },
-    { value: 'sports-specific', label: 'Sports Specific' },
-    { value: 'rehabilitation', label: 'Rehabilitation' },
-    { value: 'general-fitness', label: 'General Fitness' },
-  ];
+  categories: Category[] = [];
 
   constructor(private fb: FormBuilder) {}
 
+  getSubCategories() {
+    this.categoryService.getSubcateories().subscribe({
+      next: (res: ICategory[]) => {
+        console.log('sub categories are ..:', res);
+        this.categories = res.map((item) => {
+          return {
+            value: item._id,
+            label: item.name,
+          };
+        });
+      },
+      error: (err) => {
+        console.log('Failed to fetch subcategories ', err);
+      },
+    });
+  }
   ngOnInit() {
     this.initializeForm();
     this.generateProgramId();
+    this.getSubCategories();
   }
 
   initializeForm() {
@@ -102,6 +116,8 @@ export class ProgramCreateComponent implements OnInit {
           console.log('Training Program saved successfully:', res);
           this.toastService.success('Training Program saved successfully');
           this.isSubmitting = false;
+          this.resetForm();
+          this.router.navigate(['/trainer/programs']);
         },
         error: (err) => {
           console.error('Error saving Training Program:', err);
@@ -129,6 +145,8 @@ export class ProgramCreateComponent implements OnInit {
         console.log('Draft saved successfully:', res);
         this.toastService.success('Draft saved successfully');
         this.isSubmitting = false;
+        this.resetForm();
+        this.router.navigate(['/trainer/programs']);
       },
       error: (err) => {
         console.error('Error saving draft:', err);

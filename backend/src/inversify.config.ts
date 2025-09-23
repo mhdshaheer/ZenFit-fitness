@@ -29,6 +29,12 @@ import { ProgramRepositoy } from "./repositories/implimentation/program.reposito
 import { ISessionRepository } from "./repositories/interface/session.repository.interface";
 import { SessionRepository } from "./repositories/implimentation/session.repository";
 import { TYPES } from "./shared/types/inversify.types";
+import { ICategoryService } from "./services/interface/category.service.interface";
+import { CategoryService } from "./services/implimentation/category.service";
+import { ICategoryRepository } from "./repositories/interface/category.repository.interface";
+import { CategoryRepository } from "./repositories/implimentation/category.repository";
+import { ICategoryController } from "./controllers/interface/category.controller.interface";
+import { CategoryController } from "./controllers/implimentation/category.controller";
 
 const container = new Container();
 
@@ -62,6 +68,12 @@ container
   .bind<ISessionController>(TYPES.SessionController)
   .to(SessionController);
 
+// Category
+container.bind<ICategoryService>(TYPES.CategoryService).to(CategoryService);
+container
+  .bind<ICategoryController>(TYPES.CategoryController)
+  .to(CategoryController);
+
 // Repositories
 container.bind<IUserRepository>(TYPES.UserRepository).to(UserRepository);
 container
@@ -73,5 +85,8 @@ container
 container
   .bind<ISessionRepository>(TYPES.SessionRepository)
   .to(SessionRepository);
+container
+  .bind<ICategoryRepository>(TYPES.CategoryRepository)
+  .to(CategoryRepository);
 
 export { container };

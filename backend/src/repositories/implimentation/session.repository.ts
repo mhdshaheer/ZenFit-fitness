@@ -15,4 +15,7 @@ export class SessionRepository
   ): Promise<ISession | null> {
     return await this.updateCondition(condition, sessions);
   }
+  async getSessionsById(id: string): Promise<ISession | null> {
+    return await this.model.findOne({ programId: id }).exec();
+  }
 }

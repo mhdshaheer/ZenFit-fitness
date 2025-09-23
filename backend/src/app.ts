@@ -13,6 +13,7 @@ import router from "./routes/file.routes";
 import userRouter from "./routes/user.routes";
 import programRouter from "./routes/program.routes";
 import sessionRouter from "./routes/session.routes";
+import categoryRouter from "./routes/category.routes";
 
 const app = express();
 app.use(
@@ -30,6 +31,7 @@ const loginLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
+
 app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
@@ -41,5 +43,6 @@ app.use("/file", router);
 app.use("/user", userRouter);
 app.use("/program", programRouter);
 app.use("/session", sessionRouter);
+app.use("/category", categoryRouter);
 
 export default app;

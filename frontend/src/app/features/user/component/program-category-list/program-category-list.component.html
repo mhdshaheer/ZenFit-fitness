@@ -1,1 +1,47 @@
-<p>program-category-list works!</p>
+<div class="min-h-screen bg-gray-50 py-16 px-4">
+  <div class="max-w-5xl mx-auto">
+    <!-- Header -->
+    <div class="text-center mb-16">
+      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+        Explore Training Categories
+      </h1>
+      <p class="text-lg text-gray-600">
+        Whether you’re chasing a goal, improving your lifestyle, or exploring
+        specialized training, find the right path for you.
+      </p>
+    </div>
+
+    <!-- Category Cards Grid -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
+      @for(card of categoryCards;track card){
+
+      <div
+        class="category-card group cursor-pointer border-2 border-gray-200 rounded-2xl p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-emerald-400"
+        (click)="onCardClick(card)"
+      >
+        <!-- Icon Circle -->
+        <div class="flex justify-center mb-6">
+          <div
+            class="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
+            [ngClass]="getIconBgClass(card.color!)"
+          >
+            <span class="text-2xl">{{ card.icon }}</span>
+          </div>
+        </div>
+
+        <!-- Card Content -->
+        <div class="text-center">
+          <h3
+            class="font-semibold text-gray-900 text-lg mb-3 group-hover:text-gray-700 transition-colors"
+          >
+            {{ card.title }}
+          </h3>
+          <p class="text-gray-600 text-sm leading-relaxed mb-4 px-1">
+            {{ card.description }}
+          </p>
+        </div>
+      </div>
+      }
+    </div>
+  </div>
+</div>

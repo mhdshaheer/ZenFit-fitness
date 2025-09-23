@@ -1,0 +1,22 @@
+.category-card {
+      @apply bg-white rounded-2xl p-8 shadow-sm border border-gray-100 transition-all duration-300;
+      @apply hover:shadow-lg hover:border-gray-200 hover:-translate-y-1;
+      min-height: 240px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+
+    @media (max-width: 640px) {
+      .category-card {
+        padding: 2rem 1.5rem;
+        min-height: 220px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .category-card {
+        padding: 1.5rem;
+        min-height: 200px;
+      }
+    }

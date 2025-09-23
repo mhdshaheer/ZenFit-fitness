@@ -22,6 +22,7 @@ export class AdminLayoutComponent {
   userMenu: Menu[] = [
     { label: 'Dashboard', route: '/admin/dashboard', icon: 'fas fa-user' },
     { label: 'Users', route: '/admin/users', icon: 'fas fa-dumbbell' },
+    { label: 'Category', route: '/admin/category', icon: 'fas fa-cog' },
     { label: 'Settings', route: '/admin/settings', icon: 'fas fa-cog' },
   ];
   handleMenuClick(item: Menu) {
