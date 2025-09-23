@@ -10,6 +10,7 @@ export interface ProgramDto {
   rating?: number;
   price: number;
   status: "active" | "inactive" | "draft";
+  programId?: string;
 }
 export interface ProgramSlotDto {
   id: string;

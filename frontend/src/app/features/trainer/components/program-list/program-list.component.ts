@@ -52,6 +52,7 @@ export class ProgramListComponent {
 
   onViewProgram(programId: string): void {
     console.log('Viewing program with ID:', programId);
+    this.router.navigate(['/trainer/program', programId]);
   }
 
   onProgramSlot(programId: string): void {

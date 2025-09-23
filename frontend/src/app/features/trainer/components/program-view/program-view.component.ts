@@ -1,31 +1,31 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ProgramService } from '../../../../core/services/program.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { ActivatedRoute, Router } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ProgramService } from '../../../../core/services/program.service';
-import { Program } from '../../store/trainer.model';
-import { ToastService } from '../../../../core/services/toast.service';
 import {
   CategoryService,
   ICategory,
 } from '../../../../core/services/category.service';
-import { Router } from '@angular/router';
+import { Program } from '../../store/trainer.model';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 export interface Category {
   value: string;
   label: string;
 }
-
 @Component({
-  selector: 'app-program-create',
+  selector: 'app-program-view',
   imports: [ReactiveFormsModule],
-  templateUrl: './program-create.component.html',
-  styleUrl: './program-create.component.css',
+  templateUrl: './program-view.component.html',
+  styleUrl: './program-view.component.css',
 })
-export class ProgramCreateComponent implements OnInit {
+export class ProgramViewComponent {
   programService = inject(ProgramService);
   toastService = inject(ToastService);
   router = inject(Router);
@@ -34,10 +34,21 @@ export class ProgramCreateComponent implements OnInit {
   isSubmitting = false;
   currentTrainerId = '';
   categoryService = inject(CategoryService);
+  route = inject(ActivatedRoute);
+  logger = inject(LoggerService);
+  programId!: string;
+  category: Category = {
+    value: '',
+    label: '',
+  };
 
   categories: Category[] = [];
 
-  constructor(private fb: FormBuilder) {}
+  constructor(private fb: FormBuilder) {
+    this.route.paramMap.subscribe((params) => {
+      this.programId = params.get('id') as string;
+    });
+  }
 
   getSubCategories() {
     this.categoryService.getSubcateories().subscribe({
@@ -57,13 +68,31 @@ export class ProgramCreateComponent implements OnInit {
   }
   ngOnInit() {
     this.initializeForm();
-    this.generateProgramId();
     this.getSubCategories();
+    this.getProgram();
+  }
+
+  getProgram() {
+    this.programService.getProgramByProgramId(this.programId).subscribe({
+      next: (res: Program) => {
+        this.logger.info('Program :', res);
+        let val = JSON.parse(res.category);
+        this.category = {
+          value: val._id,
+          label: val.name,
+        };
+
+        this.programForm.patchValue(res);
+      },
+      error: (err) => {
+        this.logger.error('Failed to fetch program :', err);
+      },
+    });
   }
 
   initializeForm() {
     this.programForm = this.fb.group({
-      programId: ['', [Validators.required, Validators.minLength(3)]],
+      programId: [, [Validators.required, Validators.minLength(3)]],
       title: [
         '',
         [
@@ -84,16 +113,6 @@ export class ProgramCreateComponent implements OnInit {
     this.programForm.get('description')?.valueChanges.subscribe((value) => {
       this.characterCount = value ? value.length : 0;
     });
-  }
-
-  generateProgramId() {
-    // Auto-generate a unique program ID
-    const currentYear = new Date().getFullYear();
-    const randomNumber = Math.floor(Math.random() * 1000)
-      .toString()
-      .padStart(3, '0');
-    const programId = `FIT-${currentYear}-${randomNumber}`;
-    this.programForm.patchValue({ programId });
   }
 
   updateCharacterCount() {
@@ -131,35 +150,10 @@ export class ProgramCreateComponent implements OnInit {
     }
   }
 
-  saveDraft() {
-    this.isSubmitting = true;
-
-    const draftData: Program = {
-      ...this.programForm.value,
-      trainerId: this.currentTrainerId,
-      status: 'draft',
-    };
-
-    this.programService.saveProgramDraft(draftData).subscribe({
-      next: (res) => {
-        console.log('Draft saved successfully:', res);
-        this.toastService.success('Draft saved successfully');
-        this.isSubmitting = false;
-        this.resetForm();
-        this.router.navigate(['/trainer/programs']);
-      },
-      error: (err) => {
-        console.error('Error saving draft:', err);
-        this.toastService.error('Failed to save draft');
-        this.isSubmitting = false;
-      },
-    });
-  }
-
   resetForm() {
     this.programForm.reset();
     this.characterCount = 0;
-    this.generateProgramId();
+    // this.generateProgramId();
     this.programForm.patchValue({ status: 'draft' });
   }
 

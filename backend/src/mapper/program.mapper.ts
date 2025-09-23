@@ -11,6 +11,7 @@ export const mapToProgramDto = (programs: IProgram): ProgramDto => {
     difficultyLevel: programs.difficultyLevel,
     price: programs.price,
     status: programs.status,
+    programId: programs.programId,
     //   image?: programs;
     //   enrolledCount?: programs.entrolledCount,
     //   rating?: number;
