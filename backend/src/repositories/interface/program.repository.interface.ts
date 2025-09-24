@@ -10,4 +10,8 @@ export interface IProgramRepository {
   getPrograms(id: string): Promise<IProgram[]>;
   getProgramsFilter(condition: FilterQuery<IProgram>): Promise<IProgram[]>;
   findProgramById(programId: string): Promise<IProgram | null>;
+  updateProgramById(
+    programId: string,
+    program: Partial<IProgram>
+  ): Promise<IProgram | null>;
 }

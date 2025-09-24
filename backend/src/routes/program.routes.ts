@@ -38,4 +38,8 @@ programRouter.get("/:id", (req, res, next) => {
   programController.findProgram(req, res).catch(next);
 });
 
+programRouter.put("/:id", (req, res, next) => {
+  programController.updateProgram(req, res).catch(next);
+});
+
 export default programRouter;

@@ -37,6 +37,7 @@ export class ProgramViewComponent {
   route = inject(ActivatedRoute);
   logger = inject(LoggerService);
   programId!: string;
+  isEditMode = false;
   category: Category = {
     value: '',
     label: '',
@@ -130,20 +131,31 @@ export class ProgramViewComponent {
         status: 'active',
       };
 
-      this.programService.saveProgram(programData).subscribe({
+      this.programService.updateProgram(this.programId, programData).subscribe({
         next: (res) => {
-          console.log('Training Program saved successfully:', res);
-          this.toastService.success('Training Program saved successfully');
-          this.isSubmitting = false;
-          this.resetForm();
-          this.router.navigate(['/trainer/programs']);
+          this.toastService.success('Program data is updated');
+          this.logger.info('response:', res);
         },
         error: (err) => {
-          console.error('Error saving Training Program:', err);
-          this.toastService.error('Failed to save Training Program');
-          this.isSubmitting = false;
+          this.toastService.error('Updation failed');
+          this.logger.info('Updation failed:', err);
         },
       });
+
+      // this.programService.saveProgram(programData).subscribe({
+      //   next: (res) => {
+      //     console.log('Training Program saved successfully:', res);
+      //     this.toastService.success('Training Program saved successfully');
+      //     this.isSubmitting = false;
+      //     this.resetForm();
+      //     this.router.navigate(['/trainer/programs']);
+      //   },
+      //   error: (err) => {
+      //     console.error('Error saving Training Program:', err);
+      //     this.toastService.error('Failed to save Training Program');
+      //     this.isSubmitting = false;
+      //   },
+      // });
     } else {
       this.markFormGroupTouched();
       console.log('Form is invalid');
@@ -206,5 +218,9 @@ export class ProgramViewComponent {
       ...this.programForm.value,
       trainerId: this.currentTrainerId,
     };
+  }
+
+  onEdit() {
+    this.isEditMode = true;
   }
 }

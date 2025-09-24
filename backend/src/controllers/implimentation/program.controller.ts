@@ -149,4 +149,30 @@ export class ProgramController implements IProgramController {
         .json(HttpResponse.SERVER_ERROR);
     }
   }
+
+  async updateProgram(
+    req: Request,
+    res: Response
+  ): Promise<Response<{ message: string }>> {
+    try {
+      const programId = req.params.id;
+      const programData = req.body;
+      let response = await this.programService.updateProgram(
+        programId,
+        programData
+      );
+      if (!response) {
+        return res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: "Program updation failed" });
+      }
+      return res
+        .status(HttpStatus.OK)
+        .json({ message: "Program updated successfully" });
+    } catch (error) {
+      return res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .json({ message: "Failed to update program" });
+    }
+  }
 }

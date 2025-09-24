@@ -41,4 +41,11 @@ export class ProgramService {
   getProgramByProgramId(programId: string) {
     return this.http.get<Program>(`${this.apiUrl}/program/${programId}`);
   }
+
+  updateProgram(programId: string, program: Program) {
+    return this.http.put<{ message: string }>(
+      `${this.apiUrl}/program/${programId}`,
+      program
+    );
+  }
 }
