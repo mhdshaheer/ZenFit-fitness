@@ -1,7 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, Input } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProfileService } from '../../../../core/services/profile.service';
+import { Subject, takeUntil } from 'rxjs';
 
 interface TrainerProfile {
   id: string;
@@ -36,11 +37,13 @@ interface UploadFile {
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css',
 })
-export class UserProfileComponent {
+export class UserProfileComponent implements OnDestroy {
   uploadedFile: UploadFile | null = null;
   profileImage: string = '';
   private route = inject(ActivatedRoute);
   private profileService = inject(ProfileService);
+
+  private destroy$ = new Subject<void>();
   trainer: TrainerProfile | null = null;
 
   onImageError(event: any) {
@@ -109,10 +112,13 @@ export class UserProfileComponent {
 
   verifyResume() {
     if (this.uploadedFile && this.trainer) {
-      this.profileService.verifyResume(this.trainer.id).subscribe((res) => {
-        this.trainer!.isVerified = res.isVerified;
-        console.log('response from verify :', res);
-      });
+      this.profileService
+        .verifyResume(this.trainer.id)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe((res) => {
+          this.trainer!.isVerified = res.isVerified;
+          console.log('response from verify :', res);
+        });
     }
   }
 
@@ -129,7 +135,7 @@ export class UserProfileComponent {
   }
 
   ngOnInit() {
-    this.route.paramMap.subscribe((params) => {
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       const id = params.get('id');
       this.loadProfile(id!);
       console.log('id on ngONInit profile side :', id);
@@ -137,49 +143,58 @@ export class UserProfileComponent {
   }
 
   loadProfile(id: string) {
-    this.profileService.getProfile(id).subscribe((res) => {
-      console.log('profile details:', res);
-      if (res.profileImage) {
-        this.profileService
-          .getFile(res.profileImage, id)
-          .subscribe((fileRes) => {
-            this.profileImage = fileRes.url;
-            console.log('profileimage :', fileRes.url);
-          });
-      }
-      if (res.resume) {
-        this.profileService
-          .getFile(res.resume, id)
-          .subscribe(async (fileRes) => {
-            let fileDetails = JSON.parse(fileRes.url);
-            const response = await fetch(fileDetails.url);
-            const blob = await response.blob();
-            const file = new File([blob], fileDetails.name || 'resume.pdf', {
-              type: fileDetails.type,
+    this.profileService
+      .getProfile(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        console.log('profile details:', res);
+        if (res.profileImage) {
+          this.profileService
+            .getFile(res.profileImage, id)
+            .subscribe((fileRes) => {
+              this.profileImage = fileRes.url;
+              console.log('profileimage :', fileRes.url);
             });
+        }
+        if (res.resume) {
+          this.profileService
+            .getFile(res.resume, id)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(async (fileRes) => {
+              let fileDetails = JSON.parse(fileRes.url);
+              const response = await fetch(fileDetails.url);
+              const blob = await response.blob();
+              const file = new File([blob], fileDetails.name || 'resume.pdf', {
+                type: fileDetails.type,
+              });
 
-            this.uploadedFile = {
-              name: file.name,
-              size: file.size,
-              type: file.type,
-              file,
-              uploadedAt: new Date(fileDetails.uploadedAt),
-            };
-          });
-      }
-      this.trainer = {
-        id: res.id,
-        name: res.fullName || res.username,
-        image: this.profileImage,
-        email: res.email,
-        dob: res.dob,
-        gender: res.gender,
-        languages: [],
-        role: res.role,
-        phone: res.phone,
-        isVerified: res.resumeVerified,
-      };
-      console.log('pdf :', this.uploadedFile);
-    });
+              this.uploadedFile = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                file,
+                uploadedAt: new Date(fileDetails.uploadedAt),
+              };
+            });
+        }
+        this.trainer = {
+          id: res.id,
+          name: res.fullName || res.username,
+          image: this.profileImage,
+          email: res.email,
+          dob: res.dob,
+          gender: res.gender,
+          languages: [],
+          role: res.role,
+          phone: res.phone,
+          isVerified: res.resumeVerified,
+        };
+        console.log('pdf :', this.uploadedFile);
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
