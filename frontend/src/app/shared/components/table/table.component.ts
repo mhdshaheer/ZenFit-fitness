@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { debounceSearch } from '../../utils.ts/debouce.util';
 export interface TableColumn {
   key: string;
   label: string;
@@ -59,10 +60,15 @@ export class TableComponent {
     sortOrder: 'asc' | 'desc';
   }>();
 
+  // debounced search
   onSearch(event: Event) {
     const input = (event.target as HTMLInputElement).value;
-    this.searchChanged.emit(input);
+    this.debouncedEmit(input);
   }
+
+  private debouncedEmit = debounceSearch((query: string) => {
+    this.searchChanged.emit(query);
+  }, 300);
 
   onSort(columnKey: string) {
     console.log('Sort : ', columnKey, this.sortDirection);
