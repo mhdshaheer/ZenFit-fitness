@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Router, RouterModule } from '@angular/router';
@@ -9,6 +9,7 @@ import {
   UserProfile,
 } from '../../../../shared/components/header/header.component';
 import { ProfileService } from '../../../../core/services/profile.service';
+import { Subject, takeUntil } from 'rxjs';
 
 interface Menu {
   label: string;
@@ -22,12 +23,14 @@ interface Menu {
   templateUrl: './trainer-layout.component.html',
   styleUrl: './trainer-layout.component.css',
 })
-export class TrainerLayoutComponent {
+export class TrainerLayoutComponent implements OnDestroy {
   isMobileMenuOpen = false;
   authService = inject(AuthService);
   logger = inject(LoggerService);
   router = inject(Router);
   profileService = inject(ProfileService);
+
+  private destroy$ = new Subject<void>();
 
   // Sidebar
   userMenu: Menu[] = [
@@ -54,15 +57,18 @@ export class TrainerLayoutComponent {
   }
 
   logOutUser() {
-    this.authService.logout().subscribe({
-      next: (res) => {
-        this.logger.info(res.message);
-        this.router.navigate(['/auth/login']);
-      },
-      error: (err) => {
-        this.logger.error(err);
-      },
-    });
+    this.authService
+      .logout()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.logger.info(res.message);
+          this.router.navigate(['/auth/login']);
+        },
+        error: (err) => {
+          this.logger.error(err);
+        },
+      });
   }
 
   // =================================================
@@ -80,17 +86,23 @@ export class TrainerLayoutComponent {
       role: '',
       avatar: '',
     };
-    this.profileService.getProfile().subscribe((res) => {
-      if (res.profileImage) {
-        this.profileService.getFile(res.profileImage).subscribe((fileRes) => {
-          userData.avatar = fileRes.url;
-        });
-      }
-      userData.name = res.fullName;
-      userData.email = res.email;
-      userData.role = res.role;
-      this.currentUser = userData;
-    });
+    this.profileService
+      .getProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        if (res.profileImage) {
+          this.profileService
+            .getFile(res.profileImage)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((fileRes) => {
+              userData.avatar = fileRes.url;
+            });
+        }
+        userData.name = res.fullName;
+        userData.email = res.email;
+        userData.role = res.role;
+        this.currentUser = userData;
+      });
   }
   navItems: NavMenuItem[] = [
     {
@@ -154,5 +166,10 @@ export class TrainerLayoutComponent {
     if (this.activityLog.length > 10) {
       this.activityLog = this.activityLog.slice(0, 10);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

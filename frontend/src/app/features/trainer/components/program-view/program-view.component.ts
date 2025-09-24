@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { ProgramService } from '../../../../core/services/program.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -14,81 +14,85 @@ import {
 } from '../../../../core/services/category.service';
 import { Program } from '../../store/trainer.model';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { Subject, takeUntil } from 'rxjs';
 
 export interface Category {
   value: string;
   label: string;
 }
+
 @Component({
   selector: 'app-program-view',
   imports: [ReactiveFormsModule],
   templateUrl: './program-view.component.html',
   styleUrl: './program-view.component.css',
 })
-export class ProgramViewComponent {
+export class ProgramViewComponent implements OnInit, OnDestroy {
   programService = inject(ProgramService);
   toastService = inject(ToastService);
   router = inject(Router);
+  categoryService = inject(CategoryService);
+  route = inject(ActivatedRoute);
+  logger = inject(LoggerService);
+
   programForm!: FormGroup;
   characterCount = 0;
   isSubmitting = false;
   currentTrainerId = '';
-  categoryService = inject(CategoryService);
-  route = inject(ActivatedRoute);
-  logger = inject(LoggerService);
   programId!: string;
   isEditMode = false;
-  category: Category = {
-    value: '',
-    label: '',
-  };
 
+  category: Category = { value: '', label: '' };
   categories: Category[] = [];
 
-  constructor(private fb: FormBuilder) {
-    this.route.paramMap.subscribe((params) => {
+  private destroy$ = new Subject<void>();
+
+  constructor(private fb: FormBuilder) {}
+
+  ngOnInit() {
+    // Route param subscription with cleanup
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.programId = params.get('id') as string;
     });
-  }
 
-  getSubCategories() {
-    this.categoryService.getSubcateories().subscribe({
-      next: (res: ICategory[]) => {
-        console.log('sub categories are ..:', res);
-        this.categories = res.map((item) => {
-          return {
-            value: item._id,
-            label: item.name,
-          };
-        });
-      },
-      error: (err) => {
-        console.log('Failed to fetch subcategories ', err);
-      },
-    });
-  }
-  ngOnInit() {
     this.initializeForm();
     this.getSubCategories();
     this.getProgram();
   }
 
-  getProgram() {
-    this.programService.getProgramByProgramId(this.programId).subscribe({
-      next: (res: Program) => {
-        this.logger.info('Program :', res);
-        let val = JSON.parse(res.category);
-        this.category = {
-          value: val._id,
-          label: val.name,
-        };
+  getSubCategories() {
+    this.categoryService
+      .getSubcateories()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: ICategory[]) => {
+          console.log('sub categories are ..:', res);
+          this.categories = res.map((item) => ({
+            value: item._id,
+            label: item.name,
+          }));
+        },
+        error: (err) => {
+          console.log('Failed to fetch subcategories ', err);
+        },
+      });
+  }
 
-        this.programForm.patchValue(res);
-      },
-      error: (err) => {
-        this.logger.error('Failed to fetch program :', err);
-      },
-    });
+  getProgram() {
+    this.programService
+      .getProgramByProgramId(this.programId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: Program) => {
+          this.logger.info('Program :', res);
+          let val = JSON.parse(res.category);
+          this.category = { value: val._id, label: val.name };
+          this.programForm.patchValue(res);
+        },
+        error: (err) => {
+          this.logger.error('Failed to fetch program :', err);
+        },
+      });
   }
 
   initializeForm() {
@@ -110,10 +114,13 @@ export class ProgramViewComponent {
       status: ['draft'],
     });
 
-    // Watch description changes for character count
-    this.programForm.get('description')?.valueChanges.subscribe((value) => {
-      this.characterCount = value ? value.length : 0;
-    });
+    // Watch description changes with cleanup
+    this.programForm
+      .get('description')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((value) => {
+        this.characterCount = value ? value.length : 0;
+      });
   }
 
   updateCharacterCount() {
@@ -131,16 +138,19 @@ export class ProgramViewComponent {
         status: 'active',
       };
 
-      this.programService.updateProgram(this.programId, programData).subscribe({
-        next: (res) => {
-          this.toastService.success('Program data is updated');
-          this.logger.info('response:', res);
-        },
-        error: (err) => {
-          this.toastService.error('Updation failed');
-          this.logger.info('Updation failed:', err);
-        },
-      });
+      this.programService
+        .updateProgram(this.programId, programData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res) => {
+            this.toastService.success('Program data is updated');
+            this.logger.info('response:', res);
+          },
+          error: (err) => {
+            this.toastService.error('Updation failed');
+            this.logger.error('Updation failed:', err);
+          },
+        });
     } else {
       this.markFormGroupTouched();
       console.log('Form is invalid');
@@ -150,7 +160,6 @@ export class ProgramViewComponent {
   resetForm() {
     this.programForm.reset();
     this.characterCount = 0;
-    // this.generateProgramId();
     this.programForm.patchValue({ status: 'draft' });
   }
 
@@ -165,7 +174,6 @@ export class ProgramViewComponent {
     });
   }
 
-  // Utility methods for form validation feedback
   isFieldInvalid(fieldName: string): boolean {
     const field = this.programForm.get(fieldName);
     return !!(field?.invalid && field?.touched);
@@ -192,20 +200,20 @@ export class ProgramViewComponent {
     return null;
   }
 
-  // Method to check if form has unsaved changes
   hasUnsavedChanges(): boolean {
     return this.programForm.dirty;
   }
 
-  // Method to get form data for preview
   getFormData(): Program {
-    return {
-      ...this.programForm.value,
-      trainerId: this.currentTrainerId,
-    };
+    return { ...this.programForm.value, trainerId: this.currentTrainerId };
   }
 
   onEdit() {
     this.isEditMode = true;
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
