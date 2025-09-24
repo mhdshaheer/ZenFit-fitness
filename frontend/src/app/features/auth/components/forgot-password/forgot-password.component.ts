@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, signal } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -10,6 +10,7 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
 import { SharedFormComponent } from '../../../../shared/components/shared-form/shared-form.component';
 import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-forgot-password',
@@ -18,7 +19,7 @@ import { Router } from '@angular/router';
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.css'],
 })
-export class ForgotPasswordComponent implements OnInit {
+export class ForgotPasswordComponent implements OnInit, OnDestroy {
   step = 1;
   form!: FormGroup;
   otpForm!: FormGroup;
@@ -37,6 +38,8 @@ export class ForgotPasswordComponent implements OnInit {
   // ========= *Styles ========
 
   isLoading = signal(false);
+
+  private destroy$ = new Subject<void>(); // ✅ for unsubscribing all observables
 
   ngOnInit() {
     this.startTimer();
@@ -82,28 +85,38 @@ export class ForgotPasswordComponent implements OnInit {
   sendOtp() {
     this.submitted = true;
     if (this.form.invalid) return;
+
     this.isLoading.set(true);
-    this.authService.sendOtp(this.form.value.email).subscribe({
-      next: (res) => {
-        this.email = this.form.value.email;
-        Swal.fire('Success', res.message, 'success');
-        this.step = 2;
-        this.submitted = false;
-        this.isLoading.set(false);
-      },
-      error: (err) => {
-        this.isLoading.set(false);
-        Swal.fire('Error', err.error?.message || 'Failed to send OTP', 'error');
-      },
-    });
+    this.authService
+      .sendOtp(this.form.value.email)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.email = this.form.value.email;
+          Swal.fire('Success', res.message, 'success');
+          this.step = 2;
+          this.submitted = false;
+          this.isLoading.set(false);
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          Swal.fire(
+            'Error',
+            err.error?.message || 'Failed to send OTP',
+            'error'
+          );
+        },
+      });
   }
 
   verifyForgotOtp() {
     this.submitted = true;
     if (this.otpForm.invalid) return;
+
     this.isLoading.set(true);
     this.authService
       .verifyForgotOtp(this.email, this.otpForm.value.otp)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           Swal.fire('OTP Verified', 'success');
@@ -125,9 +138,11 @@ export class ForgotPasswordComponent implements OnInit {
   resetPassword() {
     this.submitted = true;
     if (this.resetForm.invalid) return;
+
     this.isLoading.set(true);
     this.authService
       .resetPassword(this.email, this.resetForm.value.password)
+      .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: () => {
           this.isLoading.set(false);
@@ -155,29 +170,39 @@ export class ForgotPasswordComponent implements OnInit {
 
   resendOtp() {
     this.startTimer();
-    this.authService.sendOtp(this.email).subscribe({
-      next: (res) => {
-        this.email = this.form.value.email;
-        Swal.fire('Success', res.message, 'success');
-        this.step = 2;
-      },
-      error: (err) => {
-        this.isLoading.set(false);
-        Swal.fire(
-          'Error',
-          err.error?.message || 'Failed to resend OTP',
-          'error'
-        );
-      },
-    });
+    this.authService
+      .sendOtp(this.email)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.email = this.form.value.email;
+          Swal.fire('Success', res.message, 'success');
+          this.step = 2;
+        },
+        error: (err) => {
+          this.isLoading.set(false);
+          Swal.fire(
+            'Error',
+            err.error?.message || 'Failed to resend OTP',
+            'error'
+          );
+        },
+      });
   }
+
   startTimer() {
     this.timer = 30;
     this.intervel = setInterval(() => {
       this.timer--;
-      if (this.timer == 0) {
+      if (this.timer === 0) {
         clearInterval(this.intervel);
       }
     }, 1000);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(); // unsubscribe all observables
+    this.destroy$.complete(); // complete the subject
+    clearInterval(this.intervel); // stop the timer
   }
 }
