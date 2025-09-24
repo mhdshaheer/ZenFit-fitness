@@ -1,4 +1,4 @@
-import { IUser } from "../../interfaces/user.interface";
+import { GetUsersParams, IUser } from "../../interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
 import { inject, injectable } from "inversify";
 import { UserDto } from "../../dtos/user.dtos";
@@ -6,13 +6,6 @@ import { mapToUserDto } from "../../mapper/user.mapper";
 import { IUserRepository } from "../../repositories/interface/user.repository.interface";
 import { TYPES } from "../../shared/types/inversify.types";
 
-interface GetUsersParams {
-  page: number;
-  pageSize: number;
-  search?: string;
-  sortBy?: string;
-  sortOrder?: 1 | -1;
-}
 @injectable()
 export class AdminService {
   @inject(TYPES.UserRepository)

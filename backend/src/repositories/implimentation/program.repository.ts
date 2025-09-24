@@ -1,5 +1,4 @@
 import { FilterQuery } from "mongoose";
-import { ProgramDto } from "../../dtos/program.dtos";
 import { IProgram, ProgramModel } from "../../models/program.model";
 import { BaseRepository } from "../base.repository";
 import { IProgramRepository } from "../interface/program.repository.interface";

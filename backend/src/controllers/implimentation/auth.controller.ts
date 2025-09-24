@@ -11,12 +11,11 @@ import {
   generateAccessToken,
   generateRefreshToken,
 } from "../../shared/utils/jwt.util";
+import { IAuthService } from "../../services/interface/auth.service.interface";
 
 @injectable()
 export class AuthController implements IAuthController {
-  // private authService = new AuthService();
-
-  constructor(@inject(TYPES.AuthService) private authService: AuthService) {}
+  constructor(@inject(TYPES.AuthService) private authService: IAuthService) {}
 
   async signup(req: Request, res: Response): Promise<void> {
     try {

@@ -1,15 +1,17 @@
 import { Request, Response } from "express";
-import { AdminService } from "../../services/implimentation/admin.service";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IAdminController } from "../interface/admin.controller.interface";
 import { inject, injectable } from "inversify";
 import { mapToUserStatusDto } from "../../mapper/user.mapper";
 import { TYPES } from "../../shared/types/inversify.types";
+import { IAdminService } from "../../services/interface/admin.service.interface";
 
 // admin controller
 @injectable()
 export class AdminController implements IAdminController {
-  constructor(@inject(TYPES.AdminService) private adminService: AdminService) {}
+  constructor(
+    @inject(TYPES.AdminService) private adminService: IAdminService
+  ) {}
 
   async getUsers(req: Request, res: Response): Promise<void> {
     try {

@@ -20,3 +20,11 @@ export interface IPassword {
   currentPassword: string;
   newPassword: string;
 }
+
+export interface GetUsersParams {
+  page: number;
+  pageSize: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 1 | -1;
+}

@@ -5,15 +5,11 @@ import { TYPES } from "../../shared/types/inversify.types";
 import logger from "../../shared/services/logger.service";
 import { mapToCategoryDto } from "../../mapper/category.mapper";
 import { CategoryDto } from "../../dtos/category.dtos";
-import { ProgramRepositoy } from "../../repositories/implimentation/program.repository";
-import { IProgramRepository } from "../../repositories/interface/program.repository.interface";
 
 export class CategoryService implements ICategoryService {
   constructor(
     @inject(TYPES.CategoryRepository)
-    private categoryRepository: ICategoryRepository,
-    @inject(TYPES.ProgramRespository)
-    private programRepository: IProgramRepository
+    private categoryRepository: ICategoryRepository
   ) {}
   async findAllCategory(): Promise<CategoryDto[]> {
     try {

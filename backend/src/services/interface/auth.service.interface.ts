@@ -3,15 +3,23 @@ import { Request, Response } from "express";
 
 export interface IAuthService {
   signup(userData: IUser): Promise<IUser>;
+
   sendOtp(req: Request, res: Response): Promise<void>;
   verifyOtp(req: Request, res: Response): Promise<void>;
   resendOtp(req: Request, res: Response): Promise<void>;
-  login(email: string, password: string): void;
+
+  login(
+    email: string,
+    password: string
+  ): Promise<{ user: IUser; accessToken: string; refreshToken: string }>;
 
   // =========== FORGOT PASSWORD ============
-  sendForgotPasswordOtp(email: string): void;
-  verifyForgotOtp(email: string, otp: string): void;
+  sendForgotPasswordOtp(email: string): Promise<{ message: string }>;
+
+  verifyForgotOtp(email: string, otp: string): Promise<{ message: string }>;
+
   resetPassword(req: Request, res: Response): Promise<void>;
+
   handleGoogleLogin(profile: any): Promise<IUser>;
 
   logout(res: Response): Promise<void>;
