@@ -36,13 +36,13 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 
-app.use("/auth/login", loginLimiter);
-app.use("/auth", authRouter);
-app.use("/admin", adminRouter);
-app.use("/file", router);
-app.use("/user", userRouter);
-app.use("/program", programRouter);
-app.use("/session", sessionRouter);
-app.use("/category", categoryRouter);
+app.use("/api/v1/auth/login", loginLimiter);
+app.use("/api/v1/auth", authRouter);
+app.use("/api/v1/admin", adminRouter);
+app.use("/api/v1/file", router);
+app.use("/api/v1/user", userRouter);
+app.use("/api/v1/program", programRouter);
+app.use("/api/v1/session", sessionRouter);
+app.use("/api/v1/category", categoryRouter);
 
 export default app;

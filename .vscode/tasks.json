@@ -1,0 +1,26 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "ng serve",
+      "type": "shell",
+      "command": "ng serve",
+      "options": {
+        "cwd": "F:/Zenfit/frontend"
+      },
+      "isBackground": true,
+      "problemMatcher": [
+        "$tsc-watch"
+      ]
+    },
+    {
+      "label": "npm: dev",
+      "type": "npm",
+      "script": "dev",
+      "options": {
+        "cwd": "F:/Zenfit/backend"
+      },
+      "isBackground": true
+    }
+  ]
+}
