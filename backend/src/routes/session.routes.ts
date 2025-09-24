@@ -12,10 +12,7 @@ const sessionController = container.get<ISessionController>(
 
 sessionRouter.use(authMiddleware);
 
-sessionRouter.post(
-  "/",
-  sessionController.saveDraftSession.bind(sessionController)
-);
+sessionRouter.post("/", sessionController.saveSession.bind(sessionController));
 sessionRouter.post(
   "/draft",
   sessionController.saveDraftSession.bind(sessionController)
