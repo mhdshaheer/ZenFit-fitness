@@ -65,15 +65,6 @@ export const TRAINER_ROUTES: Routes = [
           );
         },
       },
-
-      {
-        path: 'testing',
-        loadComponent: () => {
-          return import(
-            '../components/trainer-program-slot/trainer-program-slot.component'
-          ).then((m) => m.TrainerProgramSlotComponent);
-        },
-      },
     ],
   },
 ];

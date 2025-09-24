@@ -141,21 +141,6 @@ export class ProgramViewComponent {
           this.logger.info('Updation failed:', err);
         },
       });
-
-      // this.programService.saveProgram(programData).subscribe({
-      //   next: (res) => {
-      //     console.log('Training Program saved successfully:', res);
-      //     this.toastService.success('Training Program saved successfully');
-      //     this.isSubmitting = false;
-      //     this.resetForm();
-      //     this.router.navigate(['/trainer/programs']);
-      //   },
-      //   error: (err) => {
-      //     console.error('Error saving Training Program:', err);
-      //     this.toastService.error('Failed to save Training Program');
-      //     this.isSubmitting = false;
-      //   },
-      // });
     } else {
       this.markFormGroupTouched();
       console.log('Form is invalid');

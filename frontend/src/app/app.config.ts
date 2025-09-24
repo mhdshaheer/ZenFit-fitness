@@ -9,9 +9,7 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
-// import { authReducer } from '../app/store/auth/auth.reducer';
 import { provideEffects } from '@ngrx/effects';
-// import { AuthEffects } from '../app/store/auth/auth.effects';
 
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { authReducer } from './features/auth/store/auth.reducer';
@@ -48,6 +46,5 @@ export const appConfig: ApplicationConfig = {
         ],
       } as SocialAuthServiceConfig,
     },
-    // provideStoreDevtools({ maxAge: 25, logOnly: false }),
   ],
 };

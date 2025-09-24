@@ -21,11 +21,6 @@ export class SharedFormComponent {
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
-  // passwordMatchValidator(form: FormGroup) {
-  //   const password = form.get('password')?.value;
-  //   const confirmPassword = form.get('confirmPassword')?.value;
-  //   return password === confirmPassword ? null : { mismatch: true };
-  // }
 
   get currentType() {
     return this.type === 'password'

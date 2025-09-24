@@ -95,12 +95,7 @@ export class ProgramListComponent {
     { label: 'Last Modified', value: 'lastModified' },
   ];
 
-  activeFilterTags = [
-    // Sample active filters for display
-    'abx',
-    'abc',
-    'aaa',
-  ];
+  activeFilterTags = ['abx', 'abc', 'aaa'];
 
   // Computed property
   get hasActiveFilters(): boolean {

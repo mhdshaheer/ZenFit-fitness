@@ -42,14 +42,9 @@ export class SidebarComponent implements OnInit {
     this.handleScreenSize();
   }
 
-  /**
-   * Toggle mobile sidebar
-   */
   toggleMobile(): void {
     this.isMobileOpen = !this.isMobileOpen;
     this.mobileToggle.emit(this.isMobileOpen);
-
-    // Prevent body scroll when mobile menu is open
     if (this.isMobileOpen) {
       document.body.style.overflow = 'hidden';
     } else {
@@ -57,13 +52,9 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  /**
-   * Handle menu item click
-   */
   onMenuItemClick(item: MenuItem): void {
     this.menuItemClicked.emit(item);
 
-    // Close mobile menu when item is clicked
     if (this.isMobileOpen) {
       this.isMobileOpen = false;
       this.mobileToggle.emit(false);
@@ -71,18 +62,12 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  /**
-   * Handle screen resize
-   */
   @HostListener('window:resize', ['$event'])
   onResize(event: Event): void {
     this.isLargeScreen = window.innerWidth < 1024;
     this.handleScreenSize();
   }
 
-  /**
-   * Handle escape key to close mobile sidebar
-   */
   @HostListener('document:keydown.escape', ['$event'])
   onEscapeKey(event: KeyboardEvent): void {
     if (this.isMobileOpen) {
@@ -90,30 +75,22 @@ export class SidebarComponent implements OnInit {
     }
   }
 
-  /**
-   * Handle screen size changes
-   */
   private handleScreenSize(): void {
-    const isLargeScreen = window.innerWidth >= 1024; // lg breakpoint
+    const isLargeScreen = window.innerWidth >= 1024;
 
     if (isLargeScreen && this.isMobileOpen) {
-      // Close mobile sidebar on large screens
       this.isMobileOpen = false;
       this.mobileToggle.emit(false);
       document.body.style.overflow = '';
     }
   }
 
-  /**
-   * Load sidebar state from localStorage
-   */
   private loadSidebarState(): void {
     try {
       const saved = localStorage.getItem('sidebarOpen');
       if (saved !== null) {
         this.isDesktopOpen = JSON.parse(saved);
       } else {
-        // Default to open on desktop, closed on smaller screens
         this.isDesktopOpen = window.innerWidth >= 1024;
       }
     } catch (error) {

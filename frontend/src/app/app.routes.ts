@@ -41,12 +41,4 @@ export const routes: Routes = [
         (m) => m.ADMIN_ROUTES
       ),
   },
-  // {
-  //   path: '**',
-  //   // path: 'not-authorized',
-  //   loadComponent: () =>
-  //     import('../app/shared/components/not-found/not-found.component').then(
-  //       (m) => m.NotFoundComponent
-  //     ),
-  // },
 ];

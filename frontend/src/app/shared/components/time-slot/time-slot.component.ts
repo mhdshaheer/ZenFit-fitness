@@ -193,8 +193,6 @@ export class TimeSlotComponent implements OnInit, OnChanges {
       return;
     }
 
-    // Filter time slots based on selected day
-    // In a real app, you might call an API here
     this.currentTimeSlots = [...this.timeSlots];
   }
 
