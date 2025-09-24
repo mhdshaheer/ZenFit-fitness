@@ -34,7 +34,8 @@
     "passport-google-oauth20": "^2.0.0",
     "redis": "^5.5.6",
     "reflect-metadata": "^0.2.2",
-    "winston": "^3.17.0"
+    "winston": "^3.17.0",
+    "winston-daily-rotate-file": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.31.0",
