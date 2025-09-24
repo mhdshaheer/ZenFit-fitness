@@ -23,7 +23,6 @@ const authMiddleware = async (
 
   try {
     const decoded = jwt.verify(accessToken, env.jwt_access!);
-    console.log("decoded on auth middleware ", decoded);
     if (typeof decoded === "object" && "id" in decoded) {
       const user = await userRepository.findById(decoded.id);
 

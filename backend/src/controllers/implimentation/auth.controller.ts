@@ -131,13 +131,11 @@ export class AuthController implements IAuthController {
     }
   }
   async resetPassword(req: Request, res: Response): Promise<void> {
-    console.log("reset password controller");
     await this.authService.resetPassword(req, res);
     return;
   }
 
   async googleCallback(req: Request, res: Response): Promise<void> {
-    console.log("i am on google controller...");
     const user = req.user as any;
     console.log(user);
     const accessToken = generateAccessToken({
@@ -168,16 +166,6 @@ export class AuthController implements IAuthController {
       `${env.frontend_url}/user/dashboard?accessToken=${accessToken}&refreshToken=${refreshToken}`
     );
 
-    // res.status(200).json({
-    //   message: "Login successful",
-    //   accessToken,
-    //   role: user.role,
-    //   user: {
-    //     id: user._id,
-    //     username: user.username,
-    //     email: user.email,
-    //   },
-    // });
     return;
   }
   async logOut(req: Request, res: Response): Promise<void> {

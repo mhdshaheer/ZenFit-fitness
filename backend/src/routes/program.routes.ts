@@ -9,29 +9,21 @@ const programController = container.get<IProgramController>(
   TYPES.ProgramController
 );
 
-programRouter.post(
-  "/",
-  authMiddleware,
-  programController.saveProgram.bind(programController)
-);
+programRouter.use(authMiddleware);
+
+programRouter.post("/", programController.saveProgram.bind(programController));
 programRouter.post(
   "/draft",
-  authMiddleware,
   programController.saveProgramDraft.bind(programController)
 );
-programRouter.get(
-  "/",
-  authMiddleware,
-  programController.getPrograms.bind(programController)
-);
+programRouter.get("/", programController.getPrograms.bind(programController));
 programRouter.get(
   "/category",
-  authMiddleware,
+
   programController.getProgramsCategories.bind(programController)
 );
 programRouter.get(
   "/category/:id",
-  authMiddleware,
   programController.getProgramsByParantId.bind(programController)
 );
 programRouter.get("/:id", (req, res, next) => {
