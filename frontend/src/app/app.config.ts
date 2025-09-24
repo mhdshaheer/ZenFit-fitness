@@ -11,7 +11,6 @@ import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideStore } from '@ngrx/store';
 import { provideEffects } from '@ngrx/effects';
 
-import { AuthInterceptor } from './core/interceptors/auth.interceptor';
 import { authReducer } from './features/auth/store/auth.reducer';
 import { AuthEffects } from './features/auth/store/auth.effects';
 import {
@@ -19,15 +18,15 @@ import {
   SocialAuthServiceConfig,
   SocialLoginModule,
 } from '@abacritt/angularx-social-login';
-import { ErrorInterceptor } from './core/interceptors/error.interceptor';
 import { adminReducer } from './features/admin/store/admin.reducer';
 import { AdminEffects } from './features/admin/store/admin.effects';
+import { AppInterceptor } from './core/interceptors/app.interceptor';
 
 export const appConfig: ApplicationConfig = {
   providers: [
     provideZoneChangeDetection({ eventCoalescing: true }),
     provideRouter(routes),
-    provideHttpClient(withInterceptors([AuthInterceptor, ErrorInterceptor])),
+    provideHttpClient(withInterceptors([AppInterceptor])),
     provideStore({ auth: authReducer, admin: adminReducer }),
     provideEffects([AuthEffects, AdminEffects]),
     provideAnimations(),
