@@ -1,8 +1,7 @@
-import { Response } from "express";
-import { AuthRequest } from "../../shared/types/authRequest.interface";
+import { Request, Response } from "express";
 
 export interface IFileController {
-  upload(req: AuthRequest, res: Response): Promise<void>;
-  getFile(req: AuthRequest, res: Response): Promise<void>;
-  deleteFile(req: AuthRequest, res: Response): Promise<void>;
+  upload(req: Request, res: Response): Promise<void>;
+  getFile(req: Request, res: Response): Promise<void>;
+  deleteFile(req: Request, res: Response): Promise<void>;
 }

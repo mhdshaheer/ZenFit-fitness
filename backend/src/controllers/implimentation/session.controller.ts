@@ -6,16 +6,15 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ISession } from "../../models/session.model";
 import { HttpResponse } from "../../const/response_message.const";
-import { AuthRequest } from "../../shared/types/authRequest.interface";
 
 export class SessionController implements ISessionController {
   constructor(
     @inject(TYPES.SessionService) private sessionService: ISessionService
   ) {}
-  async saveDraftSession(req: AuthRequest, res: Response): Promise<void> {
+  async saveDraftSession(req: Request, res: Response): Promise<void> {
     try {
       const data = req.body;
-      const userId = req.user?.id!;
+      const userId = (req as any).user.id;
       data.trainerId = userId;
       console.log("Session draft data :", data);
 
@@ -56,10 +55,10 @@ export class SessionController implements ISessionController {
       }
     }
   }
-  async saveSession(req: AuthRequest, res: Response): Promise<void> {
+  async saveSession(req: Request, res: Response): Promise<void> {
     try {
       const data = req.body;
-      const userId = req.user?.id!;
+      const userId = (req as any).user.id;
       data.trainerId = userId;
       console.log("Session data :", data);
 

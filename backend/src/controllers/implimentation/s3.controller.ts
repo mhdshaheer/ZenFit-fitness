@@ -5,7 +5,6 @@ import { IFileService } from "../../services/interface/s3.service.interface";
 import { IProfileService } from "../../services/interface/profile.service.interface";
 import { HttpStatus } from "../../const/statuscode.const";
 import { TYPES } from "../../shared/types/inversify.types";
-import { AuthRequest } from "../../shared/types/authRequest.interface";
 
 @injectable()
 export class FileController implements IFileController {
@@ -20,10 +19,10 @@ export class FileController implements IFileController {
     this.profileService = profileService;
   }
 
-  async upload(req: AuthRequest, res: Response): Promise<void> {
+  async upload(req: Request, res: Response): Promise<void> {
     try {
       const { type } = req.body;
-      const { id, role } = req.user!;
+      const { id, role } = (req as any).user;
 
       const file = req.file as Express.Multer.File;
 
@@ -47,9 +46,9 @@ export class FileController implements IFileController {
     }
   }
 
-  async getFile(req: AuthRequest, res: Response): Promise<void> {
+  async getFile(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id!;
+      const userId = req.query.id || (req as any).user.id;
       const { key } = req.query;
       const type = key?.toString().split("/")[1];
       const signedUrl = await this.fileService.getSignedUrl(userId, type!);
@@ -64,10 +63,10 @@ export class FileController implements IFileController {
     }
   }
 
-  async deleteFile(req: AuthRequest, res: Response): Promise<void> {
+  async deleteFile(req: Request, res: Response): Promise<void> {
     try {
       const { key } = req.params;
-      const userId = req.user?.id!;
+      const userId = await (req as any).user.id;
       const type = key?.toString().split("/")[1];
       await this.fileService.delete(key);
       if (type == "profile") {

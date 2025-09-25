@@ -6,17 +6,16 @@ import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ProgramDto } from "../../dtos/program.dtos";
 import { HttpResponse } from "../../const/response_message.const";
-import { AuthRequest } from "../../shared/types/authRequest.interface";
 
 export class ProgramController implements IProgramController {
   constructor(
     @inject(TYPES.ProgramService) private programService: IProgramService
   ) {}
 
-  async saveProgramDraft(req: AuthRequest, res: Response): Promise<void> {
+  async saveProgramDraft(req: Request, res: Response): Promise<void> {
     try {
       const data = req.body;
-      const userId = req.user?.id;
+      const userId = (req as any).user.id;
       data.trainerId = userId;
       console.log("program draft data :", data);
 
@@ -53,10 +52,10 @@ export class ProgramController implements IProgramController {
     }
   }
 
-  async saveProgram(req: AuthRequest, res: Response): Promise<void> {
+  async saveProgram(req: Request, res: Response): Promise<void> {
     try {
       const data = req.body;
-      const userId = req.user?.id;
+      const userId = (req as any).user.id;
       data.trainerId = userId;
       console.log("program draft data :", data);
 
@@ -93,9 +92,9 @@ export class ProgramController implements IProgramController {
     }
   }
 
-  async getPrograms(req: AuthRequest, res: Response): Promise<void> {
+  async getPrograms(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id!;
+      const userId = (req as any)?.user?.id;
       const programs = await this.programService.getPrograms(userId);
       res.status(HttpStatus.OK).json({ programs });
     } catch (error) {
@@ -107,9 +106,9 @@ export class ProgramController implements IProgramController {
     }
   }
 
-  async getProgramsCategories(req: AuthRequest, res: Response): Promise<void> {
+  async getProgramsCategories(req: Request, res: Response): Promise<void> {
     try {
-      const userId = req.user?.id!;
+      const userId = (req as any)?.user?.id;
       const programs = await this.programService.getProgramsCategories(userId);
       res.status(HttpStatus.OK).json({ programs });
     } catch (error) {
@@ -152,12 +151,12 @@ export class ProgramController implements IProgramController {
   }
 
   async updateProgram(
-    req: AuthRequest,
+    req: Request,
     res: Response
   ): Promise<Response<{ message: string }>> {
     try {
       const programId = req.params.id;
-      const trainerId = req.user?.id;
+      const trainerId = (req as any)?.user?.id;
       const programData = req.body;
       let response = await this.programService.updateProgram(programId, {
         ...programData,
