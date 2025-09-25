@@ -15,6 +15,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { environment } from '../../../../../environments/environment';
 import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
+import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
 
 @Component({
   selector: 'app-login',
@@ -47,7 +48,7 @@ export class LoginComponent {
         [
           Validators.required,
           Validators.email,
-          Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
+          Validators.pattern(FORM_CONSTANTS.EMAIL.PATTERN),
         ],
       ],
       password: ['', [Validators.required, passwordStrengthValidator]],

@@ -11,6 +11,7 @@ import { CommonModule } from '@angular/common';
 import { SharedFormComponent } from '../../../../shared/components/shared-form/shared-form.component';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
 
 @Component({
   selector: 'app-forgot-password',
@@ -58,10 +59,8 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
           '',
           [
             Validators.required,
-            Validators.minLength(8),
-            Validators.pattern(
-              /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/
-            ),
+            Validators.minLength(FORM_CONSTANTS.PASSWORD.MIN_LENGTH),
+            Validators.pattern(FORM_CONSTANTS.PASSWORD.PATTERN),
           ],
         ],
         confirmPassword: ['', Validators.required],
