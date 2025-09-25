@@ -24,7 +24,7 @@ export interface UserProfile {
 })
 export class HeaderComponent {
   // Configuration inputs
-  @Input() logoText: string = 'FitTracker';
+  @Input() logoText: string = 'ZenFit';
   @Input() searchPlaceholder: string = 'Search workouts, exercises...';
   @Input() showDateBanner: boolean = true;
 

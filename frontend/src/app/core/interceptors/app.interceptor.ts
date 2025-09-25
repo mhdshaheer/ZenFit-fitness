@@ -5,11 +5,13 @@ import { Router } from '@angular/router';
 import { catchError, switchMap, throwError } from 'rxjs';
 import { AuthService } from '../services/auth.service';
 import { LoggerService } from '../services/logger.service';
+import { ToastService } from '../services/toast.service';
 
 export const AppInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
   const authService = inject(AuthService);
   const logger = inject(LoggerService);
+  const toastservice = inject(ToastService);
 
   // Clone the request to include credentials (like AuthInterceptor)
   const clonedReq = req.clone({ withCredentials: true });
@@ -17,6 +19,17 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
   return next(clonedReq).pipe(
     catchError((error: HttpErrorResponse) => {
       logger.error('HTTP Error:', error);
+
+      // Handle blocked user (example: 403 status with message 'User blocked')
+      if (
+        error.status === 403 &&
+        error.error?.message === 'Your account has been blocked.'
+      ) {
+        toastservice.error('Your account has been blocked. Contact support.');
+        authService.logout();
+        router.navigate(['/auth/login']);
+        return throwError(() => error);
+      }
 
       // Handle 401 Unauthorized (except login/refresh endpoints)
       if (
