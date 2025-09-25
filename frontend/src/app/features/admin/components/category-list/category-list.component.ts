@@ -5,6 +5,7 @@ import {
   ICategory,
 } from '../../../../core/services/category.service';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { Router } from '@angular/router';
 
 export interface TableColumn {
   key: string;
@@ -38,6 +39,7 @@ export class CategoryListComponent implements OnInit {
   // Service
   private _categoryService = inject(CategoryService);
   private _logger = inject(LoggerService);
+  private _router = inject(Router);
 
   categories: ICategory[] = [];
 
@@ -111,6 +113,6 @@ export class CategoryListComponent implements OnInit {
     console.log('Sorting by:', sortBy, 'Order:', sortOrder);
   }
   createCategory() {
-    console.log('create category clicked...');
+    this._router.navigate(['/admin/category-create']);
   }
 }

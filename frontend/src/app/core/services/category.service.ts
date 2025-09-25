@@ -17,4 +17,7 @@ export class CategoryService {
   getSubcateories(): Observable<ICategory[]> {
     return this.http.get<ICategory[]>(`${this.api}/subcategories`);
   }
+  createCategory(data: Partial<ICategory>): Observable<ICategory> {
+    return this.http.post<ICategory>(`${this.api}`, data);
+  }
 }

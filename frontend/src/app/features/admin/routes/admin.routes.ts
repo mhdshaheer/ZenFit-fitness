@@ -39,6 +39,14 @@ export const ADMIN_ROUTES: Routes = [
           ).then((m) => m.UserProfileComponent);
         },
       },
+      {
+        path: 'category-create',
+        loadComponent: () => {
+          return import(
+            '../components/category-create/category-create.component'
+          ).then((m) => m.CategoryCreateComponent);
+        },
+      },
     ],
   },
 ];
