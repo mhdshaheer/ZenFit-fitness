@@ -24,17 +24,17 @@ export interface MenuItem {
 })
 export class SidebarComponent implements OnInit {
   @Input() menuItems: MenuItem[] = [];
-  @Input() appName: string = 'ZenFit';
-  @Input() userName: string = 'User';
-  @Input() userRole: string = 'Member';
-  @Input() isMobileOpen: boolean = false;
+  @Input() appName = 'ZenFit';
+  @Input() userName = 'User';
+  @Input() userRole = 'Member';
+  @Input() isMobileOpen = false;
 
   @Output() mobileToggle = new EventEmitter<boolean>();
   @Output() desktopToggle = new EventEmitter<boolean>();
   @Output() menuItemClicked = new EventEmitter<MenuItem>();
   @Output() logOutClicked = new EventEmitter<void>();
 
-  isDesktopOpen: boolean = true;
+  isDesktopOpen = true;
   isLargeScreen = window.innerWidth >= 1024;
 
   ngOnInit(): void {

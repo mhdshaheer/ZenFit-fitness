@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
@@ -8,7 +8,7 @@ import { Router } from '@angular/router';
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.css',
 })
-export class LandingPageComponent {
+export class LandingPageComponent implements OnInit, OnDestroy {
   isMobileMenuOpen = false;
   activeProgram = 2;
   private intervalId: any;

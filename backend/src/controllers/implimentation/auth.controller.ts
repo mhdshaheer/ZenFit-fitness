@@ -2,7 +2,6 @@ import { inject, injectable } from "inversify";
 import { env } from "../../config/env.config";
 import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
-import { AuthService } from "../../services/implimentation/auth.service";
 
 import { IAuthController } from "../interface/auth.controller.interface";
 import { Request, Response } from "express";
@@ -167,7 +166,7 @@ export class AuthController implements IAuthController {
 
     return;
   }
-  async logOut(req: Request, res: Response): Promise<void> {
+  async logOut(_req: Request, res: Response): Promise<void> {
     await this.authService.logout(res);
     res.status(HttpStatus.OK).json({ message: HttpResponse.LOGOUT_SUCCESS });
     return;

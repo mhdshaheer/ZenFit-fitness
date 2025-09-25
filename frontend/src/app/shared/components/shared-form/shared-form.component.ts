@@ -14,9 +14,9 @@ export class SharedFormComponent {
   @Input() type: 'text' | 'email' | 'password' = 'text';
   @Input() controlName!: string;
   @Input() formGroup!: FormGroup;
-  @Input() placeholder: string = '';
+  @Input() placeholder = '';
 
-  showPassword: boolean = false;
+  showPassword = false;
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;

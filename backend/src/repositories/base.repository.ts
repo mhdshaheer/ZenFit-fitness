@@ -11,9 +11,9 @@ export abstract class BaseRepository<T> {
     return await this.model.findOne(filter);
   }
 
-  async update(userId: string, data: Partial<T>): Promise<T | null> {
+  async update(id: string, data: Partial<T>): Promise<T | null> {
     return await this.model.findByIdAndUpdate(
-      userId,
+      id,
       { $set: data },
       { new: true, runValidators: true }
     );

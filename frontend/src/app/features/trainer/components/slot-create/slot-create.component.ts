@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -31,7 +31,7 @@ export interface ITimeSlot {
   templateUrl: './slot-create.component.html',
   styleUrl: './slot-create.component.css',
 })
-export class SlotCreateComponent implements OnDestroy {
+export class SlotCreateComponent implements OnDestroy, OnInit {
   slotForm: FormGroup;
   slotInputForm: FormGroup;
   isSubmitted = false;
@@ -55,7 +55,7 @@ export class SlotCreateComponent implements OnDestroy {
   timeSlots: ITimeSlot[] = [];
   programId!: string;
   categoryName!: string;
-  isEditMode: boolean = false;
+  isEditMode = false;
 
   constructor(private fb: FormBuilder) {
     // Get CategoryId from params
@@ -199,7 +199,7 @@ export class SlotCreateComponent implements OnDestroy {
       .subscribe({
         next: (res) => {
           console.log('Program is :', res);
-          let categoryData = JSON.parse(res.category);
+          const categoryData = JSON.parse(res.category);
           this.categoryName = categoryData.name;
           console.log('JSON data : ', categoryData._id);
         },

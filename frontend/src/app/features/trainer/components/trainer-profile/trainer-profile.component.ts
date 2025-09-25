@@ -58,7 +58,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
   // ========= CV UPLOAD ========
   uploadedFile: UploadFile | null = null;
   resumeVerified!: boolean;
-  errorMessage: string = '';
+  errorMessage = '';
   isDragging = false;
   isCvUploading = false;
   uploadProgress = 0;
@@ -138,7 +138,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
             .getFile(res.resume)
             .pipe(takeUntil(this.destroy$))
             .subscribe(async (fileRes) => {
-              let fileDetails = JSON.parse(fileRes.url);
+              const fileDetails = JSON.parse(fileRes.url);
               const response = await fetch(fileDetails.url);
               const blob = await response.blob();
               const file = new File([blob], fileDetails.name || 'resume.pdf', {
@@ -405,7 +405,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
 
   onPasswordSubmit(): void {
     if (this.passwordForm.valid) {
-      let passwords = {
+      const passwords = {
         currentPassword: this.passwordForm.get('currentPassword')?.value,
         newPassword: this.passwordForm.get('newPassword')?.value,
       };

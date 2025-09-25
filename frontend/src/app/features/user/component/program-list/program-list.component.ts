@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FitnessProgram } from '../../../trainer/components/program-list/program-list.component';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
 import { CommonModule } from '@angular/common';
@@ -13,7 +13,7 @@ import { Subject, takeUntil } from 'rxjs';
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
-export class ProgramListComponent implements OnDestroy {
+export class ProgramListComponent implements OnDestroy, OnInit {
   programService = inject(ProgramService);
   route = inject(ActivatedRoute);
 
@@ -35,7 +35,7 @@ export class ProgramListComponent implements OnDestroy {
         next: (res: { programs: Program[] }) => {
           console.log('Programs response:', res.programs);
           this.programs = res.programs.map((item) => {
-            let category = JSON.parse(item.category).name;
+            const category = JSON.parse(item.category).name;
             console.log('Category :', category);
             return { ...item, category: category };
           });
@@ -55,14 +55,14 @@ export class ProgramListComponent implements OnDestroy {
     console.log('Editing program with ID:', programId);
   }
   // Properties for UI binding
-  searchTerm: string = '';
-  selectedFilter: string = 'All Programs';
-  activeFiltersCount: number = 0;
-  isFilterMenuOpen: boolean = false;
-  isSortMenuOpen: boolean = false;
-  selectedSort: string = 'Created Date';
-  selectedDuration: string = '';
-  filteredResultsCount: number = 52;
+  searchTerm = '';
+  selectedFilter = 'All Programs';
+  activeFiltersCount = 0;
+  isFilterMenuOpen = false;
+  isSortMenuOpen = false;
+  selectedSort = 'Created Date';
+  selectedDuration = '';
+  filteredResultsCount = 52;
   dateRange = { from: '', to: '' };
 
   // Sample data for dropdowns

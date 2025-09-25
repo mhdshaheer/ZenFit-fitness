@@ -5,4 +5,12 @@ export interface ICategoryRepository {
   findAllCategory(
     condition: FilterQuery<ICategory>
   ): Promise<ICategory[] | null>;
+
+  createCategory(category: Partial<ICategory>): Promise<ICategory>;
+  updateCategory(
+    categoryId: string,
+    category: Partial<ICategory>
+  ): Promise<ICategory | null>;
+
+  getCategory(categoryId: string): Promise<ICategory | null>;
 }

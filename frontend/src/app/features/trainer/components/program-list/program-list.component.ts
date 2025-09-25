@@ -32,7 +32,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
   private router = inject(Router);
 
   fitnessPrograms: FitnessProgram[] = [];
-  defaultImage: string = '/trainer/fitness_program.jpg';
+  defaultImage = '/trainer/fitness_program.jpg';
 
   // Subject to manage unsubscription
   private destroy$ = new Subject<void>();
@@ -49,7 +49,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
         next: (res) => {
           console.log('Programs response:', res);
           this.fitnessPrograms = res.programs.map((item) => {
-            let category = JSON.parse(item.category).name;
+            const category = JSON.parse(item.category).name;
             return { ...item, category: category };
           });
         },

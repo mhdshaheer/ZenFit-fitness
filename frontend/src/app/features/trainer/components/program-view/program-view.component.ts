@@ -85,7 +85,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res: Program) => {
           this.logger.info('Program :', res);
-          let val = JSON.parse(res.category);
+          const val = JSON.parse(res.category);
           this.category = { value: val._id, label: val.name };
           this.programForm.patchValue(res);
         },

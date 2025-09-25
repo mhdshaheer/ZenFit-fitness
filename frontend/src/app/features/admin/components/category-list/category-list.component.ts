@@ -1,5 +1,10 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { TableComponent } from '../../../../shared/components/table/table.component';
+import {
+  CategoryService,
+  ICategory,
+} from '../../../../core/services/category.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 export interface TableColumn {
   key: string;
@@ -29,55 +34,21 @@ export interface ActionEvent {
   templateUrl: './category-list.component.html',
   styleUrl: './category-list.component.css',
 })
-export class CategoryListComponent {
+export class CategoryListComponent implements OnInit {
+  // Service
+  private _categoryService = inject(CategoryService);
+  private _logger = inject(LoggerService);
+
+  categories: ICategory[] = [];
+
   // Pagination
   page = 1;
   pageSize = 5;
   totalCategories = 8;
 
-  // Dummy Category Data
-  categories = [
-    {
-      _id: '1',
-      name: 'Strength Training',
-      description: 'Workouts to build strength and endurance',
-      parentId: null,
-      createdAt: '2024-01-01',
-      status: 'active',
-    },
-    {
-      _id: '2',
-      name: 'Powerlifting',
-      description: 'Heavy lifting subcategory under strength',
-      parentId: '1',
-      createdAt: '2024-02-01',
-      status: 'active',
-    },
-    {
-      _id: '3',
-      name: 'Cardio & Endurance',
-      description: 'Improve stamina with cardio programs',
-      parentId: null,
-      createdAt: '2024-01-15',
-      status: 'active',
-    },
-    {
-      _id: '4',
-      name: 'Running',
-      description: 'Subcategory under Cardio',
-      parentId: '3',
-      createdAt: '2024-02-10',
-      status: 'inactive',
-    },
-    {
-      _id: '5',
-      name: 'Cycling',
-      description: 'Subcategory under Cardio',
-      parentId: '3',
-      createdAt: '2024-02-12',
-      status: 'active',
-    },
-  ];
+  ngOnInit() {
+    this.getCategories();
+  }
 
   // Table Columns
   categoryColumns: TableColumn[] = [
@@ -92,6 +63,23 @@ export class CategoryListComponent {
     },
     { key: 'createdAt', label: 'Created At', type: 'date', sortable: true },
   ];
+
+  getCategories() {
+    this._categoryService.getCategories().subscribe({
+      next: (res: ICategory[]) => {
+        this.categories = res.map((item) => {
+          let status: 'active' | 'blocked' = item.isBlocked
+            ? 'blocked'
+            : 'active';
+          let obj: ICategory = { ...item, status: status };
+          return obj;
+        });
+      },
+      error: (err) => {
+        this._logger.error('Failed to fetch categories', err);
+      },
+    });
+  }
 
   // Table Actions
   categoryActions: TableAction[] = [

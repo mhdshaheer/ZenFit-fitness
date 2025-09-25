@@ -3,4 +3,6 @@ export interface CategoryDto {
   description: string;
   _id: string;
   parantId: string | null;
+  isBlocked: boolean;
+  createdAt: string;
 }

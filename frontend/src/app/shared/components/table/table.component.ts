@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { debounceSearch } from '../../utils.ts/debouce.util';
 export interface TableColumn {
@@ -30,30 +30,30 @@ export interface ActionEvent {
   templateUrl: './table.component.html',
   styleUrl: './table.component.css',
 })
-export class TableComponent {
-  @Input() title: string = 'Data Table';
-  @Input() subtitle: string = 'Manage your data';
-  @Input() entityName: string = 'Item';
+export class TableComponent implements OnInit {
+  @Input() title = 'Data Table';
+  @Input() subtitle = 'Manage your data';
+  @Input() entityName = 'Item';
   @Input() columns: TableColumn[] = [];
   @Input() data: any[] = [];
   @Input() actions: TableAction[] = [];
-  @Input() showAddButton: boolean = true;
+  @Input() showAddButton = true;
 
   // Pagination
-  @Input() pageSize: number = 10;
-  @Input() totalItems: number = 0;
-  @Input() currentPage: number = 1;
+  @Input() pageSize = 10;
+  @Input() totalItems = 0;
+  @Input() currentPage = 1;
   @Output() pageChanged = new EventEmitter<number>();
 
   @Output() actionClicked = new EventEmitter<ActionEvent>();
   @Output() addNewClicked = new EventEmitter<void>();
 
   // Search
-  searchTerm: string = '';
+  searchTerm = '';
   @Output() searchChanged = new EventEmitter<string>();
 
   // Sort
-  sortColumn: string = '';
+  sortColumn = '';
   sortDirection: 'asc' | 'desc' = 'asc';
   @Output() sortChanged = new EventEmitter<{
     sortBy: string;

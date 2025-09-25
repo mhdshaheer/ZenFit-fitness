@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { Subject, takeUntil } from 'rxjs';
@@ -37,9 +37,9 @@ interface UploadFile {
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css',
 })
-export class UserProfileComponent implements OnDestroy {
+export class UserProfileComponent implements OnDestroy, OnInit {
   uploadedFile: UploadFile | null = null;
-  profileImage: string = '';
+  profileImage = '';
   private route = inject(ActivatedRoute);
   private profileService = inject(ProfileService);
 
@@ -161,7 +161,7 @@ export class UserProfileComponent implements OnDestroy {
             .getFile(res.resume, id)
             .pipe(takeUntil(this.destroy$))
             .subscribe(async (fileRes) => {
-              let fileDetails = JSON.parse(fileRes.url);
+              const fileDetails = JSON.parse(fileRes.url);
               const response = await fetch(fileDetails.url);
               const blob = await response.blob();
               const file = new File([blob], fileDetails.name || 'resume.pdf', {

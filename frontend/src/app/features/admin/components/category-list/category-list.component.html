@@ -1,14 +1,49 @@
-<nav>
-  <h2>Category table</h2>
+<nav
+  class="bg-white shadow-sm border-b border-gray-200 px-4 py-6 sm:px-6 lg:px-8"
+>
+  <div class="flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <!-- Icon (you can replace with your preferred icon) -->
+      <div
+        class="w-10 h-10 bg-gradient-to-br from-green-500 to-green-600 rounded-lg flex items-center justify-center shadow-md"
+      >
+        <svg
+          class="w-6 h-6 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+          ></path>
+        </svg>
+      </div>
+
+      <!-- Title -->
+      <div>
+        <h2 class="text-lg font-bold text-gray-900 sm:text-xl tracking-tight">
+          Category Table
+        </h2>
+        <p class="text-xs text-gray-500 mt-1">
+          Manage and organize your categories
+        </p>
+      </div>
+    </div>
+
+    <!-- Create Category Button -->
+    <div>
+      <button
+        class="px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 active:from-green-800 active:to-green-900 text-white font-medium text-sm rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 ease-in-out border-0 focus:outline-none focus:ring-4 focus:ring-green-300 focus:ring-opacity-50 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none sm:px-5 sm:py-2.5 capitalize tracking-wide"
+        (click)="createCategory()"
+      >
+        Create Category
+      </button>
+    </div>
+  </div>
 </nav>
-<div>
-  <button
-    class="btn bg-green-700 border-2 border-green-800"
-    (click)="createCategory()"
-  >
-    create
-  </button>
-</div>
 <div class="container mx-auto px-4 py-8">
   <app-table
     [title]="'Category Management'"

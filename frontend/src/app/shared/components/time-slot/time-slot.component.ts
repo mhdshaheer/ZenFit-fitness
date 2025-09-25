@@ -50,7 +50,7 @@ export interface ComponentConfig {
   styleUrl: './time-slot.component.css',
 })
 export class TimeSlotComponent implements OnInit, OnChanges {
-  @Input() isVisible: boolean = false;
+  @Input() isVisible = false;
   @Input() timeSlots: TimeSlot[] = [];
   @Input() initialDate?: Date;
   @Input() config: ComponentConfig = {};

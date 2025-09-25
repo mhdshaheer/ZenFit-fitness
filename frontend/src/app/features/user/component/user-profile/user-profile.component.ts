@@ -163,7 +163,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   onPasswordSubmit(): void {
     if (this.passwordForm.valid) {
-      let passwords = {
+      const passwords = {
         currentPassword: this.passwordForm.get('currentPassword')?.value,
         newPassword: this.passwordForm.get('newPassword')?.value,
       };

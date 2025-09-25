@@ -5,6 +5,7 @@ import { TYPES } from "../../shared/types/inversify.types";
 import logger from "../../shared/services/logger.service";
 import { mapToCategoryDto } from "../../mapper/category.mapper";
 import { CategoryDto } from "../../dtos/category.dtos";
+import { ICategory } from "../../models/category.model";
 
 export class CategoryService implements ICategoryService {
   constructor(
@@ -42,5 +43,38 @@ export class CategoryService implements ICategoryService {
       logger.error("Error fetching sub categories:", error);
       throw new Error("Failed to fetch sub categories");
     }
+  }
+
+  async createCategory(data: Partial<ICategory>): Promise<CategoryDto> {
+    const category = await this.categoryRepository.createCategory(data);
+    if (!category) {
+      throw new Error("error in category creation.");
+    }
+    const mappedResult = mapToCategoryDto(category);
+    return mappedResult;
+  }
+
+  async updateCategory(
+    categoryId: string,
+    categoryData: Partial<ICategory>
+  ): Promise<CategoryDto> {
+    const category = await this.categoryRepository.updateCategory(
+      categoryId,
+      categoryData
+    );
+    if (!category) {
+      throw new Error("Category updation failed");
+    }
+    const mappedCategory = mapToCategoryDto(category);
+    return mappedCategory;
+  }
+
+  async getCategory(categoryId: string): Promise<CategoryDto> {
+    const category = await this.categoryRepository.getCategory(categoryId);
+    if (!category) {
+      throw new Error("Failed to get category");
+    }
+    const mappedCategory = mapToCategoryDto(category);
+    return mappedCategory;
   }
 }

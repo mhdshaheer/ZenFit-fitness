@@ -15,4 +15,16 @@ export class CategoryRepository
   ): Promise<ICategory[] | null> {
     return this.model.find(conditon).exec();
   }
+  async createCategory(category: Partial<ICategory>): Promise<ICategory> {
+    return this.create(category);
+  }
+  async updateCategory(
+    categoryId: string,
+    category: Partial<ICategory>
+  ): Promise<ICategory | null> {
+    return this.update(categoryId, category);
+  }
+  async getCategory(categoryId: string): Promise<ICategory | null> {
+    return this.findOne({ _id: categoryId });
+  }
 }

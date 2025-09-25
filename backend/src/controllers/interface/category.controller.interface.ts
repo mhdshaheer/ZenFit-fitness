@@ -10,4 +10,7 @@ export interface ICategoryController {
     req: Request,
     res: Response
   ): Promise<Response<CategoryDto>>;
+  createCategory(req: Request, res: Response): Promise<Response<CategoryDto>>;
+  updateCategory(req: Request, res: Response): Promise<Response<CategoryDto>>;
+  getCategory(req: Request, res: Response): Promise<Response<CategoryDto>>;
 }

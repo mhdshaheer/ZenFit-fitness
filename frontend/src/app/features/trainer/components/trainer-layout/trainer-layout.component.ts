@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Router, RouterModule } from '@angular/router';
@@ -23,7 +23,7 @@ interface Menu {
   templateUrl: './trainer-layout.component.html',
   styleUrl: './trainer-layout.component.css',
 })
-export class TrainerLayoutComponent implements OnDestroy {
+export class TrainerLayoutComponent implements OnDestroy, OnInit {
   isMobileMenuOpen = false;
   authService = inject(AuthService);
   logger = inject(LoggerService);
@@ -80,7 +80,7 @@ export class TrainerLayoutComponent implements OnDestroy {
   };
 
   getUserProfile() {
-    let userData = {
+    const userData = {
       name: '',
       email: '',
       role: '',

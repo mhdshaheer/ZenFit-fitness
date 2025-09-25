@@ -2,8 +2,9 @@ import mongoose, { Document, Schema, Types } from "mongoose";
 
 export interface ICategory extends Document {
   name: string;
-  descrition: string;
+  description: string;
   parantId: Types.ObjectId | null;
+  isBlocked?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -14,7 +15,8 @@ const CategorySchema = new Schema<ICategory>(
       type: String,
       required: true,
     },
-    descrition: { type: String },
+    description: { type: String },
+    isBlocked: { type: Boolean, default: false },
     parantId: { type: Schema.Types.ObjectId, ref: "Category", default: null },
   },
   { timestamps: true }
