@@ -5,6 +5,7 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { IProfileService } from "../../services/interface/profile.service.interface";
 import { HttpResponse } from "../../const/response_message.const";
 import { TYPES } from "../../shared/types/inversify.types";
+import { AuthRequest } from "../../shared/types/authRequest.interface";
 
 @injectable()
 export class ProfileController implements IProfileController {
@@ -12,16 +13,15 @@ export class ProfileController implements IProfileController {
     @inject(TYPES.ProfileService) private profileService: IProfileService
   ) {}
 
-  async getProfile(req: Request, res: Response): Promise<void> {
-    const userId = req.query.id || (req as any).user.id;
-    console.log("id from the query ", req.query);
+  async getProfile(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user?.id!;
     const profile = await this.profileService.getProfile(userId);
     res.status(HttpStatus.OK).json(profile);
     return;
   }
 
-  async updateProfile(req: Request, res: Response): Promise<void> {
-    const userId = (req as any).user.id;
+  async updateProfile(req: AuthRequest, res: Response): Promise<void> {
+    const userId = req.user?.id!;
     const profileData = req.body;
     const updatedProfile = await this.profileService.updateProfile(
       userId,
@@ -39,9 +39,9 @@ export class ProfileController implements IProfileController {
     return;
   }
 
-  async changePassword(req: Request, res: Response): Promise<void> {
+  async changePassword(req: AuthRequest, res: Response): Promise<void> {
     try {
-      const userId = (req as any).user.id;
+      const userId = req.user?.id!;
       const passwords = req.body;
 
       const updated = await this.profileService.changePassword(
