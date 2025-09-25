@@ -131,6 +131,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   onSubmit() {
     if (this.programForm.valid) {
       this.isSubmitting = true;
+      console.log('current TrainerId:', this.currentTrainerId);
 
       const programData: Program = {
         ...this.programForm.value,
@@ -145,10 +146,13 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
           next: (res) => {
             this.toastService.success('Program data is updated');
             this.logger.info('response:', res);
+            this.isSubmitting = false;
+            this.isEditMode = false;
           },
           error: (err) => {
             this.toastService.error('Updation failed');
             this.logger.error('Updation failed:', err);
+            this.isSubmitting = false;
           },
         });
     } else {
