@@ -20,7 +20,6 @@ export interface TableAction {
   icon: string;
   color: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'gray';
   action: string;
-  // condition?: (row: any) => boolean;
 }
 
 export interface ActionEvent {
@@ -36,23 +35,27 @@ export interface ActionEvent {
   styleUrl: './category-list.component.css',
 })
 export class CategoryListComponent implements OnInit {
-  // Service
   private _categoryService = inject(CategoryService);
   private _logger = inject(LoggerService);
   private _router = inject(Router);
 
-  categories: ICategory[] = [];
+  categories: ICategory[] = []; // full list from API
+  filteredCategories: ICategory[] = []; // filtered + sorted list
 
   // Pagination
   page = 1;
   pageSize = 5;
-  totalCategories = 8;
+  totalCategories = 0;
+
+  // Search & sort
+  searchTerm = '';
+  sortBy: keyof ICategory | '' = '';
+  sortOrder: 'asc' | 'desc' = 'asc';
 
   ngOnInit() {
     this.getCategories();
   }
 
-  // Table Columns
   categoryColumns: TableColumn[] = [
     { key: 'name', label: 'Category Name', sortable: true, width: '200px' },
     { key: 'description', label: 'Description', width: '300px' },
@@ -69,13 +72,11 @@ export class CategoryListComponent implements OnInit {
   getCategories() {
     this._categoryService.getCategories().subscribe({
       next: (res: ICategory[]) => {
-        this.categories = res.map((item) => {
-          let status: 'active' | 'blocked' = item.isBlocked
-            ? 'blocked'
-            : 'active';
-          let obj: ICategory = { ...item, status: status };
-          return obj;
-        });
+        this.categories = res.map((item) => ({
+          ...item,
+          status: item.isBlocked ? 'blocked' : 'active',
+        }));
+        this.applyFilterAndSort();
       },
       error: (err) => {
         this._logger.error('Failed to fetch categories', err);
@@ -89,20 +90,21 @@ export class CategoryListComponent implements OnInit {
     { label: 'Delete', icon: 'delete', color: 'red', action: 'delete' },
   ];
 
-  // Event handlers
   onCategoryAction(event: ActionEvent) {
     console.log('Category action clicked:', event);
   }
 
+  createCategory() {
+    this._router.navigate(['/admin/category-create']);
+  }
+
+  // Search handler
   onSearchChanged(search: string) {
-    console.log('Searching for:', search);
+    this.searchTerm = search.toLowerCase();
+    this.applyFilterAndSort();
   }
 
-  onPageChanged(page: number) {
-    this.page = page;
-    console.log('Page changed:', page);
-  }
-
+  // Sort handler
   onSortChanged({
     sortBy,
     sortOrder,
@@ -110,9 +112,54 @@ export class CategoryListComponent implements OnInit {
     sortBy: string;
     sortOrder: 'asc' | 'desc';
   }) {
-    console.log('Sorting by:', sortBy, 'Order:', sortOrder);
+    if (sortBy) {
+      this.sortBy = sortBy as keyof ICategory;
+      this.sortOrder = sortOrder;
+      this.applyFilterAndSort();
+    }
   }
-  createCategory() {
-    this._router.navigate(['/admin/category-create']);
+
+  // Apply search + sort
+  private applyFilterAndSort() {
+    let list = [...this.categories];
+
+    // Filter
+    if (this.searchTerm) {
+      list = list.filter(
+        (c) =>
+          c.name.toLowerCase().includes(this.searchTerm) ||
+          (c.description &&
+            c.description.toLowerCase().includes(this.searchTerm))
+      );
+    }
+
+    // Sort
+    if (this.sortBy) {
+      list.sort((a, b) => {
+        const valA = a[this.sortBy as keyof ICategory];
+        const valB = b[this.sortBy as keyof ICategory];
+
+        if (valA == null) return 1;
+        if (valB == null) return -1;
+
+        let comparison = 0;
+        if (typeof valA === 'string' && typeof valB === 'string') {
+          comparison = valA.localeCompare(valB);
+        } else if (valA instanceof Date && valB instanceof Date) {
+          comparison = valA.getTime() - valB.getTime();
+        } else {
+          comparison = valA > valB ? 1 : -1;
+        }
+
+        return this.sortOrder === 'asc' ? comparison : -comparison;
+      });
+    }
+
+    this.filteredCategories = list;
+    this.totalCategories = list.length;
+  }
+
+  onPageChanged(page: number) {
+    this.page = page;
   }
 }
