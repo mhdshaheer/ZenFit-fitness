@@ -1,6 +1,7 @@
 // eslint.config.mjs
-import js from "@eslint/js";
-import tsPlugin from "typescript-eslint";
+import { flat } from "@eslint/js";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
 import globals from "globals";
 
 export default [
@@ -8,21 +9,26 @@ export default [
     files: ["**/*.{js,ts}"],
 
     languageOptions: {
-      globals: { ...globals.node, ...globals.browser },
+      parser: tsParser,
       parserOptions: {
-        ecmaVersion: 2024,
+        ecmaVersion: "latest",
         sourceType: "module",
       },
-    },
-
-    plugins: {
-      js,
-      "@typescript-eslint": tsPlugin,
+      globals: { ...globals.node, ...globals.browser },
     },
 
     rules: {
-      ...js.configs.recommended.rules,
-      ...tsPlugin.configs.recommended.rules,
+      // JS rules
+      "no-unused-vars": "warn",
+      "eqeqeq": "error",
+      "curly": "error",
+      "semi": ["error", "always"],
+
+      // TS rules
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/explicit-function-return-type": "warn",
+      "@typescript-eslint/strict-boolean-expressions": "error",
     },
   },
 ];

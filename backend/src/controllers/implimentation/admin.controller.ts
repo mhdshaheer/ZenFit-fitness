@@ -45,11 +45,9 @@ export class AdminController implements IAdminController {
       const { status } = req.body;
 
       if (!["active", "blocked"].includes(status)) {
-        res
-          .status(HttpStatus.BAD_REQUEST)
-          .json({ message: 'Invalid status: must be "active" or "blocked"' });
-        return;
-      }
+  throw new Error('Invalid status: must be "active" or "blocked"');
+}
+
 
       const user = await this.adminService.updateUserStatus(id, status);
       const responseDto = mapToUserStatusDto(user!, status);

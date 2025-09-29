@@ -14,6 +14,7 @@ import userRouter from "./routes/user.routes";
 import programRouter from "./routes/program.routes";
 import sessionRouter from "./routes/session.routes";
 import categoryRouter from "./routes/category.routes";
+import { errorMiddleware } from "./middlewares/errorHandle.middleware";
 
 const app = express();
 app.use(
@@ -36,6 +37,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
 
+// Routes
 app.use("/api/v1/auth/login", loginLimiter);
 app.use("/api/v1/auth", authRouter);
 app.use("/api/v1/admin", adminRouter);
@@ -44,5 +46,9 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/program", programRouter);
 app.use("/api/v1/session", sessionRouter);
 app.use("/api/v1/category", categoryRouter);
+
+
+// Global Error handling
+app.use(errorMiddleware)
 
 export default app;
