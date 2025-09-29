@@ -11,41 +11,29 @@ import {
   generateRefreshToken,
 } from "../../shared/utils/jwt.util";
 import { IAuthService } from "../../services/interface/auth.service.interface";
+import { AppError } from "../../shared/utils/appError.util";
 
 @injectable()
 export class AuthController implements IAuthController {
   constructor(@inject(TYPES.AuthService) private authService: IAuthService) {}
 
   async signup(req: Request, res: Response): Promise<void> {
-    try {
-      const { username, email, password, dob, gender, role } = req.body;
-      const user = await this.authService.signup({
-        username,
-        email,
-        password,
-        dob,
-        gender,
-        role,
-      });
-      res.status(HttpStatus.OK).json({
-        message: HttpResponse.USER_CREATION_SUCCESS,
-        user,
-      });
-    } catch (error) {
-      if (error instanceof Error) {
-        const message = error.message || "Server error";
+    const { username, email, password, dob, gender, role } = req.body;
 
-        let status = HttpStatus.INTERNAL_SERVER_ERROR;
-
-        if (message === "Email already exists") {
-          status = HttpStatus.CONFLICT;
-        } else if (message === "All fields are required") {
-          status = HttpStatus.BAD_REQUEST;
-        }
-
-        res.status(status).json({ error: message });
-      }
+    if (!username || !email || !password || !dob || !gender || !role) {
+      throw new AppError("All fields are required", HttpStatus.BAD_REQUEST);
     }
+
+    const user = await this.authService.signup({ username, email, password, dob, gender, role });
+
+    if (!user) {
+      throw new AppError("Failed to create user", HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    res.status(HttpStatus.OK).json({
+      message: HttpResponse.USER_CREATION_SUCCESS,
+      user,
+    });
   }
   async sendOtp(req: Request, res: Response): Promise<void> {
     await this.authService.sendOtp(req, res);
@@ -59,122 +47,85 @@ export class AuthController implements IAuthController {
     await this.authService.resendOtp(req, res);
   }
   async login(req: Request, res: Response): Promise<void> {
-    try {
-      const { email, password } = req.body;
-      const { user, accessToken, refreshToken } = await this.authService.login(
-        email,
-        password
-      );
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax",
-        maxAge: 15 * 60 * 1000,
-        path: "/",
-      });
+    const { email, password } = req.body;
 
-      // Set refresh token in HTTP-only cookie
-      res.cookie("refreshToken", refreshToken, {
-        httpOnly: true,
-        secure: false,
-        sameSite: "lax", // allow dev frontend access
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        path: "/",
-      });
-      res.status(HttpStatus.OK).json({
-        message: HttpResponse.LOGIN_SUCCESS,
-        accessToken,
-        role: user.role,
-        user: {
-          id: user._id,
-          username: user.username,
-          email: user.email,
-        },
-      });
-    } catch (err) {
-      if (err instanceof Error) {
-        res
-          .status(HttpStatus.UNAUTHORIZED)
-          .json({ message: err.message || "Login failed" });
-      }
+    if (!email || !password) {
+      throw new AppError("Email and password are required", HttpStatus.BAD_REQUEST);
     }
-  }
-  async sendForgotPasswordOtp(req: Request, res: Response): Promise<void> {
-    try {
-      const { email } = req.body;
 
-      const result = await this.authService.sendForgotPasswordOtp(email);
-      res.status(HttpStatus.OK).json(result);
-    } catch (error) {
-      if (error instanceof Error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-          message: error.message || "Something went wrong",
-        });
-      }
+    const { user, accessToken, refreshToken } = await this.authService.login(email, password);
+
+    if (!user) {
+      throw new AppError("Invalid email or password", HttpStatus.UNAUTHORIZED);
     }
-  }
-  async verifyForgotOtp(req: Request, res: Response): Promise<void> {
-    try {
-      console.log("verify forgot otp message", req.body);
-      const { email, otp } = req.body;
-      const result = await this.authService.verifyForgotOtp(email, otp);
-      console.log("result from service :", result);
-      res.status(HttpStatus.OK).json(result);
-    } catch (error) {
-      if (error instanceof Error) {
-        res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
-          message: error.message || "Something went wrong",
-        });
-      }
-    }
-  }
-  async resetPassword(req: Request, res: Response): Promise<void> {
-    await this.authService.resetPassword(req, res);
-    return;
-  }
 
-  async googleCallback(req: Request, res: Response): Promise<void> {
-    const user = req.user as any;
-    console.log(user);
-    const accessToken = generateAccessToken({
-      id: user._id,
-      role: user.role,
-    });
-    const refreshToken = generateRefreshToken({
-      id: user._id,
-      role: user.role,
-    });
-
+    // Set cookies
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: false,
       sameSite: "lax",
-      maxAge: 15 * 60 * 1000, // 15 minutes (adjust as needed)
+      maxAge: 15 * 60 * 1000,
+      path: "/",
     });
 
-    // Store refresh token on cookie:
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false, // ✅ false in dev
-      sameSite: "lax", // allow dev frontend access
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      secure: false,
+      sameSite: "lax",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
 
-    res.redirect(
-      `${env.frontend_url}/user/dashboard?accessToken=${accessToken}&refreshToken=${refreshToken}`
-    );
+    res.status(HttpStatus.OK).json({
+      message: HttpResponse.LOGIN_SUCCESS,
+      accessToken,
+      role: user.role,
+      user: { id: user._id, username: user.username, email: user.email },
+    });
+  }
+  async sendForgotPasswordOtp(req: Request, res: Response): Promise<void> {
+    const { email } = req.body;
 
-    return;
+    if (!email) {
+      throw new AppError("Email is required", HttpStatus.BAD_REQUEST);
+    }
+
+    const result = await this.authService.sendForgotPasswordOtp(email);
+    res.status(HttpStatus.OK).json(result);
+  }
+  async verifyForgotOtp(req: Request, res: Response): Promise<void> {
+    const { email, otp } = req.body;
+
+    if (!email || !otp) {
+      throw new AppError("Email and OTP are required", HttpStatus.BAD_REQUEST);
+    }
+
+    const result = await this.authService.verifyForgotOtp(email, otp);
+    res.status(HttpStatus.OK).json(result);
+  }
+  async resetPassword(req: Request, res: Response): Promise<void> {
+    await this.authService.resetPassword(req, res);
+  }
+
+  async googleCallback(req: Request, res: Response): Promise<void> {
+    const user = req.user as any;
+    if (!user) throw new AppError("Google authentication failed", HttpStatus.UNAUTHORIZED);
+
+    const accessToken = generateAccessToken({ id: user._id, role: user.role });
+    const refreshToken = generateRefreshToken({ id: user._id, role: user.role });
+
+    res.cookie("accessToken", accessToken, { httpOnly: true, secure: false, sameSite: "lax", maxAge: 15 * 60 * 1000 });
+    res.cookie("refreshToken", refreshToken, { httpOnly: true, secure: false, sameSite: "lax", maxAge: 7 * 24 * 60 * 60 * 1000 });
+
+    res.redirect(`${env.frontend_url}/user/dashboard?accessToken=${accessToken}&refreshToken=${refreshToken}`);
   }
   async logOut(_req: Request, res: Response): Promise<void> {
     await this.authService.logout(res);
     res.status(HttpStatus.OK).json({ message: HttpResponse.LOGOUT_SUCCESS });
-    return;
   }
 
   async refreshAccessToken(req: Request, res: Response) {
     const { refreshToken } = req.cookies;
     await this.authService.handleRefreshToken(refreshToken, res);
-    return;
   }
 }
