@@ -27,4 +27,7 @@ export class CategoryRepository
   async getCategory(categoryId: string): Promise<ICategory | null> {
     return this.findOne({ _id: categoryId });
   }
+  async findByCategoryName(name: string): Promise<ICategory | null> {
+    return this.findByName(name);
+  }
 }

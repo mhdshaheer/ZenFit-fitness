@@ -10,4 +10,5 @@ export interface ICategoryService {
     category: Partial<ICategory>
   ): Promise<CategoryDto>;
   getCategory(categoryId: string): Promise<CategoryDto>;
+  checkDuplicateName(name: string): Promise<boolean>;
 }

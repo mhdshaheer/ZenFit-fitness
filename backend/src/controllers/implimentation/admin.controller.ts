@@ -15,11 +15,6 @@ export class AdminController implements IAdminController {
   ) {}
 
   async getUsers(req: Request, res: Response): Promise<void> {
-
-
-
-
-    
     const page = parseInt(req.query.page as string) || 1;
     const pageSize = parseInt(req.query.pageSize as string) || 10;
     const search = (req.query.search as string) || "";
@@ -35,7 +30,10 @@ export class AdminController implements IAdminController {
     });
 
     if (!result) {
-      throw new AppError("Failed to fetch users", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new AppError(
+        "Failed to fetch users",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
     }
     res.status(HttpStatus.OK).json(result);
   }
@@ -45,7 +43,10 @@ export class AdminController implements IAdminController {
     const { status } = req.body;
 
     if (!["active", "blocked"].includes(status)) {
-      throw new AppError('Invalid status: must be "active" or "blocked"', HttpStatus.BAD_REQUEST);
+      throw new AppError(
+        'Invalid status: must be "active" or "blocked"',
+        HttpStatus.BAD_REQUEST
+      );
     }
 
     const user = await this.adminService.updateUserStatus(id, status);
@@ -59,5 +60,5 @@ export class AdminController implements IAdminController {
     res.status(HttpStatus.OK).json({
       responseDto,
     });
-  } 
+  }
 }

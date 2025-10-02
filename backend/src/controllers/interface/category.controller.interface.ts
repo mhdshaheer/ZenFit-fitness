@@ -5,14 +5,31 @@ export interface ICategoryController {
   findAllCategory(
     req: Request,
     res: Response,
-    next:NextFunction
+    next: NextFunction
   ): Promise<Response<CategoryDto[]>>;
   findAllSubCategory(
     req: Request,
     res: Response,
-    next:NextFunction
+    next: NextFunction
   ): Promise<Response<CategoryDto>>;
-  createCategory(req: Request, res: Response,next:NextFunction): Promise<Response<CategoryDto>>;
-  updateCategory(req: Request, res: Response,next:NextFunction): Promise<Response<CategoryDto>>;
-  getCategory(req: Request, res: Response,next:NextFunction): Promise<Response<CategoryDto>>;
+  createCategory(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response<CategoryDto>>;
+  updateCategory(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response<CategoryDto>>;
+  getCategory(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response<CategoryDto>>;
+  checkCategoryName(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response<boolean>>;
 }

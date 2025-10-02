@@ -77,4 +77,8 @@ export class CategoryService implements ICategoryService {
     const mappedCategory = mapToCategoryDto(category);
     return mappedCategory;
   }
+  async checkDuplicateName(name: string): Promise<boolean> {
+    const category = await this.categoryRepository.findByCategoryName(name);
+    return !!category;
+  }
 }

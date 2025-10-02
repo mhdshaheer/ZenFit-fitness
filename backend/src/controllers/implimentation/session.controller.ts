@@ -5,7 +5,6 @@ import { inject } from "inversify";
 import { HttpStatus } from "../../const/statuscode.const";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ISession } from "../../models/session.model";
-import { HttpResponse } from "../../const/response_message.const";
 import { AppError } from "../../shared/utils/appError.util";
 
 export class SessionController implements ISessionController {
@@ -13,39 +12,36 @@ export class SessionController implements ISessionController {
     @inject(TYPES.SessionService) private sessionService: ISessionService
   ) {}
   async saveDraftSession(req: Request, res: Response): Promise<void> {
+    const data = req.body;
+    const userId = (req as any).user.id;
 
-      const data = req.body;
-      const userId = (req as any).user.id;
-      
-      if (!data) {
-        throw new AppError("Session data is required", HttpStatus.BAD_REQUEST);
-      }
-      
-      data.trainerId = userId;
-      const slotStatus = "draft";
+    if (!data) {
+      throw new AppError("Session data is required", HttpStatus.BAD_REQUEST);
+    }
 
-      const sessionDraft = await this.sessionService.saveSession(
-        userId,
-        slotStatus,
-        data
-      );
+    data.trainerId = userId;
+    const slotStatus = "draft";
 
-      if (!sessionDraft) {
-        throw new AppError(
+    const sessionDraft = await this.sessionService.saveSession(
+      userId,
+      slotStatus,
+      data
+    );
+
+    if (!sessionDraft) {
+      throw new AppError(
         "Failed to save session draft",
         HttpStatus.INTERNAL_SERVER_ERROR
       );
-      }
+    }
 
-      res.status(HttpStatus.OK).json({
-        message: "session draft is saved successfully",
-      });
-      return;
-    
+    res.status(HttpStatus.OK).json({
+      message: "session draft is saved successfully",
+    });
+    return;
   }
   async saveSession(req: Request, res: Response): Promise<void> {
-
-      const data = req.body;
+    const data = req.body;
     const userId = (req as any).user?.id;
 
     if (!data) {

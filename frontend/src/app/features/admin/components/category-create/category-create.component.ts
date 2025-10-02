@@ -10,6 +10,9 @@ import {
 import { CategoryService } from '../../../../core/services/category.service';
 import { ICategory } from '../../../../interface/category.interface';
 import { ToastService } from '../../../../core/services/toast.service';
+import { Router } from '@angular/router';
+import { CATEGORY_FORM_CONSTANTS } from '../../../../shared/constants/categoryForm.constants';
+import { CategoryNameValidator } from '../../../../shared/validators/categoryName.validator';
 
 @Component({
   selector: 'zenfit-category-create',
@@ -18,7 +21,6 @@ import { ToastService } from '../../../../core/services/toast.service';
   styleUrl: './category-create.component.css',
 })
 export class CategoryCreateComponent {
-  activeTab = 'create';
   createForm: FormGroup;
   editForm: FormGroup | null = null;
   categorySelectControl = new FormControl('');
@@ -27,6 +29,7 @@ export class CategoryCreateComponent {
 
   private _categoryService = inject(CategoryService);
   private _toastService = inject(ToastService);
+  private router = inject(Router);
 
   constructor(private fb: FormBuilder) {
     this.createForm = this.fb.group({
@@ -34,11 +37,20 @@ export class CategoryCreateComponent {
         '',
         [
           Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(50),
+          Validators.minLength(CATEGORY_FORM_CONSTANTS.NAME.MIN_LENGTH),
+          Validators.maxLength(CATEGORY_FORM_CONSTANTS.NAME.MAX_LENGTH),
+          Validators.pattern(CATEGORY_FORM_CONSTANTS.NAME.PATTERN),
+        ],
+        [CategoryNameValidator(this._categoryService)],
+      ],
+      description: [
+        '',
+        [
+          Validators.required,
+          Validators.maxLength(CATEGORY_FORM_CONSTANTS.DESCRIPTION.MAX_LENGTH),
+          Validators.pattern(CATEGORY_FORM_CONSTANTS.DESCRIPTION.PATTERN),
         ],
       ],
-      description: ['', [Validators.maxLength(500)]],
     });
   }
 
@@ -53,6 +65,7 @@ export class CategoryCreateComponent {
           console.log('Category created:', res);
           this._toastService.success('Category is created');
           this.resetCreateForm();
+          this.router.navigate(['/admin/category']);
           this.isSubmitting = false;
         },
         error: (err) => {

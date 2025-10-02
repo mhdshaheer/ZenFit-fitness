@@ -42,42 +42,38 @@
                 placeholder="Enter category name"
               />
               <!-- Error Messages -->
-              <div
-                *ngIf="
-                  createForm.get('name')?.invalid &&
-                  createForm.get('name')?.touched
-                "
-                class="mt-1"
-              >
-                <p
-                  *ngIf="createForm.get('name')?.errors?.['required']"
-                  class="text-xs text-red-600"
-                >
-                  Category name is required
-                </p>
-                <p
-                  *ngIf="createForm.get('name')?.errors?.['minlength']"
-                  class="text-xs text-red-600"
-                >
+              @if(createForm.get('name')?.invalid &&
+              createForm.get('name')?.touched){
+
+              <div class="mt-1">
+                @if(createForm.get('name')?.errors?.['required']){
+                <p class="text-xs text-red-600">Category name is required</p>
+                } @if(createForm.get('name')?.errors?.['minlength']){
+                <p class="text-xs text-red-600">
                   Category name must be at least 3 characters long
                 </p>
-                <p
-                  *ngIf="createForm.get('name')?.errors?.['maxlength']"
-                  class="text-xs text-red-600"
-                >
+                } @if(createForm.get('name')?.errors?.['maxlength']){
+                <p class="text-xs text-red-600">
                   Category name cannot exceed 50 characters
                 </p>
+                } @if(createForm.get('name')?.errors?.['pattern']){
+                <p class="text-xs text-red-600">
+                  Only letters, numbers, spaces, hyphens (-), and underscores
+                  (_) are allowed
+                </p>
+                } @if(createForm.get('name')?.errors?.['duplicate']){
+                <p class="text-xs text-red-600">
+                  This category name already exists. Please choose another.
+                </p>
+                }
               </div>
-              <p
-                *ngIf="
-                  createForm.get('name')?.valid ||
-                  !createForm.get('name')?.touched
-                "
-                class="mt-1 text-xs text-gray-500"
-              >
+              } @if(createForm.get('name')?.valid
+              ||!createForm.get('name')?.touched){
+              <p class="mt-1 text-xs text-gray-500">
                 Choose a unique and descriptive name for your category (3-50
                 characters)
               </p>
+              }
             </div>
 
             <!-- Description Field -->
@@ -104,30 +100,31 @@
                 placeholder="Describe what this category is for..."
               ></textarea>
               <!-- Error Messages -->
-              <div
-                *ngIf="
-                  createForm.get('description')?.invalid &&
-                  createForm.get('description')?.touched
-                "
-                class="mt-1"
-              >
-                <p
-                  *ngIf="createForm.get('description')?.errors?.['maxlength']"
-                  class="text-xs text-red-600"
-                >
+              @if(createForm.get('description')?.invalid &&
+              createForm.get('description')?.touched){
+
+              <div class="mt-1">
+                @if(createForm.get('description')?.errors?.['required']){
+                <p class="text-xs text-red-600">
+                  Category description is required
+                </p>
+                } @if(createForm.get('description')?.errors?.['maxlength']){
+                <p class="text-xs text-red-600">
                   Description cannot exceed 500 characters
                 </p>
+                } @if(createForm.get('description')?.errors?.['pattern']){
+                <p class="text-xs text-red-600">
+                  Invalid characters used in description
+                </p>
+                }
               </div>
-              <p
-                *ngIf="
-                  createForm.get('description')?.valid ||
-                  !createForm.get('description')?.touched
-                "
-                class="mt-1 text-xs text-gray-500"
-              >
+              } @if(createForm.get('description')?.valid ||
+              !createForm.get('description')?.touched){
+              <p class="mt-1 text-xs text-gray-500">
                 Optional: Add a description to help others understand this
                 category (max 500 characters)
               </p>
+              }
             </div>
 
             <!-- Action Buttons -->

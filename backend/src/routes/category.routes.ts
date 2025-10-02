@@ -10,18 +10,21 @@ const controller = container.get<ICategoryController>(TYPES.CategoryController);
 // categoryRouter.use(authMiddleware);
 
 categoryRouter.get("/", (req, res, next) => {
-  controller.findAllCategory(req, res,next).catch(next);
+  controller.findAllCategory(req, res, next).catch(next);
 });
 categoryRouter.get("/subcategories", (req, res, next) => {
-  controller.findAllSubCategory(req, res,next).catch(next);
+  controller.findAllSubCategory(req, res, next).catch(next);
 });
 categoryRouter.post("/", (req, res, next) => {
-  controller.createCategory(req, res,next).catch(next);
+  controller.createCategory(req, res, next).catch(next);
+});
+categoryRouter.get("/check-name", (req, res, next) => {
+  controller.checkCategoryName(req, res, next).catch(next);
 });
 categoryRouter.put("/:id", (req, res, next) => {
-  controller.updateCategory(req, res,next).catch(next);
+  controller.updateCategory(req, res, next).catch(next);
 });
 categoryRouter.get("/:id", (req, res, next) => {
-  controller.getCategory(req, res,next).catch(next);
+  controller.getCategory(req, res, next).catch(next);
 });
 export default categoryRouter;

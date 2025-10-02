@@ -20,4 +20,7 @@ export class CategoryService {
   createCategory(data: Partial<ICategory>): Observable<ICategory> {
     return this.http.post<ICategory>(`${this.api}`, data);
   }
+  checkDuplicateName(name: String): Observable<boolean> {
+    return this.http.get<boolean>(`${this.api}/check-name?name=${name}`);
+  }
 }

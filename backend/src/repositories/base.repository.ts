@@ -33,4 +33,10 @@ export abstract class BaseRepository<T> {
       }
     );
   }
+
+  async findByName(name: string): Promise<T | null> {
+    return await this.model.findOne({
+      name: { $regex: new RegExp(`^${name}$`, "i") },
+    });
+  }
 }
