@@ -37,4 +37,9 @@ export interface ICategoryController {
     res: Response,
     next: NextFunction
   ): Promise<Response<CategoryDto>>;
+  getTableCategories(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response<CategoryDto[]>>;
 }

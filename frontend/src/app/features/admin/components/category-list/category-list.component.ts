@@ -8,6 +8,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { Router } from '@angular/router';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { IParams } from '../../../../interface/category.interface';
 
 export interface TableColumn {
   key: string;
@@ -44,7 +45,6 @@ export class CategoryListComponent implements OnInit {
   private dialog = inject(MatDialog);
 
   categories: ICategory[] = []; // full list from API
-  filteredCategories: ICategory[] = []; // filtered + sorted list
 
   // Pagination
   page = 1;
@@ -55,6 +55,14 @@ export class CategoryListComponent implements OnInit {
   searchTerm = '';
   sortBy: keyof ICategory | '' = '';
   sortOrder: 'asc' | 'desc' = 'asc';
+
+  params: IParams = {
+    page: 1,
+    pageSize: 5,
+    search: '',
+    sortBy: 'createdAt',
+    sortOrder: 'asc',
+  };
 
   ngOnInit() {
     this.getCategories();
@@ -74,13 +82,18 @@ export class CategoryListComponent implements OnInit {
   ];
 
   getCategories() {
-    this._categoryService.getCategories().subscribe({
-      next: (res: ICategory[]) => {
-        this.categories = res.map((item) => ({
+    this.params.page = this.page;
+    this.params.pageSize = this.pageSize;
+    this.params.search = this.searchTerm;
+    this.params.sortBy = this.sortBy || 'createdAt';
+    this.params.sortOrder = this.sortOrder;
+    this._categoryService.getCategoryTable(this.params).subscribe({
+      next: (res: { total: number; data: ICategory[] }) => {
+        this.totalCategories = res.total;
+        this.categories = res.data.map((item) => ({
           ...item,
           status: item.isBlocked ? 'blocked' : 'active',
         }));
-        this.applyFilterAndSort();
       },
       error: (err) => {
         this._logger.error('Failed to fetch categories', err);
@@ -137,7 +150,7 @@ export class CategoryListComponent implements OnInit {
                     }
                   : item
               );
-              this.applyFilterAndSort();
+              this.getCategories();
             });
         }
       });
@@ -152,7 +165,8 @@ export class CategoryListComponent implements OnInit {
   // Search handler
   onSearchChanged(search: string) {
     this.searchTerm = search.toLowerCase();
-    this.applyFilterAndSort();
+    this.page = 1;
+    this.getCategories();
   }
 
   // Sort handler
@@ -166,51 +180,12 @@ export class CategoryListComponent implements OnInit {
     if (sortBy) {
       this.sortBy = sortBy as keyof ICategory;
       this.sortOrder = sortOrder;
-      this.applyFilterAndSort();
+      this.getCategories();
     }
-  }
-
-  // Apply search + sort
-  private applyFilterAndSort() {
-    let list = [...this.categories];
-
-    // Filter
-    if (this.searchTerm) {
-      list = list.filter(
-        (c) =>
-          c.name.toLowerCase().includes(this.searchTerm) ||
-          (c.description &&
-            c.description.toLowerCase().includes(this.searchTerm))
-      );
-    }
-
-    // Sort
-    if (this.sortBy) {
-      list.sort((a, b) => {
-        const valA = a[this.sortBy as keyof ICategory];
-        const valB = b[this.sortBy as keyof ICategory];
-
-        if (valA == null) return 1;
-        if (valB == null) return -1;
-
-        let comparison = 0;
-        if (typeof valA === 'string' && typeof valB === 'string') {
-          comparison = valA.localeCompare(valB);
-        } else if (valA instanceof Date && valB instanceof Date) {
-          comparison = valA.getTime() - valB.getTime();
-        } else {
-          comparison = valA > valB ? 1 : -1;
-        }
-
-        return this.sortOrder === 'asc' ? comparison : -comparison;
-      });
-    }
-
-    this.filteredCategories = list;
-    this.totalCategories = list.length;
   }
 
   onPageChanged(page: number) {
     this.page = page;
+    this.getCategories();
   }
 }

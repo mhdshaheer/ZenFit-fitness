@@ -84,4 +84,32 @@ export class CategoryController implements ICategoryController {
     const category = await this.categoryService.updateStatus(id, isBlocked);
     return res.status(HttpStatus.OK).json(category);
   }
+
+  async getTableCategories(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<Response<CategoryDto[]>> {
+    const page = parseInt(req.query.page as string);
+    const pageSize = parseInt(req.query.pageSize as string);
+    const search = req.query.search as string;
+    const sortBy = req.query.sortBy as string;
+    const sortOrder = (req.query.sortOrder as string) === "desc" ? -1 : 1;
+
+    const result = await this.categoryService.getTableCategories({
+      page,
+      pageSize,
+      search,
+      sortBy,
+      sortOrder,
+    });
+
+    if (!result) {
+      throw new AppError(
+        "Failed to fetch categories",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+    return res.status(HttpStatus.OK).json(result);
+  }
 }

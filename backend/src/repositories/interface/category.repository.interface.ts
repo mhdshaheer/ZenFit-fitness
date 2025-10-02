@@ -1,5 +1,6 @@
 import { FilterQuery } from "mongoose";
 import { ICategory } from "../../models/category.model";
+import { GetCategoryParams } from "../../interfaces/category.interface";
 
 export interface ICategoryRepository {
   findAllCategory(
@@ -18,4 +19,7 @@ export interface ICategoryRepository {
     categoryId: string,
     isBlocked: boolean
   ): Promise<ICategory | null>;
+  getAllForTable(
+    options: GetCategoryParams
+  ): Promise<{ total: number; data: ICategory[] }>;
 }

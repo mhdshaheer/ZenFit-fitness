@@ -1,4 +1,5 @@
 import { CategoryDto } from "../../dtos/category.dtos";
+import { GetCategoryParams } from "../../interfaces/category.interface";
 import { ICategory } from "../../models/category.model";
 
 export interface ICategoryService {
@@ -12,4 +13,7 @@ export interface ICategoryService {
   getCategory(categoryId: string): Promise<CategoryDto>;
   checkDuplicateName(name: string): Promise<boolean>;
   updateStatus(categoryId: string, isBlocked: boolean): Promise<CategoryDto>;
+  getTableCategories(
+    params: GetCategoryParams
+  ): Promise<{ data: CategoryDto[]; total: number }>;
 }

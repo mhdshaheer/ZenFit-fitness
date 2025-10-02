@@ -2,6 +2,7 @@ import { FilterQuery } from "mongoose";
 import { CategoryModel, ICategory } from "../../models/category.model";
 import { BaseRepository } from "../base.repository";
 import { ICategoryRepository } from "../interface/category.repository.interface";
+import { GetCategoryParams } from "../../interfaces/category.interface";
 
 export class CategoryRepository
   extends BaseRepository<ICategory>
@@ -39,5 +40,34 @@ export class CategoryRepository
       { $set: { isBlocked } },
       { new: true }
     );
+  }
+  async getAllForTable(
+    options: GetCategoryParams
+  ): Promise<{ total: number; data: ICategory[] }> {
+    const {
+      filter = {},
+      sortBy = "createdAt",
+      sortOrder = "asc",
+      page = 1,
+      pageSize = 10,
+      search = "",
+    } = options;
+
+    if (search) {
+      filter.$or = [
+        { name: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
+    }
+    const total = await this.model.countDocuments(filter);
+
+    // Fetch users with filter, sort, pagination
+    const categories = await this.model
+      .find(filter)
+      .sort({ [sortBy]: sortOrder })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+
+    return { total, data: categories };
   }
 }

@@ -7,3 +7,10 @@ export interface ICategory {
   createdAt?: Date | string;
   status?: 'active' | 'blocked';
 }
+export interface IParams {
+  page: number;
+  pageSize: number;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}

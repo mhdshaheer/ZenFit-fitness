@@ -21,6 +21,9 @@ categoryRouter.post("/", (req, res, next) => {
 categoryRouter.get("/check-name", (req, res, next) => {
   controller.checkCategoryName(req, res, next).catch(next);
 });
+categoryRouter.get("/table", (req, res, next) => {
+  controller.getTableCategories(req, res, next).catch(next);
+});
 categoryRouter.put("/:id", (req, res, next) => {
   controller.updateCategory(req, res, next).catch(next);
 });

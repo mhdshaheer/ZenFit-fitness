@@ -8,6 +8,7 @@ import { CategoryDto } from "../../dtos/category.dtos";
 import { ICategory } from "../../models/category.model";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
+import { GetCategoryParams } from "../../interfaces/category.interface";
 
 export class CategoryService implements ICategoryService {
   constructor(
@@ -99,5 +100,15 @@ export class CategoryService implements ICategoryService {
     }
     const categoryDto = mapToCategoryDto(category);
     return categoryDto;
+  }
+
+  async getTableCategories(
+    params: GetCategoryParams
+  ): Promise<{ data: CategoryDto[]; total: number }> {
+    const { total, data } = await this.categoryRepository.getAllForTable(
+      params
+    );
+    const categoryDto = data.map(mapToCategoryDto);
+    return { data: categoryDto, total };
   }
 }

@@ -1,8 +1,8 @@
 import { Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { ICategory } from '../../interface/category.interface';
+import { ICategory, IParams } from '../../interface/category.interface';
 export type { ICategory };
 
 @Injectable({ providedIn: 'root' })
@@ -19,6 +19,26 @@ export class CategoryService {
   }
   createCategory(data: Partial<ICategory>): Observable<ICategory> {
     return this.http.post<ICategory>(`${this.api}`, data);
+  }
+  getCategoryTable(
+    params: IParams
+  ): Observable<{ total: number; data: ICategory[] }> {
+    let httpParams = new HttpParams()
+      .set('page', params.page.toString())
+      .set('pageSize', params.pageSize.toString())
+      .set('sortBy', params.sortBy || 'createdAt')
+      .set('sortOrder', params.sortOrder || 'asc');
+
+    if (params.search) {
+      httpParams = httpParams.set('search', params.search);
+    }
+    return this.http.get<{ total: number; data: ICategory[] }>(
+      `${this.api}/table`,
+      {
+        params: httpParams,
+        withCredentials: true,
+      }
+    );
   }
   checkDuplicateName(name: String): Observable<boolean> {
     return this.http.get<boolean>(`${this.api}/check-name?name=${name}`);
