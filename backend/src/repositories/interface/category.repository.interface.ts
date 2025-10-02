@@ -14,4 +14,8 @@ export interface ICategoryRepository {
 
   getCategory(categoryId: string): Promise<ICategory | null>;
   findByCategoryName(name: string): Promise<ICategory | null>;
+  updateStatus(
+    categoryId: string,
+    isBlocked: boolean
+  ): Promise<ICategory | null>;
 }

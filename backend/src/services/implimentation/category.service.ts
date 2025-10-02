@@ -6,6 +6,8 @@ import logger from "../../shared/services/logger.service";
 import { mapToCategoryDto } from "../../mapper/category.mapper";
 import { CategoryDto } from "../../dtos/category.dtos";
 import { ICategory } from "../../models/category.model";
+import { AppError } from "../../shared/utils/appError.util";
+import { HttpStatus } from "../../const/statuscode.const";
 
 export class CategoryService implements ICategoryService {
   constructor(
@@ -80,5 +82,22 @@ export class CategoryService implements ICategoryService {
   async checkDuplicateName(name: string): Promise<boolean> {
     const category = await this.categoryRepository.findByCategoryName(name);
     return !!category;
+  }
+  async updateStatus(
+    categoryId: string,
+    isBlocked: boolean
+  ): Promise<CategoryDto> {
+    const category = await this.categoryRepository.updateStatus(
+      categoryId,
+      isBlocked
+    );
+    if (!category) {
+      throw new AppError(
+        "Category not found for editing",
+        HttpStatus.NOT_FOUND
+      );
+    }
+    const categoryDto = mapToCategoryDto(category);
+    return categoryDto;
   }
 }

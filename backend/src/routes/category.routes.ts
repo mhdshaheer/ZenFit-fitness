@@ -27,4 +27,7 @@ categoryRouter.put("/:id", (req, res, next) => {
 categoryRouter.get("/:id", (req, res, next) => {
   controller.getCategory(req, res, next).catch(next);
 });
+categoryRouter.put("/status/:id", (req, res, next) => {
+  controller.updateStatus(req, res, next).catch(next);
+});
 export default categoryRouter;

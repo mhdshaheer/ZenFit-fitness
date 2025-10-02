@@ -11,4 +11,5 @@ export interface ICategoryService {
   ): Promise<CategoryDto>;
   getCategory(categoryId: string): Promise<CategoryDto>;
   checkDuplicateName(name: string): Promise<boolean>;
+  updateStatus(categoryId: string, isBlocked: boolean): Promise<CategoryDto>;
 }

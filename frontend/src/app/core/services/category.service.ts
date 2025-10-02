@@ -23,4 +23,7 @@ export class CategoryService {
   checkDuplicateName(name: String): Observable<boolean> {
     return this.http.get<boolean>(`${this.api}/check-name?name=${name}`);
   }
+  updateStatus(id: String, isBlocked: boolean): Observable<ICategory> {
+    return this.http.put<ICategory>(`${this.api}/status/${id}`, { isBlocked });
+  }
 }

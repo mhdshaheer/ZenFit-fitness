@@ -32,4 +32,9 @@ export interface ICategoryController {
     res: Response,
     next: NextFunction
   ): Promise<Response<boolean>>;
+  updateStatus(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<Response<CategoryDto>>;
 }

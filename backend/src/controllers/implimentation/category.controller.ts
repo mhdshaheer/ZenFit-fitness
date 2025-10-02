@@ -73,4 +73,15 @@ export class CategoryController implements ICategoryController {
     const isDuplicate = await this.categoryService.checkDuplicateName(name);
     return res.status(HttpStatus.OK).json(isDuplicate);
   }
+
+  async updateStatus(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<Response<CategoryDto>> {
+    const { id } = req.params;
+    const { isBlocked } = req.body;
+    const category = await this.categoryService.updateStatus(id, isBlocked);
+    return res.status(HttpStatus.OK).json(category);
+  }
 }

@@ -30,4 +30,14 @@ export class CategoryRepository
   async findByCategoryName(name: string): Promise<ICategory | null> {
     return this.findByName(name);
   }
+  async updateStatus(
+    categoryId: string,
+    isBlocked: boolean
+  ): Promise<ICategory | null> {
+    return this.model.findByIdAndUpdate(
+      categoryId,
+      { $set: { isBlocked } },
+      { new: true }
+    );
+  }
 }

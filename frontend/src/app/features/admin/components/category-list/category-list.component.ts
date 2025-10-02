@@ -20,6 +20,7 @@ export interface TableAction {
   icon: string;
   color: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'gray';
   action: string;
+  condition?: (row: ICategory) => boolean;
 }
 
 export interface ActionEvent {
@@ -87,11 +88,42 @@ export class CategoryListComponent implements OnInit {
   // Table Actions
   categoryActions: TableAction[] = [
     { label: 'Edit', icon: 'edit', color: 'blue', action: 'edit' },
-    { label: 'Delete', icon: 'delete', color: 'red', action: 'delete' },
+    {
+      label: 'Block',
+      icon: 'block',
+      color: 'red',
+      action: 'block',
+      condition: (row) => row.isBlocked == false,
+    },
+    {
+      label: 'Ubblock',
+      icon: 'unlock',
+      color: 'green',
+      action: 'unblock',
+      condition: (row) => row.isBlocked == true,
+    },
   ];
 
   onCategoryAction(event: ActionEvent) {
-    console.log('Category action clicked:', event);
+    if (event.action == 'edit') {
+      this._router.navigate(['admin/category/', event.row._id]);
+    } else if (event.action === 'block' || event.action === 'unblock') {
+      let id = event.row._id;
+      let isBlocked = event.action == 'block' ? true : false;
+      this._categoryService
+        .updateStatus(id, isBlocked)
+        .subscribe((updatedCategory) => {
+          this.categories = this.categories.map((item) =>
+            item._id === id
+              ? {
+                  ...updatedCategory,
+                  status: updatedCategory.isBlocked ? 'blocked' : 'active',
+                }
+              : item
+          );
+          this.applyFilterAndSort();
+        });
+    }
   }
 
   createCategory() {
