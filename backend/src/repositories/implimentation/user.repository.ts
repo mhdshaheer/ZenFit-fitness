@@ -1,4 +1,4 @@
-import { IUser } from "../../interfaces/user.interface";
+import { GetUsersParams, IUser } from "../../interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
 import { BaseRepository } from "../base.repository";
 import { IUserRepository } from "../interface/user.repository.interface";
@@ -43,6 +43,34 @@ export class UserRepository
     );
   }
 
+  async getAllForTable(
+    options: GetUsersParams
+  ): Promise<{ total: number; data: IUser[] }> {
+    const {
+      filter = {},
+      sortBy = "createdAt",
+      sortOrder = "asc",
+      page = 1,
+      pageSize = 10,
+      search = "",
+    } = options;
+
+    if (search) {
+      filter.$or = [
+        { username: { $regex: search, $options: "i" } },
+        { email: { $regex: search, $options: "i" } },
+      ];
+    }
+    const total = await UserModel.countDocuments(filter);
+
+    // Fetch users with filter, sort, pagination
+    const users = await UserModel.find(filter)
+      .sort({ [sortBy]: sortOrder })
+      .skip((page - 1) * pageSize)
+      .limit(pageSize);
+
+    return { total, data: users };
+  }
   // =========== Google signup ==========
 
   async createGoogleUser(userData: {

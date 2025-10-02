@@ -22,6 +22,7 @@ export interface IPassword {
 }
 
 export interface GetUsersParams {
+  filter?: Record<string, any>;
   page: number;
   pageSize: number;
   search?: string;
