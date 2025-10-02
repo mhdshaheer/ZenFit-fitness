@@ -6,6 +6,8 @@ import {
 } from '../../../../core/services/category.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Router } from '@angular/router';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 export interface TableColumn {
   key: string;
@@ -39,6 +41,7 @@ export class CategoryListComponent implements OnInit {
   private _categoryService = inject(CategoryService);
   private _logger = inject(LoggerService);
   private _router = inject(Router);
+  private dialog = inject(MatDialog);
 
   categories: ICategory[] = []; // full list from API
   filteredCategories: ICategory[] = []; // filtered + sorted list
@@ -110,19 +113,35 @@ export class CategoryListComponent implements OnInit {
     } else if (event.action === 'block' || event.action === 'unblock') {
       let id = event.row._id;
       let isBlocked = event.action == 'block' ? true : false;
-      this._categoryService
-        .updateStatus(id, isBlocked)
-        .subscribe((updatedCategory) => {
-          this.categories = this.categories.map((item) =>
-            item._id === id
-              ? {
-                  ...updatedCategory,
-                  status: updatedCategory.isBlocked ? 'blocked' : 'active',
-                }
-              : item
-          );
-          this.applyFilterAndSort();
-        });
+
+      // =================
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        width: '350px',
+        data: {
+          title:
+            event.action === 'block' ? 'Block Category' : 'Unblock Category',
+          message: `Are you sure you want to ${event.action} this category?`,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if (confirmed) {
+          this._categoryService
+            .updateStatus(id, isBlocked)
+            .subscribe((updatedCategory) => {
+              this.categories = this.categories.map((item) =>
+                item._id === id
+                  ? {
+                      ...updatedCategory,
+                      status: updatedCategory.isBlocked ? 'blocked' : 'active',
+                    }
+                  : item
+              );
+              this.applyFilterAndSort();
+            });
+        }
+      });
+      // =================
     }
   }
 
