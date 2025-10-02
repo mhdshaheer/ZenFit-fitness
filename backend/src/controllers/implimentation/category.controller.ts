@@ -35,6 +35,7 @@ export class CategoryController implements ICategoryController {
     _next: NextFunction
   ): Promise<Response<CategoryDto>> {
     const categoryData = req.body;
+    console.log("category from frontend :", categoryData);
     const response = await this.categoryService.createCategory(categoryData);
     return res.status(HttpStatus.OK).json(response);
   }

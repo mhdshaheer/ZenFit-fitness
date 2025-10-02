@@ -47,6 +47,14 @@ export const ADMIN_ROUTES: Routes = [
           ).then((m) => m.CategoryCreateComponent);
         },
       },
+      {
+        path: 'category/:id',
+        loadComponent: () => {
+          return import(
+            '../components/category-view/category-view.component'
+          ).then((m) => m.CategoryViewComponent);
+        },
+      },
     ],
   },
 ];
