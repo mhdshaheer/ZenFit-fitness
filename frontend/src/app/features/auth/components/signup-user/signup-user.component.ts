@@ -16,6 +16,7 @@ import { OtpAccessService } from '../../../../core/services/otp-access.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { environment } from '../../../../../environments/environment';
 import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
+import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
 
 @Component({
   selector: 'app-signup-user',
@@ -45,9 +46,9 @@ export class SignupUserComponent {
           '',
           [
             Validators.required,
-            Validators.minLength(4),
-            Validators.maxLength(20),
-            Validators.pattern(/^[a-zA-Z0-9_]+$/),
+            Validators.minLength(FORM_CONSTANTS.USERNAME.MIN_LENGTH),
+            Validators.maxLength(FORM_CONSTANTS.USERNAME.MAX_LENGTH),
+            Validators.pattern(FORM_CONSTANTS.USERNAME.PATTERN),
           ],
         ],
         email: [
@@ -55,9 +56,7 @@ export class SignupUserComponent {
           [
             Validators.required,
             Validators.email,
-            Validators.pattern(
-              /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-            ),
+            Validators.pattern(FORM_CONSTANTS.EMAIL.PATTERN),
           ],
         ],
         password: ['', [Validators.required, passwordStrengthValidator]],

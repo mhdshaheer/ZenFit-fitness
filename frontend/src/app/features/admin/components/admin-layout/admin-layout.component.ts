@@ -1,8 +1,9 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { SidebarComponent } from '../../../../shared/components/sidebar/sidebar.component';
+import { Subject, takeUntil } from 'rxjs';
 
 interface Menu {
   label: string;
@@ -15,10 +16,13 @@ interface Menu {
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.css',
 })
-export class AdminLayoutComponent {
+export class AdminLayoutComponent implements OnDestroy {
   private router = inject(Router);
   private authService = inject(AuthService);
   private logger = inject(LoggerService);
+
+  private destroy$ = new Subject<void>(); // used to unsubscribe
+
   userMenu: Menu[] = [
     { label: 'Dashboard', route: '/admin/dashboard', icon: 'fas fa-user' },
     { label: 'Users', route: '/admin/users', icon: 'fas fa-dumbbell' },
@@ -34,14 +38,22 @@ export class AdminLayoutComponent {
   }
 
   logOutUser() {
-    this.authService.logout().subscribe({
-      next: (res) => {
-        this.logger.info(res.message);
-        this.router.navigate(['/auth/login']);
-      },
-      error: (err) => {
-        this.logger.error(err);
-      },
-    });
+    this.authService
+      .logout()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.logger.info(res.message);
+          this.router.navigate(['/auth/login']);
+        },
+        error: (err) => {
+          this.logger.error(err);
+        },
+      });
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next(); // trigger unsubscribe
+    this.destroy$.complete(); // complete the subject
   }
 }

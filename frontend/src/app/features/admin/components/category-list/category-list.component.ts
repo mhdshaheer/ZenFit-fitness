@@ -1,5 +1,14 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { TableComponent } from '../../../../shared/components/table/table.component';
+import {
+  CategoryService,
+  ICategory,
+} from '../../../../core/services/category.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { Router } from '@angular/router';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material/dialog';
+import { IParams } from '../../../../interface/category.interface';
 
 export interface TableColumn {
   key: string;
@@ -14,7 +23,7 @@ export interface TableAction {
   icon: string;
   color: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'gray';
   action: string;
-  // condition?: (row: any) => boolean;
+  condition?: (row: ICategory) => boolean;
 }
 
 export interface ActionEvent {
@@ -29,57 +38,36 @@ export interface ActionEvent {
   templateUrl: './category-list.component.html',
   styleUrl: './category-list.component.css',
 })
-export class CategoryListComponent {
+export class CategoryListComponent implements OnInit {
+  private _categoryService = inject(CategoryService);
+  private _logger = inject(LoggerService);
+  private _router = inject(Router);
+  private dialog = inject(MatDialog);
+
+  categories: ICategory[] = []; // full list from API
+
   // Pagination
   page = 1;
   pageSize = 5;
-  totalCategories = 8;
+  totalCategories = 0;
 
-  // Dummy Category Data
-  categories = [
-    {
-      _id: '1',
-      name: 'Strength Training',
-      description: 'Workouts to build strength and endurance',
-      parentId: null,
-      createdAt: '2024-01-01',
-      status: 'active',
-    },
-    {
-      _id: '2',
-      name: 'Powerlifting',
-      description: 'Heavy lifting subcategory under strength',
-      parentId: '1',
-      createdAt: '2024-02-01',
-      status: 'active',
-    },
-    {
-      _id: '3',
-      name: 'Cardio & Endurance',
-      description: 'Improve stamina with cardio programs',
-      parentId: null,
-      createdAt: '2024-01-15',
-      status: 'active',
-    },
-    {
-      _id: '4',
-      name: 'Running',
-      description: 'Subcategory under Cardio',
-      parentId: '3',
-      createdAt: '2024-02-10',
-      status: 'inactive',
-    },
-    {
-      _id: '5',
-      name: 'Cycling',
-      description: 'Subcategory under Cardio',
-      parentId: '3',
-      createdAt: '2024-02-12',
-      status: 'active',
-    },
-  ];
+  // Search & sort
+  searchTerm = '';
+  sortBy: keyof ICategory | '' = '';
+  sortOrder: 'asc' | 'desc' = 'asc';
 
-  // Table Columns
+  params: IParams = {
+    page: 1,
+    pageSize: 5,
+    search: '',
+    sortBy: 'createdAt',
+    sortOrder: 'asc',
+  };
+
+  ngOnInit() {
+    this.getCategories();
+  }
+
   categoryColumns: TableColumn[] = [
     { key: 'name', label: 'Category Name', sortable: true, width: '200px' },
     { key: 'description', label: 'Description', width: '300px' },
@@ -93,26 +81,95 @@ export class CategoryListComponent {
     { key: 'createdAt', label: 'Created At', type: 'date', sortable: true },
   ];
 
+  getCategories() {
+    this.params.page = this.page;
+    this.params.pageSize = this.pageSize;
+    this.params.search = this.searchTerm;
+    this.params.sortBy = this.sortBy || 'createdAt';
+    this.params.sortOrder = this.sortOrder;
+    this._categoryService.getCategoryTable(this.params).subscribe({
+      next: (res: { total: number; data: ICategory[] }) => {
+        this.totalCategories = res.total;
+        this.categories = res.data.map((item) => ({
+          ...item,
+          status: item.isBlocked ? 'blocked' : 'active',
+        }));
+      },
+      error: (err) => {
+        this._logger.error('Failed to fetch categories', err);
+      },
+    });
+  }
+
   // Table Actions
   categoryActions: TableAction[] = [
     { label: 'Edit', icon: 'edit', color: 'blue', action: 'edit' },
-    { label: 'Delete', icon: 'delete', color: 'red', action: 'delete' },
+    {
+      label: 'Block',
+      icon: 'block',
+      color: 'red',
+      action: 'block',
+      condition: (row) => row.isBlocked == false,
+    },
+    {
+      label: 'Ubblock',
+      icon: 'unlock',
+      color: 'green',
+      action: 'unblock',
+      condition: (row) => row.isBlocked == true,
+    },
   ];
 
-  // Event handlers
   onCategoryAction(event: ActionEvent) {
-    console.log('Category action clicked:', event);
+    if (event.action == 'edit') {
+      this._router.navigate(['admin/category/', event.row._id]);
+    } else if (event.action === 'block' || event.action === 'unblock') {
+      let id = event.row._id;
+      let isBlocked = event.action == 'block' ? true : false;
+
+      // =================
+      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+        width: '350px',
+        data: {
+          title:
+            event.action === 'block' ? 'Block Category' : 'Unblock Category',
+          message: `Are you sure you want to ${event.action} this category?`,
+        },
+      });
+
+      dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+        if (confirmed) {
+          this._categoryService
+            .updateStatus(id, isBlocked)
+            .subscribe((updatedCategory) => {
+              this.categories = this.categories.map((item) =>
+                item._id === id
+                  ? {
+                      ...updatedCategory,
+                      status: updatedCategory.isBlocked ? 'blocked' : 'active',
+                    }
+                  : item
+              );
+              this.getCategories();
+            });
+        }
+      });
+      // =================
+    }
   }
 
+  createCategory() {
+    this._router.navigate(['/admin/category-create']);
+  }
+
+  // Search handler
   onSearchChanged(search: string) {
-    console.log('Searching for:', search);
+    this.searchTerm = search.toLowerCase();
+    this.page = 1;
+    this.getCategories();
   }
 
-  onPageChanged(page: number) {
-    this.page = page;
-    console.log('Page changed:', page);
-  }
-
+  // Sort handler
   onSortChanged({
     sortBy,
     sortOrder,
@@ -120,9 +177,15 @@ export class CategoryListComponent {
     sortBy: string;
     sortOrder: 'asc' | 'desc';
   }) {
-    console.log('Sorting by:', sortBy, 'Order:', sortOrder);
+    if (sortBy) {
+      this.sortBy = sortBy as keyof ICategory;
+      this.sortOrder = sortOrder;
+      this.getCategories();
+    }
   }
-  createCategory() {
-    console.log('create category clicked...');
+
+  onPageChanged(page: number) {
+    this.page = page;
+    this.getCategories();
   }
 }

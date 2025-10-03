@@ -1,7 +1,4 @@
-import { Component, inject } from '@angular/core';
-import { AuthService } from '../../../../core/services/auth.service';
-import { Router } from '@angular/router';
-import { LoggerService } from '../../../../core/services/logger.service';
+import { Component } from '@angular/core';
 
 @Component({
   selector: 'app-dashboard',

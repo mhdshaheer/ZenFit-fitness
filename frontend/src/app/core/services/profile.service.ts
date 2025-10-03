@@ -30,7 +30,7 @@ export class ProfileService {
 
     return this.http.request<{ key: string; url: string }>(req);
   }
-  getFile(key: string, id: string = '') {
+  getFile(key: string, id = '') {
     return this.http.get<{ url: string }>(
       `${this.apiUrl}/file/profile/image?key=${encodeURIComponent(
         key
@@ -42,7 +42,7 @@ export class ProfileService {
   }
 
   // Personal information
-  getProfile(id: string = '') {
+  getProfile(id = '') {
     return this.http.get<any>(`${this.apiUrl}/user/profile?id=${id}`);
   }
 

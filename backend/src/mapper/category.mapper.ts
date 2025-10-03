@@ -4,8 +4,10 @@ import { ICategory } from "../models/category.model";
 export const mapToCategoryDto = (category: ICategory): CategoryDto => {
   return {
     _id: category._id?.toString()!,
-    description: category.descrition,
+    description: category.description,
     name: category.name,
     parantId: category.parantId?.toString()!,
+    isBlocked: category.isBlocked || false,
+    createdAt: category.createdAt?.toString()!,
   };
 };

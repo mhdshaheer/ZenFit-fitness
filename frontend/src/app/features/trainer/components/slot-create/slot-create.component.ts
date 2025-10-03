@@ -1,11 +1,12 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { Subject, takeUntil } from 'rxjs';
 import { IProgramSlot, ProgramCategory } from '../../store/trainer.model';
 import { ProgramService } from '../../../../core/services/program.service';
 import { SessionService } from '../../../../core/services/session.service';
@@ -30,7 +31,7 @@ export interface ITimeSlot {
   templateUrl: './slot-create.component.html',
   styleUrl: './slot-create.component.css',
 })
-export class SlotCreateComponent {
+export class SlotCreateComponent implements OnDestroy, OnInit {
   slotForm: FormGroup;
   slotInputForm: FormGroup;
   isSubmitted = false;
@@ -48,15 +49,17 @@ export class SlotCreateComponent {
   route = inject(ActivatedRoute);
   logger = inject(LoggerService);
 
+  private destroy$ = new Subject<void>();
+
   programs: ProgramCategory[] = [];
   timeSlots: ITimeSlot[] = [];
   programId!: string;
   categoryName!: string;
-  isEditMode: boolean = false;
+  isEditMode = false;
 
   constructor(private fb: FormBuilder) {
     // Get CategoryId from params
-    this.route.paramMap.subscribe((params) => {
+    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
       this.programId = params.get('id') as string;
     });
 
@@ -89,13 +92,19 @@ export class SlotCreateComponent {
     });
 
     // Auto-update end time when start time or duration changes
-    this.slotInputForm.get('startTime')?.valueChanges.subscribe(() => {
-      this.updateEndTime();
-    });
+    this.slotInputForm
+      .get('startTime')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.updateEndTime();
+      });
 
-    this.slotForm.get('duration')?.valueChanges.subscribe(() => {
-      this.updateEndTime();
-    });
+    this.slotForm
+      .get('duration')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        this.updateEndTime();
+      });
   }
 
   ngOnInit(): void {
@@ -184,18 +193,21 @@ export class SlotCreateComponent {
   }
 
   getProgramCategory(programId: string): void {
-    this.programService.getProgramByProgramId(programId).subscribe({
-      next: (res) => {
-        console.log('Program is :', res);
-        let categoryData = JSON.parse(res.category);
-        this.categoryName = categoryData.name;
-        console.log('JSON data : ', categoryData._id);
-      },
-      error: (err) => {
-        console.error('Error loading programs:', err);
-        this.toastService.error('Failed to load programs');
-      },
-    });
+    this.programService
+      .getProgramByProgramId(programId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          console.log('Program is :', res);
+          const categoryData = JSON.parse(res.category);
+          this.categoryName = categoryData.name;
+          console.log('JSON data : ', categoryData._id);
+        },
+        error: (err) => {
+          console.error('Error loading programs:', err);
+          this.toastService.error('Failed to load programs');
+        },
+      });
   }
 
   validateForm(): boolean {
@@ -235,22 +247,25 @@ export class SlotCreateComponent {
 
     console.log('Saving training sessions:', formData);
 
-    this.sessionService.saveSession(formData).subscribe({
-      next: (res) => {
-        console.log('Training Sessions saved successfully:', res);
-        this.showSuccessMessage = true;
-        this.toastService.success('Training Sessions created successfully');
+    this.sessionService
+      .saveSession(formData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          console.log('Training Sessions saved successfully:', res);
+          this.showSuccessMessage = true;
+          this.toastService.success('Training Sessions created successfully');
 
-        setTimeout(() => {
-          this.router.navigate(['/trainer/programs']);
-        }, 2000);
-      },
-      error: (err) => {
-        console.error('Error saving Training Sessions:', err);
-        this.toastService.error('❌ Failed to save Training Sessions');
-        this.isLoading = false;
-      },
-    });
+          setTimeout(() => {
+            this.router.navigate(['/trainer/programs']);
+          }, 2000);
+        },
+        error: (err) => {
+          console.error('Error saving Training Sessions:', err);
+          this.toastService.error('❌ Failed to save Training Sessions');
+          this.isLoading = false;
+        },
+      });
   }
 
   onSaveAsDraft(): void {
@@ -265,39 +280,45 @@ export class SlotCreateComponent {
 
     console.log('Saving as draft:', formData);
 
-    this.sessionService.saveSessionDraft(formData).subscribe({
-      next: (res) => {
-        console.log('Draft saved successfully:', res);
-        this.toastService.success('Draft saved successfully');
+    this.sessionService
+      .saveSessionDraft(formData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          console.log('Draft saved successfully:', res);
+          this.toastService.success('Draft saved successfully');
 
-        setTimeout(() => {
-          this.router.navigate(['/trainer/programs']);
-        }, 2000);
-      },
-      error: (err) => {
-        console.error('Error saving draft:', err);
-        this.toastService.error('Failed to save draft');
-      },
-    });
+          setTimeout(() => {
+            this.router.navigate(['/trainer/programs']);
+          }, 2000);
+        },
+        error: (err) => {
+          console.error('Error saving draft:', err);
+          this.toastService.error('Failed to save draft');
+        },
+      });
   }
 
   getSession(programId: string) {
-    this.sessionService.getSession(programId).subscribe({
-      next: (res: IProgramSlot) => {
-        this.logger.info('Session is :', res);
-        this.timeSlots = res.timeSlots.map((item) => {
-          return {
-            ...item,
-            displayDate: this.formatDate(item.date),
-            displayStartTime: this.formatTime12Hour(item.startTime),
-            displayEndTime: this.formatTime12Hour(item.endTime),
-          };
-        });
-      },
-      error: (error) => {
-        this.logger.error('Failed to fetch session :', error);
-      },
-    });
+    this.sessionService
+      .getSession(programId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: IProgramSlot) => {
+          this.logger.info('Session is :', res);
+          this.timeSlots = res.timeSlots.map((item) => {
+            return {
+              ...item,
+              displayDate: this.formatDate(item.date),
+              displayStartTime: this.formatTime12Hour(item.startTime),
+              displayEndTime: this.formatTime12Hour(item.endTime),
+            };
+          });
+        },
+        error: (error) => {
+          this.logger.error('Failed to fetch session :', error);
+        },
+      });
   }
 
   onBack(): void {
@@ -363,5 +384,9 @@ export class SlotCreateComponent {
 
   onEditSlot() {
     this.isEditMode = true;
+  }
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

@@ -7,6 +7,7 @@ import Swal from 'sweetalert2';
 import { Subject } from 'rxjs';
 import { takeUntil } from 'rxjs/operators';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-signup-otp',
@@ -21,6 +22,7 @@ export class SignupOtpComponent implements OnDestroy {
   private authService = inject(AuthService);
   private router = inject(Router);
   private otpService = inject(OtpAccessService);
+  private toastService = inject(ToastService);
 
   email = localStorage.getItem('signupEmail') || '';
 
@@ -45,7 +47,6 @@ export class SignupOtpComponent implements OnDestroy {
         next: (res) => {
           localStorage.setItem('accessToken', res.accessToken);
           localStorage.setItem('userRole', res.role);
-
           Swal.fire({
             title: 'OTP verified. User registered!',
             icon: 'success',
@@ -57,33 +58,23 @@ export class SignupOtpComponent implements OnDestroy {
         },
         error: (err) => {
           this.logger.error('Invalid OTP', err);
-          Swal.fire({
-            title: 'Invalid OTP',
-            text: err.error?.error || 'Please try again.',
-            icon: 'error',
-            draggable: true,
-          });
+          this.toastService.error('Invalid OTP');
         },
       });
   }
   resendOtpRequest() {
     if (!this.email) return;
-    this.authService.resentOtp(this.email).subscribe({
-      next: (res) => {
-        Swal.fire({
-          icon: 'success',
-          title: 'OTP resent',
-          text: res.message,
-        });
-      },
-      error: (err) => {
-        Swal.fire({
-          icon: 'error',
-          title: 'Failed to resend OTP',
-          text: err.error?.message || 'Please try again later',
-        });
-      },
-    });
+    this.authService
+      .resentOtp(this.email)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (_res) => {
+          this.toastService.success('OTP resent');
+        },
+        error: (_err) => {
+          this.toastService.error('Failed to resend OTP');
+        },
+      });
   }
 
   ngOnDestroy(): void {

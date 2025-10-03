@@ -35,16 +35,20 @@ import { ICategoryRepository } from "./repositories/interface/category.repositor
 import { CategoryRepository } from "./repositories/implimentation/category.repository";
 import { ICategoryController } from "./controllers/interface/category.controller.interface";
 import { CategoryController } from "./controllers/implimentation/category.controller";
+import { IAuthService } from "./services/interface/auth.service.interface";
+import { IAuthController } from "./controllers/interface/auth.controller.interface";
+import { IAdminService } from "./services/interface/admin.service.interface";
+import { IAdminController } from "./controllers/interface/admin.controller.interface";
 
 const container = new Container();
 
 // Auth
-container.bind<AuthService>(TYPES.AuthService).to(AuthService);
-container.bind<AuthController>(TYPES.AuthController).to(AuthController);
+container.bind<IAuthService>(TYPES.AuthService).to(AuthService);
+container.bind<IAuthController>(TYPES.AuthController).to(AuthController);
 
 // Admin
-container.bind<AdminService>(TYPES.AdminService).to(AdminService);
-container.bind<AdminController>(TYPES.AdminController).to(AdminController);
+container.bind<IAdminService>(TYPES.AdminService).to(AdminService);
+container.bind<IAdminController>(TYPES.AdminController).to(AdminController);
 
 // S3 bucket
 container.bind<IFileService>(TYPES.FileService).to(FileService);

@@ -6,7 +6,7 @@ import { UserLayoutComponent } from '../component/user-layout/user-layout.compon
 export const USER_ROUTES: Routes = [
   {
     path: '',
-    // canActivate: [AuthGuard, RoleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     component: UserLayoutComponent,
     data: { role: 'user' },
     children: [

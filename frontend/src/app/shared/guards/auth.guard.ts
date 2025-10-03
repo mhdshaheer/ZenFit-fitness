@@ -4,30 +4,7 @@ import { Store } from '@ngrx/store';
 import { selectAuthStatus } from '../../store/auth/auth.selectors';
 import { map } from 'rxjs';
 
-// export const AuthGuard: CanActivateFn = (route, state) => {
-//   const store = inject(Store);
-//   const router = inject(Router);
-//   const expectedRole = route.data['role'] as 'admin' | 'user' | 'trainer';
-//   return store.select(selectToken).pipe(
-//     map((token) => {
-//       if (!token) {
-//         router.navigate(['/']);
-//         return false;
-//       }
-//       return store.select(selectRole).pipe(
-//         map((role) => {
-//           if (role == expectedRole) {
-//             return false;
-//           }
-//           router.navigate(['/']);
-//           return false;
-//         })
-//       );
-//     })
-//   );
-// };
-
-export const AuthGuard: CanActivateFn = (route, state) => {
+export const AuthGuard: CanActivateFn = (route, _state) => {
   const store = inject(Store);
   const router = inject(Router);
   const expectedRole = route.data['role'] as 'admin' | 'user' | 'trainer';

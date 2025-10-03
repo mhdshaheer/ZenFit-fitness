@@ -69,4 +69,26 @@ export class ProgramService implements IProgramService {
       throw new Error("Failed to fetch category");
     }
   }
+
+  async updateProgram(
+    id: string,
+    program: Partial<IProgram>
+  ): Promise<ProgramDto> {
+    console.log("service :", id, program);
+    try {
+      const updated = await this.programRepository.updateProgramById(
+        id,
+        program
+      );
+      console.log("Updated data :", updated);
+      if (!updated) {
+        throw new Error("Program updation is failed");
+      }
+      const mappedResult = mapToProgramDto(updated);
+      return mappedResult;
+    } catch (error) {
+      logger.error("Error in program updation", error);
+      throw new Error("Failed to update program");
+    }
+  }
 }

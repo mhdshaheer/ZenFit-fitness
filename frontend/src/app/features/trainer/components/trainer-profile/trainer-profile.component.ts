@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ProfileService } from '../../../../core/services/profile.service';
 import {
   FormBuilder,
@@ -13,6 +13,7 @@ import { getErrorMessages } from '../../../../shared/utils.ts/form-error.util';
 import { HttpEventType, HttpResponse } from '@angular/common/http';
 import { ToastService } from '../../../../core/services/toast.service';
 import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
+import { Subject, takeUntil } from 'rxjs';
 
 interface UploadFile {
   name?: string;
@@ -44,7 +45,7 @@ interface Tab {
   templateUrl: './trainer-profile.component.html',
   styleUrl: './trainer-profile.component.css',
 })
-export class TrainerProfileComponent implements OnInit {
+export class TrainerProfileComponent implements OnInit, OnDestroy {
   profileImageUrl: string | null = null;
   defaultImage = 'landing_page/user.png';
   isUploading = false;
@@ -52,10 +53,12 @@ export class TrainerProfileComponent implements OnInit {
   toastService = inject(ToastService);
   isEditMode = false;
 
+  private destroy$ = new Subject<void>();
+
   // ========= CV UPLOAD ========
   uploadedFile: UploadFile | null = null;
   resumeVerified!: boolean;
-  errorMessage: string = '';
+  errorMessage = '';
   isDragging = false;
   isCvUploading = false;
   uploadProgress = 0;
@@ -78,23 +81,26 @@ export class TrainerProfileComponent implements OnInit {
     const file: File = input.files[0];
     this.isUploading = true;
 
-    this.profileService.uploadfile(file, 'profile').subscribe({
-      next: (event) => {
-        if (event.type === HttpEventType.UploadProgress && event.total) {
-          // this.progress = Math.round((100 * event.loaded) / event.total);
-        } else if (event.type === HttpEventType.Response) {
-          this.profileImageUrl = event.body?.url ?? null;
+    this.profileService
+      .uploadfile(file, 'profile')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (event) => {
+          if (event.type === HttpEventType.UploadProgress && event.total) {
+            // this.progress = Math.round((100 * event.loaded) / event.total);
+          } else if (event.type === HttpEventType.Response) {
+            this.profileImageUrl = event.body?.url ?? null;
+            this.isUploading = false;
+            console.log('Profile image uploaded, key:', event.body?.url);
+            // this.progress = 0; // reset after upload
+          }
+        },
+        error: () => {
+          alert('Image upload failed');
           this.isUploading = false;
-          console.log('Profile image uploaded, key:', event.body?.url);
-          // this.progress = 0; // reset after upload
-        }
-      },
-      error: () => {
-        alert('Image upload failed');
-        this.isUploading = false;
-        // this.progress = 0;
-      },
-    });
+          // this.progress = 0;
+        },
+      });
   }
 
   get displayImage(): string {
@@ -111,61 +117,73 @@ export class TrainerProfileComponent implements OnInit {
     this.initializePasswordForm();
   }
   loadProfile() {
-    this.profileService.getProfile().subscribe((res) => {
-      console.log('Response of profile: ', res);
-      this.profileData = res;
+    this.profileService
+      .getProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        console.log('Response of profile: ', res);
+        this.profileData = res;
 
-      if (res.profileImage) {
-        this.profileService.getFile(res.profileImage).subscribe((fileRes) => {
-          this.profileImageUrl = fileRes.url;
+        if (res.profileImage) {
+          this.profileService
+            .getFile(res.profileImage)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((fileRes) => {
+              this.profileImageUrl = fileRes.url;
+            });
+        }
+        if (res.resume) {
+          this.resumeKey = res.resume;
+          this.profileService
+            .getFile(res.resume)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(async (fileRes) => {
+              const fileDetails = JSON.parse(fileRes.url);
+              const response = await fetch(fileDetails.url);
+              const blob = await response.blob();
+              const file = new File([blob], fileDetails.name || 'resume.pdf', {
+                type: fileDetails.type,
+              });
+
+              this.uploadedFile = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                file,
+                uploadedAt: new Date(fileDetails.uploadedAt),
+              };
+            });
+        }
+        this.resumeVerified = res.resumeVerified;
+
+        this.profileForm = this.fb.group({
+          fullName: [res.fullName],
+          username: [res.username, Validators.required],
+          dob: [res.dob ? res.dob.split('T')[0] : ''],
+          gender: [res.gender],
+          email: [res.email, [CustomValidators.email()]],
+          phone: [res.phone, optionalPhoneValidator],
+          role: [res.role, Validators.required],
         });
-      }
-      if (res.resume) {
-        this.resumeKey = res.resume;
-        this.profileService.getFile(res.resume).subscribe(async (fileRes) => {
-          let fileDetails = JSON.parse(fileRes.url);
-          const response = await fetch(fileDetails.url);
-          const blob = await response.blob();
-          const file = new File([blob], fileDetails.name || 'resume.pdf', {
-            type: fileDetails.type,
-          });
-
-          this.uploadedFile = {
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            file,
-            uploadedAt: new Date(fileDetails.uploadedAt),
-          };
-        });
-      }
-      this.resumeVerified = res.resumeVerified;
-
-      this.profileForm = this.fb.group({
-        fullName: [res.fullName],
-        username: [res.username, Validators.required],
-        dob: [res.dob ? res.dob.split('T')[0] : ''],
-        gender: [res.gender],
-        email: [res.email, [CustomValidators.email()]],
-        phone: [res.phone, optionalPhoneValidator],
-        role: [res.role, Validators.required],
       });
-    });
   }
 
   saveProfile() {
     if (this.profileForm.valid) {
       console.log('profile data:', this.profileForm.value);
-      this.profileService.updateProfile(this.profileForm.value).subscribe({
-        next: (res) => {
-          console.log('response from the backend :', res);
-          this.profileData = res;
-          this.isEditMode = false;
-        },
-        error: (err) => {
-          console.log('Failed to saved profile ', err);
-        },
-      });
+      this.profileService
+        .updateProfile(this.profileForm.value)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res) => {
+            console.log('response from the backend :', res);
+            this.profileData = res;
+            this.isEditMode = false;
+          },
+          error: (err) => {
+            console.log('Failed to saved profile ', err);
+          },
+        });
     } else {
       this.profileForm.markAllAsTouched();
     }
@@ -230,30 +248,35 @@ export class TrainerProfileComponent implements OnInit {
 
     this.simulateUpload(file);
 
-    this.profileService.uploadfile(file, 'resume').subscribe({
-      next: (event) => {
-        if (event.type === HttpEventType.UploadProgress && event.total) {
-          this.uploadProgress = Math.round((100 * event.loaded) / event.total);
-        } else if (event instanceof HttpResponse) {
-          this.uploadedFile = {
-            name: file.name,
-            size: file.size,
-            type: file.type,
-            file: file,
-            uploadedAt: new Date(),
-            id: event.body?.key, // store S3 key or Mongo _id if returned
-          };
+    this.profileService
+      .uploadfile(file, 'resume')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (event) => {
+          if (event.type === HttpEventType.UploadProgress && event.total) {
+            this.uploadProgress = Math.round(
+              (100 * event.loaded) / event.total
+            );
+          } else if (event instanceof HttpResponse) {
+            this.uploadedFile = {
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              file: file,
+              uploadedAt: new Date(),
+              id: event.body?.key, // store S3 key or Mongo _id if returned
+            };
+            this.isCvUploading = false;
+            this.uploadProgress = 0;
+            console.log('Resume uploaded:', this.uploadedFile);
+          }
+        },
+        error: () => {
+          this.errorMessage = 'PDF upload failed';
           this.isCvUploading = false;
           this.uploadProgress = 0;
-          console.log('Resume uploaded:', this.uploadedFile);
-        }
-      },
-      error: () => {
-        this.errorMessage = 'PDF upload failed';
-        this.isCvUploading = false;
-        this.uploadProgress = 0;
-      },
-    });
+        },
+      });
   }
   private simulateUpload(file: File): void {
     const uploadInterval = setInterval(() => {
@@ -334,20 +357,23 @@ export class TrainerProfileComponent implements OnInit {
     if (this.uploadedFile) {
       this.isDeleting = true;
       console.log('Uploaded file is : ', this.uploadedFile);
-      this.profileService.deleteS3File(this.resumeKey, 'resume').subscribe({
-        next: (res) => {
-          console.log('resume is deleted :', res);
-          this.toastService.success('Resume deleted Successfully');
-          this.resumeKey = '';
-          this.resetUploadedFile();
-          this.isDeleting = false;
-        },
-        error: (err) => {
-          console.log('Failed to delete resume :', err);
-          this.toastService.error('Failed to delete resume');
-          this.isDeleting = false;
-        },
-      });
+      this.profileService
+        .deleteS3File(this.resumeKey, 'resume')
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res) => {
+            console.log('resume is deleted :', res);
+            this.toastService.success('Resume deleted Successfully');
+            this.resumeKey = '';
+            this.resetUploadedFile();
+            this.isDeleting = false;
+          },
+          error: (err) => {
+            console.log('Failed to delete resume :', err);
+            this.toastService.error('Failed to delete resume');
+            this.isDeleting = false;
+          },
+        });
     }
   }
   // ============= *CV UPLOAD ====================
@@ -379,23 +405,26 @@ export class TrainerProfileComponent implements OnInit {
 
   onPasswordSubmit(): void {
     if (this.passwordForm.valid) {
-      let passwords = {
+      const passwords = {
         currentPassword: this.passwordForm.get('currentPassword')?.value,
         newPassword: this.passwordForm.get('newPassword')?.value,
       };
       console.log('submitted data :', passwords);
-      this.profileService.changePassword(passwords).subscribe({
-        next: (res) => {
-          console.log(res);
-          this.toastService.success('Password changed successfully');
-          this.resetPasswordForm();
-          this.activeTab = 'personal';
-        },
-        error: (err) => {
-          console.log(err);
-          this.toastService.error('Failed to change password');
-        },
-      });
+      this.profileService
+        .changePassword(passwords)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.toastService.success('Password changed successfully');
+            this.resetPasswordForm();
+            this.activeTab = 'personal';
+          },
+          error: (err) => {
+            console.log(err);
+            this.toastService.error('Failed to change password');
+          },
+        });
     }
   }
   initializePasswordForm() {
@@ -417,5 +446,10 @@ export class TrainerProfileComponent implements OnInit {
   }
   get f() {
     return this.passwordForm.controls;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

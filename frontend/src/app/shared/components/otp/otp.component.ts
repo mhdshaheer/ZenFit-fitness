@@ -6,7 +6,7 @@ import {
   Input,
   Output,
   QueryList,
-  ViewChildren,
+  ViewChildren, OnInit,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
@@ -17,18 +17,18 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './otp.component.html',
   styleUrls: ['./otp.component.css'],
 })
-export class OtpComponent {
+export class OtpComponent implements OnInit {
   @Input() bgColor = ' from-green-950 via-emerald-950 to-teal-700';
   @Input() buttonColor = 'text-green-600 font-semibold';
   @Input() textColor =
     'text-green-600 font-semibold underline hover:text-green-700';
-  @Input() email: string = 'gmail';
+  @Input() email = 'gmail';
   @Input() context: 'signup' | 'login' | 'reset' = 'signup';
   @Output() onVerify = new EventEmitter<string>();
   @Output() onResend = new EventEmitter<void>();
 
   otpDigits = new Array(6).fill('');
-  timer: number = 30;
+  timer = 30;
   intervel: any;
 
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef>;

@@ -129,29 +129,7 @@ export class AuthEffects {
     { dispatch: false }
   );
 
-  // Refresh access token
-  // refreshAccessToken$ = createEffect(() =>
-  //   this.actions$.pipe(
-  //     ofType(AuthActions.refreshAccessToken),
-  //     switchMap(() =>
-  //       this.authService.refreshToken().pipe(
-  //         map((res: { accessToken: string }) =>
-  //           AuthActions.refreshAccessTokenSuccess({
-  //             accessToken: res.accessToken,
-  //           })
-  //         ),
-  //         catchError(() =>
-  //           of(
-  //             AuthActions.refreshAccessTokenFailure({
-  //               error: 'Token refresh failed',
-  //             })
-  //           )
-  //         )
-  //       )
-  //     )
-  //   )
-  // );
-
+  
   // google signup
   googleSignup$ = createEffect(() =>
     this.actions$.pipe(

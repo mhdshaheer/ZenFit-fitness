@@ -8,6 +8,12 @@ export const env = {
   get mongo_url() {
     return process.env.MONGODB_URL;
   },
+
+  get node(){
+    return process.env.NODE;
+  },
+
+
   get mail_user() {
     return process.env.MAIL_USER;
   },
@@ -49,4 +55,6 @@ export const env = {
   get aws_s3_bucket() {
     return process.env.AWS_S3_BUCKET;
   },
+
+
 };

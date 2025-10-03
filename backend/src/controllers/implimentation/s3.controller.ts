@@ -5,6 +5,7 @@ import { IFileService } from "../../services/interface/s3.service.interface";
 import { IProfileService } from "../../services/interface/profile.service.interface";
 import { HttpStatus } from "../../const/statuscode.const";
 import { TYPES } from "../../shared/types/inversify.types";
+import { AppError } from "../../shared/utils/appError.util";
 
 @injectable()
 export class FileController implements IFileController {
@@ -20,15 +21,13 @@ export class FileController implements IFileController {
   }
 
   async upload(req: Request, res: Response): Promise<void> {
-    try {
       const { type } = req.body;
       const { id, role } = (req as any).user;
 
       const file = req.file as Express.Multer.File;
 
       if (!file) {
-        res.status(400).json({ message: "No file uploaded" });
-        return;
+        throw new AppError("No file uploaded" ,HttpStatus.BAD_REQUEST)
       }
 
       const key = await this.fileService.upload(role, type, id, file);
@@ -40,31 +39,20 @@ export class FileController implements IFileController {
       }
       const signedUrl = await this.fileService.getSignedUrl(id, type);
       res.status(HttpStatus.OK).json({ key, url: signedUrl });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ message: "Upload failed" });
-    }
+
   }
 
   async getFile(req: Request, res: Response): Promise<void> {
-    try {
+
       const userId = req.query.id || (req as any).user.id;
       const { key } = req.query;
       const type = key?.toString().split("/")[1];
       const signedUrl = await this.fileService.getSignedUrl(userId, type!);
       res.status(HttpStatus.OK).json({ url: signedUrl });
-    } catch (error) {
-      if (error instanceof Error) {
-        console.error(error);
-        res
-          .status(HttpStatus.NOT_FOUND)
-          .json({ message: error.message || "Failed to fetch file" });
-      }
-    }
+    
   }
 
   async deleteFile(req: Request, res: Response): Promise<void> {
-    try {
       const { key } = req.params;
       const userId = await (req as any).user.id;
       const type = key?.toString().split("/")[1];
@@ -76,11 +64,6 @@ export class FileController implements IFileController {
       }
 
       res.status(HttpStatus.OK).json({ message: "Deleted successfully" });
-    } catch (error) {
-      console.error(error);
-      res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: "Failed to delete file" });
-    }
+    
   }
 }

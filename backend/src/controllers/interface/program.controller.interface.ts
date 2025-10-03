@@ -8,4 +8,8 @@ export interface IProgramController {
   getProgramsCategories(req: Request, res: Response): Promise<void>;
   getProgramsByParantId(req: Request, res: Response): Promise<void>;
   findProgram(req: Request, res: Response): Promise<Response<ProgramDto>>;
+  updateProgram(
+    req: Request,
+    res: Response
+  ): Promise<Response<{ message: string }>>;
 }

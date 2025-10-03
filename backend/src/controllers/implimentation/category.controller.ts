@@ -1,11 +1,11 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { ICategoryController } from "../interface/category.controller.interface";
 import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ICategoryService } from "../../services/interface/category.service.interface";
 import { HttpStatus } from "../../const/statuscode.const";
 import { CategoryDto } from "../../dtos/category.dtos";
-import { HttpResponse } from "../../const/response_message.const";
+import { AppError } from "../../shared/utils/appError.util";
 
 export class CategoryController implements ICategoryController {
   constructor(
@@ -13,34 +13,103 @@ export class CategoryController implements ICategoryController {
   ) {}
   async findAllCategory(
     _req: Request,
-    res: Response
+    res: Response,
+    _next: NextFunction
   ): Promise<Response<CategoryDto[]>> {
-    try {
-      const categories: CategoryDto[] =
-        await this.categoryService.findAllCategory();
-
-      return res.status(HttpStatus.OK).json(categories);
-    } catch (error) {
-      console.error("Error fetching categories:", error);
-      return res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: "Failed to fetch categories" });
-    }
+    const categories = await this.categoryService.findAllCategory();
+    return res.status(HttpStatus.OK).json(categories);
   }
   async findAllSubCategory(
     _req: Request,
-    res: Response
+    res: Response,
+    _next: NextFunction
   ): Promise<Response<CategoryDto>> {
-    try {
-      const subCategories: CategoryDto[] =
-        await this.categoryService.findALlSubCategory();
+    const subCategories: CategoryDto[] =
+      await this.categoryService.findALlSubCategory();
+    return res.status(HttpStatus.OK).json(subCategories);
+  }
 
-      return res.status(HttpStatus.OK).json(subCategories);
-    } catch (error) {
-      console.error("Error fetching sub categories:", error);
-      return res
-        .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .json({ message: "Failed to fetch sub categories" });
+  async createCategory(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<Response<CategoryDto>> {
+    const categoryData = req.body;
+    console.log("category from frontend :", categoryData);
+    const response = await this.categoryService.createCategory(categoryData);
+    return res.status(HttpStatus.OK).json(response);
+  }
+
+  async updateCategory(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<Response<CategoryDto>> {
+    const { id } = req.params;
+    const category = req.body;
+    const response = await this.categoryService.updateCategory(id, category);
+    return res.status(HttpStatus.OK).json(response);
+  }
+
+  async getCategory(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<Response<CategoryDto>> {
+    const categoryId = req.params.id;
+    const response = await this.categoryService.getCategory(categoryId);
+    return res.status(HttpStatus.OK).json(response);
+  }
+
+  async checkCategoryName(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<Response<boolean>> {
+    const { name } = req.query;
+    if (!name || typeof name !== "string") {
+      throw new AppError("Category name is required", HttpStatus.BAD_REQUEST);
     }
+    const isDuplicate = await this.categoryService.checkDuplicateName(name);
+    return res.status(HttpStatus.OK).json(isDuplicate);
+  }
+
+  async updateStatus(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<Response<CategoryDto>> {
+    const { id } = req.params;
+    const { isBlocked } = req.body;
+    const category = await this.categoryService.updateStatus(id, isBlocked);
+    return res.status(HttpStatus.OK).json(category);
+  }
+
+  async getTableCategories(
+    req: Request,
+    res: Response,
+    _next: NextFunction
+  ): Promise<Response<CategoryDto[]>> {
+    const page = parseInt(req.query.page as string);
+    const pageSize = parseInt(req.query.pageSize as string);
+    const search = req.query.search as string;
+    const sortBy = req.query.sortBy as string;
+    const sortOrder = (req.query.sortOrder as string) === "desc" ? -1 : 1;
+
+    const result = await this.categoryService.getTableCategories({
+      page,
+      pageSize,
+      search,
+      sortBy,
+      sortOrder,
+    });
+
+    if (!result) {
+      throw new AppError(
+        "Failed to fetch categories",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+    return res.status(HttpStatus.OK).json(result);
   }
 }
