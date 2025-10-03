@@ -14,6 +14,12 @@ import { Subject, takeUntil } from 'rxjs';
   styleUrl: './program-list.component.css',
 })
 export class ProgramListComponent implements OnDestroy, OnInit {
+  // UI
+  subscribeBtnIcon =
+    'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z';
+  subscribeBtnClass =
+    'px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2';
+
   programService = inject(ProgramService);
   route = inject(ActivatedRoute);
 
@@ -26,7 +32,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
 
   getSubCategory() {
     const id = this.route.snapshot.paramMap.get('id');
-    if (!id) return; // safety check
+    if (!id) return;
 
     this.programService
       .getProgramsByParantId(id)
@@ -51,8 +57,8 @@ export class ProgramListComponent implements OnDestroy, OnInit {
     console.log('Viewing program with ID:', programId);
   }
 
-  onEditProgram(programId: string): void {
-    console.log('Editing program with ID:', programId);
+  onSubscribeProgram(programId: string): void {
+    console.log('Subscribe program with ID:', programId);
   }
   // Properties for UI binding
   searchTerm = '';

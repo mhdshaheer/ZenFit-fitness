@@ -8,8 +8,12 @@
         <!-- Logo -->
         <div class="flex-shrink-0">
           <a [routerLink]="'/'" class="flex items-center space-x-2">
-            <div class="bg-white p-2 rounded-lg">
-              <i class="fas fa-dumbbell text-emerald-600 text-xl"></i>
+            <div class="bg-green p-2 rounded-full">
+              <img
+                src="zenfit.webp"
+                alt="Logo"
+                class="h-8 w-8 object-contain rounded-full"
+              />
             </div>
             <span class="text-white text-xl font-bold tracking-wide">{{
               logoText
@@ -33,36 +37,6 @@
 
       <!-- Right side: Search, Links, and User -->
       <div class="flex items-center space-x-4">
-        <!-- Search Bar (Hidden on small screens) -->
-        <div class="hidden md:block relative">
-          <div class="relative">
-            <div
-              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-            >
-              <i class="fas fa-search text-emerald-300"></i>
-            </div>
-            <input
-              type="text"
-              [(ngModel)]="searchQuery"
-              (input)="onSearchChange()"
-              (keyup.enter)="onSearchSubmit()"
-              [placeholder]="searchPlaceholder"
-              class="bg-emerald-500 bg-opacity-30 text-white placeholder-emerald-200 border border-emerald-400 rounded-lg pl-10 pr-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
-            />
-            <div
-              *ngIf="searchQuery"
-              class="absolute inset-y-0 right-0 pr-3 flex items-center"
-            >
-              <button
-                (click)="clearSearch()"
-                class="text-emerald-200 hover:text-white transition-colors"
-              >
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
         <!-- User Profile Dropdown -->
         <div class="relative">
           <button
@@ -199,25 +173,6 @@
     <!-- Mobile Menu -->
     <div *ngIf="isMobileMenuOpen" class="lg:hidden border-t border-emerald-500">
       <div class="px-2 pt-4 pb-3 space-y-1">
-        <!-- Mobile Search -->
-        <div class="md:hidden mb-4">
-          <div class="relative">
-            <div
-              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-            >
-              <i class="fas fa-search text-emerald-300"></i>
-            </div>
-            <input
-              type="text"
-              [(ngModel)]="searchQuery"
-              (input)="onSearchChange()"
-              (keyup.enter)="onSearchSubmit()"
-              [placeholder]="searchPlaceholder"
-              class="bg-emerald-500 bg-opacity-30 text-white placeholder-emerald-200 border border-emerald-400 rounded-lg pl-10 pr-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
-            />
-          </div>
-        </div>
-
         <!-- Mobile Navigation Items -->
         <a
           *ngFor="let item of navigationItems"

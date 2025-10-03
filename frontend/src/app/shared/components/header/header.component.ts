@@ -59,22 +59,8 @@ export class HeaderComponent {
   @Output() mobileMenuToggle = new EventEmitter<boolean>();
 
   // Component state
-  searchQuery = '';
   isUserMenuOpen = false;
   isMobileMenuOpen = false;
-
-  onSearchChange() {
-    this.searchChange.emit(this.searchQuery);
-  }
-
-  onSearchSubmit() {
-    this.searchSubmit.emit(this.searchQuery);
-  }
-
-  clearSearch() {
-    this.searchQuery = '';
-    this.searchChange.emit('');
-  }
 
   toggleUserMenu() {
     this.isUserMenuOpen = !this.isUserMenuOpen;

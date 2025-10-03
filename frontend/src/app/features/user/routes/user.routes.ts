@@ -45,6 +45,14 @@ export const USER_ROUTES: Routes = [
             (m) => m.ProgramListComponent
           ),
       },
+      {
+        path: 'payment/:id',
+        loadComponent: () => {
+          return import('../component/payment/payment.component').then(
+            (m) => m.PaymentComponent
+          );
+        },
+      },
     ],
   },
 ];

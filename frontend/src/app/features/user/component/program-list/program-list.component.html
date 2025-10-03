@@ -417,8 +417,11 @@
       @for(program of programs;track program){
       <app-program-card
         [program]="program"
-        (editProgram)="onEditProgram($event)"
+        (editProgram)="onSubscribeProgram($event)"
         (viewProgram)="onViewProgram($event)"
+        [button2Labal]="'Subscribe'"
+        [btn2Class]="subscribeBtnClass"
+        [btn2Icon]="subscribeBtnIcon"
       ></app-program-card>
       }
     </div>
