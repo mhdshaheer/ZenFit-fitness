@@ -1,113 +1,102 @@
-import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormBuilder,
-  FormControl,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { CATEGORY_FORM_CONSTANTS } from '../../../../shared/constants/categoryForm.constants';
+import { ICategory } from '../../../../interface/category.interface';
+import { CategoryService } from '../../../../core/services/category.service';
+import { ActivatedRoute } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
+import { ToastService } from '../../../../core/services/toast.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'zenfit-category-view',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './category-view.component.html',
   styleUrl: './category-view.component.css',
 })
 export class CategoryViewComponent {
-  activeTab = 'create';
-  createForm: FormGroup;
-  editForm: FormGroup | null = null;
-  categorySelectControl = new FormControl('');
+  editForm: FormGroup;
 
-  categories: any[] = []; // Your category list
   isSubmitting = false;
-  isDeleting = false;
+  categoryId!: string;
+
+  // Services
+  private categoryService = inject(CategoryService);
+  private activatedRoute = inject(ActivatedRoute);
+  private toastService = inject(ToastService);
+  private logger = inject(LoggerService);
+
+  private destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder) {
     // Initialize create form
-    this.createForm = this.fb.group({
+    this.editForm = this.fb.group({
       name: [
         '',
         [
           Validators.required,
-          Validators.minLength(3),
-          Validators.maxLength(50),
+          Validators.minLength(CATEGORY_FORM_CONSTANTS.NAME.MIN_LENGTH),
+          Validators.maxLength(CATEGORY_FORM_CONSTANTS.NAME.MAX_LENGTH),
         ],
       ],
-      description: ['', [Validators.maxLength(500)]],
+      description: [
+        '',
+        [Validators.maxLength(CATEGORY_FORM_CONSTANTS.DESCRIPTION.MAX_LENGTH)],
+      ],
     });
   }
 
   ngOnInit() {
-    // Watch for category selection changes
-    this.categorySelectControl.valueChanges.subscribe((categoryId) => {
-      if (categoryId) {
-        this.loadCategoryForEdit(categoryId);
-      } else {
-        this.editForm = null;
-      }
-    });
-  }
-
-  setActiveTab(tab: string) {
-    this.activeTab = tab;
-    if (tab === 'create') {
-      this.resetCreateForm();
-    }
+    this.categoryId = this.activatedRoute.snapshot.paramMap.get('id')!;
+    this.getCategory();
   }
 
   // Create form methods
-  onCreateCategory() {
-    if (this.createForm.valid) {
-      this.isSubmitting = true;
-      const formValue = this.createForm.value;
-    }
-  }
-
-  resetCreateForm() {
-    this.createForm.reset();
-    this.createForm.markAsUntouched();
-  }
-
-  // Edit form methods
-  loadCategoryForEdit(categoryId: string) {
-    const category = this.categories.find((c) => c.id === categoryId);
-    if (category) {
-      this.editForm = this.fb.group({
-        id: [category.id],
-        name: [
-          category.name,
-          [
-            Validators.required,
-            Validators.minLength(3),
-            Validators.maxLength(50),
-          ],
-        ],
-        description: [category.description || '', [Validators.maxLength(500)]],
-      });
-    }
-  }
-
-  onUpdateCategory() {
-    if (this.editForm && this.editForm.valid && this.editForm.dirty) {
+  onEditCategory() {
+    if (this.editForm.valid) {
       this.isSubmitting = true;
       const formValue = this.editForm.value;
+      this.categoryService
+        .updateCategory(this.categoryId, formValue)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res) => {
+            this.logger.info('updated category ', res);
+            this.toastService.success('Category updated');
+
+            this.editForm.markAsPristine();
+          },
+          error: (err) => {
+            this.logger.error('Failed to update category', err);
+            this.toastService.error('Category Updation Failed');
+          },
+        });
+      this.isSubmitting = false;
     }
   }
 
-  onDeleteCategory() {
-    if (
-      this.editForm &&
-      confirm('Are you sure you want to delete this category?')
-    ) {
-      this.isDeleting = true;
-      const categoryId = this.editForm.get('id')?.value;
-    }
+  getCategory() {
+    this.categoryService
+      .getCategory(this.categoryId)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        this.initializeForm(res);
+      });
+  }
+  initializeForm(res: ICategory) {
+    this.editForm.patchValue({
+      name: res.name,
+      description: res.description,
+    });
   }
 
-  cancelEdit() {
-    this.categorySelectControl.setValue('');
-    this.editForm = null;
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

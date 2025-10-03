@@ -17,8 +17,14 @@ export class CategoryService {
   getSubcateories(): Observable<ICategory[]> {
     return this.http.get<ICategory[]>(`${this.api}/subcategories`);
   }
+  getCategory(id: string): Observable<ICategory> {
+    return this.http.get<ICategory>(`${this.api}/${id}`);
+  }
   createCategory(data: Partial<ICategory>): Observable<ICategory> {
     return this.http.post<ICategory>(`${this.api}`, data);
+  }
+  updateCategory(id: string, data: Partial<ICategory>) {
+    return this.http.put<ICategory>(`${this.api}/${id}`, data);
   }
   getCategoryTable(
     params: IParams

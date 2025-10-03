@@ -4,7 +4,7 @@
     <!-- Page Header -->
     <div class="mb-8">
       <h1 class="text-2xl font-bold text-gray-900 mb-2">Category Management</h1>
-      <p class="text-gray-600">Create new categories or edit existing ones</p>
+      <p class="text-gray-600">Edit Category</p>
     </div>
 
     <!-- Tab Navigation -->
@@ -14,15 +14,7 @@
       <div class="border-b border-gray-200">
         <nav class="-mb-px flex" aria-label="Tabs">
           <button
-            class="w-1/2 py-4 px-6 text-center font-medium text-sm border-b-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-inset"
-            [class.border-green-500]="activeTab === 'create'"
-            [class.text-green-600]="activeTab === 'create'"
-            [class.bg-green-50]="activeTab === 'create'"
-            [class.border-transparent]="activeTab !== 'create'"
-            [class.text-gray-500]="activeTab !== 'create'"
-            [class.hover:text-gray-700]="activeTab !== 'create'"
-            [class.hover:border-gray-300]="activeTab !== 'create'"
-            (click)="setActiveTab('create')"
+            class="w-full py-4 px-6 text-center font-medium text-sm border-b-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-inset"
           >
             <div class="flex items-center justify-center space-x-2">
               <svg
@@ -38,35 +30,6 @@
                   d="M12 4v16m8-8H4"
                 ></path>
               </svg>
-              <span>Create Category</span>
-            </div>
-          </button>
-
-          <button
-            class="w-1/2 py-4 px-6 text-center font-medium text-sm border-b-2 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-inset"
-            [class.border-green-500]="activeTab === 'edit'"
-            [class.text-green-600]="activeTab === 'edit'"
-            [class.bg-green-50]="activeTab === 'edit'"
-            [class.border-transparent]="activeTab !== 'edit'"
-            [class.text-gray-500]="activeTab !== 'edit'"
-            [class.hover:text-gray-700]="activeTab !== 'edit'"
-            [class.hover:border-gray-300]="activeTab !== 'edit'"
-            (click)="setActiveTab('edit')"
-          >
-            <div class="flex items-center justify-center space-x-2">
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                ></path>
-              </svg>
               <span>Edit Category</span>
             </div>
           </button>
@@ -76,8 +39,8 @@
       <!-- Tab Content -->
       <div class="p-6">
         <!-- Create Category Tab -->
-        <div *ngIf="activeTab === 'create'">
-          <form [formGroup]="createForm" (ngSubmit)="onCreateCategory()">
+        <div>
+          <form [formGroup]="editForm" (ngSubmit)="onEditCategory()">
             <div class="space-y-6">
               <!-- Name Field -->
               <div>
@@ -93,56 +56,46 @@
                   type="text"
                   class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 placeholder-gray-400 text-gray-900 transition-colors duration-200"
                   [class.border-red-300]="
-                    createForm.get('name')?.invalid &&
-                    createForm.get('name')?.touched
+                    editForm.get('name')?.invalid &&
+                    editForm.get('name')?.touched
                   "
                   [class.border-gray-300]="
-                    createForm.get('name')?.valid ||
-                    !createForm.get('name')?.touched
+                    editForm.get('name')?.valid ||
+                    !editForm.get('name')?.touched
                   "
                   [class.hover:border-gray-400]="
-                    createForm.get('name')?.valid ||
-                    !createForm.get('name')?.touched
+                    editForm.get('name')?.valid ||
+                    !editForm.get('name')?.touched
                   "
                   placeholder="Enter category name"
                 />
                 <!-- Error Messages -->
-                <div
-                  *ngIf="
-                    createForm.get('name')?.invalid &&
-                    createForm.get('name')?.touched
-                  "
-                  class="mt-1"
-                >
-                  <p
-                    *ngIf="createForm.get('name')?.errors?.['required']"
-                    class="text-xs text-red-600"
-                  >
-                    Category name is required
-                  </p>
-                  <p
-                    *ngIf="createForm.get('name')?.errors?.['minlength']"
-                    class="text-xs text-red-600"
-                  >
+                @if(editForm.get('name')?.invalid &&
+                editForm.get('name')?.touched){
+
+                <div class="mt-1">
+                  @if(editForm.get('name')?.errors?.['required']){
+
+                  <p class="text-xs text-red-600">Category name is required</p>
+                  } @if(editForm.get('name')?.errors?.['minlength']){
+
+                  <p class="text-xs text-red-600">
                     Category name must be at least 3 characters long
                   </p>
-                  <p
-                    *ngIf="createForm.get('name')?.errors?.['maxlength']"
-                    class="text-xs text-red-600"
-                  >
+                  } @if(editForm.get('name')?.errors?.['maxlength']){
+
+                  <p class="text-xs text-red-600">
                     Category name cannot exceed 50 characters
                   </p>
+                  }
                 </div>
-                <p
-                  *ngIf="
-                    createForm.get('name')?.valid ||
-                    !createForm.get('name')?.touched
-                  "
-                  class="mt-1 text-xs text-gray-500"
-                >
+                } @if(editForm.get('name')?.valid ||
+                !editForm.get('name')?.touched){
+                <p class="mt-1 text-xs text-gray-500">
                   Choose a unique and descriptive name for your category (3-50
                   characters)
                 </p>
+                }
               </div>
 
               <!-- Description Field -->
@@ -159,40 +112,35 @@
                   rows="4"
                   class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 placeholder-gray-400 text-gray-900 transition-colors duration-200 hover:border-gray-400 resize-vertical"
                   [class.border-red-300]="
-                    createForm.get('description')?.invalid &&
-                    createForm.get('description')?.touched
+                    editForm.get('description')?.invalid &&
+                    editForm.get('description')?.touched
                   "
                   [class.border-gray-300]="
-                    createForm.get('description')?.valid ||
-                    !createForm.get('description')?.touched
+                    editForm.get('description')?.valid ||
+                    !editForm.get('description')?.touched
                   "
                   placeholder="Describe what this category is for..."
                 ></textarea>
                 <!-- Error Messages -->
-                <div
-                  *ngIf="
-                    createForm.get('description')?.invalid &&
-                    createForm.get('description')?.touched
-                  "
-                  class="mt-1"
-                >
-                  <p
-                    *ngIf="createForm.get('description')?.errors?.['maxlength']"
-                    class="text-xs text-red-600"
-                  >
+                @if(editForm.get('description')?.invalid &&
+                editForm.get('description')?.touched){
+                <div class="mt-1">
+                  @if(editForm.get('description')?.errors?.['maxlength']){
+                  <p class="text-xs text-red-600">
                     Description cannot exceed 500 characters
                   </p>
+
+                  }
                 </div>
-                <p
-                  *ngIf="
-                    createForm.get('description')?.valid ||
-                    !createForm.get('description')?.touched
-                  "
-                  class="mt-1 text-xs text-gray-500"
-                >
+
+                } @if(editForm.get('description')?.valid ||
+                !editForm.get('description')?.touched){
+                <p class="mt-1 text-xs text-gray-500">
                   Optional: Add a description to help others understand this
                   category (max 500 characters)
                 </p>
+
+                }
               </div>
 
               <!-- Action Buttons -->
@@ -200,34 +148,48 @@
                 class="flex items-center justify-end space-x-4 pt-4 border-t border-gray-200"
               >
                 <button
-                  type="button"
-                  class="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
-                  (click)="resetCreateForm()"
-                >
-                  Reset
-                </button>
-                <button
                   type="submit"
-                  [disabled]="createForm.invalid || isSubmitting"
+                  [disabled]="
+                    !editForm.dirty || editForm.invalid || isSubmitting
+                  "
                   class="px-6 py-2.5 bg-gradient-to-r font-medium rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
-                  [class.from-green-600]="createForm.valid && !isSubmitting"
-                  [class.to-green-700]="createForm.valid && !isSubmitting"
+                  [class.from-green-600]="
+                    editForm.dirty && editForm.valid && !isSubmitting
+                  "
+                  [class.to-green-700]="
+                    editForm.dirty && editForm.valid && !isSubmitting
+                  "
                   [class.hover:from-green-700]="
-                    createForm.valid && !isSubmitting
+                    editForm.dirty && editForm.valid && !isSubmitting
                   "
-                  [class.hover:to-green-800]="createForm.valid && !isSubmitting"
-                  [class.hover:shadow-lg]="createForm.valid && !isSubmitting"
-                  [class.text-white]="createForm.valid && !isSubmitting"
-                  [class.from-gray-400]="createForm.invalid || isSubmitting"
-                  [class.to-gray-500]="createForm.invalid || isSubmitting"
-                  [class.text-gray-300]="createForm.invalid || isSubmitting"
-                  [class.cursor-not-allowed]="
-                    createForm.invalid || isSubmitting
+                  [class.hover:to-green-800]="
+                    editForm.dirty && editForm.valid && !isSubmitting
                   "
-                  [class.shadow-none]="createForm.invalid || isSubmitting"
+                  [class.hover:shadow-lg]="
+                    editForm.dirty && editForm.valid && !isSubmitting
+                  "
+                  [class.text-white]="
+                    editForm.dirty && editForm.valid && !isSubmitting
+                  "
+                  [class.from-gray-400]="
+                    !editForm.dirty || editForm.invalid || isSubmitting
+                  "
+                  [class.to-gray-500]="
+                    !editForm.dirty || editForm.invalid || isSubmitting
+                  "
+                  [class.text-gray-300]="
+                    !editForm.dirty || editForm.invalid || isSubmitting
+                  "
+                  [class.cursor-not-allowed]="editForm.invalid || isSubmitting"
+                  [class.shadow-none]="
+                    !editForm.dirty || editForm.invalid || isSubmitting
+                  "
                 >
-                  <span *ngIf="!isSubmitting">Create Category</span>
-                  <span *ngIf="isSubmitting" class="flex items-center">
+                  @if(!isSubmitting){
+
+                  <span>Create Category</span>
+                  } @if(isSubmitting){
+                  <span class="flex items-center">
                     <svg
                       class="animate-spin -ml-1 mr-2 h-4 w-4"
                       fill="none"
@@ -249,287 +211,11 @@
                     </svg>
                     Creating...
                   </span>
+                  }
                 </button>
               </div>
             </div>
           </form>
-        </div>
-
-        <!-- Edit Category Tab -->
-        <div *ngIf="activeTab === 'edit'">
-          <!-- Category Selection -->
-          <div class="mb-6">
-            <label
-              for="category-select"
-              class="block text-sm font-medium text-gray-700 mb-2"
-            >
-              Select Category to Edit
-            </label>
-            <select
-              id="category-select"
-              [formControl]="categorySelectControl"
-              class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 text-gray-900 bg-white transition-colors duration-200 hover:border-gray-400"
-            >
-              <option value="">Choose a category to edit...</option>
-              <option *ngFor="let category of categories" [value]="category.id">
-                {{ category.name }}
-              </option>
-            </select>
-          </div>
-
-          <!-- Edit Form (shown when category is selected) -->
-          <form
-            *ngIf="editForm && categorySelectControl.value"
-            [formGroup]="editForm"
-            (ngSubmit)="onUpdateCategory()"
-          >
-            <div class="space-y-6">
-              <!-- Name Field -->
-              <div>
-                <label
-                  for="edit-name"
-                  class="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Category Name <span class="text-red-500">*</span>
-                </label>
-                <input
-                  id="edit-name"
-                  formControlName="name"
-                  type="text"
-                  class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 placeholder-gray-400 text-gray-900 transition-colors duration-200"
-                  [class.border-red-300]="
-                    editForm.get('name')?.invalid &&
-                    editForm.get('name')?.touched
-                  "
-                  [class.border-gray-300]="
-                    editForm.get('name')?.valid ||
-                    !editForm.get('name')?.touched
-                  "
-                  [class.hover:border-gray-400]="
-                    editForm.get('name')?.valid ||
-                    !editForm.get('name')?.touched
-                  "
-                  placeholder="Enter category name"
-                />
-                <!-- Error Messages -->
-                <div
-                  *ngIf="
-                    editForm.get('name')?.invalid &&
-                    editForm.get('name')?.touched
-                  "
-                  class="mt-1"
-                >
-                  <p
-                    *ngIf="editForm.get('name')?.errors?.['required']"
-                    class="text-xs text-red-600"
-                  >
-                    Category name is required
-                  </p>
-                  <p
-                    *ngIf="editForm.get('name')?.errors?.['minlength']"
-                    class="text-xs text-red-600"
-                  >
-                    Category name must be at least 3 characters long
-                  </p>
-                  <p
-                    *ngIf="editForm.get('name')?.errors?.['maxlength']"
-                    class="text-xs text-red-600"
-                  >
-                    Category name cannot exceed 50 characters
-                  </p>
-                </div>
-                <p
-                  *ngIf="
-                    editForm.get('name')?.valid ||
-                    !editForm.get('name')?.touched
-                  "
-                  class="mt-1 text-xs text-gray-500"
-                >
-                  Update the category name (3-50 characters)
-                </p>
-              </div>
-
-              <!-- Description Field -->
-              <div>
-                <label
-                  for="edit-description"
-                  class="block text-sm font-medium text-gray-700 mb-2"
-                >
-                  Description
-                </label>
-                <textarea
-                  id="edit-description"
-                  formControlName="description"
-                  rows="4"
-                  class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 placeholder-gray-400 text-gray-900 transition-colors duration-200 hover:border-gray-400 resize-vertical"
-                  [class.border-red-300]="
-                    editForm.get('description')?.invalid &&
-                    editForm.get('description')?.touched
-                  "
-                  [class.border-gray-300]="
-                    editForm.get('description')?.valid ||
-                    !editForm.get('description')?.touched
-                  "
-                  placeholder="Describe what this category is for..."
-                ></textarea>
-                <!-- Error Messages -->
-                <div
-                  *ngIf="
-                    editForm.get('description')?.invalid &&
-                    editForm.get('description')?.touched
-                  "
-                  class="mt-1"
-                >
-                  <p
-                    *ngIf="editForm.get('description')?.errors?.['maxlength']"
-                    class="text-xs text-red-600"
-                  >
-                    Description cannot exceed 500 characters
-                  </p>
-                </div>
-                <p
-                  *ngIf="
-                    editForm.get('description')?.valid ||
-                    !editForm.get('description')?.touched
-                  "
-                  class="mt-1 text-xs text-gray-500"
-                >
-                  Update the category description (max 500 characters)
-                </p>
-              </div>
-
-              <!-- Action Buttons -->
-              <div
-                class="flex items-center justify-between pt-4 border-t border-gray-200"
-              >
-                <button
-                  type="button"
-                  class="px-6 py-2.5 border border-red-300 text-red-600 font-medium rounded-lg hover:bg-red-50 hover:border-red-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors duration-200"
-                  (click)="onDeleteCategory()"
-                  [disabled]="isSubmitting"
-                >
-                  <span *ngIf="!isDeleting">Delete Category</span>
-                  <span *ngIf="isDeleting" class="flex items-center">
-                    <svg
-                      class="animate-spin -ml-1 mr-2 h-4 w-4"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        class="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        stroke-width="4"
-                      ></circle>
-                      <path
-                        class="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Deleting...
-                  </span>
-                </button>
-
-                <div class="flex space-x-4">
-                  <button
-                    type="button"
-                    class="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
-                    (click)="cancelEdit()"
-                    [disabled]="isSubmitting"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    [disabled]="
-                      editForm.invalid || isSubmitting || !editForm.dirty
-                    "
-                    class="px-6 py-2.5 font-medium rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
-                    [class.bg-gradient-to-r]="
-                      editForm.valid && !isSubmitting && editForm.dirty
-                    "
-                    [class.from-green-600]="
-                      editForm.valid && !isSubmitting && editForm.dirty
-                    "
-                    [class.to-green-700]="
-                      editForm.valid && !isSubmitting && editForm.dirty
-                    "
-                    [class.hover:from-green-700]="
-                      editForm.valid && !isSubmitting && editForm.dirty
-                    "
-                    [class.hover:to-green-800]="
-                      editForm.valid && !isSubmitting && editForm.dirty
-                    "
-                    [class.hover:shadow-lg]="
-                      editForm.valid && !isSubmitting && editForm.dirty
-                    "
-                    [class.text-white]="
-                      editForm.valid && !isSubmitting && editForm.dirty
-                    "
-                    [class.bg-gray-400]="
-                      editForm.invalid || isSubmitting || !editForm.dirty
-                    "
-                    [class.text-gray-300]="
-                      editForm.invalid || isSubmitting || !editForm.dirty
-                    "
-                    [class.cursor-not-allowed]="
-                      editForm.invalid || isSubmitting || !editForm.dirty
-                    "
-                    [class.shadow-none]="
-                      editForm.invalid || isSubmitting || !editForm.dirty
-                    "
-                  >
-                    <span *ngIf="!isSubmitting">Update Category</span>
-                    <span *ngIf="isSubmitting" class="flex items-center">
-                      <svg
-                        class="animate-spin -ml-1 mr-2 h-4 w-4"
-                        fill="none"
-                        viewBox="0 0 24 24"
-                      >
-                        <circle
-                          class="opacity-25"
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="currentColor"
-                          stroke-width="4"
-                        ></circle>
-                        <path
-                          class="opacity-75"
-                          fill="currentColor"
-                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                        ></path>
-                      </svg>
-                      Updating...
-                    </span>
-                  </button>
-                </div>
-              </div>
-            </div>
-          </form>
-
-          <!-- Empty state when no category selected -->
-          <div *ngIf="!categorySelectControl.value" class="text-center py-12">
-            <svg
-              class="w-12 h-12 text-gray-400 mx-auto mb-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              ></path>
-            </svg>
-            <p class="text-gray-500">
-              Select a category from the dropdown to start editing
-            </p>
-          </div>
         </div>
       </div>
     </div>
