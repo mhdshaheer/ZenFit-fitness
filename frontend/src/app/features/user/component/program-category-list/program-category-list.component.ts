@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   CategoryService,
   ICategory,
 } from '../../../../core/services/category.service';
 import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 interface CategoryCard {
   id: string;
   title: string;
@@ -19,10 +20,12 @@ interface CategoryCard {
   templateUrl: './program-category-list.component.html',
   styleUrl: './program-category-list.component.css',
 })
-export class ProgramCategoryListComponent implements OnInit {
+export class ProgramCategoryListComponent implements OnInit, OnDestroy {
   categories: ICategory[] = [];
   categoryCards: CategoryCard[] = [];
   router = inject(Router);
+
+  private destroy$ = new Subject<void>();
   constructor(private categoryService: CategoryService) {}
 
   categoryExtras: Record<string, { icon: string; color: string }> = {
@@ -35,24 +38,27 @@ export class ProgramCategoryListComponent implements OnInit {
     this.getCategories();
   }
   getCategories() {
-    this.categoryService.getCategories().subscribe({
-      next: (res: ICategory[]) => {
-        console.log('categories are :', res);
-        this.categories = res;
-        this.categoryCards = res.map((item) => {
-          return {
-            title: item.name,
-            description: item.description,
-            id: item._id,
-            color: this.categoryExtras[item.name]?.color || 'red',
-            icon: this.categoryExtras[item.name]?.icon || '📊',
-          };
-        });
-      },
-      error: (error) => {
-        console.log('error in category fetching', error);
-      },
-    });
+    this.categoryService
+      .getCategories()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: ICategory[]) => {
+          console.log('categories are :', res);
+          this.categories = res;
+          this.categoryCards = res.map((item) => {
+            return {
+              title: item.name,
+              description: item.description,
+              id: item._id,
+              color: this.categoryExtras[item.name]?.color || 'red',
+              icon: this.categoryExtras[item.name]?.icon || '📊',
+            };
+          });
+        },
+        error: (error) => {
+          console.log('error in category fetching', error);
+        },
+      });
   }
 
   getIconBgClass(color: string): string {
@@ -68,5 +74,10 @@ export class ProgramCategoryListComponent implements OnInit {
   onCardClick(card: CategoryCard): void {
     console.log('Category card clicked:', card);
     this.router.navigate(['/user/programs', card.id]);
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

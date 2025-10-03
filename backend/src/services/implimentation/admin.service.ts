@@ -1,4 +1,4 @@
-import { IUser } from "../../interfaces/user.interface";
+import { GetUsersParams, IUser } from "../../interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
 import { inject, injectable } from "inversify";
 import { UserDto } from "../../dtos/user.dtos";
@@ -6,13 +6,6 @@ import { mapToUserDto } from "../../mapper/user.mapper";
 import { IUserRepository } from "../../repositories/interface/user.repository.interface";
 import { TYPES } from "../../shared/types/inversify.types";
 
-interface GetUsersParams {
-  page: number;
-  pageSize: number;
-  search?: string;
-  sortBy?: string;
-  sortOrder?: 1 | -1;
-}
 @injectable()
 export class AdminService {
   @inject(TYPES.UserRepository)
@@ -27,33 +20,17 @@ export class AdminService {
     return await this.userRepository.updateStatus(id, status);
   }
 
-  async getUsers({
-    page,
-    pageSize,
-    search = "",
-    sortBy = "createdAt",
-    sortOrder = 1,
-  }: GetUsersParams): Promise<{ data: UserDto[]; total: number }> {
+  async getUsers(
+    params: GetUsersParams
+  ): Promise<{ data: UserDto[]; total: number }> {
     const filter: any = {
       role: { $ne: "admin" },
     };
-
-    if (search) {
-      filter.$or = [
-        { username: { $regex: search, $options: "i" } },
-        { email: { $regex: search, $options: "i" } },
-      ];
-    }
-
-    const total = await UserModel.countDocuments(filter);
-
-    // Fetch users with filter, sort, pagination
-    const users = await UserModel.find(filter)
-      .sort({ [sortBy]: sortOrder })
-      .skip((page - 1) * pageSize)
-      .limit(pageSize);
-
-    const userDtos = users.map(mapToUserDto);
+    const { total, data } = await this.userRepository.getAllForTable({
+      filter,
+      ...params,
+    });
+    const userDtos = data.map(mapToUserDto);
     return { data: userDtos, total };
   }
 }

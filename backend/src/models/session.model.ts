@@ -1,7 +1,6 @@
 import { Schema, model, Document, ObjectId } from "mongoose";
 
 export interface ISession extends Document {
-  sessionId: string;
   programId: ObjectId | string;
   trainerId: ObjectId | string;
   duration: number;
@@ -23,7 +22,6 @@ export interface ISession extends Document {
 
 const SessionSchema = new Schema<ISession>(
   {
-    sessionId: { type: String, required: true, unique: true },
     programId: { type: Schema.Types.ObjectId, ref: "Program", required: true },
     trainerId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     timeSlots: [

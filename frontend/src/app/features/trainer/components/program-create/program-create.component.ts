@@ -1,5 +1,4 @@
-import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -9,6 +8,12 @@ import {
 import { ProgramService } from '../../../../core/services/program.service';
 import { Program } from '../../store/trainer.model';
 import { ToastService } from '../../../../core/services/toast.service';
+import {
+  CategoryService,
+  ICategory,
+} from '../../../../core/services/category.service';
+import { Router } from '@angular/router';
+import { Subject, takeUntil } from 'rxjs';
 
 export interface Category {
   value: string;
@@ -21,30 +26,50 @@ export interface Category {
   templateUrl: './program-create.component.html',
   styleUrl: './program-create.component.css',
 })
-export class ProgramCreateComponent implements OnInit {
+export class ProgramCreateComponent implements OnInit, OnDestroy {
   programService = inject(ProgramService);
   toastService = inject(ToastService);
+  router = inject(Router);
+  categoryService = inject(CategoryService);
+
   programForm!: FormGroup;
   characterCount = 0;
   isSubmitting = false;
   currentTrainerId = '';
+  categories: Category[] = [];
 
-  categories: Category[] = [
-    { value: 'strength', label: 'Strength Training' },
-    { value: 'cardio', label: 'Cardio & Endurance' },
-    { value: 'flexibility', label: 'Flexibility & Mobility' },
-    { value: 'weight-loss', label: 'Weight Loss' },
-    { value: 'muscle-gain', label: 'Muscle Gain' },
-    { value: 'sports-specific', label: 'Sports Specific' },
-    { value: 'rehabilitation', label: 'Rehabilitation' },
-    { value: 'general-fitness', label: 'General Fitness' },
-  ];
+  private destroy$ = new Subject<void>(); // ✅ for cleanup
 
   constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
     this.initializeForm();
     this.generateProgramId();
+    this.getSubCategories();
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
+    console.log('Unsubscribed all streams ✅');
+  }
+
+  getSubCategories() {
+    this.categoryService
+      .getSubcateories()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: ICategory[]) => {
+          console.log('sub categories are ..:', res);
+          this.categories = res.map((item) => ({
+            value: item._id,
+            label: item.name,
+          }));
+        },
+        error: (err) => {
+          console.log('Failed to fetch subcategories ', err);
+        },
+      });
   }
 
   initializeForm() {
@@ -66,14 +91,16 @@ export class ProgramCreateComponent implements OnInit {
       status: ['draft'],
     });
 
-    // Watch description changes for character count
-    this.programForm.get('description')?.valueChanges.subscribe((value) => {
-      this.characterCount = value ? value.length : 0;
-    });
+    // Watch description changes
+    this.programForm
+      .get('description')
+      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      .subscribe((value) => {
+        this.characterCount = value ? value.length : 0;
+      });
   }
 
   generateProgramId() {
-    // Auto-generate a unique program ID
     const currentYear = new Date().getFullYear();
     const randomNumber = Math.floor(Math.random() * 1000)
       .toString()
@@ -97,18 +124,23 @@ export class ProgramCreateComponent implements OnInit {
         status: 'active',
       };
 
-      this.programService.saveProgram(programData).subscribe({
-        next: (res) => {
-          console.log('Training Program saved successfully:', res);
-          this.toastService.success('Training Program saved successfully');
-          this.isSubmitting = false;
-        },
-        error: (err) => {
-          console.error('Error saving Training Program:', err);
-          this.toastService.error('Failed to save Training Program');
-          this.isSubmitting = false;
-        },
-      });
+      this.programService
+        .saveProgram(programData)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res) => {
+            console.log('Training Program saved successfully:', res);
+            this.toastService.success('Training Program saved successfully');
+            this.isSubmitting = false;
+            this.resetForm();
+            this.router.navigate(['/trainer/programs']);
+          },
+          error: (err) => {
+            console.error('Error saving Training Program:', err);
+            this.toastService.error('Failed to save Training Program');
+            this.isSubmitting = false;
+          },
+        });
     } else {
       this.markFormGroupTouched();
       console.log('Form is invalid');
@@ -124,18 +156,23 @@ export class ProgramCreateComponent implements OnInit {
       status: 'draft',
     };
 
-    this.programService.saveProgramDraft(draftData).subscribe({
-      next: (res) => {
-        console.log('Draft saved successfully:', res);
-        this.toastService.success('Draft saved successfully');
-        this.isSubmitting = false;
-      },
-      error: (err) => {
-        console.error('Error saving draft:', err);
-        this.toastService.error('Failed to save draft');
-        this.isSubmitting = false;
-      },
-    });
+    this.programService
+      .saveProgramDraft(draftData)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          console.log('Draft saved successfully:', res);
+          this.toastService.success('Draft saved successfully');
+          this.isSubmitting = false;
+          this.resetForm();
+          this.router.navigate(['/trainer/programs']);
+        },
+        error: (err) => {
+          console.error('Error saving draft:', err);
+          this.toastService.error('Failed to save draft');
+          this.isSubmitting = false;
+        },
+      });
   }
 
   resetForm() {
@@ -156,7 +193,6 @@ export class ProgramCreateComponent implements OnInit {
     });
   }
 
-  // Utility methods for form validation feedback
   isFieldInvalid(fieldName: string): boolean {
     const field = this.programForm.get(fieldName);
     return !!(field?.invalid && field?.touched);
@@ -179,16 +215,13 @@ export class ProgramCreateComponent implements OnInit {
         return `${fieldName} must be greater than ${field.errors['min'].min}`;
       }
     }
-
     return null;
   }
 
-  // Method to check if form has unsaved changes
   hasUnsavedChanges(): boolean {
     return this.programForm.dirty;
   }
 
-  // Method to get form data for preview
   getFormData(): Program {
     return {
       ...this.programForm.value,

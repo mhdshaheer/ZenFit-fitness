@@ -1,7 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FitnessProgram } from '../../../trainer/components/program-list/program-list.component';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
 import { CommonModule } from '@angular/common';
+import { ActivatedRoute } from '@angular/router';
+import { ProgramService } from '../../../../core/services/program.service';
+import { Program } from '../../../trainer/store/trainer.model';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-program-list',
@@ -9,39 +13,40 @@ import { CommonModule } from '@angular/common';
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
-export class ProgramListComponent {
-  programs: FitnessProgram[] = [
-    {
-      _id: 'dfsd',
-      category: 'kkkk',
-      description: 'ddd',
-      difficultyLevel: 'easy',
-      duration: '8',
-      price: 3333,
-      title: 'hai',
-      enrolledCount: 90,
-    },
-    {
-      _id: 'dfsd',
-      category: 'kkkk',
-      description: 'ddd',
-      difficultyLevel: 'easy',
-      duration: '8',
-      price: 3333,
-      title: 'hai',
-      enrolledCount: 90,
-    },
-    {
-      _id: 'dfsd',
-      category: 'kkkk',
-      description: 'ddd',
-      difficultyLevel: 'easy',
-      duration: '8',
-      price: 3333,
-      title: 'hai',
-      enrolledCount: 90,
-    },
-  ];
+export class ProgramListComponent implements OnDestroy, OnInit {
+  programService = inject(ProgramService);
+  route = inject(ActivatedRoute);
+
+  private destroy$ = new Subject<void>();
+
+  ngOnInit() {
+    this.getSubCategory();
+  }
+  programs: FitnessProgram[] = [];
+
+  getSubCategory() {
+    const id = this.route.snapshot.paramMap.get('id');
+    if (!id) return; // safety check
+
+    this.programService
+      .getProgramsByParantId(id)
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res: { programs: Program[] }) => {
+          console.log('Programs response:', res.programs);
+          this.programs = res.programs.map((item) => {
+            const category = JSON.parse(item.category).name;
+            console.log('Category :', category);
+            return { ...item, category: category };
+          });
+        },
+        error: (err) => {
+          console.error('Error fetching programs:', err);
+          this.programs = [];
+        },
+      });
+  }
+
   onViewProgram(programId: string): void {
     console.log('Viewing program with ID:', programId);
   }
@@ -50,14 +55,14 @@ export class ProgramListComponent {
     console.log('Editing program with ID:', programId);
   }
   // Properties for UI binding
-  searchTerm: string = '';
-  selectedFilter: string = 'All Programs';
-  activeFiltersCount: number = 0;
-  isFilterMenuOpen: boolean = false;
-  isSortMenuOpen: boolean = false;
-  selectedSort: string = 'Created Date';
-  selectedDuration: string = '';
-  filteredResultsCount: number = 52;
+  searchTerm = '';
+  selectedFilter = 'All Programs';
+  activeFiltersCount = 0;
+  isFilterMenuOpen = false;
+  isSortMenuOpen = false;
+  selectedSort = 'Created Date';
+  selectedDuration = '';
+  filteredResultsCount = 52;
   dateRange = { from: '', to: '' };
 
   // Sample data for dropdowns
@@ -96,12 +101,7 @@ export class ProgramListComponent {
     { label: 'Last Modified', value: 'lastModified' },
   ];
 
-  activeFilterTags = [
-    // Sample active filters for display
-    'abx',
-    'abc',
-    'aaa',
-  ];
+  activeFilterTags = ['abx', 'abc', 'aaa'];
 
   // Computed property
   get hasActiveFilters(): boolean {
@@ -124,4 +124,9 @@ export class ProgramListComponent {
     this.isSortMenuOpen = !this.isSortMenuOpen;
   }
   onSortChange(option: any) {}
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
 }

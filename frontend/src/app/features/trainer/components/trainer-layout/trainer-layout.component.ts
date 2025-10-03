@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Router, RouterModule } from '@angular/router';
@@ -9,6 +9,7 @@ import {
   UserProfile,
 } from '../../../../shared/components/header/header.component';
 import { ProfileService } from '../../../../core/services/profile.service';
+import { Subject, takeUntil } from 'rxjs';
 
 interface Menu {
   label: string;
@@ -22,12 +23,14 @@ interface Menu {
   templateUrl: './trainer-layout.component.html',
   styleUrl: './trainer-layout.component.css',
 })
-export class TrainerLayoutComponent {
+export class TrainerLayoutComponent implements OnDestroy, OnInit {
   isMobileMenuOpen = false;
   authService = inject(AuthService);
   logger = inject(LoggerService);
   router = inject(Router);
   profileService = inject(ProfileService);
+
+  private destroy$ = new Subject<void>();
 
   // Sidebar
   userMenu: Menu[] = [
@@ -54,15 +57,18 @@ export class TrainerLayoutComponent {
   }
 
   logOutUser() {
-    this.authService.logout().subscribe({
-      next: (res) => {
-        this.logger.info(res.message);
-        this.router.navigate(['/auth/login']);
-      },
-      error: (err) => {
-        this.logger.error(err);
-      },
-    });
+    this.authService
+      .logout()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (res) => {
+          this.logger.info(res.message);
+          this.router.navigate(['/auth/login']);
+        },
+        error: (err) => {
+          this.logger.error(err);
+        },
+      });
   }
 
   // =================================================
@@ -74,23 +80,29 @@ export class TrainerLayoutComponent {
   };
 
   getUserProfile() {
-    let userData = {
+    const userData = {
       name: '',
       email: '',
       role: '',
       avatar: '',
     };
-    this.profileService.getProfile().subscribe((res) => {
-      if (res.profileImage) {
-        this.profileService.getFile(res.profileImage).subscribe((fileRes) => {
-          userData.avatar = fileRes.url;
-        });
-      }
-      userData.name = res.fullName;
-      userData.email = res.email;
-      userData.role = res.role;
-      this.currentUser = userData;
-    });
+    this.profileService
+      .getProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        if (res.profileImage) {
+          this.profileService
+            .getFile(res.profileImage)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((fileRes) => {
+              userData.avatar = fileRes.url;
+            });
+        }
+        userData.name = res.fullName;
+        userData.email = res.email;
+        userData.role = res.role;
+        this.currentUser = userData;
+      });
   }
   navItems: NavMenuItem[] = [
     {
@@ -109,64 +121,11 @@ export class TrainerLayoutComponent {
     { label: 'Help & Support', route: '/help', icon: 'fas fa-question-circle' },
   ];
 
-  recentActivity = [
-    {
-      title: 'Completed Morning Cardio',
-      description: '30 minutes of high-intensity interval training',
-      time: '2 hours ago',
-      icon: 'fas fa-running',
-      bgColor: 'bg-emerald-100',
-      textColor: 'text-emerald-600',
-    },
-    {
-      title: 'New Personal Record',
-      description: 'Bench press: 185 lbs (previous: 180 lbs)',
-      time: '1 day ago',
-      icon: 'fas fa-trophy',
-      bgColor: 'bg-yellow-100',
-      textColor: 'text-yellow-600',
-    },
-    {
-      title: 'Nutrition Goal Achieved',
-      description: 'Met daily protein intake target: 150g',
-      time: '2 days ago',
-      icon: 'fas fa-apple-alt',
-      bgColor: 'bg-green-100',
-      textColor: 'text-green-600',
-    },
-  ];
-
   searchResults: any[] = [];
   activityLog: any[] = [];
 
   handleSearchChange(query: string) {
     console.log('Search query changed:', query);
-
-    // Simulate search results
-    if (query.length > 2) {
-      this.searchResults = [
-        {
-          title: 'Push Up Variations',
-          description:
-            '10 different push-up exercises to build upper body strength',
-          icon: 'fas fa-dumbbell',
-        },
-        {
-          title: 'HIIT Cardio Routine',
-          description: '20-minute high-intensity interval training workout',
-          icon: 'fas fa-heart',
-        },
-        {
-          title: 'Protein Smoothie Recipe',
-          description: 'Post-workout smoothie with 25g protein',
-          icon: 'fas fa-glass-whiskey',
-        },
-      ];
-    } else {
-      this.searchResults = [];
-    }
-
-    this.addToActivityLog('fas fa-search', `Searched for: "${query}"`);
   }
 
   handleSearchSubmit(query: string) {
@@ -207,5 +166,10 @@ export class TrainerLayoutComponent {
     if (this.activityLog.length > 10) {
       this.activityLog = this.activityLog.slice(0, 10);
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

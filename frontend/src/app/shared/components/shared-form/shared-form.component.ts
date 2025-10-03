@@ -14,18 +14,13 @@ export class SharedFormComponent {
   @Input() type: 'text' | 'email' | 'password' = 'text';
   @Input() controlName!: string;
   @Input() formGroup!: FormGroup;
-  @Input() placeholder: string = '';
+  @Input() placeholder = '';
 
-  showPassword: boolean = false;
+  showPassword = false;
 
   togglePasswordVisibility() {
     this.showPassword = !this.showPassword;
   }
-  // passwordMatchValidator(form: FormGroup) {
-  //   const password = form.get('password')?.value;
-  //   const confirmPassword = form.get('confirmPassword')?.value;
-  //   return password === confirmPassword ? null : { mismatch: true };
-  // }
 
   get currentType() {
     return this.type === 'password'

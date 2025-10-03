@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ProfileService } from '../../../../core/services/profile.service';
 import {
   FormBuilder,
@@ -13,6 +13,7 @@ import { getErrorMessages } from '../../../../shared/utils.ts/form-error.util';
 import { HttpEventType } from '@angular/common/http';
 import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
 import { ToastService } from '../../../../core/services/toast.service';
+import { Subject, takeUntil } from 'rxjs';
 
 interface ProfileUser {
   fullName: string;
@@ -30,13 +31,15 @@ interface ProfileUser {
   templateUrl: './user-profile.component.html',
   styleUrl: './user-profile.component.css',
 })
-export class UserProfileComponent implements OnInit {
+export class UserProfileComponent implements OnInit, OnDestroy {
   profileImageUrl: string | null = null;
   defaultImage = 'landing_page/user.png';
   isUploading = false;
   profileService = inject(ProfileService);
   toastService = inject(ToastService);
   isEditMode = false;
+
+  private destroy$ = new Subject<void>();
 
   // ==============
   profileForm!: FormGroup;
@@ -50,24 +53,27 @@ export class UserProfileComponent implements OnInit {
 
     const file: File = input.files[0];
     this.isUploading = true;
-    this.profileService.uploadfile(file, 'profile').subscribe({
-      next: (event) => {
-        if (event.type === HttpEventType.UploadProgress && event.total) {
-          // this.progress = Math.round((100 * event.loaded) / event.total);
-        } else if (event.type === HttpEventType.Response) {
-          this.profileImageUrl = event.body?.url ?? null;
+    this.profileService
+      .uploadfile(file, 'profile')
+      .pipe(takeUntil(this.destroy$))
+      .subscribe({
+        next: (event) => {
+          if (event.type === HttpEventType.UploadProgress && event.total) {
+            // this.progress = Math.round((100 * event.loaded) / event.total);
+          } else if (event.type === HttpEventType.Response) {
+            this.profileImageUrl = event.body?.url ?? null;
+            this.isUploading = false;
+            console.log('Profile image uploaded, key:', event.body?.key);
+            this.toastService.success('Profile image is updated successfully');
+            // this.progress = 0; // reset after upload
+          }
+        },
+        error: () => {
+          this.toastService.error('Image upload failed');
           this.isUploading = false;
-          console.log('Profile image uploaded, key:', event.body?.key);
-          this.toastService.success('Profile image is updated successfully');
-          // this.progress = 0; // reset after upload
-        }
-      },
-      error: () => {
-        this.toastService.error('Image upload failed');
-        this.isUploading = false;
-        // this.progress = 0;
-      },
-    });
+          // this.progress = 0;
+        },
+      });
   }
 
   get displayImage(): string {
@@ -84,26 +90,32 @@ export class UserProfileComponent implements OnInit {
     this.initializePasswordForm();
   }
   loadProfile() {
-    this.profileService.getProfile().subscribe((res) => {
-      console.log('Response of profile: ', res);
-      this.profileData = res;
+    this.profileService
+      .getProfile()
+      .pipe(takeUntil(this.destroy$))
+      .subscribe((res) => {
+        console.log('Response of profile: ', res);
+        this.profileData = res;
 
-      if (res.profileImage) {
-        this.profileService.getFile(res.profileImage).subscribe((fileRes) => {
-          this.profileImageUrl = fileRes.url;
+        if (res.profileImage) {
+          this.profileService
+            .getFile(res.profileImage)
+            .pipe(takeUntil(this.destroy$))
+            .subscribe((fileRes) => {
+              this.profileImageUrl = fileRes.url;
+            });
+        }
+
+        this.profileForm = this.fb.group({
+          fullName: [res.fullName],
+          username: [res.username, Validators.required],
+          dob: [res.dob ? res.dob.split('T')[0] : ''],
+          gender: [res.gender],
+          email: [res.email, [CustomValidators.email()]],
+          phone: [res.phone, optionalPhoneValidator],
+          role: [res.role, Validators.required],
         });
-      }
-
-      this.profileForm = this.fb.group({
-        fullName: [res.fullName],
-        username: [res.username, Validators.required],
-        dob: [res.dob ? res.dob.split('T')[0] : ''],
-        gender: [res.gender],
-        email: [res.email, [CustomValidators.email()]],
-        phone: [res.phone, optionalPhoneValidator],
-        role: [res.role, Validators.required],
       });
-    });
   }
 
   get f() {
@@ -113,23 +125,26 @@ export class UserProfileComponent implements OnInit {
   saveProfile() {
     if (this.profileForm.valid) {
       console.log('profile data:', this.profileForm.value);
-      this.profileService.updateProfile(this.profileForm.value).subscribe({
-        next: (res) => {
-          console.log('response from the backend :', res);
-          this.toastService.success('Profile data is updated Successfully');
-          this.profileData = res;
-          this.isEditMode = false;
-        },
-        error: (err) => {
-          console.error('Error updating profile:', err);
-          this.toastService.error(
-            'Failed to update profile. Please try again later.'
-          );
-        },
-        complete: () => {
-          console.log('Profile update request completed.');
-        },
-      });
+      this.profileService
+        .updateProfile(this.profileForm.value)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res) => {
+            console.log('response from the backend :', res);
+            this.toastService.success('Profile data is updated Successfully');
+            this.profileData = res;
+            this.isEditMode = false;
+          },
+          error: (err) => {
+            console.error('Error updating profile:', err);
+            this.toastService.error(
+              'Failed to update profile. Please try again later.'
+            );
+          },
+          complete: () => {
+            console.log('Profile update request completed.');
+          },
+        });
     } else {
       this.profileForm.markAllAsTouched();
     }
@@ -148,23 +163,26 @@ export class UserProfileComponent implements OnInit {
 
   onPasswordSubmit(): void {
     if (this.passwordForm.valid) {
-      let passwords = {
+      const passwords = {
         currentPassword: this.passwordForm.get('currentPassword')?.value,
         newPassword: this.passwordForm.get('newPassword')?.value,
       };
       console.log('submitted data :', passwords);
-      this.profileService.changePassword(passwords).subscribe({
-        next: (res) => {
-          console.log(res);
-          this.toastService.success('Password changed successfully');
-          this.resetPasswordForm();
-          this.activeTab = 'personal';
-        },
-        error: (err) => {
-          console.log(err);
-          this.toastService.error('Failed to change password');
-        },
-      });
+      this.profileService
+        .changePassword(passwords)
+        .pipe(takeUntil(this.destroy$))
+        .subscribe({
+          next: (res) => {
+            console.log(res);
+            this.toastService.success('Password changed successfully');
+            this.resetPasswordForm();
+            this.activeTab = 'personal';
+          },
+          error: (err) => {
+            console.log(err);
+            this.toastService.error('Failed to change password');
+          },
+        });
     }
   }
   initializePasswordForm() {
@@ -184,5 +202,10 @@ export class UserProfileComponent implements OnInit {
 
   setActiveTab(tab: 'personal' | 'security'): void {
     this.activeTab = tab;
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }

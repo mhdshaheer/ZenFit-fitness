@@ -26,4 +26,15 @@ export class SessionService implements ISessionService {
 
     return result;
   }
+  async getSession(id: string): Promise<ISession> {
+    try {
+      const session = await this.sessionRepository.getSessionsById(id);
+      if (!session) {
+        throw new Error("Session is not available");
+      }
+      return session;
+    } catch (error) {
+      throw new Error("Failed get sessions");
+    }
+  }
 }

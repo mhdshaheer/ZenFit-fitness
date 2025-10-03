@@ -10,15 +10,16 @@ const sessionController = container.get<ISessionController>(
   TYPES.SessionController
 );
 
-sessionRouter.post(
-  "/",
-  authMiddleware,
-  sessionController.saveDraftSession.bind(sessionController)
-);
+sessionRouter.use(authMiddleware);
+
+sessionRouter.post("/", sessionController.saveSession.bind(sessionController));
 sessionRouter.post(
   "/draft",
-  authMiddleware,
   sessionController.saveDraftSession.bind(sessionController)
 );
+
+sessionRouter.get("/:id", (req, res, next) => {
+  sessionController.getSession(req, res).catch(next);
+});
 
 export default sessionRouter;

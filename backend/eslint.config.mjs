@@ -1,11 +1,34 @@
-import js from "@eslint/js";
+// eslint.config.mjs
+import { flat } from "@eslint/js";
+import tsPlugin from "@typescript-eslint/eslint-plugin";
+import tsParser from "@typescript-eslint/parser";
 import globals from "globals";
-import tseslint from "typescript-eslint";
-import { defineConfig } from "eslint/config";
 
+export default [
+  {
+    files: ["**/*.{js,ts}"],
 
-export default defineConfig([
-  { files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], plugins: { js }, extends: ["js/recommended"] },
-  { files: ["**/*.{js,mjs,cjs,ts,mts,cts}"], languageOptions: { globals: globals.browser } },
-  tseslint.configs.recommended,
-]);
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        ecmaVersion: "latest",
+        sourceType: "module",
+      },
+      globals: { ...globals.node, ...globals.browser },
+    },
+
+    rules: {
+      // JS rules
+      "no-unused-vars": "warn",
+      "eqeqeq": "error",
+      "curly": "error",
+      "semi": ["error", "always"],
+
+      // TS rules
+      "@typescript-eslint/no-unused-vars": "warn",
+      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/explicit-function-return-type": "warn",
+      "@typescript-eslint/strict-boolean-expressions": "error",
+    },
+  },
+];

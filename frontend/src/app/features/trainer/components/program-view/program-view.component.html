@@ -1,0 +1,411 @@
+<div class="min-h-screen bg-gray-50 py-8">
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Compact Header -->
+    <div class="mb-8">
+      <div class="flex items-center justify-between">
+        <div>
+          <h1 class="text-2xl font-bold text-gray-900">Create New Program</h1>
+          <p class="text-sm text-gray-600 mt-1">
+            Design your fitness training program
+          </p>
+        </div>
+        <div class="flex items-center space-x-3">
+          <span
+            class="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800"
+          >
+            <div class="w-1.5 h-1.5 bg-green-500 rounded-full mr-1.5"></div>
+            Draft
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sleek Form Container -->
+    <form [formGroup]="programForm" (ngSubmit)="onSubmit()" class="space-y-6">
+      <!-- Main Content Card -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+        <!-- Form Header -->
+        <div class="border-b border-gray-100 px-6 py-4">
+          <div class="flex items-center">
+            <div
+              class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3"
+            >
+              <svg
+                class="w-4 h-4 text-green-600"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path>
+              </svg>
+            </div>
+            <h3 class="text-lg font-semibold text-gray-900">Program Details</h3>
+          </div>
+        </div>
+
+        <!-- Form Body -->
+        <div class="px-6 py-6">
+          <!-- Basic Info Grid -->
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+            <!-- Program ID -->
+            <div>
+              <label
+                class="block text-xs font-medium text-gray-700 uppercase tracking-wide mb-2"
+              >
+                Program ID *
+              </label>
+              <input
+                type="text"
+                formControlName="programId"
+                placeholder="FIT-2025-001"
+                readonly
+                class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white placeholder-gray-500"
+                [class.border-red-500]="
+                  programForm.get('programId')?.invalid &&
+                  programForm.get('programId')?.touched
+                "
+              />
+              @if(programForm.get('programId')?.invalid &&
+              programForm.get('programId')?.touched){
+              <div class="text-red-500 text-xs mt-1">
+                Program ID is required
+              </div>
+              }
+            </div>
+
+            <!-- Program Title -->
+            <div>
+              <label
+                class="block text-xs font-medium text-gray-700 uppercase tracking-wide mb-2"
+              >
+                Program Title *
+              </label>
+              @if(isEditMode){
+              <input
+                type="text"
+                formControlName="title"
+                placeholder="Full Body Strength Training"
+                class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white placeholder-gray-500"
+                [class.border-red-500]="
+                  programForm.get('title')?.invalid &&
+                  programForm.get('title')?.touched
+                "
+              />
+              }@else{
+              <input
+                type="text"
+                formControlName="title"
+                placeholder="Full Body Strength Training"
+                readonly
+                class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white placeholder-gray-500"
+              />
+              } @if(programForm.get('title')?.invalid &&
+              programForm.get('title')?.touched){
+
+              <div class="text-red-500 text-xs mt-1">
+                Program title is required
+              </div>
+              }
+            </div>
+          </div>
+
+          <!-- Description -->
+          <div class="mb-6">
+            <label
+              class="block text-xs font-medium text-gray-700 uppercase tracking-wide mb-2"
+            >
+              Description
+            </label>
+            @if(isEditMode){
+
+            <textarea
+              rows="3"
+              formControlName="description"
+              placeholder="Describe your program objectives and benefits..."
+              class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white resize-none placeholder-gray-500"
+              (input)="updateCharacterCount()"
+            ></textarea>
+            }@else {
+            <textarea
+              rows="3"
+              formControlName="description"
+              readonly
+              placeholder="Describe your program objectives and benefits..."
+              class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white resize-none placeholder-gray-500"
+              (input)="updateCharacterCount()"
+            ></textarea>
+
+            }
+            <div class="flex justify-between items-center mt-1">
+              <p class="text-xs text-gray-500">
+                Brief description of your program
+              </p>
+              <span class="text-xs text-gray-400"
+                >{{ characterCount }}/500</span
+              >
+            </div>
+          </div>
+
+          <!-- Three Column Layout -->
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+            <!-- Category -->
+            <div>
+              <label
+                class="block text-xs font-medium text-gray-700 uppercase tracking-wide mb-2"
+              >
+                Category
+              </label>
+              @if(isEditMode){
+
+              <select
+                formControlName="category"
+                class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white"
+              >
+                <option [value]="category.value">
+                  {{ category.label }}
+                </option>
+                @for (category of categories; track category) {
+                <option [value]="category.value">
+                  {{ category.label }}
+                </option>
+                }
+              </select>
+              }@else {
+              <input
+                type="text"
+                [value]="category.label"
+                readonly
+                class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white placeholder-gray-500"
+              />
+              }
+            </div>
+
+            <!-- Duration -->
+            <div>
+              <label
+                class="block text-xs font-medium text-gray-700 uppercase tracking-wide mb-2"
+              >
+                Duration
+              </label>
+              @if(isEditMode){
+
+              <select
+                formControlName="duration"
+                class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white"
+              >
+                <option value="">Select Duration</option>
+                <option value="4 weeks">4 Weeks</option>
+                <option value="6 weeks">6 Weeks</option>
+                <option value="8 weeks">8 Weeks</option>
+                <option value="12 weeks">12 Weeks</option>
+                <option value="16 weeks">16 Weeks</option>
+                <option value="6 months">6 Months</option>
+                <option value="1 year">1 Year</option>
+                <option value="ongoing">Ongoing</option>
+              </select>
+              }@else {
+              <input
+                type="text"
+                formControlName="duration"
+                readonly
+                class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white placeholder-gray-500"
+              />
+              }
+            </div>
+
+            <!-- Price -->
+            <div>
+              <label
+                class="block text-xs font-medium text-gray-700 uppercase tracking-wide mb-2"
+              >
+                Price (₹) *
+              </label>
+              <div class="relative">
+                @if(isEditMode){
+                <div
+                  class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
+                >
+                  <span class="text-gray-500 text-sm">₹</span>
+                </div>
+
+                <input
+                  type="number"
+                  formControlName="price"
+                  placeholder="0.00"
+                  min="0"
+                  step="0.01"
+                  class="w-full pl-8 pr-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white"
+                  [class.border-red-500]="
+                    programForm.get('price')?.invalid &&
+                    programForm.get('price')?.touched
+                  "
+                />
+                }@else {
+                <input
+                  type="text"
+                  formControlName="price"
+                  readonly
+                  class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white placeholder-gray-500"
+                />
+                }
+              </div>
+              @if(programForm.get('price')?.invalid &&
+              programForm.get('price')?.touched){
+
+              <div class="text-red-500 text-xs mt-1">Price is required</div>
+              }
+            </div>
+          </div>
+
+          <!-- Difficulty Level -->
+          <div class="mb-6">
+            <label
+              class="block text-xs font-medium text-gray-700 uppercase tracking-wide mb-3"
+            >
+              Difficulty Level *
+            </label>
+            <div class="grid grid-cols-3 gap-3">
+              @if(isEditMode){
+
+              <!-- Beginner -->
+              <label class="relative cursor-pointer group">
+                <input
+                  type="radio"
+                  formControlName="difficultyLevel"
+                  value="Beginner"
+                  class="sr-only peer"
+                />
+                <div
+                  class="p-3 text-center border-2 border-gray-200 rounded-lg peer-checked:border-green-500 peer-checked:bg-green-50 hover:border-gray-300 transition-all"
+                >
+                  <div class="flex items-center justify-center mb-2">
+                    <div class="w-3 h-3 rounded-full bg-green-400"></div>
+                  </div>
+                  <span class="text-sm font-medium text-gray-900"
+                    >Beginner</span
+                  >
+                  <p class="text-xs text-gray-500 mt-1">Basic level</p>
+                </div>
+              </label>
+
+              <!-- Intermediate -->
+              <label class="relative cursor-pointer group">
+                <input
+                  type="radio"
+                  formControlName="difficultyLevel"
+                  value="Intermediate"
+                  class="sr-only peer"
+                />
+                <div
+                  class="p-3 text-center border-2 border-gray-200 rounded-lg peer-checked:border-yellow-500 peer-checked:bg-yellow-50 hover:border-gray-300 transition-all"
+                >
+                  <div class="flex items-center justify-center mb-2">
+                    <div class="w-3 h-3 rounded-full bg-yellow-400"></div>
+                  </div>
+                  <span class="text-sm font-medium text-gray-900"
+                    >Intermediate</span
+                  >
+                  <p class="text-xs text-gray-500 mt-1">Moderate level</p>
+                </div>
+              </label>
+
+              <!-- Advanced -->
+              <label class="relative cursor-pointer group">
+                <input
+                  type="radio"
+                  formControlName="difficultyLevel"
+                  value="Advanced"
+                  class="sr-only peer"
+                />
+                <div
+                  class="p-3 text-center border-2 border-gray-200 rounded-lg peer-checked:border-red-500 peer-checked:bg-red-50 hover:border-gray-300 transition-all"
+                >
+                  <div class="flex items-center justify-center mb-2">
+                    <div class="w-3 h-3 rounded-full bg-red-400"></div>
+                  </div>
+                  <span class="text-sm font-medium text-gray-900"
+                    >Advanced</span
+                  >
+                  <p class="text-xs text-gray-500 mt-1">Expert level</p>
+                </div>
+              </label>
+              }@else {
+              <input
+                type="text"
+                formControlName="difficultyLevel"
+                readonly
+                class="w-full px-3 py-2.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-green-800 focus:border-green-500 transition-colors bg-gray-50 focus:bg-white placeholder-gray-500"
+              />
+
+              }
+            </div>
+            @if(programForm.get('difficultyLevel')?.invalid &&
+            programForm.get('difficultyLevel')?.touched){
+
+            <div class="text-red-500 text-xs mt-2">
+              Please select a difficulty level
+            </div>
+            }
+          </div>
+        </div>
+
+        <!-- Form Footer -->
+        <div
+          class="border-t border-gray-100 px-6 py-4 bg-gray-50/50 rounded-b-xl"
+        >
+          <div class="flex flex-col sm:flex-row gap-3 sm:justify-end">
+            @if(isEditMode){
+
+            <button
+              type="submit"
+              class="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              [disabled]="programForm.invalid || isSubmitting"
+            >
+              <svg
+                class="w-4 h-4 mr-1.5 inline"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+                ></path>
+              </svg>
+              {{ isSubmitting ? "Updating..." : "Update Program" }}
+            </button>
+            }@else {
+            <button
+              type="button"
+              (click)="onEdit()"
+              class="px-4 py-2 text-sm font-medium text-white bg-green-600 border border-transparent rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <svg
+                class="w-4 h-4 mr-1.5 inline text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5h2m-1 0v14m-7-7h14"
+                />
+              </svg>
+              Edit Program
+            </button>
+            }
+          </div>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

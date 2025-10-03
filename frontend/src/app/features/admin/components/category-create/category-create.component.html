@@ -1,0 +1,236 @@
+<!-- Create Category Page -->
+<div class="min-h-screen bg-gray-50 py-6">
+  <div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
+    <!-- Page Header -->
+    <div class="mb-8 flex items-center justify-between">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900 mb-2">
+          Create {{ isSubcategory ? "Subcategory" : "Category" }}
+        </h1>
+        <p class="text-gray-600">
+          Add a new {{ isSubcategory ? "subcategory" : "category" }} to organize
+          your content
+        </p>
+      </div>
+      <button
+        class="px-4 py-2 bg-green-600 text-white rounded-lg shadow hover:bg-green-700 transition"
+        (click)="onCategory()"
+      >
+        {{ isSubcategory ? "Category" : "Subcategory" }}
+      </button>
+    </div>
+    <!-- Create Category Form -->
+    <div
+      class="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden"
+    >
+      <div class="p-6">
+        <form [formGroup]="createForm" (ngSubmit)="onCreateCategory()">
+          <div class="space-y-6">
+            <!-- Parent Category Dropdown (only for Subcategory) -->
+            @if(isSubcategory){
+
+            <div>
+              <label
+                for="parent-category"
+                class="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Select Parent Category <span class="text-red-500">*</span>
+              </label>
+              <select
+                id="parent-category"
+                formControlName="parantId"
+                class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+              >
+                <option value="">-- Select Category --</option>
+                @for (category of categories; track category._id) {
+
+                <option [value]="category._id">
+                  {{ category.name }}
+                </option>
+                }
+              </select>
+              @if(createForm.get('parantId')?.invalid &&
+              createForm.get('parantId')?.touched){
+              <div class="mt-1">
+                <p class="text-xs text-red-600">Parent category is required</p>
+              </div>
+              }
+            </div>
+            }
+            <!-- Name Field -->
+            <div>
+              <label
+                for="create-name"
+                class="block text-sm font-medium text-gray-700 mb-2"
+              >
+                {{ isSubcategory ? "Subcategory" : "Category" }} Name
+                <span class="text-red-500">*</span>
+              </label>
+              <input
+                id="create-name"
+                formControlName="name"
+                type="text"
+                class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 placeholder-gray-400 text-gray-900 transition-colors duration-200"
+                [class.border-red-300]="
+                  createForm.get('name')?.invalid &&
+                  createForm.get('name')?.touched
+                "
+                [class.border-gray-300]="
+                  createForm.get('name')?.valid ||
+                  !createForm.get('name')?.touched
+                "
+                [class.hover:border-gray-400]="
+                  createForm.get('name')?.valid ||
+                  !createForm.get('name')?.touched
+                "
+                placeholder="Enter category name"
+              />
+              <!-- Error Messages -->
+              @if(createForm.get('name')?.invalid &&
+              createForm.get('name')?.touched){
+
+              <div class="mt-1">
+                @if(createForm.get('name')?.errors?.['required']){
+                <p class="text-xs text-red-600">Category name is required</p>
+                } @if(createForm.get('name')?.errors?.['minlength']){
+                <p class="text-xs text-red-600">
+                  Category name must be at least 3 characters long
+                </p>
+                } @if(createForm.get('name')?.errors?.['maxlength']){
+                <p class="text-xs text-red-600">
+                  Category name cannot exceed 50 characters
+                </p>
+                } @if(createForm.get('name')?.errors?.['pattern']){
+                <p class="text-xs text-red-600">
+                  Only letters, numbers, spaces, hyphens (-), and underscores
+                  (_) are allowed
+                </p>
+                } @if(createForm.get('name')?.errors?.['duplicate']){
+                <p class="text-xs text-red-600">
+                  This category name already exists. Please choose another.
+                </p>
+                }
+              </div>
+              } @if(createForm.get('name')?.valid
+              ||!createForm.get('name')?.touched){
+              <p class="mt-1 text-xs text-gray-500">
+                Choose a unique and descriptive name for your category (3-50
+                characters)
+              </p>
+              }
+            </div>
+
+            <!-- Description Field -->
+            <div>
+              <label
+                for="create-description"
+                class="block text-sm font-medium text-gray-700 mb-2"
+              >
+                Description
+              </label>
+              <textarea
+                id="create-description"
+                formControlName="description"
+                rows="4"
+                class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 placeholder-gray-400 text-gray-900 transition-colors duration-200 hover:border-gray-400 resize-vertical"
+                [class.border-red-300]="
+                  createForm.get('description')?.invalid &&
+                  createForm.get('description')?.touched
+                "
+                [class.border-gray-300]="
+                  createForm.get('description')?.valid ||
+                  !createForm.get('description')?.touched
+                "
+                placeholder="Describe what this category is for..."
+              ></textarea>
+              <!-- Error Messages -->
+              @if(createForm.get('description')?.invalid &&
+              createForm.get('description')?.touched){
+
+              <div class="mt-1">
+                @if(createForm.get('description')?.errors?.['required']){
+                <p class="text-xs text-red-600">
+                  Category description is required
+                </p>
+                } @if(createForm.get('description')?.errors?.['maxlength']){
+                <p class="text-xs text-red-600">
+                  Description cannot exceed 500 characters
+                </p>
+                } @if(createForm.get('description')?.errors?.['pattern']){
+                <p class="text-xs text-red-600">
+                  Invalid characters used in description
+                </p>
+                }
+              </div>
+              } @if(createForm.get('description')?.valid ||
+              !createForm.get('description')?.touched){
+              <p class="mt-1 text-xs text-gray-500">
+                Optional: Add a description to help others understand this
+                category (max 500 characters)
+              </p>
+              }
+            </div>
+
+            <!-- Action Buttons -->
+            <div
+              class="flex items-center justify-end space-x-4 pt-4 border-t border-gray-200"
+            >
+              <button
+                type="button"
+                class="px-6 py-2.5 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 hover:border-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-500 focus:ring-offset-2 transition-colors duration-200"
+                (click)="resetCreateForm()"
+              >
+                Reset
+              </button>
+              <button
+                type="submit"
+                [disabled]="createForm.invalid || isSubmitting"
+                class="px-6 py-2.5 font-medium rounded-lg shadow-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 transition-all duration-200"
+                [class.bg-gradient-to-r]="createForm.valid && !isSubmitting"
+                [class.from-green-600]="createForm.valid && !isSubmitting"
+                [class.to-green-700]="createForm.valid && !isSubmitting"
+                [class.hover:from-green-700]="createForm.valid && !isSubmitting"
+                [class.hover:to-green-800]="createForm.valid && !isSubmitting"
+                [class.hover:shadow-lg]="createForm.valid && !isSubmitting"
+                [class.text-white]="createForm.valid && !isSubmitting"
+                [class.bg-gray-400]="createForm.invalid || isSubmitting"
+                [class.text-gray-300]="createForm.invalid || isSubmitting"
+                [class.cursor-not-allowed]="createForm.invalid || isSubmitting"
+                [class.shadow-none]="createForm.invalid || isSubmitting"
+              >
+                @if(!isSubmitting){
+                <span
+                  >Create {{ isSubcategory ? "Subcategory" : "Category" }}
+                </span>
+                } @if(isSubmitting){
+                <span class="flex items-center">
+                  <svg
+                    class="animate-spin -ml-1 mr-2 h-4 w-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                  >
+                    <circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle>
+                    <path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path>
+                  </svg>
+                  Creating...
+                </span>
+                }
+              </button>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

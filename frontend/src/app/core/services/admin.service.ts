@@ -9,38 +9,11 @@ export class AdminService {
   private apiUrl = environment.apiUrl;
   private http = inject(HttpClient);
 
-  // getUsers(): Observable<User[]> {
-  //   return this.http.get<User[]>(`${this.apiUrl}/admin/users`);
-  // }
   updateUserStatus(id: string, status: 'active' | 'blocked') {
     return this.http.patch(`${this.apiUrl}/admin/users/${id}/status`, {
       status,
     });
   }
-
-  // getUsers(params: {
-  //   page: number;
-  //   pageSize: number;
-  //   search?: string;
-  //   sortBy?: string;
-  //   sortOrder?: 'asc' | 'desc';
-  // }): Observable<any> {
-  //   let httpParams = new HttpParams()
-  //     .set('page', params.page)
-  //     .set('pageSize', params.pageSize)
-  //     .set('sortBy', params.sortBy || 'createdAt')
-  //     .set('sortOrder', params.sortOrder || 'asc');
-
-  //   if (params.search) {
-  //     httpParams = httpParams.set('search', params.search);
-  //   }
-
-  //   return this.http.get(`${this.apiUrl}/admin/users`, {
-  //     params: httpParams,
-  //     withCredentials: true,
-  //   });
-  // }
-
   getUsers(params: {
     page: number;
     pageSize: number;

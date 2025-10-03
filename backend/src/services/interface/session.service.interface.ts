@@ -6,4 +6,6 @@ export interface ISessionService {
     slotStatus: string,
     sessionData: ISession
   ): Promise<ISession | null>;
+
+  getSession(id: string): Promise<ISession>;
 }

@@ -1,4 +1,4 @@
-import { IUser } from "../../interfaces/user.interface";
+import { GetUsersParams, IUser } from "../../interfaces/user.interface";
 
 export interface IUserRepository {
   findByEmail(email: string): Promise<IUser | null>;
@@ -11,6 +11,7 @@ export interface IUserRepository {
   ): Promise<IUser | null>;
   updateById(id: string, data: Partial<IUser>): Promise<IUser | null>;
   updatePassword(email: string, newPassword: string): Promise<IUser | null>;
+  getAllForTable(options:GetUsersParams): Promise<{ total: number; data: IUser[] }>;
 
   // GOOGLE
   createGoogleUser(userData: {

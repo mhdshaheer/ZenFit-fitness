@@ -24,7 +24,8 @@ export interface Program {
 export class ProgramCardComponent {
   //Parant to child
   @Input() program!: Program;
-  @Input() defaultImage: string = 'trainer/fitness_program.jpg';
+  @Input() defaultImage = 'trainer/fitness_program.jpg';
+  @Input() button2Labal = 'Edit';
 
   //Child to parant
   @Output() viewProgram = new EventEmitter<string>();
@@ -56,7 +57,7 @@ export class ProgramCardComponent {
     }
   }
 
-  generateStars(rating: number = 3): number[] {
+  generateStars(rating = 3): number[] {
     if (rating < 0) {
       return [];
     }
@@ -68,7 +69,7 @@ export class ProgramCardComponent {
     this.viewProgram.emit(id);
   }
 
-  onEditProgram(id: string) {
+  onViewProgramSlot(id: string) {
     this.editProgram.emit(id);
   }
 }

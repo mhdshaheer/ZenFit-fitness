@@ -5,4 +5,7 @@ export interface IProgramService {
   saveProgramDraft(data: IProgram): Promise<IProgram | null>;
   getPrograms(id: string): Promise<ProgramDto[]>;
   getProgramsCategories(id: string): Promise<ProgramSlotDto[]>;
+  getProgramsByParentId(id: string): Promise<ProgramDto[]>;
+  findProgram(id: string): Promise<ProgramDto>;
+  updateProgram(id: string, program: Partial<IProgram>): Promise<ProgramDto>;
 }

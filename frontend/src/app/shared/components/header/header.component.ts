@@ -24,9 +24,9 @@ export interface UserProfile {
 })
 export class HeaderComponent {
   // Configuration inputs
-  @Input() logoText: string = 'FitTracker';
-  @Input() searchPlaceholder: string = 'Search workouts, exercises...';
-  @Input() showDateBanner: boolean = true;
+  @Input() logoText = 'ZenFit';
+  @Input() searchPlaceholder = 'Search workouts, exercises...';
+  @Input() showDateBanner = true;
 
   // Data inputs
   @Input() userProfile: UserProfile | null = {
@@ -59,9 +59,9 @@ export class HeaderComponent {
   @Output() mobileMenuToggle = new EventEmitter<boolean>();
 
   // Component state
-  searchQuery: string = '';
-  isUserMenuOpen: boolean = false;
-  isMobileMenuOpen: boolean = false;
+  searchQuery = '';
+  isUserMenuOpen = false;
+  isMobileMenuOpen = false;
 
   onSearchChange() {
     this.searchChange.emit(this.searchQuery);

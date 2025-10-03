@@ -7,7 +7,7 @@ export const ADMIN_ROUTES: Routes = [
   {
     path: '',
     component: AdminLayoutComponent,
-    // canActivate: [AuthGuard, RoleGuard],
+    canActivate: [AuthGuard, RoleGuard],
     data: { role: 'admin' },
     children: [
       {
@@ -37,6 +37,22 @@ export const ADMIN_ROUTES: Routes = [
           return import(
             '../components/user-profile/user-profile.component'
           ).then((m) => m.UserProfileComponent);
+        },
+      },
+      {
+        path: 'category-create',
+        loadComponent: () => {
+          return import(
+            '../components/category-create/category-create.component'
+          ).then((m) => m.CategoryCreateComponent);
+        },
+      },
+      {
+        path: 'category/:id',
+        loadComponent: () => {
+          return import(
+            '../components/category-view/category-view.component'
+          ).then((m) => m.CategoryViewComponent);
         },
       },
     ],

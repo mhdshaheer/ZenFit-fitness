@@ -5,6 +5,7 @@ import {
   Program,
   ProgramCategory,
 } from '../../features/trainer/store/trainer.model';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class ProgramService {
@@ -27,6 +28,24 @@ export class ProgramService {
   getProgramCategory() {
     return this.http.get<{ programs: ProgramCategory[] }>(
       `${this.apiUrl}/program/category`
+    );
+  }
+  getProgramsByParantId(
+    categoryId: string
+  ): Observable<{ programs: Program[] }> {
+    return this.http.get<{ programs: Program[] }>(
+      `${this.apiUrl}/program/category/${categoryId}`
+    );
+  }
+
+  getProgramByProgramId(programId: string) {
+    return this.http.get<Program>(`${this.apiUrl}/program/${programId}`);
+  }
+
+  updateProgram(programId: string, program: Program) {
+    return this.http.put<{ message: string }>(
+      `${this.apiUrl}/program/${programId}`,
+      program
     );
   }
 }

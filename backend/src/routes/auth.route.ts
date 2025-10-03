@@ -1,15 +1,12 @@
 import { Router } from "express";
-import { AuthController } from "../controllers/implimentation/auth.controller";
 import passport from "passport";
-// import { blockUserMiddleware } from "../middlewares/blockuser.middleware";
-// import { adminMiddleware } from "../middlewares/isAdmin.middleware";
 import authMiddleware from "../middlewares/verifyToken.middleware";
 import { container } from "../inversify.config";
 import { TYPES } from "../shared/types/inversify.types";
+import { IAuthController } from "../controllers/interface/auth.controller.interface";
 
 const authRouter = Router();
-// const controller = new AuthController();
-const controller = container.get<AuthController>(TYPES.AuthController);
+const controller = container.get<IAuthController>(TYPES.AuthController);
 
 authRouter.post("/signup", controller.sendOtp.bind(controller));
 authRouter.post(
@@ -26,7 +23,6 @@ authRouter.post(
 authRouter.post("/reset-password", controller.resetPassword.bind(controller));
 
 authRouter.post("/login", controller.login.bind(controller));
-authRouter.post("/logout", controller.logOut.bind(controller));
 
 // Google signup
 
@@ -41,6 +37,7 @@ authRouter.get(
   controller.googleCallback
 );
 
+// Private Routes
 authRouter.get("/protected", authMiddleware, (req, res) => {
   res.json({ message: "Welcome to dashboard" });
 });
@@ -48,5 +45,6 @@ authRouter.post(
   "/refresh-token",
   controller.refreshAccessToken.bind(controller)
 );
+authRouter.post("/logout", controller.logOut.bind(controller));
 
 export default authRouter;

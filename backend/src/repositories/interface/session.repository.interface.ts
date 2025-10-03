@@ -5,4 +5,5 @@ export interface ISessionRepository {
     condition: Partial<ISession>,
     sessions: Partial<ISession>
   ): Promise<ISession | null>;
+  getSessionsById(id: string): Promise<ISession | null>;
 }
