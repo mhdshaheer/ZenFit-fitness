@@ -1,12 +1,15 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-interface Program {
+import { Component, inject, OnInit } from '@angular/core';
+import { Program } from '../../../trainer/store/trainer.model';
+import { ProgramService } from '../../../../core/services/program.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { ActivatedRoute } from '@angular/router';
+interface IProgram {
   name: string;
   description: string;
   duration: string;
   difficulty: string;
   category: string;
-  subcategory: string;
   rating: number;
   reviewCount: number;
   price: number;
@@ -24,22 +27,28 @@ interface PaymentMethod {
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css',
 })
-export class PaymentComponent {
+export class PaymentComponent implements OnInit {
   selectedPayment: string = 'card';
+  myProgram: Program[] = [];
+  programId!: string;
 
-  program: Program = {
+  // services
+  private programService = inject(ProgramService);
+  private loggerService = inject(LoggerService);
+  private activatedRoute = inject(ActivatedRoute);
+
+  program: IProgram = {
     name: 'Advanced HIIT Mastery',
     description:
       'Transform your fitness with our comprehensive High-Intensity Interval Training program. Designed for maximum results, this program combines cardio, strength, and endurance training to help you achieve your fitness goals.',
     duration: '12 Weeks',
     difficulty: 'Advanced',
     category: 'Cardio',
-    subcategory: 'HIIT Training',
-    rating: 4.8,
-    reviewCount: 324,
+    rating: 0.0,
+    reviewCount: 0.0,
     price: 79.99,
     features: [
-      '12 weeks of structured workouts',
+      `12 weeks of structured workouts`,
       'Nutrition guide included',
       'Progress tracking tools',
       '24/7 support access',
@@ -54,8 +63,14 @@ export class PaymentComponent {
     { id: 'wallet', name: 'Digital Wallet', icon: 'wallet' },
   ];
 
+  ngOnInit() {
+    this.programId = this.activatedRoute.snapshot.paramMap.get('id')!;
+    this.getProgram(this.programId);
+  }
+
   selectPayment(methodId: string): void {
     this.selectedPayment = methodId;
+    console.log(this.selectedPayment);
   }
 
   getDifficultyColor(difficulty: string): string {
@@ -79,5 +94,29 @@ export class PaymentComponent {
     alert(
       'Payment processing... This is where you would integrate your payment gateway.'
     );
+  }
+
+  getProgram(id: string) {
+    this.programService.getProgramByProgramId(id).subscribe({
+      next: (res) => {
+        this.loggerService.info('Program is :', res);
+        const category = JSON.parse(res.category);
+        console.log('category is :', category);
+        this.program = {
+          name: res.title,
+          category: category.name,
+          description: res.description,
+          difficulty: res.difficultyLevel,
+          duration: res.duration,
+          features: [],
+          price: res.price,
+          rating: 0,
+          reviewCount: 0.0,
+        };
+      },
+      error: (err) => {
+        this.loggerService.error('Failed to fetch program :', err);
+      },
+    });
   }
 }

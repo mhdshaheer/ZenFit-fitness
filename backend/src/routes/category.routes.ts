@@ -7,7 +7,7 @@ import authMiddleware from "../middlewares/verifyToken.middleware";
 const categoryRouter = Router();
 const controller = container.get<ICategoryController>(TYPES.CategoryController);
 
-categoryRouter.use(authMiddleware);
+// categoryRouter.use(authMiddleware);
 
 categoryRouter.get("/", (req, res, next) => {
   controller.findAllCategory(req, res, next).catch(next);

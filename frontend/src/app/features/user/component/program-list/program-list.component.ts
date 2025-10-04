@@ -2,7 +2,7 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FitnessProgram } from '../../../trainer/components/program-list/program-list.component';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
 import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { ProgramService } from '../../../../core/services/program.service';
 import { Program } from '../../../trainer/store/trainer.model';
 import { Subject, takeUntil } from 'rxjs';
@@ -20,8 +20,9 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   subscribeBtnClass =
     'px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2';
 
-  programService = inject(ProgramService);
-  route = inject(ActivatedRoute);
+  private programService = inject(ProgramService);
+  private activatedRoute = inject(ActivatedRoute);
+  private route = inject(Router);
 
   private destroy$ = new Subject<void>();
 
@@ -31,7 +32,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   programs: FitnessProgram[] = [];
 
   getSubCategory() {
-    const id = this.route.snapshot.paramMap.get('id');
+    const id = this.activatedRoute.snapshot.paramMap.get('id');
     if (!id) return;
 
     this.programService
@@ -58,7 +59,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   }
 
   onSubscribeProgram(programId: string): void {
-    console.log('Subscribe program with ID:', programId);
+    this.route.navigate(['user/payment', programId]);
   }
   // Properties for UI binding
   searchTerm = '';
