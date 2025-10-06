@@ -15,6 +15,8 @@ import programRouter from "./routes/program.routes";
 import sessionRouter from "./routes/session.routes";
 import categoryRouter from "./routes/category.routes";
 import { errorMiddleware } from "./middlewares/errorHandle.middleware";
+import bodyParser from "body-parser";
+import paymentRouter from "./routes/payment.routes";
 
 const app = express();
 app.use(
@@ -25,6 +27,12 @@ app.use(
   })
 );
 
+app.use("/api/v1/payment/webhook", express.raw({ type: "application/json" }));
+
+app.use(express.json());
+app.use(cookieParser());
+app.use(passport.initialize());
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
@@ -32,10 +40,6 @@ const loginLimiter = rateLimit({
   standardHeaders: true,
   legacyHeaders: false,
 });
-
-app.use(express.json());
-app.use(cookieParser());
-app.use(passport.initialize());
 
 // Routes
 app.use("/api/v1/auth/login", loginLimiter);
@@ -46,9 +50,9 @@ app.use("/api/v1/user", userRouter);
 app.use("/api/v1/program", programRouter);
 app.use("/api/v1/session", sessionRouter);
 app.use("/api/v1/category", categoryRouter);
-
+app.use("/api/v1/payment", paymentRouter);
 
 // Global Error handling
-app.use(errorMiddleware)
+app.use(errorMiddleware);
 
 export default app;

@@ -9,10 +9,9 @@ export const env = {
     return process.env.MONGODB_URL;
   },
 
-  get node(){
+  get node() {
     return process.env.NODE;
   },
-
 
   get mail_user() {
     return process.env.MAIL_USER;
@@ -56,5 +55,11 @@ export const env = {
     return process.env.AWS_S3_BUCKET;
   },
 
-
+  // Stripe
+  get stripe_secret_key() {
+    return process.env.STRIPE_TEST_SECRET_KEY;
+  },
+  get stripe_web_hook() {
+    return process.env.STRIPE_WEB_HOOK;
+  },
 };

@@ -15,9 +15,10 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class ProgramListComponent implements OnDestroy, OnInit {
   // UI
-  subscribeBtnIcon =
+  btn2Label = 'Purchase';
+  btn2Icon =
     'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z';
-  subscribeBtnClass =
+  btn2Class =
     'px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2';
 
   private programService = inject(ProgramService);
@@ -73,13 +74,6 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   dateRange = { from: '', to: '' };
 
   // Sample data for dropdowns
-  statusOptions = [
-    { label: 'Active', value: 'active', selected: false, count: 24 },
-    { label: 'Inactive', value: 'inactive', selected: false, count: 8 },
-    { label: 'Draft', value: 'draft', selected: false, count: 5 },
-    { label: 'Completed', value: 'completed', selected: false, count: 12 },
-    { label: 'Archived', value: 'archived', selected: false, count: 3 },
-  ];
 
   programTypes = [
     { label: 'Weight Training', value: 'weight', selected: false, count: 18 },
@@ -122,7 +116,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
     this.isFilterMenuOpen = !this.isFilterMenuOpen;
   }
   onFilterChange(type: string, option: any) {}
-  onDateRangeChange() {}
+
   clearAllFilters() {}
   resetFilters() {}
   applyFilters() {}

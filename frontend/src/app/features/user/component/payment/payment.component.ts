@@ -4,6 +4,8 @@ import { Program } from '../../../trainer/store/trainer.model';
 import { ProgramService } from '../../../../core/services/program.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ActivatedRoute } from '@angular/router';
+import { PaymentService } from '../../../../core/services/payment.service';
+import { IPaymentCourse } from '../../../../interface/payment.interface';
 interface IProgram {
   name: string;
   description: string;
@@ -36,6 +38,7 @@ export class PaymentComponent implements OnInit {
   private programService = inject(ProgramService);
   private loggerService = inject(LoggerService);
   private activatedRoute = inject(ActivatedRoute);
+  private paymentService = inject(PaymentService);
 
   program: IProgram = {
     name: 'Advanced HIIT Mastery',
@@ -58,9 +61,6 @@ export class PaymentComponent implements OnInit {
 
   paymentMethods: PaymentMethod[] = [
     { id: 'card', name: 'Credit/Debit Card', icon: 'credit-card' },
-    { id: 'upi', name: 'UPI', icon: 'smartphone' },
-    { id: 'netbanking', name: 'Net Banking', icon: 'building' },
-    { id: 'wallet', name: 'Digital Wallet', icon: 'wallet' },
   ];
 
   ngOnInit() {
@@ -89,11 +89,22 @@ export class PaymentComponent implements OnInit {
   }
 
   completePurchase(): void {
-    console.log('Processing payment with method:', this.selectedPayment);
-    // Implement your payment logic here
-    alert(
-      'Payment processing... This is where you would integrate your payment gateway.'
-    );
+    // console.log('Processing payment with method:', this.selectedPayment);
+    // // Implement your payment logic here
+    // alert(
+    //   'Payment processing... This is where you would integrate your payment gateway.'
+    // );
+
+    const course: IPaymentCourse = {
+      courseId: 'course123',
+      courseName: 'Advanced HIIT Program',
+      price: 1999, // Indian rupee
+    };
+
+    this.paymentService.createCheckout(course).subscribe((res) => {
+      console.log('to :', res.url);
+      window.location.href = res.url; // redirect to Stripe Checkout
+    });
   }
 
   getProgram(id: string) {
