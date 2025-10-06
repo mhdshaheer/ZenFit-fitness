@@ -4,22 +4,33 @@ import { ProgramCardComponent } from '../../../../shared/components/program-card
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProgramService } from '../../../../core/services/program.service';
-import { Program } from '../../../trainer/store/trainer.model';
-import { Subject, takeUntil } from 'rxjs';
+import { lastValueFrom, Subject, takeUntil } from 'rxjs';
 
+import { ISubCategory } from '../../../../interface/category.interface';
+import { FormsModule } from '@angular/forms';
+
+interface IProgramType {
+  label: string;
+  value: string;
+  selected: boolean;
+}
 @Component({
   selector: 'app-program-list',
-  imports: [ProgramCardComponent, CommonModule],
+  imports: [ProgramCardComponent, CommonModule, FormsModule],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
 export class ProgramListComponent implements OnDestroy, OnInit {
-  // UI
-  btn2Label = 'Purchase';
-  btn2Icon =
-    'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z';
-  btn2Class =
-    'px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2';
+  searchTerm = '';
+  selectedFilter = 'All Programs';
+  activeFiltersCount = 0;
+  isFilterMenuOpen = false;
+  isSortMenuOpen = false;
+  selectedSort = 'Latest';
+  filteredResultsCount = 52;
+  programs: FitnessProgram[] = [];
+  subcategories: ISubCategory[] = [];
+  programTypes: IProgramType[] = [];
 
   private programService = inject(ProgramService);
   private activatedRoute = inject(ActivatedRoute);
@@ -27,100 +38,106 @@ export class ProgramListComponent implements OnDestroy, OnInit {
 
   private destroy$ = new Subject<void>();
 
+  // UI
+  btn2Label = 'Purchase';
+  btn2Icon =
+    'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z';
+  btn2Class =
+    'px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2';
+
   ngOnInit() {
     this.getSubCategory();
   }
-  programs: FitnessProgram[] = [];
 
-  getSubCategory() {
+  async getSubCategory() {
     const id = this.activatedRoute.snapshot.paramMap.get('id');
     if (!id) return;
 
-    this.programService
-      .getProgramsByParantId(id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: { programs: Program[] }) => {
-          console.log('Programs response:', res.programs);
-          this.programs = res.programs.map((item) => {
-            const category = JSON.parse(item.category).name;
-            console.log('Category :', category);
-            return { ...item, category: category };
-          });
-        },
-        error: (err) => {
-          console.error('Error fetching programs:', err);
-          this.programs = [];
-        },
+    try {
+      const res = await lastValueFrom(
+        this.programService
+          .getProgramsByParantId(id)
+          .pipe(takeUntil(this.destroy$))
+      );
+
+      this.programs = res.programs.map((item) => {
+        const categories = JSON.parse(item.category);
+        const subCatName = categories.name;
+        this.subcategories.push(categories);
+        return { ...item, category: subCatName };
       });
+
+      this.extractUniqueSubCategories(this.subcategories);
+    } catch (err) {
+      console.error('Error fetching programs:', err);
+      this.programs = [];
+    }
   }
 
   onViewProgram(programId: string): void {
     console.log('Viewing program with ID:', programId);
   }
-
   onSubscribeProgram(programId: string): void {
     this.route.navigate(['user/payment', programId]);
   }
-  // Properties for UI binding
-  searchTerm = '';
-  selectedFilter = 'All Programs';
-  activeFiltersCount = 0;
-  isFilterMenuOpen = false;
-  isSortMenuOpen = false;
-  selectedSort = 'Created Date';
-  selectedDuration = '';
-  filteredResultsCount = 52;
-  dateRange = { from: '', to: '' };
 
   // Sample data for dropdowns
 
-  programTypes = [
-    { label: 'Weight Training', value: 'weight', selected: false, count: 18 },
-    { label: 'Cardio', value: 'cardio', selected: false, count: 15 },
-    { label: 'HIIT', value: 'hiit', selected: false, count: 10 },
-    { label: 'Yoga', value: 'yoga', selected: false, count: 8 },
-    { label: 'Pilates', value: 'pilates', selected: false, count: 6 },
-    { label: 'CrossFit', value: 'crossfit', selected: false, count: 12 },
-    { label: 'Swimming', value: 'swimming', selected: false, count: 4 },
-  ];
-
-  durationOptions = [
-    { label: 'All Durations', value: '', selected: true, count: 52 },
-    { label: '1-4 weeks', value: '1-4', selected: false, count: 15 },
-    { label: '1-3 months', value: '1-3', selected: false, count: 22 },
-    { label: '3-6 months', value: '3-6', selected: false, count: 12 },
-    { label: '6+ months', value: '6+', selected: false, count: 3 },
-  ];
-
   sortOptions = [
-    { label: 'Created Date', value: 'createdDate' },
+    { label: 'Latest', value: 'createdDate' },
     { label: 'Name (A-Z)', value: 'name_asc' },
     { label: 'Name (Z-A)', value: 'name_desc' },
     { label: 'Duration', value: 'duration' },
-    { label: 'Status', value: 'status' },
-    { label: 'Last Modified', value: 'lastModified' },
   ];
 
-  activeFilterTags = ['abx', 'abc', 'aaa'];
-
-  // Computed property
-  get hasActiveFilters(): boolean {
-    return this.activeFiltersCount > 0;
+  extractUniqueSubCategories(subcategories: ISubCategory[]) {
+    let unique = new Set<string>();
+    for (let i = 0; i < subcategories.length; i++) {
+      let str = JSON.stringify(subcategories[i]);
+      if (!unique.has(str)) {
+        unique.add(str);
+      }
+    }
+    let newArr = [];
+    for (let item of unique) {
+      newArr.push(JSON.parse(item));
+    }
+    this.programTypes = newArr.map((item) => {
+      let obj: IProgramType = {
+        label: item.name,
+        value: item._id,
+        selected: false,
+      };
+      return obj;
+    });
   }
 
-  // Methods called by template (empty implementations)
-  onSearch(event: any) {}
-  clearSearch() {}
+  // Search
+  onSearch(text: string) {
+    this.searchTerm = text;
+    console.log(text);
+  }
+  clearSearch() {
+    this.searchTerm = '';
+    this.onSearch('');
+  }
+
+  // Filter
   toggleFilterMenu() {
     this.isFilterMenuOpen = !this.isFilterMenuOpen;
   }
-  onFilterChange(type: string, option: any) {}
+  onFilterChange(option: IProgramType) {
+    for (let item of this.programTypes) {
+      if (item.value == option.value) {
+        item.selected = !item.selected;
+      }
+    }
+    console.log('filtering :', this.programTypes);
+  }
 
   clearAllFilters() {}
-  resetFilters() {}
-  applyFilters() {}
-  removeFilter(filter: any) {}
+
+  // Sorting
   toggleSortMenu() {
     this.isSortMenuOpen = !this.isSortMenuOpen;
   }

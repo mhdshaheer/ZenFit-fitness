@@ -14,3 +14,14 @@ export interface IParams {
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
+
+export interface ISubCategory {
+  createdAt: string;
+  description: string;
+  isBlocked: boolean;
+  name: string;
+  parantId: string;
+  updatedAt: string;
+  __v: number;
+  _id: string;
+}
