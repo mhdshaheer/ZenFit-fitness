@@ -36,4 +36,11 @@ export class PaymentController implements IPaymentController {
     const response = await this.paymentService.getTrainerPayments(trainerId);
     return res.status(HttpStatus.OK).json(response);
   }
+  async getPayment(
+    _req: Request,
+    res: Response
+  ): Promise<Response<PaymentHistoryDto[]>> {
+    const response = await this.paymentService.getPayments();
+    return res.status(HttpStatus.OK).json(response);
+  }
 }

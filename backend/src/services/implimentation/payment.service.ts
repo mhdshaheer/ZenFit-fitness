@@ -15,7 +15,10 @@ import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IPayment } from "../../models/payment.model";
 import { PaymentHistoryDto } from "../../dtos/payment.dtos";
-import { mapToPaymentHistoryDto } from "../../mapper/payment.mapper";
+import {
+  mapToPaymentHistoryAdminDto,
+  mapToPaymentHistoryDto,
+} from "../../mapper/payment.mapper";
 
 export class PaymentService implements IPaymentService {
   constructor(
@@ -164,6 +167,11 @@ export class PaymentService implements IPaymentService {
       trainerId
     );
     const paymentDto = payments.map(mapToPaymentHistoryDto);
+    return paymentDto;
+  }
+  async getPayments(): Promise<PaymentHistoryDto[]> {
+    const payments = await this.paymentRepository.getPayments();
+    const paymentDto = payments.map(mapToPaymentHistoryAdminDto);
     return paymentDto;
   }
 }

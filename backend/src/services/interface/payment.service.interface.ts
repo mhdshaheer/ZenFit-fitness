@@ -14,4 +14,5 @@ export interface IPaymentService {
   processWebhook(req: Request): Promise<void>;
   handleWebhook(event: Stripe.Event): Promise<void>;
   getTrainerPayments(trainerId: string): Promise<PaymentHistoryDto[]>;
+  getPayments(): Promise<PaymentHistoryDto[]>;
 }

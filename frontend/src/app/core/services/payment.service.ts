@@ -20,4 +20,7 @@ export class PaymentService {
   getHistory() {
     return this.http.get<PaymentHistory[]>(`${this.api}/trainer`);
   }
+  getHistoryAdmin() {
+    return this.http.get<PaymentHistory[]>(`${this.api}`);
+  }
 }

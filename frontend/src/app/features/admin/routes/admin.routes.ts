@@ -55,6 +55,14 @@ export const ADMIN_ROUTES: Routes = [
           ).then((m) => m.CategoryViewComponent);
         },
       },
+      {
+        path: 'wallet',
+        loadComponent: () => {
+          return import(
+            '../components/admin-wallet/admin-wallet.component'
+          ).then((m) => m.AdminWalletComponent);
+        },
+      },
     ],
   },
 ];

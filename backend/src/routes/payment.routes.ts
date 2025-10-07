@@ -14,5 +14,8 @@ paymentRouter.post("/create-checkout-session", authMiddleware, (req, res) =>
 paymentRouter.get("/trainer", authMiddleware, (req, res, next) => {
   controller.getTrainerPayments(req, res).catch(next);
 });
+paymentRouter.get("/", authMiddleware, (req, res, next) => {
+  controller.getPayment(req, res).catch(next);
+});
 
 export default paymentRouter;

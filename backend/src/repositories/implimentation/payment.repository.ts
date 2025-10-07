@@ -22,4 +22,7 @@ export class PaymentRepository
   async getProgramsByTrainerId(trainerId: string): Promise<IPayment[]> {
     return this.model.find({ trainerId });
   }
+  async getPayments(): Promise<IPayment[]> {
+    return this.model.find();
+  }
 }

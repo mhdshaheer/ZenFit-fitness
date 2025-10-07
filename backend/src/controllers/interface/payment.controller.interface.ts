@@ -8,4 +8,8 @@ export interface IPaymentController {
     req: Request,
     res: Response
   ): Promise<Response<PaymentHistoryDto[]>>;
+  getPayment(
+    req: Request,
+    res: Response
+  ): Promise<Response<PaymentHistoryDto[]>>;
 }

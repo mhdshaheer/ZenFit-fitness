@@ -13,3 +13,15 @@ export const mapToPaymentHistoryDto = (
     date: payment.createdAt,
   };
 };
+export const mapToPaymentHistoryAdminDto = (
+  payment: IPayment
+): PaymentHistoryDto => {
+  return {
+    _id: String(payment._id),
+    referenceNumber: payment.paymentIntentId!,
+    status: payment.paymentStatus,
+    programName: payment.programName,
+    price: payment.platformFee,
+    date: payment.createdAt,
+  };
+};
