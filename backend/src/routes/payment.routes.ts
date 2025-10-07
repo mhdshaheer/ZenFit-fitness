@@ -8,14 +8,11 @@ import authMiddleware from "../middlewares/verifyToken.middleware";
 const paymentRouter = Router();
 const controller = container.get<IPaymentController>(TYPES.PaymentController);
 
-// paymentRouter.post(
-//   "/webhook",
-//   express.raw({ type: "application/json" }),
-//   (req, res) => controller.webhook(req, res)
-// );
-
 paymentRouter.post("/create-checkout-session", authMiddleware, (req, res) =>
   controller.createCheckoutSession(req, res)
 );
+paymentRouter.get("/trainer", authMiddleware, (req, res, next) => {
+  controller.getTrainerPayments(req, res).catch(next);
+});
 
 export default paymentRouter;

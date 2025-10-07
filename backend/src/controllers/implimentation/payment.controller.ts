@@ -3,6 +3,8 @@ import { IPaymentController } from "../interface/payment.controller.interface";
 import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IPaymentService } from "../../services/interface/payment.service.interface";
+import { PaymentHistoryDto } from "../../dtos/payment.dtos";
+import { HttpStatus } from "../../const/statuscode.const";
 
 export class PaymentController implements IPaymentController {
   constructor(
@@ -25,5 +27,13 @@ export class PaymentController implements IPaymentController {
       console.error("❌ Webhook error:", err.message);
       res.status(500).send(`Webhook error: ${err.message}`);
     }
+  }
+  async getTrainerPayments(
+    req: Request,
+    res: Response
+  ): Promise<Response<PaymentHistoryDto[]>> {
+    const trainerId = (req as any).user.id;
+    const response = await this.paymentService.getTrainerPayments(trainerId);
+    return res.status(HttpStatus.OK).json(response);
   }
 }

@@ -5,7 +5,7 @@ export interface IPaymentCourse {
 }
 export interface PaymentHistory {
   _id: string;
-  courseName: string;
+  programName: string;
   price: number;
   date: string;
   status: 'success' | 'pending' | 'failed';

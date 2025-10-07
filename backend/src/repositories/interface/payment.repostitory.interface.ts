@@ -6,4 +6,5 @@ export interface IPaymentRepository {
     id: string,
     updateData: Partial<IPayment>
   ): Promise<IPayment | null>;
+  getProgramsByTrainerId(trainerId: string): Promise<IPayment[]>;
 }

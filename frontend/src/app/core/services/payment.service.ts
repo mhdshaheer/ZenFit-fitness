@@ -1,7 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
-import { IPaymentCourse } from '../../interface/payment.interface';
+import {
+  IPaymentCourse,
+  PaymentHistory,
+} from '../../interface/payment.interface';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
@@ -13,5 +16,8 @@ export class PaymentService {
       `${this.api}/create-checkout-session`,
       data
     );
+  }
+  getHistory() {
+    return this.http.get<PaymentHistory[]>(`${this.api}/trainer`);
   }
 }

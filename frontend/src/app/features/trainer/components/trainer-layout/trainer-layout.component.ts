@@ -118,7 +118,11 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
 
   userMenuItems: NavMenuItem[] = [
     { label: 'My Profile', route: '/trainer/profile', icon: 'fas fa-user' },
-    { label: 'Help & Support', route: '/help', icon: 'fas fa-question-circle' },
+    {
+      label: 'Wallet',
+      route: '/trainer/wallet',
+      icon: 'fas fa-wallet',
+    },
   ];
 
   searchResults: any[] = [];

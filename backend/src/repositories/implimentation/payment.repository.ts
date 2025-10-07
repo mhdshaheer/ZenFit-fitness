@@ -18,4 +18,8 @@ export class PaymentRepository
   ): Promise<IPayment | null> {
     return await this.update(id, updateData);
   }
+
+  async getProgramsByTrainerId(trainerId: string): Promise<IPayment[]> {
+    return this.model.find({ trainerId });
+  }
 }

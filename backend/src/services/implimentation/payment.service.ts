@@ -14,6 +14,8 @@ import { IProgramRepository } from "../../repositories/interface/program.reposit
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IPayment } from "../../models/payment.model";
+import { PaymentHistoryDto } from "../../dtos/payment.dtos";
+import { mapToPaymentHistoryDto } from "../../mapper/payment.mapper";
 
 export class PaymentService implements IPaymentService {
   constructor(
@@ -155,5 +157,13 @@ export class PaymentService implements IPaymentService {
     } catch (err: any) {
       console.error("❌ Error processing webhook:", err.message || err);
     }
+  }
+
+  async getTrainerPayments(trainerId: string): Promise<PaymentHistoryDto[]> {
+    const payments = await this.paymentRepository.getProgramsByTrainerId(
+      trainerId
+    );
+    const paymentDto = payments.map(mapToPaymentHistoryDto);
+    return paymentDto;
   }
 }
