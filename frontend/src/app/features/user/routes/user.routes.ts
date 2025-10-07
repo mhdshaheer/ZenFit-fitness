@@ -53,6 +53,22 @@ export const USER_ROUTES: Routes = [
           );
         },
       },
+      {
+        path: 'payment-success',
+        loadComponent: () => {
+          return import(
+            '../component/payment-success/payment-success.component'
+          ).then((m) => m.PaymentSuccessComponent);
+        },
+      },
+      {
+        path: 'payment-failed',
+        loadComponent: () => {
+          return import(
+            '../component/payment-failed/payment-failed.component'
+          ).then((m) => m.PaymentFailedComponent);
+        },
+      },
     ],
   },
 ];

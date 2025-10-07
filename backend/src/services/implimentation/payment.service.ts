@@ -67,8 +67,8 @@ export class PaymentService implements IPaymentService {
         },
       ],
       mode: "payment",
-      success_url: `${env.frontend_url}/user/dashboard`,
-      cancel_url: `${env.frontend_url}/cancel`,
+      success_url: `${env.frontend_url}/user/payment-success`,
+      cancel_url: `${env.frontend_url}/user/payment-failed`,
       metadata: {
         programId: data.courseId,
         programName: data.courseName,
@@ -119,7 +119,7 @@ export class PaymentService implements IPaymentService {
             chargeId,
           });
 
-          console.log(`✅ Payment succeeded `);
+          console.log(`Payment succeeded `);
           break;
         }
 
@@ -134,12 +134,8 @@ export class PaymentService implements IPaymentService {
             paymentIntentId,
             chargeId,
           });
-
-          console.log(`💰 Payment ${status} for ${paymentIntentId}`);
           break;
         }
-
-        // 3️⃣ Payment failed
         case "payment_intent.payment_failed": {
           const paymentIntent = event.data.object as Stripe.PaymentIntent;
           const paymentIntentId = paymentIntent.id;
@@ -148,13 +144,11 @@ export class PaymentService implements IPaymentService {
             paymentStatus: "failed",
             paymentIntentId,
           });
-
-          console.log(`❌ Payment failed for ${paymentIntentId}`);
           break;
         }
 
         default:
-          console.log(`ℹ️ Unhandled event type: ${eventType}`);
+          console.log(`Unhandled event type: ${eventType}`);
       }
 
       console.log("Event data:", event.data.object);
