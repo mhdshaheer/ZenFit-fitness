@@ -17,6 +17,10 @@ import categoryRouter from "./routes/category.routes";
 import { errorMiddleware } from "./middlewares/errorHandle.middleware";
 import bodyParser from "body-parser";
 import paymentRouter from "./routes/payment.routes";
+import authMiddleware from "./middlewares/verifyToken.middleware";
+import { container } from "./inversify.config";
+import { TYPES } from "./shared/types/inversify.types";
+import { IPaymentController } from "./controllers/interface/payment.controller.interface";
 
 const app = express();
 app.use(
@@ -27,11 +31,19 @@ app.use(
   })
 );
 
-app.use("/api/v1/payment/webhook", express.raw({ type: "application/json" }));
-
-app.use(express.json());
 app.use(cookieParser());
 app.use(passport.initialize());
+
+const paymentController = container.get<IPaymentController>(
+  TYPES.PaymentController
+);
+
+app.use(
+  "/api/v1/payment/webhook",
+  express.raw({ type: "application/json" }),
+  (req, res) => paymentController.webhook(req, res)
+);
+app.use(express.json());
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,

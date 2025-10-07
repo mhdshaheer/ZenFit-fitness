@@ -37,4 +37,5 @@ export const TYPES = {
   SessionRepository: Symbol.for("SessionRepository"),
   ProgramRespository: Symbol.for("ProgramRepository"),
   CategoryRepository: Symbol.for("CategoryRepository"),
+  PaymentRepository: Symbol.for("PaymentRepository"),
 };

@@ -1,3 +1,5 @@
+import Stripe from "stripe";
+import { Request } from "express";
 import {
   CheckoutRequest,
   CheckoutResponse,
@@ -8,5 +10,6 @@ export interface IPaymentService {
     data: CheckoutRequest,
     userId: string
   ): Promise<CheckoutResponse>;
-  handleWebhook(event: any): Promise<void>;
+  processWebhook(req: Request): Promise<void>;
+  handleWebhook(event: Stripe.Event): Promise<void>;
 }

@@ -40,24 +40,7 @@ export class PaymentComponent implements OnInit {
   private activatedRoute = inject(ActivatedRoute);
   private paymentService = inject(PaymentService);
 
-  program: IProgram = {
-    name: 'Advanced HIIT Mastery',
-    description:
-      'Transform your fitness with our comprehensive High-Intensity Interval Training program. Designed for maximum results, this program combines cardio, strength, and endurance training to help you achieve your fitness goals.',
-    duration: '12 Weeks',
-    difficulty: 'Advanced',
-    category: 'Cardio',
-    rating: 0.0,
-    reviewCount: 0.0,
-    price: 79.99,
-    features: [
-      `12 weeks of structured workouts`,
-      'Nutrition guide included',
-      'Progress tracking tools',
-      '24/7 support access',
-      'Certificate upon completion',
-    ],
-  };
+  program = {} as IProgram;
 
   paymentMethods: PaymentMethod[] = [
     { id: 'card', name: 'Credit/Debit Card', icon: 'credit-card' },
@@ -89,16 +72,10 @@ export class PaymentComponent implements OnInit {
   }
 
   completePurchase(): void {
-    // console.log('Processing payment with method:', this.selectedPayment);
-    // // Implement your payment logic here
-    // alert(
-    //   'Payment processing... This is where you would integrate your payment gateway.'
-    // );
-
     const course: IPaymentCourse = {
-      courseId: 'course123',
-      courseName: 'Advanced HIIT Program',
-      price: 1999, // Indian rupee
+      courseId: this.programId,
+      courseName: this.program.name,
+      price: this.program.price,
     };
 
     this.paymentService.createCheckout(course).subscribe((res) => {

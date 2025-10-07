@@ -43,6 +43,8 @@ import { IPaymentService } from "./services/interface/payment.service.interface"
 import { PaymentService } from "./services/implimentation/payment.service";
 import { IPaymentController } from "./controllers/interface/payment.controller.interface";
 import { PaymentController } from "./controllers/implimentation/payment.controller";
+import { IPaymentRepository } from "./repositories/interface/payment.repostitory.interface";
+import { PaymentRepository } from "./repositories/implimentation/payment.repository";
 
 const container = new Container();
 
@@ -102,5 +104,7 @@ container
 container
   .bind<ICategoryRepository>(TYPES.CategoryRepository)
   .to(CategoryRepository);
-
+container
+  .bind<IPaymentRepository>(TYPES.PaymentRepository)
+  .to(PaymentRepository);
 export { container };

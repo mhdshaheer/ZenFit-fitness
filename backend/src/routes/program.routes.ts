@@ -9,7 +9,7 @@ const programController = container.get<IProgramController>(
   TYPES.ProgramController
 );
 
-// programRouter.use(authMiddleware);
+programRouter.use(authMiddleware);
 
 programRouter.post("/", programController.saveProgram.bind(programController));
 programRouter.post(

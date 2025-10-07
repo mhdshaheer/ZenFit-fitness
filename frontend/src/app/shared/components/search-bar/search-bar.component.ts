@@ -1,11 +1,10 @@
-import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Output } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 import { debounceSearch } from '../../utils.ts/debouce.util';
 
 @Component({
   selector: 'zenfit-search-bar',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './search-bar.component.html',
   styleUrl: './search-bar.component.css',
 })

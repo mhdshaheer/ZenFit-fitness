@@ -8,6 +8,7 @@ import { lastValueFrom, Subject, takeUntil } from 'rxjs';
 
 import { ISubCategory } from '../../../../interface/category.interface';
 import { FormsModule } from '@angular/forms';
+import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
 
 interface IProgramType {
   label: string;
@@ -16,7 +17,12 @@ interface IProgramType {
 }
 @Component({
   selector: 'app-program-list',
-  imports: [ProgramCardComponent, CommonModule, FormsModule],
+  imports: [
+    ProgramCardComponent,
+    CommonModule,
+    FormsModule,
+    SearchBarComponent,
+  ],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
@@ -43,8 +49,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   btn2Icon =
     'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z';
   btn2Class =
-    'px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-lg hover:bg-orange-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2';
-
+    'px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2';
   ngOnInit() {
     this.getSubCategory();
   }
@@ -80,9 +85,6 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   onSubscribeProgram(programId: string): void {
     this.route.navigate(['user/payment', programId]);
   }
-
-  // Sample data for dropdowns
-
   sortOptions = [
     { label: 'Latest', value: 'createdDate' },
     { label: 'Name (A-Z)', value: 'name_asc' },
