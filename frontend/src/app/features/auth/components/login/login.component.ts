@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, signal } from '@angular/core';
 import {
   FormBuilder,
@@ -22,10 +22,9 @@ import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
   standalone: true,
   imports: [
     ReactiveFormsModule,
-    CommonModule,
     RouterModule,
-    SharedFormComponent,
-  ],
+    SharedFormComponent
+],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })

@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-landing-page',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './landing-page.component.html',
   styleUrl: './landing-page.component.css',
 })

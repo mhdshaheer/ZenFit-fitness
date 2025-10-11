@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { ProgramService } from '../../../../core/services/program.service';
 import { Router } from '@angular/router';
@@ -23,7 +23,7 @@ export interface FitnessProgram {
 
 @Component({
   selector: 'app-program-list',
-  imports: [CommonModule, ProgramCardComponent],
+  imports: [ProgramCardComponent],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })

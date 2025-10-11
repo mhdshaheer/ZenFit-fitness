@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   FormBuilder,
   FormGroup,
@@ -17,7 +17,7 @@ import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'zenfit-category-create',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './category-create.component.html',
   styleUrl: './category-create.component.css',
 })

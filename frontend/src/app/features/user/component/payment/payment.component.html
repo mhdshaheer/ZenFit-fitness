@@ -1,6 +1,6 @@
 <div
   class="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50 py-8 px-4"
->
+  >
   <div class="max-w-6xl mx-auto">
     <!-- Header -->
     <div class="text-left mb-8">
@@ -14,7 +14,7 @@
         <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
           <div
             class="flex flex-col md:flex-row md:items-start md:justify-between mb-6"
-          >
+            >
             <div class="flex-1">
               <h2 class="text-md md:text-xl font-bold text-gray-900 mb-3">
                 {{ program.name }}
@@ -31,222 +31,224 @@
                     xmlns="http://www.w3.org/2000/svg"
                     viewBox="0 0 24 24"
                     fill="currentColor"
-                  >
+                    >
                     <path
                       d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
-                    />
-                  </svg>
-                  <span class="ml-1 font-semibold text-gray-900">
-                    {{ program.rating }}
+                      />
+                    </svg>
+                    <span class="ml-1 font-semibold text-gray-900">
+                      {{ program.rating }}
+                    </span>
+                  </div>
+                  <span class="text-gray-500">
+                    ({{ program.reviewCount }} reviews)
                   </span>
                 </div>
-                <span class="text-gray-500">
-                  ({{ program.reviewCount }} reviews)
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <!-- Program Details Grid -->
-          <div class="grid sm:grid-cols-2 gap-4 mb-6">
-            <div class="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
-              <svg
-                class="w-6 h-6 text-green-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <div>
-                <p class="text-sm text-gray-600">Duration</p>
-                <p class="font-semibold text-gray-900">
-                  {{ program.duration }}
-                </p>
               </div>
             </div>
 
-            <div class="flex items-center gap-3 p-4 bg-purple-50 rounded-lg">
-              <svg
-                class="w-6 h-6 text-green-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              <div>
-                <p class="text-sm text-gray-600">Difficulty</p>
-                <span
-                  [class]="
-                    'inline-block px-3 py-1 rounded-full text-sm font-semibold ' +
-                    getDifficultyColor(program.difficulty)
-                  "
-                >
-                  {{ program.difficulty }}
-                </span>
-              </div>
-            </div>
-
-            <div class="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
-              <svg
-                class="w-6 h-6 text-green-600"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                />
-              </svg>
-              <div>
-                <p class="text-sm text-gray-600">Category</p>
-                <p class="font-semibold text-gray-900">
-                  {{ program.category }}
-                </p>
-              </div>
-            </div>
-          </div>
-
-          <!-- Features -->
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">
-              What's Included
-            </h3>
-            <ul class="space-y-3">
-              <li
-                *ngFor="let feature of program.features"
-                class="flex items-start gap-3"
-              >
+            <!-- Program Details Grid -->
+            <div class="grid sm:grid-cols-2 gap-4 mb-6">
+              <div class="flex items-center gap-3 p-4 bg-blue-50 rounded-lg">
                 <svg
-                  class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0"
+                  class="w-6 h-6 text-green-600"
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
-                >
+                  >
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M5 13l4 4L19 7"
-                  />
-                </svg>
-                <span class="text-gray-700">{{ feature }}</span>
-              </li>
-            </ul>
-          </div>
-        </div>
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                  <div>
+                    <p class="text-sm text-gray-600">Duration</p>
+                    <p class="font-semibold text-gray-900">
+                      {{ program.duration }}
+                    </p>
+                  </div>
+                </div>
 
-        <!-- Payment Method Selection -->
-        <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
-          <h3 class="text-xl font-bold text-gray-900 mb-4">
-            Select Payment Method
-          </h3>
-          <div class="grid sm:grid-cols-2 gap-4">
-            <button
-              *ngFor="let method of paymentMethods"
-              (click)="selectPayment(method.id)"
+                <div class="flex items-center gap-3 p-4 bg-purple-50 rounded-lg">
+                  <svg
+                    class="w-6 h-6 text-green-600"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <div>
+                      <p class="text-sm text-gray-600">Difficulty</p>
+                      <span
+                  [class]="
+                    'inline-block px-3 py-1 rounded-full text-sm font-semibold ' +
+                    getDifficultyColor(program.difficulty)
+                  "
+                        >
+                        {{ program.difficulty }}
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3 p-4 bg-green-50 rounded-lg">
+                    <svg
+                      class="w-6 h-6 text-green-600"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                      >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                        />
+                      </svg>
+                      <div>
+                        <p class="text-sm text-gray-600">Category</p>
+                        <p class="font-semibold text-gray-900">
+                          {{ program.category }}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Features -->
+                  <div>
+                    <h3 class="text-lg font-semibold text-gray-900 mb-4">
+                      What's Included
+                    </h3>
+                    <ul class="space-y-3">
+                      @for (feature of program.features; track feature) {
+                        <li
+                          class="flex items-start gap-3"
+                          >
+                          <svg
+                            class="w-5 h-5 text-green-600 mt-0.5 flex-shrink-0"
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M5 13l4 4L19 7"
+                              />
+                            </svg>
+                            <span class="text-gray-700">{{ feature }}</span>
+                          </li>
+                        }
+                      </ul>
+                    </div>
+                  </div>
+
+                  <!-- Payment Method Selection -->
+                  <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-4">
+                      Select Payment Method
+                    </h3>
+                    <div class="grid sm:grid-cols-2 gap-4">
+                      @for (method of paymentMethods; track method) {
+                        <button
+                          (click)="selectPayment(method.id)"
               [class]="
                 'flex items-center gap-3 p-4 rounded-lg border-2 transition-all ' +
                 (selectedPayment === method.id
                   ? 'border-green-600 bg-blue-50'
                   : 'border-gray-200 hover:border-gray-300')
               "
-            >
-              <svg
+                          >
+                          <svg
                 [class]="
                   'w-6 h-6 ' +
                   (selectedPayment === method.id
                     ? 'text-green-600'
                     : 'text-gray-600')
                 "
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
-                />
-              </svg>
-              <span
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                            >
+                            <path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                              />
+                            </svg>
+                            <span
                 [class]="
                   'font-medium ' +
                   (selectedPayment === method.id
                     ? 'text-green-900'
                     : 'text-gray-700')
                 "
-              >
-                {{ method.name }}
-              </span>
-            </button>
-          </div>
-        </div>
-      </div>
+                              >
+                              {{ method.name }}
+                            </span>
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  </div>
 
-      <!-- Order Summary - Right Section -->
-      <div class="lg:col-span-1">
-        <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
-          <h3 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h3>
+                  <!-- Order Summary - Right Section -->
+                  <div class="lg:col-span-1">
+                    <div class="bg-white rounded-2xl shadow-lg p-6 sticky top-8">
+                      <h3 class="text-xl font-bold text-gray-900 mb-6">Order Summary</h3>
 
-          <div class="space-y-4 mb-6">
-            <div class="flex justify-between text-gray-600">
-              <span>Program Price</span>
-              <span class="font-semibold">₹{{ program.price }}</span>
+                      <div class="space-y-4 mb-6">
+                        <div class="flex justify-between text-gray-600">
+                          <span>Program Price</span>
+                          <span class="font-semibold">₹{{ program.price }}</span>
+                        </div>
+                        <!-- <div class="flex justify-between text-gray-600">
+                        <span>Platform fee</span>
+                        <span class="font-semibold text-red-700">{{ platformFee }}%</span>
+                      </div> -->
+                      <div
+                        class="border-t pt-4 flex justify-between text-lg font-bold text-gray-900"
+                        >
+                        <span>Total</span>
+                        <span class="text-green-600">₹{{ program.price }}</span>
+                      </div>
+                    </div>
+
+                    <button
+                      (click)="completePurchase()"
+                      class="w-full bg-gradient-to-r from-green-600 to-green-600 text-white py-4 rounded-lg font-semibold hover:from-green-700 hover:to-green-700 transition-all shadow-lg hover:shadow-xl mb-4"
+                      >
+                      Complete Purchase
+                    </button>
+
+                    <div class="text-center">
+                      <p class="text-sm text-gray-500">
+                        🔒 Secure payment powered by SSL encryption
+                      </p>
+                    </div>
+
+                    <div class="mt-6 pt-6 border-t">
+                      <p class="text-xs text-gray-500 text-center">
+                        By completing this purchase, you agree to our Terms of Service and
+                        Privacy Policy
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <!-- <div class="flex justify-between text-gray-600">
-              <span>Platform fee</span>
-              <span class="font-semibold text-red-700">{{ platformFee }}%</span>
-            </div> -->
-            <div
-              class="border-t pt-4 flex justify-between text-lg font-bold text-gray-900"
-            >
-              <span>Total</span>
-              <span class="text-green-600">₹{{ program.price }}</span>
-            </div>
           </div>
-
-          <button
-            (click)="completePurchase()"
-            class="w-full bg-gradient-to-r from-green-600 to-green-600 text-white py-4 rounded-lg font-semibold hover:from-green-700 hover:to-green-700 transition-all shadow-lg hover:shadow-xl mb-4"
-          >
-            Complete Purchase
-          </button>
-
-          <div class="text-center">
-            <p class="text-sm text-gray-500">
-              🔒 Secure payment powered by SSL encryption
-            </p>
-          </div>
-
-          <div class="mt-6 pt-6 border-t">
-            <p class="text-xs text-gray-500 text-center">
-              By completing this purchase, you agree to our Terms of Service and
-              Privacy Policy
-            </p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>

@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnInit } from '@angular/core';
 import { Program } from '../../../trainer/store/trainer.model';
 import { ProgramService } from '../../../../core/services/program.service';
@@ -25,7 +25,7 @@ interface PaymentMethod {
 }
 @Component({
   selector: 'zenfit-payment',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css',
 })

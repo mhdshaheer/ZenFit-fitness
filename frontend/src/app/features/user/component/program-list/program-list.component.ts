@@ -1,7 +1,7 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FitnessProgram } from '../../../trainer/components/program-list/program-list.component';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
-import { CommonModule } from '@angular/common';
+
 import { ActivatedRoute, Router } from '@angular/router';
 import { ProgramService } from '../../../../core/services/program.service';
 import { lastValueFrom, Subject, takeUntil } from 'rxjs';
@@ -19,10 +19,9 @@ interface IProgramType {
   selector: 'app-program-list',
   imports: [
     ProgramCardComponent,
-    CommonModule,
     FormsModule,
-    SearchBarComponent,
-  ],
+    SearchBarComponent
+],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })

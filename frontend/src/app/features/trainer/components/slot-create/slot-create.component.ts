@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -27,7 +27,7 @@ export interface ITimeSlot {
 
 @Component({
   selector: 'app-slot-create',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './slot-create.component.html',
   styleUrl: './slot-create.component.css',
 })
