@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { PaymentHistoryDto } from "../../dtos/payment.dtos";
+import { PaymentHistoryDto, PurchasedProgram } from "../../dtos/payment.dtos";
 
 export interface IPaymentController {
   createCheckoutSession(req: Request, res: Response): Promise<void>;
@@ -12,4 +12,8 @@ export interface IPaymentController {
     req: Request,
     res: Response
   ): Promise<Response<PaymentHistoryDto[]>>;
+  getPurchasedProgram(
+    req: Request,
+    res: Response
+  ): Promise<Response<PurchasedProgram[]>>;
 }

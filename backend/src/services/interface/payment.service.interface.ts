@@ -4,7 +4,7 @@ import {
   CheckoutRequest,
   CheckoutResponse,
 } from "../../shared/types/payment.types";
-import { PaymentHistoryDto } from "../../dtos/payment.dtos";
+import { PaymentHistoryDto, PurchasedProgram } from "../../dtos/payment.dtos";
 
 export interface IPaymentService {
   createCheckoutSession(
@@ -15,4 +15,5 @@ export interface IPaymentService {
   handleWebhook(event: Stripe.Event): Promise<void>;
   getTrainerPayments(trainerId: string): Promise<PaymentHistoryDto[]>;
   getPayments(): Promise<PaymentHistoryDto[]>;
+  getPurchasedProgram(userId: string): Promise<PurchasedProgram[]>;
 }

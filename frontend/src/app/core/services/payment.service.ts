@@ -4,7 +4,9 @@ import { environment } from '../../../environments/environment';
 import {
   IPaymentCourse,
   PaymentHistory,
+  PurchasedProgram,
 } from '../../interface/payment.interface';
+import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
@@ -22,5 +24,8 @@ export class PaymentService {
   }
   getHistoryAdmin() {
     return this.http.get<PaymentHistory[]>(`${this.api}`);
+  }
+  getPurchasedPrograms(): Observable<PurchasedProgram[]> {
+    return this.http.get<PurchasedProgram[]>(`${this.api}/purchased`);
   }
 }

@@ -14,7 +14,7 @@ import { IProgramRepository } from "../../repositories/interface/program.reposit
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IPayment } from "../../models/payment.model";
-import { PaymentHistoryDto } from "../../dtos/payment.dtos";
+import { PaymentHistoryDto, PurchasedProgram } from "../../dtos/payment.dtos";
 import {
   mapToPaymentHistoryAdminDto,
   mapToPaymentHistoryDto,
@@ -173,5 +173,10 @@ export class PaymentService implements IPaymentService {
     const payments = await this.paymentRepository.getPayments();
     const paymentDto = payments.map(mapToPaymentHistoryAdminDto);
     return paymentDto;
+  }
+
+  async getPurchasedProgram(userId: string): Promise<PurchasedProgram[]> {
+    const programs = await this.paymentRepository.findPurchasedProgram(userId);
+    return programs;
   }
 }

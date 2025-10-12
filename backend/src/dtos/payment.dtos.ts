@@ -6,3 +6,16 @@ export interface PaymentHistoryDto {
   referenceNumber: string;
   date: Date;
 }
+
+export interface PurchasedProgram {
+  programId: string;
+  title: string;
+  category: string | null;
+  duration: string;
+  difficultyLevel: string;
+  description: string;
+  trainerId: string;
+  amountPaid: number;
+  paymentMethod: string;
+  purchasedAt: Date;
+}

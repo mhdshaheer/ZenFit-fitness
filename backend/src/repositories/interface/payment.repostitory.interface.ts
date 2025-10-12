@@ -1,3 +1,4 @@
+import { PurchasedProgram } from "../../dtos/payment.dtos";
 import { IPayment } from "../../models/payment.model";
 
 export interface IPaymentRepository {
@@ -8,4 +9,5 @@ export interface IPaymentRepository {
   ): Promise<IPayment | null>;
   getProgramsByTrainerId(trainerId: string): Promise<IPayment[]>;
   getPayments(): Promise<IPayment[]>;
+  findPurchasedProgram(userId: string): Promise<PurchasedProgram[]>;
 }

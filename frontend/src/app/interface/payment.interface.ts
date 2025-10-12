@@ -11,3 +11,15 @@ export interface PaymentHistory {
   status: 'success' | 'pending' | 'failed';
   referenceNumber: string;
 }
+export interface PurchasedProgram {
+  programId: string;
+  title: string;
+  category: string | null;
+  duration: string;
+  difficultyLevel: string;
+  description: string;
+  trainerId: string;
+  amountPaid: number;
+  paymentMethod: string;
+  purchasedAt: Date;
+}

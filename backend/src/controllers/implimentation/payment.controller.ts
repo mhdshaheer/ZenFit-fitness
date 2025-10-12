@@ -3,7 +3,7 @@ import { IPaymentController } from "../interface/payment.controller.interface";
 import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IPaymentService } from "../../services/interface/payment.service.interface";
-import { PaymentHistoryDto } from "../../dtos/payment.dtos";
+import { PaymentHistoryDto, PurchasedProgram } from "../../dtos/payment.dtos";
 import { HttpStatus } from "../../const/statuscode.const";
 
 export class PaymentController implements IPaymentController {
@@ -42,5 +42,15 @@ export class PaymentController implements IPaymentController {
   ): Promise<Response<PaymentHistoryDto[]>> {
     const response = await this.paymentService.getPayments();
     return res.status(HttpStatus.OK).json(response);
+  }
+  async getPurchasedProgram(
+    req: Request,
+    res: Response
+  ): Promise<Response<PurchasedProgram[]>> {
+    const userId = (req as any).user.id;
+    const purchasedPrograms = await this.paymentService.getPurchasedProgram(
+      userId
+    );
+    return res.status(HttpStatus.OK).json(purchasedPrograms);
   }
 }

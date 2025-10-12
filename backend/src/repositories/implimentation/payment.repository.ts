@@ -1,3 +1,5 @@
+import mongoose from "mongoose";
+import { PurchasedProgram } from "../../dtos/payment.dtos";
 import { IPayment, PaymentModel } from "../../models/payment.model";
 import { BaseRepository } from "../base.repository";
 import { IPaymentRepository } from "../interface/payment.repostitory.interface";
@@ -24,5 +26,39 @@ export class PaymentRepository
   }
   async getPayments(): Promise<IPayment[]> {
     return this.model.find();
+  }
+  async findPurchasedProgram(userId: string): Promise<PurchasedProgram[]> {
+    return await this.model.aggregate([
+      {
+        $match: {
+          userId: new mongoose.Types.ObjectId(userId),
+          paymentStatus: "success",
+        },
+      },
+      {
+        $lookup: {
+          from: "programs",
+          localField: "programId",
+          foreignField: "_id",
+          as: "programDetails",
+        },
+      },
+      { $unwind: "$programDetails" },
+      {
+        $project: {
+          _id: 0,
+          programId: "$programDetails._id",
+          title: "$programDetails.title",
+          category: "$programDetails.category",
+          duration: "$programDetails.duration",
+          difficultyLevel: "$programDetails.difficultyLevel",
+          description: "$programDetails.description",
+          trainerId: "$programDetails.trainerId",
+          amountPaid: "$amount",
+          paymentMethod: 1,
+          purchasedAt: "$createdAt",
+        },
+      },
+    ]);
   }
 }
