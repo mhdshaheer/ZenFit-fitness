@@ -16,4 +16,8 @@ export interface IPaymentController {
     req: Request,
     res: Response
   ): Promise<Response<PurchasedProgram[]>>;
+  getEntrolledUsers(
+    req: Request,
+    res: Response
+  ): Promise<Response<{ count: number }>>;
 }

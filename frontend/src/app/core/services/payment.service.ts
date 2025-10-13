@@ -28,4 +28,9 @@ export class PaymentService {
   getPurchasedPrograms(): Observable<PurchasedProgram[]> {
     return this.http.get<PurchasedProgram[]>(`${this.api}/purchased`);
   }
+  getEntrolledUsers(programId: string): Observable<{ count: number }> {
+    return this.http.get<{ count: number }>(
+      `${this.api}/entrolled/${programId}`
+    );
+  }
 }

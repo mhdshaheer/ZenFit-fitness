@@ -16,4 +16,5 @@ export interface IPaymentService {
   getTrainerPayments(trainerId: string): Promise<PaymentHistoryDto[]>;
   getPayments(): Promise<PaymentHistoryDto[]>;
   getPurchasedProgram(userId: string): Promise<PurchasedProgram[]>;
+  getEntrolledUsers(programId: string): Promise<number>;
 }

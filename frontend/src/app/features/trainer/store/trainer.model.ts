@@ -3,6 +3,7 @@ import { ITimeSlot } from '../components/slot-create/slot-create.component';
 export interface Program {
   programId: string;
   _id: string;
+  id?: string;
   title: string;
   description: string;
   category: string;

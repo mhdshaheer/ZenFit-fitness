@@ -5,6 +5,7 @@ import { TYPES } from "../../shared/types/inversify.types";
 import { IPaymentService } from "../../services/interface/payment.service.interface";
 import { PaymentHistoryDto, PurchasedProgram } from "../../dtos/payment.dtos";
 import { HttpStatus } from "../../const/statuscode.const";
+import { AppError } from "../../shared/utils/appError.util";
 
 export class PaymentController implements IPaymentController {
   constructor(
@@ -52,5 +53,18 @@ export class PaymentController implements IPaymentController {
       userId
     );
     return res.status(HttpStatus.OK).json(purchasedPrograms);
+  }
+  async getEntrolledUsers(
+    req: Request,
+    res: Response
+  ): Promise<Response<{ count: number }>> {
+    const { programId } = req.params;
+    if (!programId) {
+      throw new AppError("Program ID is missing", HttpStatus.BAD_REQUEST);
+    }
+    const entrolledUsers = await this.paymentService.getEntrolledUsers(
+      programId
+    );
+    return res.status(HttpStatus.OK).json({ count: entrolledUsers });
   }
 }

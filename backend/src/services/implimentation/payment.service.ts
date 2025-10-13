@@ -179,4 +179,9 @@ export class PaymentService implements IPaymentService {
     const programs = await this.paymentRepository.findPurchasedProgram(userId);
     return programs;
   }
+
+  async getEntrolledUsers(programId: string): Promise<number> {
+    const count = await this.paymentRepository.getEntrolledUsers(programId);
+    return count;
+  }
 }

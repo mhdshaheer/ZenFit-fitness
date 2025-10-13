@@ -20,5 +20,8 @@ paymentRouter.get("/", authMiddleware, (req, res, next) => {
 paymentRouter.get("/purchased/", authMiddleware, (req, res, next) => {
   controller.getPurchasedProgram(req, res).catch(next);
 });
+paymentRouter.get("/entrolled/:programId", authMiddleware, (req, res, next) => {
+  controller.getEntrolledUsers(req, res).catch(next);
+});
 
 export default paymentRouter;

@@ -61,4 +61,11 @@ export class PaymentRepository
       },
     ]);
   }
+  async getEntrolledUsers(programId: string): Promise<number> {
+    let count = await this.model.countDocuments({
+      programId: new mongoose.Types.ObjectId(programId),
+      paymentStatus: "success",
+    });
+    return count;
+  }
 }

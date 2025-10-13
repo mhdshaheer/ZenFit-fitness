@@ -10,4 +10,5 @@ export interface IPaymentRepository {
   getProgramsByTrainerId(trainerId: string): Promise<IPayment[]>;
   getPayments(): Promise<IPayment[]>;
   findPurchasedProgram(userId: string): Promise<PurchasedProgram[]>;
+  getEntrolledUsers(programId: string): Promise<number>;
 }
