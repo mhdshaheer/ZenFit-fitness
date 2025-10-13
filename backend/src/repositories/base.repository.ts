@@ -39,4 +39,7 @@ export abstract class BaseRepository<T> {
       name: { $regex: new RegExp(`^${name}$`, "i") },
     });
   }
+  async find(): Promise<T[]> {
+    return await this.model.find();
+  }
 }

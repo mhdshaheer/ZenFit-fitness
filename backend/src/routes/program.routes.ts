@@ -12,6 +12,9 @@ const programController = container.get<IProgramController>(
 programRouter.use(authMiddleware);
 
 programRouter.post("/", programController.saveProgram.bind(programController));
+programRouter.get("/", (req, res, next) => {
+  programController.getAllPrograms(req, res).catch(next);
+});
 programRouter.post(
   "/draft",
   programController.saveProgramDraft.bind(programController)

@@ -112,7 +112,7 @@ export class CategoryListComponent implements OnInit {
       condition: (row) => row.isBlocked == false,
     },
     {
-      label: 'Ubblock',
+      label: 'Unblock',
       icon: 'unlock',
       color: 'green',
       action: 'unblock',

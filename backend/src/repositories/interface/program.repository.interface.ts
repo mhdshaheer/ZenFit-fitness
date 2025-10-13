@@ -6,7 +6,7 @@ export interface IProgramRepository {
     condition: Partial<IProgram>,
     program: Partial<IProgram>
   ): Promise<IProgram | null>;
-
+  getAllPrograms():Promise<IProgram[]>
   getPrograms(id: string): Promise<IProgram[]>;
   getProgramsFilter(condition: FilterQuery<IProgram>): Promise<IProgram[]>;
   findProgramById(programId: string): Promise<IProgram | null>;

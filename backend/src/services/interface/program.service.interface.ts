@@ -3,6 +3,7 @@ import { IProgram } from "../../models/program.model";
 
 export interface IProgramService {
   saveProgramDraft(data: IProgram): Promise<IProgram | null>;
+  getAllPrograms(): Promise<ProgramDto[]>;
   getPrograms(id: string): Promise<ProgramDto[]>;
   getProgramsCategories(id: string): Promise<ProgramSlotDto[]>;
   getProgramsByParentId(id: string): Promise<ProgramDto[]>;

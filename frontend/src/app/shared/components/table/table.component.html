@@ -3,7 +3,7 @@
   <div class="px-6 py-4 border-b border-gray-200 bg-gray-50">
     <div
       class="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0"
-      >
+    >
       <div>
         <h3 class="text-lg font-medium text-gray-900">{{ title }}</h3>
         <p class="text-sm text-gray-500">{{ subtitle }}</p>
@@ -11,18 +11,18 @@
 
       <div
         class="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-3"
-        >
+      >
         <!-- Search -->
         <div class="relative">
           <div
             class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-            >
+          >
             <svg
               class="h-5 w-5 text-gray-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
-              >
+            >
               <path
                 stroke-linecap="round"
                 stroke-linejoin="round"
@@ -37,236 +37,243 @@
             (input)="onSearch($event)"
             placeholder="Search..."
             class="block w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md leading-5 bg-white placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:ring-1 focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-            />
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Table -->
-    <div class="overflow-x-auto">
-      <table class="min-w-full divide-y divide-gray-200">
-        <thead class="bg-gray-50">
-          <tr>
-            @for (column of columns; track column) {
-              <th
-                [style.width]="column.width"
-                class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
-                (click)="column.sortable ? onSort(column.key) : null"
-                >
-                <div class="flex items-center space-x-1">
-                  <span>{{ column.label }}</span>
-                  @if (column.sortable) {
-                    <div class="flex flex-col">
-                      <svg
-                        class="w-3 h-3"
-                  [class.text-blue-600]="
-                    sortColumn === column.key && sortDirection === 'asc'
-                  "
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        >
-                        <path
-                          d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
-                        ></path>
-                      </svg>
-                      <svg
-                        class="w-3 h-3 -mt-1"
-                  [class.text-blue-600]="
-                    sortColumn === column.key && sortDirection === 'desc'
-                  "
-                        fill="currentColor"
-                        viewBox="0 0 20 20"
-                        >
-                        <path
-                          d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                        ></path>
-                      </svg>
-                    </div>
-                  }
-                </div>
-              </th>
-            }
-            <th
-              class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
-              >
-              Actions
-            </th>
-          </tr>
-        </thead>
-        <tbody class="bg-white divide-y divide-gray-200">
-          @for (row of data; track row; let i = $index) {
-            <tr class="hover:bg-gray-50">
-              @for (column of columns; track column) {
-                <td
-                  class="px-6 py-4 whitespace-nowrap text-sm"
-                  [ngClass]="getCellClass(column.type)"
-                  >
-                  <div>
-                    @switch (column.type) {
-                      <!-- Avatar -->
-                      @case ('avatar') {
-                        <div class="flex items-center">
-                          <div class="flex-shrink-0 h-10 w-10">
-                            @if (row[column.key]) {
-                              <img
-                                [src]="row[column.key]"
-                                [alt]="row.name || row.firstName + ' ' + row.lastName"
-                                class="h-10 w-10 rounded-full object-cover"
-                                />
-                            } @else {
-                              <div
-                                class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center"
-                                >
-                                <svg
-                                  class="h-6 w-6 text-gray-600"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                  >
-                                  <path
-                                    stroke-linecap="round"
-                                    stroke-linejoin="round"
-                                    stroke-width="2"
-                                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                  ></path>
-                                </svg>
-                              </div>
-                            }
-                          </div>
-                          <div class="ml-4">
-                            <div class="text-sm font-medium text-gray-900">
-                              {{ row.name || row.firstName + " " + row.lastName }}
-                            </div>
-                            <div class="text-sm text-gray-500">{{ row.email }}</div>
-                          </div>
-                        </div>
-                      }
-                      <!-- Status -->
-                      @case ('status') {
-                        <span
-                          class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
-                          [ngClass]="getStatusClass(row[column.key])"
-                          >
-                          {{ row[column.key] }}
-                        </span>
-                      }
-                      <!-- Date -->
-                      @case ('date') {
-                        <span>
-                          {{ formatDate(row[column.key]) }}
-                        </span>
-                      }
-                      <!-- Email -->
-                      @case ('email') {
-                        <a
-                          [href]="'mailto:' + row[column.key]"
-                          class="text-blue-600 hover:text-blue-900"
-                          >
-                          {{ row[column.key] }}
-                        </a>
-                      }
-                      <!-- Default Text -->
-                      @default {
-                        <span>{{ row[column.key] }}</span>
-                      }
-                    }
-                  </div>
-                </td>
-              }
-              <!-- Actions -->
-              <td
-                class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
-                >
-                <div class="flex items-center justify-end space-x-2">
-                  @for (action of getAvailableActions(row); track action) {
-                    <button
-                      (click)="onAction(action.action, row, i)"
-                      [title]="action.label"
-                      class="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
-                      [ngClass]="getActionClass(action.color)"
-                      >
-                      <svg
-                        class="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        >
-                        <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          [attr.d]="getActionIcon(action.icon)"
-                        ></path>
-                      </svg>
-                    </button>
-                  }
-                </div>
-              </td>
-            </tr>
-          }
-
-          <!-- Empty State -->
-          @if (data.length === 0) {
-            <tr>
-              <td
-                [attr.colspan]="columns.length + 1"
-                class="px-6 py-12 text-center text-sm text-gray-500"
-                >
-                <div class="flex flex-col items-center">
-                  <svg
-                    class="h-12 w-12 text-gray-400 mb-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
-                    ></path>
-                  </svg>
-                  <p>No {{ entityName.toLowerCase() }}s found</p>
-                  <p class="text-xs text-gray-400 mt-1">
-                    Try adjusting your search criteria
-                  </p>
-                </div>
-              </td>
-            </tr>
-          }
-        </tbody>
-      </table>
-    </div>
-
-    <!-- Pagination -->
-
-    <div class="px-6 py-3 border-t border-gray-200 bg-gray-50">
-      <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-700">
-          <!-- ✅ Pagination Summary -->
-          Showing {{ startIndex + 1 }} to {{ Math.min(startIndex + pageSize) }} of
-          {{ totalItems }} results
-        </div>
-        <div class="flex items-center space-x-2">
-          <button
-            (click)="previousPage()"
-            [disabled]="currentPage == 1"
-            class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-            Previous
-          </button>
-          <span class="text-sm text-gray-700">
-            Page {{ currentPage }} of {{ totalPages }}
-          </span>
-          <button
-            (click)="nextPage()"
-            [disabled]="currentPage == totalPages"
-            class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-            Next
-          </button>
+          />
         </div>
       </div>
     </div>
   </div>
+
+  <!-- Table -->
+  <div class="overflow-x-auto">
+    <table class="min-w-full divide-y divide-gray-200">
+      <thead class="bg-gray-50">
+        <tr>
+          @for (column of columns; track column) {
+          <th
+            [style.width]="column.width"
+            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
+            (click)="column.sortable ? onSort(column.key) : null"
+          >
+            <div class="flex items-center space-x-1">
+              <span>{{ column.label }}</span>
+              @if (column.sortable) {
+              <div class="flex flex-col">
+                <svg
+                  class="w-3 h-3"
+                  [class.text-blue-600]="
+                    sortColumn === column.key && sortDirection === 'asc'
+                  "
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M14.707 12.707a1 1 0 01-1.414 0L10 9.414l-3.293 3.293a1 1 0 01-1.414-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 010 1.414z"
+                  ></path>
+                </svg>
+                <svg
+                  class="w-3 h-3 -mt-1"
+                  [class.text-blue-600]="
+                    sortColumn === column.key && sortDirection === 'desc'
+                  "
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+                  ></path>
+                </svg>
+              </div>
+              }
+            </div>
+          </th>
+          }
+          <th
+            class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider"
+          >
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        @for (row of data; track row; let i = $index) {
+        <tr class="hover:bg-gray-50">
+          @for (column of columns; track column) {
+          <td
+            class="px-6 py-4 whitespace-nowrap text-sm"
+            [ngClass]="getCellClass(column.type)"
+          >
+            <div>
+              @switch (column.type) {
+              <!-- Avatar -->
+              @case ('avatar') {
+              <div class="flex items-center">
+                <div class="flex-shrink-0 h-10 w-10">
+                  @if (row[column.key]) {
+                  <img
+                    [src]="row[column.key]"
+                    [alt]="row.name || row.firstName + ' ' + row.lastName"
+                    class="h-10 w-10 rounded-full object-cover"
+                  />
+                  } @else {
+                  <div
+                    class="h-10 w-10 rounded-full bg-gray-300 flex items-center justify-center"
+                  >
+                    <svg
+                      class="h-6 w-6 text-gray-600"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                      ></path>
+                    </svg>
+                  </div>
+                  }
+                </div>
+                <div class="ml-4">
+                  <div class="text-sm font-medium text-gray-900">
+                    {{ row.name || row.firstName + " " + row.lastName }}
+                  </div>
+                  <div class="text-sm text-gray-500">{{ row.email }}</div>
+                </div>
+              </div>
+              }
+              <!-- Status -->
+              @case ('status') {
+              <span
+                class="inline-flex px-2 py-1 text-xs font-semibold rounded-full"
+                [ngClass]="getStatusClass(row[column.key])"
+              >
+                {{ row[column.key] }}
+              </span>
+              }
+              <!-- Date -->
+              @case ('date') {
+              <span>
+                {{ formatDate(row[column.key]) }}
+              </span>
+              }
+              <!-- Email -->
+              @case ('email') {
+              <a
+                [href]="'mailto:' + row[column.key]"
+                class="text-blue-600 hover:text-blue-900"
+              >
+                {{ row[column.key] }}
+              </a>
+              } @case('approval') {
+
+              <span
+                class="inline-flex bg-gray-100 items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                [class]="row.approvalStatus | approvalStatusColor"
+              >
+                {{ row.approvalStatus }}
+              </span>
+              }
+              <!-- Default Text -->
+              @default {
+              <span>{{ row[column.key] }}</span>
+              } }
+            </div>
+          </td>
+          }
+          <!-- Actions -->
+          <td
+            class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium"
+          >
+            <div class="flex items-center justify-end space-x-2">
+              @for (action of getAvailableActions(row); track action) {
+              <button
+                (click)="onAction(action.action, row, i)"
+                [title]="action.label"
+                class="inline-flex items-center p-2 border border-transparent rounded-full shadow-sm text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition-colors duration-200"
+                [ngClass]="getActionClass(action.color)"
+              >
+                <svg
+                  class="h-4 w-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    [attr.d]="getActionIcon(action.icon)"
+                  ></path>
+                </svg>
+              </button>
+              }
+            </div>
+          </td>
+        </tr>
+        }
+
+        <!-- Empty State -->
+        @if (data.length === 0) {
+        <tr>
+          <td
+            [attr.colspan]="columns.length + 1"
+            class="px-6 py-12 text-center text-sm text-gray-500"
+          >
+            <div class="flex flex-col items-center">
+              <svg
+                class="h-12 w-12 text-gray-400 mb-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"
+                ></path>
+              </svg>
+              <p>No {{ entityName.toLowerCase() }}s found</p>
+              <p class="text-xs text-gray-400 mt-1">
+                Try adjusting your search criteria
+              </p>
+            </div>
+          </td>
+        </tr>
+        }
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+
+  <div class="px-6 py-3 border-t border-gray-200 bg-gray-50">
+    <div class="flex items-center justify-between">
+      <div class="text-sm text-gray-700">
+        <!-- ✅ Pagination Summary -->
+        Showing {{ startIndex + 1 }} to {{ Math.min(startIndex + pageSize) }} of
+        {{ totalItems }} results
+      </div>
+      <div class="flex items-center space-x-2">
+        <button
+          (click)="previousPage()"
+          [disabled]="currentPage == 1"
+          class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Previous
+        </button>
+        <span class="text-sm text-gray-700">
+          Page {{ currentPage }} of {{ totalPages }}
+        </span>
+        <button
+          (click)="nextPage()"
+          [disabled]="currentPage == totalPages"
+          class="px-3 py-1 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+        >
+          Next
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

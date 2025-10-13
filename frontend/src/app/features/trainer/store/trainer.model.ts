@@ -12,6 +12,8 @@ export interface Program {
   duration: string;
   trainerId: string;
   status: 'active' | 'inactive' | 'draft';
+  createdAt?: string;
+  approvalStatus?: 'Pending' | 'Approved' | 'Rejected' | undefined;
 }
 export interface ProgramCategory {
   _id: string;

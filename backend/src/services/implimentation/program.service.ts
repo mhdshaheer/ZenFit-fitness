@@ -29,6 +29,12 @@ export class ProgramService implements IProgramService {
     );
     return savedData;
   }
+
+  async getAllPrograms(): Promise<ProgramDto[]> {
+    const programs = await this.programRepository.getAllPrograms();
+    const mappedPrograms = programs.map(mapToProgramDto);
+    return mappedPrograms;
+  }
   async getPrograms(id: string): Promise<ProgramDto[]> {
     const result = await this.programRepository.getPrograms(id);
     const mappedResult = result.map(mapToProgramDto);

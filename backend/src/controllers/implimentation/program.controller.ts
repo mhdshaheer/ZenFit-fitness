@@ -17,12 +17,17 @@ export class ProgramController implements IProgramController {
     const data = req.body;
     const userId = (req as any)?.user?.id;
 
-    if (!data) throw new AppError("Program data is required", HttpStatus.BAD_REQUEST);
+    if (!data)
+      throw new AppError("Program data is required", HttpStatus.BAD_REQUEST);
 
     data.trainerId = userId;
     const draft = await this.programService.saveProgramDraft(data);
 
-    if (!draft) throw new AppError("Failed to save draft", HttpStatus.INTERNAL_SERVER_ERROR);
+    if (!draft)
+      throw new AppError(
+        "Failed to save draft",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
 
     res.status(HttpStatus.OK).json({
       message: "Program draft is saved successfully",
@@ -33,13 +38,17 @@ export class ProgramController implements IProgramController {
     const data = req.body;
     const userId = (req as any)?.user?.id;
 
-    if (!data) throw new AppError("Program data is required", HttpStatus.BAD_REQUEST);
+    if (!data)
+      throw new AppError("Program data is required", HttpStatus.BAD_REQUEST);
 
     data.trainerId = userId;
     const program = await this.programService.saveProgramDraft(data);
 
     if (!program)
-      throw new AppError("Failed to save Training Program", HttpStatus.INTERNAL_SERVER_ERROR);
+      throw new AppError(
+        "Failed to save Training Program",
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
 
     res.status(HttpStatus.OK).json({
       message: "Training Program is saved successfully",
@@ -59,9 +68,16 @@ export class ProgramController implements IProgramController {
 
     res.status(HttpStatus.OK).json({ programs });
   }
+  async getAllPrograms(
+    req: Request,
+    res: Response
+  ): Promise<Response<ProgramDto[]>> {
+    const programs = await this.programService.getAllPrograms();
+    return res.status(HttpStatus.OK).json(programs);
+  }
 
   async getProgramsByParantId(req: Request, res: Response): Promise<void> {
-     const id = req.params.id;
+    const id = req.params.id;
     const programs = await this.programService.getProgramsByParentId(id);
 
     res.status(HttpStatus.OK).json({ programs });
@@ -92,9 +108,11 @@ export class ProgramController implements IProgramController {
       trainerId,
     });
 
-    if (!response) throw new AppError("Program updation failed", HttpStatus.NOT_FOUND);
+    if (!response)
+      throw new AppError("Program updation failed", HttpStatus.NOT_FOUND);
 
-    return res.status(HttpStatus.OK).json({ message: "Program updated successfully" });
-  
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: "Program updated successfully" });
   }
 }

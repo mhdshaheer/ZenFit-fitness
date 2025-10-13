@@ -7,6 +7,7 @@ export interface IProgramController {
   getPrograms(req: Request, res: Response): Promise<void>;
   getProgramsCategories(req: Request, res: Response): Promise<void>;
   getProgramsByParantId(req: Request, res: Response): Promise<void>;
+  getAllPrograms(req: Request, res: Response): Promise<Response<ProgramDto[]>>;
   findProgram(req: Request, res: Response): Promise<Response<ProgramDto>>;
   updateProgram(
     req: Request,

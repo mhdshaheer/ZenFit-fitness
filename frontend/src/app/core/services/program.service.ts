@@ -21,6 +21,9 @@ export class ProgramService {
   saveProgram(data: Program) {
     return this.http.post<{ message: string }>(`${this.apiUrl}/program`, data);
   }
+  getAllPrograms(): Observable<Program[]> {
+    return this.http.get<Program[]>(`${this.apiUrl}/program`);
+  }
 
   getPrograms() {
     return this.http.get<{ programs: Program[] }>(`${this.apiUrl}/program`);
