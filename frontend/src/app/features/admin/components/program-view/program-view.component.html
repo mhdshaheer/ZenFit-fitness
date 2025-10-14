@@ -154,6 +154,8 @@
 
       <!-- Action Buttons -->
       <div class="flex justify-end mt-4 space-x-2">
+        @if(program.approvalStatus=='Pending'){
+
         <button
           (click)="approveProgram()"
           class="bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-md transition-colors duration-200 flex items-center justify-center gap-1 text-xs sm:text-sm md:text-base"
@@ -193,6 +195,19 @@
           </svg>
           Reject
         </button>
+        }@else if (program.approvalStatus=="Approved") {
+        <span
+          class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-green-100 text-green-700 border border-green-300"
+        >
+          Approved
+        </span>
+        }@else if(program.approvalStatus=="Rejected") {
+        <span
+          class="inline-flex items-center px-3 py-1 text-sm font-medium rounded-full bg-red-100 text-red-700 border border-red-300"
+        >
+          Rejected
+        </span>
+        }
       </div>
     </div>
   </div>

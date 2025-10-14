@@ -5,6 +5,9 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { ActivatedRoute } from '@angular/router';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { Subject, takeUntil } from 'rxjs';
+import { ToastService } from '../../../../core/services/toast.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 interface Program {
   programName: string;
@@ -14,6 +17,7 @@ interface Program {
   createdDate: string;
   difficultyLevel: string;
   duration: string;
+  approvalStatus?: 'Pending' | 'Approved' | 'Rejected';
 }
 
 interface Trainer {
@@ -32,6 +36,8 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   private _programService = inject(ProgramService);
   private _profileService = inject(ProfileService);
   private _logger = inject(LoggerService);
+  private _dialog = inject(MatDialog);
+  private _toastService = inject(ToastService);
   private _activatedRoute = inject(ActivatedRoute);
   private _destroy$ = new Subject<void>();
 
@@ -71,6 +77,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
             duration: res.duration,
             price: res.price,
             createdDate: res.createdAt!,
+            approvalStatus: res.approvalStatus,
           };
           this.trainerId = res.trainerId;
           this.getTrainer(this.trainerId);
@@ -101,21 +108,69 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   }
 
   getProfileImage(profileUrl: string, trainerId: string) {
-    this._profileService.getFile(profileUrl, trainerId).subscribe({
-      next: (res) => {
-        this.trainer.avatar = res.url;
-      },
-    });
+    // setTimeout(() => {
+    //   this._profileService.getFile(profileUrl, trainerId).subscribe({
+    //     next: (res) => {
+    //       this.trainer.avatar = res.url;
+    //     },
+    //   });
+    // }, 2000);
   }
 
   approveProgram(): void {
-    console.log('Program approved:', this.program);
-    alert(`Program "${this.program.programName}" has been approved!`);
+    const dialogRef = this._dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        title: 'Approve',
+        message: `Are you sure you want to approve this program?`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this._programService
+          .updateApprovalStatus(this.programId, 'Approved')
+          .subscribe({
+            next: (res) => {
+              this._logger.info('Program Approved');
+              this.program.approvalStatus = res.approvalStatus;
+              this._toastService.success('Program Approved');
+            },
+            error: (err) => {
+              this._logger.error('Failed to update approval status', err);
+              this._toastService.error('Failed to Approved Program');
+            },
+          });
+      }
+    });
   }
 
   rejectProgram(): void {
-    console.log('Program rejected:', this.program);
-    alert(`Program "${this.program.programName}" has been rejected.`);
+    const dialogRef = this._dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        title: 'Reject',
+        message: `Are you sure you want to reject this program?`,
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        this._programService
+          .updateApprovalStatus(this.programId, 'Rejected')
+          .subscribe({
+            next: (res) => {
+              this._logger.info('Program rejected');
+              this.program.approvalStatus = res.approvalStatus;
+              this._toastService.success('Program Rejected');
+            },
+            error: (err) => {
+              this._logger.error('Failed to update approval status', err);
+              this._toastService.error('Failed to Reject Program');
+            },
+          });
+      }
+    });
   }
 
   ngOnDestroy() {

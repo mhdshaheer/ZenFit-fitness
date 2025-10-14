@@ -2,6 +2,8 @@ import { FilterQuery } from "mongoose";
 import { IProgram, ProgramModel } from "../../models/program.model";
 import { BaseRepository } from "../base.repository";
 import { IProgramRepository } from "../interface/program.repository.interface";
+import app from "../../app";
+import { IApprovalStatus } from "../../interfaces/program.interface";
 
 export class ProgramRepositoy
   extends BaseRepository<IProgram>
@@ -36,5 +38,12 @@ export class ProgramRepositoy
     program: Partial<IProgram>
   ): Promise<IProgram | null> {
     return this.update(programId, program);
+  }
+
+  async updateApprovalStatus(
+    programId: string,
+    approvalStatus: IApprovalStatus
+  ): Promise<IProgram | null> {
+    return this.update(programId, { approvalStatus: approvalStatus });
   }
 }

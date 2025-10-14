@@ -115,4 +115,17 @@ export class ProgramController implements IProgramController {
       .status(HttpStatus.OK)
       .json({ message: "Program updated successfully" });
   }
+
+  async updateApprovalStatus(
+    req: Request,
+    res: Response
+  ): Promise<Response<ProgramDto>> {
+    const { programId } = req.params;
+    const approvalStatus = req.body.approvalStatus;
+    const program = await this.programService.updateApprovalStatus(
+      programId,
+      approvalStatus
+    );
+    return res.status(HttpStatus.OK).json(program);
+  }
 }

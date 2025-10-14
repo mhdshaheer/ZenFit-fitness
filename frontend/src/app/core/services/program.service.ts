@@ -51,4 +51,14 @@ export class ProgramService {
       program
     );
   }
+
+  updateApprovalStatus(
+    programId: string,
+    approvalStatus: string
+  ): Observable<Program> {
+    return this.http.put<Program>(
+      `${this.apiUrl}/program/approvalStatus/${programId}`,
+      { approvalStatus }
+    );
+  }
 }

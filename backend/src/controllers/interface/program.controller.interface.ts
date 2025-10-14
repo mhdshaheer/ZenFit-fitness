@@ -13,4 +13,9 @@ export interface IProgramController {
     req: Request,
     res: Response
   ): Promise<Response<{ message: string }>>;
+
+  updateApprovalStatus(
+    req: Request,
+    res: Response
+  ): Promise<Response<ProgramDto>>;
 }

@@ -10,6 +10,9 @@ import { IProgramService } from "../interface/program.service.interface";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ICategoryRepository } from "../../repositories/interface/category.repository.interface";
 import logger from "../../shared/services/logger.service";
+import { IApprovalStatus } from "../../interfaces/program.interface";
+import { AppError } from "../../shared/utils/appError.util";
+import { HttpStatus } from "../../const/statuscode.const";
 
 export class ProgramService implements IProgramService {
   constructor(
@@ -96,5 +99,20 @@ export class ProgramService implements IProgramService {
       logger.error("Error in program updation", error);
       throw new Error("Failed to update program");
     }
+  }
+
+  async updateApprovalStatus(
+    programId: string,
+    approvalStatus: IApprovalStatus
+  ): Promise<ProgramDto> {
+    const program = await this.programRepository.updateApprovalStatus(
+      programId,
+      approvalStatus
+    );
+    if (!program) {
+      throw new AppError("Program is not updated", HttpStatus.NOT_FOUND);
+    }
+    const mappedProgram = mapToProgramDto(program);
+    return mappedProgram;
   }
 }

@@ -15,6 +15,9 @@ programRouter.post("/", programController.saveProgram.bind(programController));
 programRouter.get("/", (req, res, next) => {
   programController.getAllPrograms(req, res).catch(next);
 });
+programRouter.put("/approvalStatus/:programId", (req, res, next) => {
+  programController.updateApprovalStatus(req, res).catch(next);
+});
 programRouter.post(
   "/draft",
   programController.saveProgramDraft.bind(programController)
