@@ -41,4 +41,10 @@ export class PaymentService {
   getTopPrograms(): Observable<ITopPrograms[]> {
     return this.http.get<ITopPrograms[]>(`${this.api}/top-programs`);
   }
+  getTopCategoriesByTrainer(): Observable<ITopCategory[]> {
+    return this.http.get<ITopCategory[]>(`${this.api}/top-categories/trainer`);
+  }
+  getTopProgramsByTrainer(): Observable<ITopPrograms[]> {
+    return this.http.get<ITopPrograms[]>(`${this.api}/top-programs/trainer`);
+  }
 }

@@ -21,7 +21,6 @@ export class UserRepository
     return await this.model.find();
   }
   async findById(id: string): Promise<IUser | null> {
-    console.log("Reached on profile rep", id);
     if (!mongoose.isValidObjectId(id)) {
       throw new Error(`Invalid ObjectId: ${id}`);
     }

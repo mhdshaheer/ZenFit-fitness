@@ -86,4 +86,24 @@ export class PaymentController implements IPaymentController {
     const programs = await this.paymentService.getTopSellingPrograms();
     return res.status(HttpStatus.OK).json(programs);
   }
+  async getTopSellingCategoriesByTrainer(
+    req: Request,
+    res: Response
+  ): Promise<Response<ITopSellingCategory[]>> {
+    const trainerId = (req as any).user.id;
+    const categoies = await this.paymentService.getTopSellingCategoryByTrainer(
+      trainerId
+    );
+    return res.status(HttpStatus.OK).json(categoies);
+  }
+  async getTopSellingProgramsByTrainer(
+    req: Request,
+    res: Response
+  ): Promise<Response<ITopSellingPrograms[]>> {
+    const trainerId = (req as any).user.id;
+    const programs = await this.paymentService.getTopSellingProgramsByTrainer(
+      trainerId
+    );
+    return res.status(HttpStatus.OK).json(programs);
+  }
 }

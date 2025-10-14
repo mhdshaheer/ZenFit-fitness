@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Types } from "mongoose";
 import {
   ITopSellingCategory,
   ITopSellingPrograms,
@@ -109,6 +109,74 @@ export class PaymentRepository
   async getTopSellingPrograms(limit: number): Promise<ITopSellingPrograms[]> {
     return this.model.aggregate([
       { $match: { paymentStatus: "success" } },
+      {
+        $lookup: {
+          from: "programs",
+          localField: "programId",
+          foreignField: "_id",
+          as: "program",
+        },
+      },
+      { $unwind: "$program" },
+      {
+        $group: {
+          _id: "$program._id",
+          courseName: { $first: "$program.title" },
+          totalPurchases: { $sum: 1 },
+          totalRevenue: { $sum: "$amount" },
+        },
+      },
+      { $sort: { totalPurchases: -1 } },
+      { $limit: limit },
+    ]);
+  }
+  async getTopSellingCategoryByTrainer(
+    trainerId: string,
+    limit: number
+  ): Promise<ITopSellingCategory[]> {
+    return this.model.aggregate([
+      { $match: { trainerId: new Types.ObjectId(trainerId) } },
+      {
+        $lookup: {
+          from: "programs",
+          localField: "programId",
+          foreignField: "_id",
+          as: "program",
+        },
+      },
+      { $unwind: "$program" },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "program.category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+      {
+        $group: {
+          _id: "$category._id",
+          categoryName: { $first: "$category.name" },
+          totalPurchases: { $sum: 1 },
+          totalRevenue: { $sum: "$amount" },
+        },
+      },
+      { $sort: { totalPurchases: -1 } },
+      { $limit: limit },
+    ]);
+  }
+  async getTopSellingProgramsByTrainer(
+    trainerId: string,
+    limit: number
+  ): Promise<ITopSellingPrograms[]> {
+    return this.model.aggregate([
+      {
+        $match: {
+          trainerId: new Types.ObjectId(trainerId),
+          paymentStatus: "success",
+        },
+      },
       {
         $lookup: {
           from: "programs",

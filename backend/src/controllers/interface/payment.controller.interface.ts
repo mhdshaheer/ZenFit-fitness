@@ -33,4 +33,12 @@ export interface IPaymentController {
     req: Request,
     res: Response
   ): Promise<Response<ITopSellingPrograms[]>>;
+  getTopSellingCategoriesByTrainer(
+    req: Request,
+    res: Response
+  ): Promise<Response<ITopSellingCategory[]>>;
+  getTopSellingProgramsByTrainer(
+    req: Request,
+    res: Response
+  ): Promise<Response<ITopSellingPrograms[]>>;
 }

@@ -24,4 +24,10 @@ export interface IPaymentService {
   getEntrolledUsers(programId: string): Promise<number>;
   getTopSellingCategory(): Promise<ITopSellingCategory[]>;
   getTopSellingPrograms(): Promise<ITopSellingPrograms[]>;
+  getTopSellingCategoryByTrainer(
+    trainerId: string
+  ): Promise<ITopSellingCategory[]>;
+  getTopSellingProgramsByTrainer(
+    trainerId: string
+  ): Promise<ITopSellingPrograms[]>;
 }

@@ -17,4 +17,12 @@ export interface IPaymentRepository {
   getEntrolledUsers(programId: string): Promise<number>;
   getTopSellingCategory(limit: number): Promise<ITopSellingCategory[]>;
   getTopSellingPrograms(limit: number): Promise<ITopSellingPrograms[]>;
+  getTopSellingCategoryByTrainer(
+    trainerId: string,
+    limit: number
+  ): Promise<ITopSellingCategory[]>;
+  getTopSellingProgramsByTrainer(
+    trainerId: string,
+    limit: number
+  ): Promise<ITopSellingPrograms[]>;
 }

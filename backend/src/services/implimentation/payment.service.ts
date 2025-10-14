@@ -200,4 +200,26 @@ export class PaymentService implements IPaymentService {
     const programs = await this.paymentRepository.getTopSellingPrograms(limit);
     return programs;
   }
+  async getTopSellingCategoryByTrainer(
+    trainerId: string
+  ): Promise<ITopSellingCategory[]> {
+    const limit = 5;
+    const categoies =
+      await this.paymentRepository.getTopSellingCategoryByTrainer(
+        trainerId,
+        limit
+      );
+    return categoies;
+  }
+  async getTopSellingProgramsByTrainer(
+    trainerId: string
+  ): Promise<ITopSellingPrograms[]> {
+    const limit = 5;
+    const programs =
+      await this.paymentRepository.getTopSellingProgramsByTrainer(
+        trainerId,
+        limit
+      );
+    return programs;
+  }
 }

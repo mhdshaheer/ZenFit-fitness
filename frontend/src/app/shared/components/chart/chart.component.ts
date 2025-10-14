@@ -21,9 +21,7 @@ export class ChartComponent {
   }
 
   getBarHeight(value: number): number {
-    console.log('Bar height is :', value);
     const maxRevenue = Math.max(...this.data.map((d) => d.revenue), 0);
-    console.log('calculated value : ', (value / maxRevenue) * 100);
     if (maxRevenue === 0) return 0;
     return (value / maxRevenue) * 100;
   }

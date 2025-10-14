@@ -19,11 +19,21 @@ paymentRouter.get("/", authMiddleware, (req, res, next) => {
 paymentRouter.get("/purchased/", authMiddleware, (req, res, next) => {
   controller.getPurchasedProgram(req, res).catch(next);
 });
-paymentRouter.get("/top-categories", (req, res, next) => {
+paymentRouter.get("/top-categories", authMiddleware, (req, res, next) => {
   controller.getTopSellingCategories(req, res).catch(next);
 });
-paymentRouter.get("/top-programs", (req, res, next) => {
+paymentRouter.get(
+  "/top-categories/trainer",
+  authMiddleware,
+  (req, res, next) => {
+    controller.getTopSellingCategoriesByTrainer(req, res).catch(next);
+  }
+);
+paymentRouter.get("/top-programs", authMiddleware, (req, res, next) => {
   controller.getTopSellingPrograms(req, res).catch(next);
+});
+paymentRouter.get("/top-programs/trainer", authMiddleware, (req, res, next) => {
+  controller.getTopSellingProgramsByTrainer(req, res).catch(next);
 });
 paymentRouter.get("/entrolled/:programId", authMiddleware, (req, res, next) => {
   controller.getEntrolledUsers(req, res).catch(next);
