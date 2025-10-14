@@ -6,6 +6,8 @@
   [columns]="programsColumn"
   [actions]="programAction"
   [customCell]="customCell"
+  [actions]="programAction"
+  (actionClicked)="onViewProgram($event)"
 >
   <ng-template #customCell let-row let-column="column">
     @if (column.key === 'approvalStatus') {

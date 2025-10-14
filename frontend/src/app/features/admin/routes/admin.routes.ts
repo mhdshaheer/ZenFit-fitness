@@ -71,6 +71,14 @@ export const ADMIN_ROUTES: Routes = [
           ).then((m) => m.AdminWalletComponent);
         },
       },
+      {
+        path: 'programs/:programId',
+        loadComponent: () => {
+          return import(
+            '../components/program-view/program-view.component'
+          ).then((m) => m.ProgramViewComponent);
+        },
+      },
     ],
   },
 ];

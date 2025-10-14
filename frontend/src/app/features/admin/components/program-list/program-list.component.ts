@@ -10,6 +10,8 @@ import { IProgramTable } from '../../../../interface/program.interface';
 import { Program } from '../../../trainer/store/trainer.model';
 import { ApprovalStatusColorPipe } from '../../../../shared/pipes/approval-status-color.pipe';
 import { NgClass } from '@angular/common';
+import { Router } from '@angular/router';
+import { ActionEvent } from '../user-manage/user-manage.component';
 
 @Component({
   selector: 'zenfit-program-list',
@@ -20,6 +22,7 @@ import { NgClass } from '@angular/common';
 export class ProgramListComponent implements OnInit {
   private _programService = inject(ProgramService);
   private _logger = inject(LoggerService);
+  private _router = inject(Router);
 
   programsColumn: TableColumn[] = [
     { key: 'name', label: 'Program Name', sortable: true, width: '200px' },
@@ -37,20 +40,15 @@ export class ProgramListComponent implements OnInit {
       sortable: true,
       width: '120px',
     },
-    { key: 'createdAt', label: 'Created At', type: 'date', sortable: true },
-  ];
-  programs: IProgramTable[] = [
     {
-      _id: '000',
-      description: 'dkflsd',
-      name: 'shaheer',
-      price: 900,
-      approvalStatus: 'Approved',
-      isBlocked: true,
-      status: 'active',
-      createdAt: '9/09/2025',
+      key: 'createdAt',
+      label: 'Created At',
+      type: 'date',
+      sortable: true,
+      width: '150px',
     },
   ];
+  programs: IProgramTable[] = [];
 
   programAction: TableAction[] = [
     { label: 'View', icon: 'view', color: 'blue', action: 'view' },
@@ -66,6 +64,7 @@ export class ProgramListComponent implements OnInit {
         this.programs = res.map((item) => {
           return {
             _id: item._id,
+            id: item.id,
             description: item.description,
             name: item.title,
             price: item.price,
@@ -80,5 +79,11 @@ export class ProgramListComponent implements OnInit {
         this._logger.error('Failed to fetch programs :', err);
       },
     });
+  }
+  onViewProgram(event: ActionEvent) {
+    if (event.action == 'view') {
+      this._logger.info('view action is clicked :', event.row.id);
+      this._router.navigate(['admin/programs', event.row.id]);
+    }
   }
 }

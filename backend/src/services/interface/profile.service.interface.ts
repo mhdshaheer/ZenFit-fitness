@@ -2,12 +2,12 @@ import { UserDto } from "../../dtos/user.dtos";
 import { IPassword, IUser } from "../../interfaces/user.interface";
 
 export interface IProfileService {
-  getProfile(id: string): Promise<UserDto>;
-  updateProfile(id: string, data: IUser): Promise<UserDto>;
-  updateProfileImage(id: string, key: string): void;
-  removeProfileImage(id: string): void;
-  updateResumePdf(id: string, key: string): void;
-  removeResumePdf(id: string): void;
-  verifyResume(id: string): Promise<boolean>;
-  changePassword(id: string, passwords: IPassword): Promise<boolean>;
+  getProfile(userId: string): Promise<UserDto>;
+  updateProfile(userId: string, data: IUser): Promise<UserDto>;
+  updateProfileImage(userId: string, key: string): void;
+  removeProfileImage(userId: string): void;
+  updateResumePdf(userId: string, key: string): void;
+  removeResumePdf(userId: string): void;
+  verifyResume(userId: string): Promise<boolean>;
+  changePassword(userId: string, passwords: IPassword): Promise<boolean>;
 }

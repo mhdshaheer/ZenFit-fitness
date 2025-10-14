@@ -11,6 +11,7 @@ export interface ProgramDto {
   price: number;
   status: "active" | "inactive" | "draft";
   approvalStatus?: string;
+  trainerId?: string;
   programId?: string;
   createdAt?: string;
 }

@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { IUserResponse } from '../../interface/user.interface';
 
 @Injectable({
   providedIn: 'root',
@@ -42,6 +43,9 @@ export class ProfileService {
   }
 
   // Personal information
+  getUserById(userId: string): Observable<IUserResponse> {
+    return this.http.get<IUserResponse>(`${this.apiUrl}/user/${userId}`);
+  }
   getProfile(id = '') {
     return this.http.get<any>(`${this.apiUrl}/user/profile?id=${id}`);
   }

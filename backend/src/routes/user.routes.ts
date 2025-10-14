@@ -11,6 +11,10 @@ const profileController = container.get<IProfileController>(
 
 userRouter.use(authMiddleware);
 
+userRouter.get("/:userId", (req, res, next) => {
+  profileController.getUserByUserId(req, res).catch(next);
+});
+
 userRouter.get(
   "/profile",
   profileController.getProfile.bind(profileController)
