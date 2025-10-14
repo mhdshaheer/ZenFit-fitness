@@ -87,6 +87,10 @@
                   <p class="text-xs text-red-600">
                     Category name cannot exceed 50 characters
                   </p>
+                  } @if(editForm.get('name')?.errors?.['duplicate']){
+                  <p class="text-xs text-red-600">
+                    This category name already exists. Please choose another.
+                  </p>
                   }
                 </div>
                 } @if(editForm.get('name')?.valid ||
