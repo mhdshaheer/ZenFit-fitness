@@ -30,4 +30,8 @@ export interface IPaymentRepository {
     limit: number
   ): Promise<ITopSellingPrograms[]>;
   getRevenueByFilter(filter: IRevenueFilter): Promise<IRevenueData[]>;
+  getRevenueByFilterByTrainer(
+    trainerId: string,
+    filter: IRevenueFilter
+  ): Promise<IRevenueData[]>;
 }

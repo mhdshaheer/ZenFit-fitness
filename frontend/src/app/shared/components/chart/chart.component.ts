@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
+import {
+  IRevenueData,
+  IRevenueFilter,
+} from '../../../interface/payment.interface';
 
-interface RevenueData {
-  name: string;
-  revenue: number;
-}
 @Component({
   selector: 'zenfit-chart',
   imports: [CommonModule],
@@ -12,9 +12,9 @@ interface RevenueData {
   styleUrl: './chart.component.css',
 })
 export class ChartComponent {
-  @Input() data: RevenueData[] = [];
-  @Input() filter: 'weekly' | 'monthly' | 'yearly' = 'monthly';
-  @Output() filterChange = new EventEmitter<'weekly' | 'monthly' | 'yearly'>();
+  @Input() data: IRevenueData[] = [];
+  @Input() filter: IRevenueFilter = 'weekly';
+  @Output() filterChange = new EventEmitter<IRevenueFilter>();
 
   get maxRevenue(): number {
     return Math.max(...this.data.map((d) => d.revenue), 0);
@@ -24,10 +24,5 @@ export class ChartComponent {
     const maxRevenue = Math.max(...this.data.map((d) => d.revenue), 0);
     if (maxRevenue === 0) return 0;
     return (value / maxRevenue) * 100;
-  }
-
-  formatRevenue(revenue: number): string {
-    if (revenue >= 1000) return `$${(revenue / 1000).toFixed(0)}k`;
-    return `$${revenue}`;
   }
 }

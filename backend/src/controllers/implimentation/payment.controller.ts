@@ -122,4 +122,21 @@ export class PaymentController implements IPaymentController {
     );
     return res.status(HttpStatus.OK).json(filterData);
   }
+  async getRevenueChartByTrainer(
+    req: Request,
+    res: Response
+  ): Promise<Response<IRevenueData[]>> {
+    const trainerId = (req as any).user.id;
+    const { filter } = req.query;
+
+    const validFilters = ["weekly", "monthly", "yearly"];
+    const selectedFilter = validFilters.includes(filter as string)
+      ? (filter as "weekly" | "monthly" | "yearly")
+      : "monthly";
+    const filterData = await this.paymentService.getRevenueChartByTrainer(
+      trainerId,
+      selectedFilter
+    );
+    return res.status(HttpStatus.OK).json(filterData);
+  }
 }

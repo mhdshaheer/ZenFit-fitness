@@ -22,6 +22,9 @@ paymentRouter.get("/purchased/", authMiddleware, (req, res, next) => {
 paymentRouter.get("/revenue-chart", (req, res, next) => {
   controller.getRevenueChart(req, res).catch(next);
 });
+paymentRouter.get("/revenue-chart/trainer", (req, res, next) => {
+  controller.getRevenueChartByTrainer(req, res).catch(next);
+});
 paymentRouter.get("/top-categories", authMiddleware, (req, res, next) => {
   controller.getTopSellingCategories(req, res).catch(next);
 });

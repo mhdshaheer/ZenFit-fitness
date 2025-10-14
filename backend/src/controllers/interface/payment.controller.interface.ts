@@ -46,4 +46,8 @@ export interface IPaymentController {
     req: Request,
     res: Response
   ): Promise<Response<IRevenueData[]>>;
+  getRevenueChartByTrainer(
+    req: Request,
+    res: Response
+  ): Promise<Response<IRevenueData[]>>;
 }

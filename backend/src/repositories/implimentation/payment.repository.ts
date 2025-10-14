@@ -291,4 +291,96 @@ export class PaymentRepository
 
     return revenueData;
   }
+  async getRevenueByFilterByTrainer(
+    trainerId: string,
+    filter: IRevenueFilter
+  ): Promise<IRevenueData[]> {
+    const matchStage = { trainerId, paymentStatus: "success" };
+
+    let groupStage = {};
+    let projectStage = {};
+    let sortStage = {};
+
+    switch (filter) {
+      case "weekly":
+        groupStage = {
+          _id: { $dayOfWeek: "$createdAt" },
+          totalRevenue: { $sum: "$amount" },
+        };
+        projectStage = {
+          _id: 0,
+          name: {
+            $switch: {
+              branches: [
+                { case: { $eq: ["$_id", 1] }, then: "Sun" },
+                { case: { $eq: ["$_id", 2] }, then: "Mon" },
+                { case: { $eq: ["$_id", 3] }, then: "Tue" },
+                { case: { $eq: ["$_id", 4] }, then: "Wed" },
+                { case: { $eq: ["$_id", 5] }, then: "Thu" },
+                { case: { $eq: ["$_id", 6] }, then: "Fri" },
+                { case: { $eq: ["$_id", 7] }, then: "Sat" },
+              ],
+              default: "Unknown",
+            },
+          },
+          revenue: "$totalRevenue",
+        };
+        sortStage = { _id: 1 };
+        break;
+
+      case "monthly":
+        groupStage = {
+          _id: { $month: "$createdAt" },
+          totalRevenue: { $sum: "$amount" },
+        };
+        projectStage = {
+          _id: 0,
+          name: {
+            $arrayElemAt: [
+              [
+                "",
+                "Jan",
+                "Feb",
+                "Mar",
+                "Apr",
+                "May",
+                "Jun",
+                "Jul",
+                "Aug",
+                "Sep",
+                "Oct",
+                "Nov",
+                "Dec",
+              ],
+              "$_id",
+            ],
+          },
+          revenue: "$totalRevenue",
+        };
+        sortStage = { _id: 1 };
+        break;
+
+      case "yearly":
+        groupStage = {
+          _id: { $year: "$createdAt" },
+          totalRevenue: { $sum: "$amount" },
+        };
+        projectStage = {
+          _id: 0,
+          name: "$_id",
+          revenue: "$totalRevenue",
+        };
+        sortStage = { _id: 1 };
+        break;
+    }
+
+    const revenueData = await this.model.aggregate([
+      { $match: matchStage },
+      { $group: groupStage },
+      { $project: projectStage },
+      { $sort: sortStage },
+    ]);
+
+    return revenueData;
+  }
 }

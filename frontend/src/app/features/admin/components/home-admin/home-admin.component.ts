@@ -86,16 +86,19 @@ export class HomeAdminComponent implements OnInit, OnDestroy {
       });
   }
   getRevenueChart(filter: IRevenueFilter) {
-    this._paymentService.getRevenueChart(filter).subscribe({
-      next: (res) => {
-        this._logger.info('chart data :', res);
-        this.revenueData[filter] = res;
-        this.currentRevenueData = this.revenueData[filter];
-      },
-      error: (err) => {
-        this._logger.error('failed to fetch chart data ', err);
-      },
-    });
+    this._paymentService
+      .getRevenueChart(filter)
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (res) => {
+          this._logger.info('chart data :', res);
+          this.revenueData[filter] = res;
+          this.currentRevenueData = this.revenueData[filter];
+        },
+        error: (err) => {
+          this._logger.error('failed to fetch chart data ', err);
+        },
+      });
   }
   ngOnDestroy() {
     this._destroy$.next();

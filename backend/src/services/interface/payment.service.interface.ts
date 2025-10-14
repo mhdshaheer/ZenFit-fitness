@@ -35,4 +35,8 @@ export interface IPaymentService {
     trainerId: string
   ): Promise<ITopSellingPrograms[]>;
   getRevenueChart(filter: IRevenueFilter): Promise<IRevenueData[]>;
+  getRevenueChartByTrainer(
+    trainerId: string,
+    filter: IRevenueFilter
+  ): Promise<IRevenueData[]>;
 }

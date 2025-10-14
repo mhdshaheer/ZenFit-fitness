@@ -55,4 +55,10 @@ export class PaymentService {
       params,
     });
   }
+  getRevenueChartByTrainer(filter: IRevenueFilter): Observable<IRevenueData[]> {
+    const params = { filter };
+    return this.http.get<IRevenueData[]>(`${this.api}/revenue-chart/trainer`, {
+      params,
+    });
+  }
 }

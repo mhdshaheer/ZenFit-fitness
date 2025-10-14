@@ -230,4 +230,14 @@ export class PaymentService implements IPaymentService {
     const chartData = await this.paymentRepository.getRevenueByFilter(filter);
     return chartData;
   }
+  async getRevenueChartByTrainer(
+    trainerId: string,
+    filter: IRevenueFilter
+  ): Promise<IRevenueData[]> {
+    const chartData = await this.paymentRepository.getRevenueByFilterByTrainer(
+      trainerId,
+      filter
+    );
+    return chartData;
+  }
 }
