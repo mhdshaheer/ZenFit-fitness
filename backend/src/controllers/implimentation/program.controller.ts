@@ -5,7 +5,6 @@ import { IProgramService } from "../../services/interface/program.service.interf
 import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ProgramDto } from "../../dtos/program.dtos";
-import { HttpResponse } from "../../const/response_message.const";
 import { AppError } from "../../shared/utils/appError.util";
 
 export class ProgramController implements IProgramController {
@@ -69,7 +68,7 @@ export class ProgramController implements IProgramController {
     res.status(HttpStatus.OK).json({ programs });
   }
   async getAllPrograms(
-    req: Request,
+    _req: Request,
     res: Response
   ): Promise<Response<ProgramDto[]>> {
     const programs = await this.programService.getAllPrograms();
@@ -77,8 +76,10 @@ export class ProgramController implements IProgramController {
   }
 
   async getProgramsByParantId(req: Request, res: Response): Promise<void> {
-    const id = req.params.id;
-    const programs = await this.programService.getProgramsByParentId(id);
+    const parantCategoryId = req.params.id;
+    const programs = await this.programService.getProgramsByParentId(
+      parantCategoryId
+    );
 
     res.status(HttpStatus.OK).json({ programs });
   }

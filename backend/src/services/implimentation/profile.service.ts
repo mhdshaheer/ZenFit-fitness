@@ -13,6 +13,7 @@ export class ProfileService implements IProfileService {
     @inject(TYPES.UserRepository) private userRepository: IUserRepository
   ) {}
   async getProfile(userId: string): Promise<UserDto> {
+    console.log("Reached on getProfile service");
     const user = await this.userRepository.findById(userId);
     if (user) {
       const profileDto = mapToUserDto(user);

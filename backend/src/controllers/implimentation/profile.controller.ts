@@ -7,6 +7,7 @@ import { HttpResponse } from "../../const/response_message.const";
 import { TYPES } from "../../shared/types/inversify.types";
 import { AppError } from "../../shared/utils/appError.util";
 import { UserDto } from "../../dtos/user.dtos";
+import logger from "../../shared/services/logger.service";
 
 @injectable()
 export class ProfileController implements IProfileController {

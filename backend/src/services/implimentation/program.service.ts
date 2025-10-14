@@ -59,6 +59,7 @@ export class ProgramService implements IProgramService {
     const subCategoryIds = subCategories.map((cat) => cat._id);
     const programs = await this.programRepository.getProgramsFilter({
       category: { $in: subCategoryIds },
+      approvalStatus: "Approved",
     });
     const mappedResult = programs.map(mapToProgramDto);
 
