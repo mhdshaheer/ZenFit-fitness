@@ -25,3 +25,11 @@ export interface ISubCategory {
   __v: number;
   _id: string;
 }
+
+export interface ITopCategory {
+  _id?: string;
+  categoryName: string;
+  totalPurchases: number;
+  totalRevenue: number;
+  color?: string;
+}

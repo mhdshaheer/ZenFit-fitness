@@ -3,7 +3,12 @@ import { IPaymentController } from "../interface/payment.controller.interface";
 import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IPaymentService } from "../../services/interface/payment.service.interface";
-import { PaymentHistoryDto, PurchasedProgram } from "../../dtos/payment.dtos";
+import {
+  ITopSellingCategory,
+  ITopSellingPrograms,
+  PaymentHistoryDto,
+  PurchasedProgram,
+} from "../../dtos/payment.dtos";
 import { HttpStatus } from "../../const/statuscode.const";
 import { AppError } from "../../shared/utils/appError.util";
 
@@ -66,5 +71,19 @@ export class PaymentController implements IPaymentController {
       programId
     );
     return res.status(HttpStatus.OK).json({ count: entrolledUsers });
+  }
+  async getTopSellingCategories(
+    _req: Request,
+    res: Response
+  ): Promise<Response<ITopSellingCategory[]>> {
+    const categories = await this.paymentService.getTopSellingCategory();
+    return res.status(HttpStatus.OK).json(categories);
+  }
+  async getTopSellingPrograms(
+    _req: Request,
+    res: Response
+  ): Promise<Response<ITopSellingPrograms[]>> {
+    const programs = await this.paymentService.getTopSellingPrograms();
+    return res.status(HttpStatus.OK).json(programs);
   }
 }

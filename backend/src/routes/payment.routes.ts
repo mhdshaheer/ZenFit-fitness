@@ -2,7 +2,6 @@ import { Router } from "express";
 import { container } from "../inversify.config";
 import { IPaymentController } from "../controllers/interface/payment.controller.interface";
 import { TYPES } from "../shared/types/inversify.types";
-import express from "express";
 import authMiddleware from "../middlewares/verifyToken.middleware";
 
 const paymentRouter = Router();
@@ -19,6 +18,12 @@ paymentRouter.get("/", authMiddleware, (req, res, next) => {
 });
 paymentRouter.get("/purchased/", authMiddleware, (req, res, next) => {
   controller.getPurchasedProgram(req, res).catch(next);
+});
+paymentRouter.get("/top-categories", (req, res, next) => {
+  controller.getTopSellingCategories(req, res).catch(next);
+});
+paymentRouter.get("/top-programs", (req, res, next) => {
+  controller.getTopSellingPrograms(req, res).catch(next);
 });
 paymentRouter.get("/entrolled/:programId", authMiddleware, (req, res, next) => {
   controller.getEntrolledUsers(req, res).catch(next);

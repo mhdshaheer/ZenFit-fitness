@@ -19,3 +19,17 @@ export interface PurchasedProgram {
   paymentMethod: string;
   purchasedAt: Date;
 }
+
+export interface ITopSellingCategory {
+  _id: string;
+  categoryName: string;
+  totalPurchases: number;
+  totalRevenue: number;
+}
+
+export interface ITopSellingPrograms {
+  _id: string;
+  courseName: string;
+  totalPurchases: number;
+  totalRevenue: number;
+}

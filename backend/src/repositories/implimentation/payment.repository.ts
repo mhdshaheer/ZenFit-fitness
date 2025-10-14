@@ -1,5 +1,9 @@
 import mongoose from "mongoose";
-import { PurchasedProgram } from "../../dtos/payment.dtos";
+import {
+  ITopSellingCategory,
+  ITopSellingPrograms,
+  PurchasedProgram,
+} from "../../dtos/payment.dtos";
 import { IPayment, PaymentModel } from "../../models/payment.model";
 import { BaseRepository } from "../base.repository";
 import { IPaymentRepository } from "../interface/payment.repostitory.interface";
@@ -67,5 +71,63 @@ export class PaymentRepository
       paymentStatus: "success",
     });
     return count;
+  }
+
+  async getTopSellingCategory(limit: number): Promise<ITopSellingCategory[]> {
+    return this.model.aggregate([
+      {
+        $lookup: {
+          from: "programs",
+          localField: "programId",
+          foreignField: "_id",
+          as: "program",
+        },
+      },
+      { $unwind: "$program" },
+      {
+        $lookup: {
+          from: "categories",
+          localField: "program.category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      { $unwind: "$category" },
+      {
+        $group: {
+          _id: "$category._id",
+          categoryName: { $first: "$category.name" },
+          totalPurchases: { $sum: 1 },
+          totalRevenue: { $sum: "$amount" },
+        },
+      },
+      { $sort: { totalPurchases: -1 } },
+      { $limit: limit },
+    ]);
+  }
+
+  async getTopSellingPrograms(limit: number): Promise<ITopSellingPrograms[]> {
+    return this.model.aggregate([
+      { $match: { paymentStatus: "success" } },
+      {
+        $lookup: {
+          from: "programs",
+          localField: "programId",
+          foreignField: "_id",
+          as: "program",
+        },
+      },
+      { $unwind: "$program" },
+      {
+        $group: {
+          _id: "$program._id",
+          courseName: { $first: "$program.title" },
+          totalPurchases: { $sum: 1 },
+          totalRevenue: { $sum: "$amount" },
+        },
+      },
+      { $sort: { totalPurchases: -1 } },
+      { $limit: limit },
+    ]);
   }
 }

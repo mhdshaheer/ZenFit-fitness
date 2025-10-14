@@ -1,4 +1,8 @@
-import { PurchasedProgram } from "../../dtos/payment.dtos";
+import {
+  ITopSellingCategory,
+  ITopSellingPrograms,
+  PurchasedProgram,
+} from "../../dtos/payment.dtos";
 import { IPayment } from "../../models/payment.model";
 
 export interface IPaymentRepository {
@@ -11,4 +15,6 @@ export interface IPaymentRepository {
   getPayments(): Promise<IPayment[]>;
   findPurchasedProgram(userId: string): Promise<PurchasedProgram[]>;
   getEntrolledUsers(programId: string): Promise<number>;
+  getTopSellingCategory(limit: number): Promise<ITopSellingCategory[]>;
+  getTopSellingPrograms(limit: number): Promise<ITopSellingPrograms[]>;
 }

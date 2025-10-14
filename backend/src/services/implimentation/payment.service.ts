@@ -14,7 +14,12 @@ import { IProgramRepository } from "../../repositories/interface/program.reposit
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IPayment } from "../../models/payment.model";
-import { PaymentHistoryDto, PurchasedProgram } from "../../dtos/payment.dtos";
+import {
+  ITopSellingCategory,
+  ITopSellingPrograms,
+  PaymentHistoryDto,
+  PurchasedProgram,
+} from "../../dtos/payment.dtos";
 import {
   mapToPaymentHistoryAdminDto,
   mapToPaymentHistoryDto,
@@ -183,5 +188,16 @@ export class PaymentService implements IPaymentService {
   async getEntrolledUsers(programId: string): Promise<number> {
     const count = await this.paymentRepository.getEntrolledUsers(programId);
     return count;
+  }
+
+  async getTopSellingCategory(): Promise<ITopSellingCategory[]> {
+    const limit = 5;
+    const categoies = await this.paymentRepository.getTopSellingCategory(limit);
+    return categoies;
+  }
+  async getTopSellingPrograms(): Promise<ITopSellingPrograms[]> {
+    const limit = 5;
+    const programs = await this.paymentRepository.getTopSellingPrograms(limit);
+    return programs;
   }
 }

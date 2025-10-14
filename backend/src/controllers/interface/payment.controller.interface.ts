@@ -1,5 +1,10 @@
 import { Request, Response } from "express";
-import { PaymentHistoryDto, PurchasedProgram } from "../../dtos/payment.dtos";
+import {
+  ITopSellingCategory,
+  ITopSellingPrograms,
+  PaymentHistoryDto,
+  PurchasedProgram,
+} from "../../dtos/payment.dtos";
 
 export interface IPaymentController {
   createCheckoutSession(req: Request, res: Response): Promise<void>;
@@ -20,4 +25,12 @@ export interface IPaymentController {
     req: Request,
     res: Response
   ): Promise<Response<{ count: number }>>;
+  getTopSellingCategories(
+    req: Request,
+    res: Response
+  ): Promise<Response<ITopSellingCategory[]>>;
+  getTopSellingPrograms(
+    req: Request,
+    res: Response
+  ): Promise<Response<ITopSellingPrograms[]>>;
 }

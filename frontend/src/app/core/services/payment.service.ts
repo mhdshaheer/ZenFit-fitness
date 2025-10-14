@@ -7,6 +7,7 @@ import {
   PurchasedProgram,
 } from '../../interface/payment.interface';
 import { Observable } from 'rxjs';
+import { ITopCategory } from '../../interface/category.interface';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
@@ -32,5 +33,8 @@ export class PaymentService {
     return this.http.get<{ count: number }>(
       `${this.api}/entrolled/${programId}`
     );
+  }
+  getTopCategories(): Observable<ITopCategory[]> {
+    return this.http.get<ITopCategory[]>(`${this.api}/top-categories`);
   }
 }

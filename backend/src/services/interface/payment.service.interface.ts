@@ -4,7 +4,12 @@ import {
   CheckoutRequest,
   CheckoutResponse,
 } from "../../shared/types/payment.types";
-import { PaymentHistoryDto, PurchasedProgram } from "../../dtos/payment.dtos";
+import {
+  ITopSellingCategory,
+  ITopSellingPrograms,
+  PaymentHistoryDto,
+  PurchasedProgram,
+} from "../../dtos/payment.dtos";
 
 export interface IPaymentService {
   createCheckoutSession(
@@ -17,4 +22,6 @@ export interface IPaymentService {
   getPayments(): Promise<PaymentHistoryDto[]>;
   getPurchasedProgram(userId: string): Promise<PurchasedProgram[]>;
   getEntrolledUsers(programId: string): Promise<number>;
+  getTopSellingCategory(): Promise<ITopSellingCategory[]>;
+  getTopSellingPrograms(): Promise<ITopSellingPrograms[]>;
 }
