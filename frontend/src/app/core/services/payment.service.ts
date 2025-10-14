@@ -8,6 +8,7 @@ import {
 } from '../../interface/payment.interface';
 import { Observable } from 'rxjs';
 import { ITopCategory } from '../../interface/category.interface';
+import { ITopPrograms } from '../../interface/program.interface';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
@@ -36,5 +37,8 @@ export class PaymentService {
   }
   getTopCategories(): Observable<ITopCategory[]> {
     return this.http.get<ITopCategory[]>(`${this.api}/top-categories`);
+  }
+  getTopPrograms(): Observable<ITopPrograms[]> {
+    return this.http.get<ITopPrograms[]>(`${this.api}/top-programs`);
   }
 }

@@ -8,3 +8,10 @@ export interface IProgramTable {
   createdAt?: Date | string;
   status?: 'active' | 'blocked';
 }
+
+export interface ITopPrograms {
+  _id?: string;
+  courseName: string;
+  totalPurchases: number;
+  totalRevenue: number;
+}

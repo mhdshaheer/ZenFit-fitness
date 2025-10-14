@@ -1,10 +1,6 @@
 import { Component, Input } from '@angular/core';
+import { ITopPrograms } from '../../../interface/program.interface';
 
-interface Course {
-  name: string;
-  students: number;
-  revenue: number;
-}
 @Component({
   selector: 'zenfit-list',
   imports: [],
@@ -12,7 +8,7 @@ interface Course {
   styleUrl: './list.component.css',
 })
 export class ListComponent {
-  @Input() courses: Course[] = [];
+  @Input() courses: ITopPrograms[] = [];
 
   formatNumber(num: number): string {
     return num.toLocaleString();

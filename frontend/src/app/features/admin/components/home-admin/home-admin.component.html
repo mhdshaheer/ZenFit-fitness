@@ -1,6 +1,6 @@
 <div class="min-h-screen bg-gray-50">
   <!-- Header -->
-  <header class="bg-white shadow-sm sticky top-0 z-10">
+  <header class="bg-white shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
       <div
         class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
@@ -73,10 +73,9 @@
               <polyline points="17 6 23 6 23 12"></polyline>
             </svg>
           </div>
-          <span class="text-sm font-medium text-green-600">+20.1%</span>
         </div>
         <h3 class="text-gray-600 text-sm font-medium mb-1">Total Revenue</h3>
-        <p class="text-2xl font-bold text-gray-900">$847,392</p>
+        <p class="text-2xl font-bold text-gray-900">₹8473</p>
       </div>
 
       <!-- Total Users Card -->
@@ -102,10 +101,9 @@
               <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
             </svg>
           </div>
-          <span class="text-sm font-medium text-green-600">+15.3%</span>
         </div>
         <h3 class="text-gray-600 text-sm font-medium mb-1">Total Users</h3>
-        <p class="text-2xl font-bold text-gray-900">12,486</p>
+        <p class="text-2xl font-bold text-gray-900">4</p>
       </div>
 
       <!-- Total Trainers Card -->
@@ -124,21 +122,18 @@
               <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
             </svg>
           </div>
-          <span class="text-sm font-medium text-green-600">+8.7%</span>
         </div>
         <h3 class="text-gray-600 text-sm font-medium mb-1">Total Trainers</h3>
-        <p class="text-2xl font-bold text-gray-900">284</p>
+        <p class="text-2xl font-bold text-gray-900">2</p>
       </div>
     </div>
 
-    <!-- Revenue Chart -->
     <zenfit-chart
       [data]="currentRevenueData"
       [filter]="revenueFilter"
       (filterChange)="handleRevenueFilterChange($event)"
     ></zenfit-chart>
 
-    <!-- Bottom Section -->
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
       <zenfit-progress-bar [categories]="topCategories"></zenfit-progress-bar>
       <zenfit-list [courses]="topCourses"></zenfit-list>

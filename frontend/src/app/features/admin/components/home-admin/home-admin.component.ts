@@ -1,23 +1,17 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChartComponent } from '../../../../shared/components/chart/chart.component';
 import { ListComponent } from '../../../../shared/components/list/list.component';
 import { ProgressBarComponent } from '../../../../shared/components/progress-bar/progress-bar.component';
 import { ITopCategory } from '../../../../interface/category.interface';
 import { PaymentService } from '../../../../core/services/payment.service';
+import { ITopPrograms } from '../../../../interface/program.interface';
+import { Subject, takeUntil } from 'rxjs';
 
 interface RevenueData {
   name: string;
   revenue: number;
-}
-
-interface Course {
-  _id?: string;
-  name: string;
-  students: number;
-  revenue: number;
-  rating: number;
 }
 
 @Component({
@@ -33,9 +27,20 @@ interface Course {
   templateUrl: './home-admin.component.html',
   styleUrl: './home-admin.component.css',
 })
-export class HomeAdminComponent {
+export class HomeAdminComponent implements OnInit, OnDestroy {
   private _paymentService = inject(PaymentService);
+  private _destroy$ = new Subject<void>();
 
+  topCategories: ITopCategory[] = [];
+  topCourses: ITopPrograms[] = [];
+  currentRevenueData: RevenueData[] = [];
+  colors: string[] = [
+    'bg-blue-500',
+    'bg-purple-500',
+    'bg-green-500',
+    'bg-orange-500',
+    'bg-pink-500',
+  ];
   revenueFilter: 'weekly' | 'monthly' | 'yearly' = 'monthly';
 
   revenueData: Record<string, RevenueData[]> = {
@@ -71,53 +76,10 @@ export class HomeAdminComponent {
     ],
   };
 
-  colors: string[] = [
-    'bg-blue-500',
-    'bg-purple-500',
-    'bg-green-500',
-    'bg-orange-500',
-    'bg-pink-500',
-  ];
-
-  topCategories: ITopCategory[] = [];
-  topCourses: Course[] = [
-    {
-      name: 'Complete Web Development Bootcamp',
-      students: 3245,
-      revenue: 162250,
-      rating: 4.8,
-    },
-    {
-      name: 'Python for Data Science',
-      students: 2890,
-      revenue: 144500,
-      rating: 4.9,
-    },
-    {
-      name: 'React Native Masterclass',
-      students: 2156,
-      revenue: 107800,
-      rating: 4.7,
-    },
-    {
-      name: 'Advanced JavaScript Course',
-      students: 1998,
-      revenue: 99900,
-      rating: 4.8,
-    },
-    {
-      name: 'Full Stack Development',
-      students: 1876,
-      revenue: 93800,
-      rating: 4.6,
-    },
-  ];
-
-  currentRevenueData: RevenueData[] = [];
-
   ngOnInit(): void {
     this.currentRevenueData = this.revenueData[this.revenueFilter];
     this.getTopCategories();
+    this.getTopPrograms();
   }
 
   handleRevenueFilterChange(filter: 'weekly' | 'monthly' | 'yearly') {
@@ -126,12 +88,29 @@ export class HomeAdminComponent {
   }
 
   getTopCategories() {
-    this._paymentService.getTopCategories().subscribe({
-      next: (res: ITopCategory[]) => {
-        this.topCategories = res.map((item, index) => {
-          return { color: this.colors[index], ...item };
-        });
-      },
-    });
+    this._paymentService
+      .getTopCategories()
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (res: ITopCategory[]) => {
+          this.topCategories = res.map((item, index) => {
+            return { color: this.colors[index], ...item };
+          });
+        },
+      });
+  }
+  getTopPrograms() {
+    this._paymentService
+      .getTopPrograms()
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (res: ITopPrograms[]) => {
+          this.topCourses = res;
+        },
+      });
+  }
+  ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

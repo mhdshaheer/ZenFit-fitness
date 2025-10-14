@@ -1,7 +1,7 @@
 <div class="bg-white rounded-lg shadow-sm p-6">
   <h2 class="text-lg font-semibold text-gray-900 mb-6">Top 5 Courses</h2>
   <div class="space-y-4">
-    @for (course of courses; track course.name;let i = $index) {
+    @for (course of courses; track course._id;let i = $index) {
     <div class="border-b border-gray-100 last:border-0 pb-4 last:pb-0">
       <div class="flex items-start gap-3">
         <div
@@ -11,11 +11,11 @@
         </div>
         <div class="flex-1 min-w-0">
           <h3 class="text-sm font-medium text-gray-900 mb-1 line-clamp-1">
-            {{ course.name }}
+            {{ course.courseName }}
           </h3>
           <div class="flex flex-wrap items-center gap-3 text-xs text-gray-500">
-            <span>{{ formatNumber(course.students) }} students</span>
-            <span>₹{{ formatNumber(course.revenue) }}</span>
+            <span>{{ formatNumber(course.totalPurchases) }} students</span>
+            <span>₹{{ formatNumber(course.totalRevenue) }}</span>
           </div>
         </div>
       </div>
