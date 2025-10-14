@@ -10,6 +10,10 @@ import {
   PaymentHistoryDto,
   PurchasedProgram,
 } from "../../dtos/payment.dtos";
+import {
+  IRevenueData,
+  IRevenueFilter,
+} from "../../interfaces/payment.interface";
 
 export interface IPaymentService {
   createCheckoutSession(
@@ -30,4 +34,5 @@ export interface IPaymentService {
   getTopSellingProgramsByTrainer(
     trainerId: string
   ): Promise<ITopSellingPrograms[]>;
+  getRevenueChart(filter: IRevenueFilter): Promise<IRevenueData[]>;
 }

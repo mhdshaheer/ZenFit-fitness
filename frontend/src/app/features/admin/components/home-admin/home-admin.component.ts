@@ -8,11 +8,11 @@ import { ITopCategory } from '../../../../interface/category.interface';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { ITopPrograms } from '../../../../interface/program.interface';
 import { Subject, takeUntil } from 'rxjs';
-
-interface RevenueData {
-  name: string;
-  revenue: number;
-}
+import { LoggerService } from '../../../../core/services/logger.service';
+import {
+  IRevenueData,
+  IRevenueFilter,
+} from '../../../../interface/payment.interface';
 
 @Component({
   selector: 'app-home-admin',
@@ -30,10 +30,11 @@ interface RevenueData {
 export class HomeAdminComponent implements OnInit, OnDestroy {
   private _paymentService = inject(PaymentService);
   private _destroy$ = new Subject<void>();
+  private _logger = inject(LoggerService);
 
   topCategories: ITopCategory[] = [];
   topCourses: ITopPrograms[] = [];
-  currentRevenueData: RevenueData[] = [];
+  currentRevenueData: IRevenueData[] = [];
   colors: string[] = [
     'bg-blue-500',
     'bg-purple-500',
@@ -41,49 +42,24 @@ export class HomeAdminComponent implements OnInit, OnDestroy {
     'bg-orange-500',
     'bg-pink-500',
   ];
-  revenueFilter: 'weekly' | 'monthly' | 'yearly' = 'monthly';
+  revenueFilter: IRevenueFilter = 'weekly';
 
-  revenueData: Record<string, RevenueData[]> = {
-    weekly: [
-      { name: 'Mon', revenue: 4200 },
-      { name: 'Tue', revenue: 3800 },
-      { name: 'Wed', revenue: 5100 },
-      { name: 'Thu', revenue: 4600 },
-      { name: 'Fri', revenue: 6200 },
-      { name: 'Sat', revenue: 7800 },
-      { name: 'Sun', revenue: 5400 },
-    ],
-    monthly: [
-      { name: 'Jan', revenue: 45000 },
-      { name: 'Feb', revenue: 52000 },
-      { name: 'Mar', revenue: 48000 },
-      { name: 'Apr', revenue: 61000 },
-      { name: 'May', revenue: 55000 },
-      { name: 'Jun', revenue: 67000 },
-      { name: 'Jul', revenue: 72000 },
-      { name: 'Aug', revenue: 68000 },
-      { name: 'Sep', revenue: 74000 },
-      { name: 'Oct', revenue: 82000 },
-      { name: 'Nov', revenue: 78000 },
-      { name: 'Dec', revenue: 85000 },
-    ],
-    yearly: [
-      { name: '2020', revenue: 420000 },
-      { name: '2021', revenue: 580000 },
-      { name: '2022', revenue: 720000 },
-      { name: '2023', revenue: 850000 },
-      { name: '2024', revenue: 920000 },
-    ],
+  revenueData: Record<string, IRevenueData[]> = {
+    weekly: [],
+    monthly: [],
+    yearly: [],
   };
 
   ngOnInit(): void {
     this.currentRevenueData = this.revenueData[this.revenueFilter];
     this.getTopCategories();
     this.getTopPrograms();
+    this.getRevenueChart(this.revenueFilter);
   }
 
-  handleRevenueFilterChange(filter: 'weekly' | 'monthly' | 'yearly') {
+  handleRevenueFilterChange(filter: IRevenueFilter) {
     this.revenueFilter = filter;
+    this.getRevenueChart(this.revenueFilter);
     this.currentRevenueData = this.revenueData[filter];
   }
 
@@ -108,6 +84,18 @@ export class HomeAdminComponent implements OnInit, OnDestroy {
           this.topCourses = res;
         },
       });
+  }
+  getRevenueChart(filter: IRevenueFilter) {
+    this._paymentService.getRevenueChart(filter).subscribe({
+      next: (res) => {
+        this._logger.info('chart data :', res);
+        this.revenueData[filter] = res;
+        this.currentRevenueData = this.revenueData[filter];
+      },
+      error: (err) => {
+        this._logger.error('failed to fetch chart data ', err);
+      },
+    });
   }
   ngOnDestroy() {
     this._destroy$.next();

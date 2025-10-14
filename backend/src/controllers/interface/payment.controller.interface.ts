@@ -5,6 +5,7 @@ import {
   PaymentHistoryDto,
   PurchasedProgram,
 } from "../../dtos/payment.dtos";
+import { IRevenueData } from "../../interfaces/payment.interface";
 
 export interface IPaymentController {
   createCheckoutSession(req: Request, res: Response): Promise<void>;
@@ -41,4 +42,8 @@ export interface IPaymentController {
     req: Request,
     res: Response
   ): Promise<Response<ITopSellingPrograms[]>>;
+  getRevenueChart(
+    req: Request,
+    res: Response
+  ): Promise<Response<IRevenueData[]>>;
 }

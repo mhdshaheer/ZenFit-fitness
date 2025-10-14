@@ -11,6 +11,7 @@ import {
 } from "../../dtos/payment.dtos";
 import { HttpStatus } from "../../const/statuscode.const";
 import { AppError } from "../../shared/utils/appError.util";
+import { IRevenueData } from "../../interfaces/payment.interface";
 
 export class PaymentController implements IPaymentController {
   constructor(
@@ -105,5 +106,20 @@ export class PaymentController implements IPaymentController {
       trainerId
     );
     return res.status(HttpStatus.OK).json(programs);
+  }
+  async getRevenueChart(
+    req: Request,
+    res: Response
+  ): Promise<Response<IRevenueData[]>> {
+    const { filter } = req.query;
+
+    const validFilters = ["weekly", "monthly", "yearly"];
+    const selectedFilter = validFilters.includes(filter as string)
+      ? (filter as "weekly" | "monthly" | "yearly")
+      : "monthly";
+    const filterData = await this.paymentService.getRevenueChart(
+      selectedFilter
+    );
+    return res.status(HttpStatus.OK).json(filterData);
   }
 }

@@ -3,6 +3,8 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
   IPaymentCourse,
+  IRevenueData,
+  IRevenueFilter,
   PaymentHistory,
   PurchasedProgram,
 } from '../../interface/payment.interface';
@@ -46,5 +48,11 @@ export class PaymentService {
   }
   getTopProgramsByTrainer(): Observable<ITopPrograms[]> {
     return this.http.get<ITopPrograms[]>(`${this.api}/top-programs/trainer`);
+  }
+  getRevenueChart(filter: IRevenueFilter): Observable<IRevenueData[]> {
+    const params = { filter };
+    return this.http.get<IRevenueData[]>(`${this.api}/revenue-chart`, {
+      params,
+    });
   }
 }

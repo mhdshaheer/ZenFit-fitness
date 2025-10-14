@@ -3,6 +3,10 @@ import {
   ITopSellingPrograms,
   PurchasedProgram,
 } from "../../dtos/payment.dtos";
+import {
+  IRevenueData,
+  IRevenueFilter,
+} from "../../interfaces/payment.interface";
 import { IPayment } from "../../models/payment.model";
 
 export interface IPaymentRepository {
@@ -25,4 +29,5 @@ export interface IPaymentRepository {
     trainerId: string,
     limit: number
   ): Promise<ITopSellingPrograms[]>;
+  getRevenueByFilter(filter: IRevenueFilter): Promise<IRevenueData[]>;
 }

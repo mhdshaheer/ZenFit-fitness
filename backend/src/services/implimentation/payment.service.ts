@@ -24,6 +24,10 @@ import {
   mapToPaymentHistoryAdminDto,
   mapToPaymentHistoryDto,
 } from "../../mapper/payment.mapper";
+import {
+  IRevenueFilter,
+  IRevenueData,
+} from "../../interfaces/payment.interface";
 
 export class PaymentService implements IPaymentService {
   constructor(
@@ -221,5 +225,9 @@ export class PaymentService implements IPaymentService {
         limit
       );
     return programs;
+  }
+  async getRevenueChart(filter: IRevenueFilter): Promise<IRevenueData[]> {
+    const chartData = await this.paymentRepository.getRevenueByFilter(filter);
+    return chartData;
   }
 }
