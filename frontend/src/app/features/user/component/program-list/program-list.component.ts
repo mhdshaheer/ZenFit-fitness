@@ -17,11 +17,7 @@ interface IProgramType {
 }
 @Component({
   selector: 'app-program-list',
-  imports: [
-    ProgramCardComponent,
-    FormsModule,
-    SearchBarComponent
-],
+  imports: [ProgramCardComponent, FormsModule, SearchBarComponent],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
@@ -37,11 +33,11 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   subcategories: ISubCategory[] = [];
   programTypes: IProgramType[] = [];
 
-  private programService = inject(ProgramService);
-  private activatedRoute = inject(ActivatedRoute);
-  private route = inject(Router);
+  private _programService = inject(ProgramService);
+  private _activatedRoute = inject(ActivatedRoute);
+  private _route = inject(Router);
 
-  private destroy$ = new Subject<void>();
+  private _destroy$ = new Subject<void>();
 
   // UI
   btn2Label = 'Purchase';
@@ -54,14 +50,14 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   }
 
   async getSubCategory() {
-    const id = this.activatedRoute.snapshot.paramMap.get('id');
+    const id = this._activatedRoute.snapshot.paramMap.get('id');
     if (!id) return;
 
     try {
       const res = await lastValueFrom(
-        this.programService
+        this._programService
           .getProgramsByParantId(id)
-          .pipe(takeUntil(this.destroy$))
+          .pipe(takeUntil(this._destroy$))
       );
 
       this.programs = res.programs.map((item) => {
@@ -82,7 +78,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
     console.log('Viewing program with ID:', programId);
   }
   onSubscribeProgram(programId: string): void {
-    this.route.navigate(['user/payment', programId]);
+    this._route.navigate(['user/payment', programId]);
   }
   sortOptions = [
     { label: 'Latest', value: 'createdDate' },
@@ -145,7 +141,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   onSortChange(option: any) {}
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

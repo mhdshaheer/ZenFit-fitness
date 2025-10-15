@@ -39,12 +39,12 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   toastService = inject(ToastService);
   isEditMode = false;
 
-  private destroy$ = new Subject<void>();
+  private _destroy$ = new Subject<void>();
 
   // ==============
   profileForm!: FormGroup;
   profileData!: ProfileUser;
-  private fb = inject(FormBuilder);
+  private _fb = inject(FormBuilder);
   // ==============
 
   onFileSelected(event: Event): void {
@@ -55,7 +55,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.isUploading = true;
     this.profileService
       .uploadfile(file, 'profile')
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (event) => {
           if (event.type === HttpEventType.UploadProgress && event.total) {
@@ -92,7 +92,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   loadProfile() {
     this.profileService
       .getProfile()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
         console.log('Response of profile: ', res);
         this.profileData = res;
@@ -100,13 +100,13 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         if (res.profileImage) {
           this.profileService
             .getFile(res.profileImage)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntil(this._destroy$))
             .subscribe((fileRes) => {
               this.profileImageUrl = fileRes.url;
             });
         }
 
-        this.profileForm = this.fb.group({
+        this.profileForm = this._fb.group({
           fullName: [res.fullName],
           username: [res.username, Validators.required],
           dob: [res.dob ? res.dob.split('T')[0] : ''],
@@ -127,7 +127,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       console.log('profile data:', this.profileForm.value);
       this.profileService
         .updateProfile(this.profileForm.value)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
             console.log('response from the backend :', res);
@@ -170,7 +170,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       console.log('submitted data :', passwords);
       this.profileService
         .changePassword(passwords)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
             console.log(res);
@@ -186,7 +186,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     }
   }
   initializePasswordForm() {
-    this.passwordForm = this.fb.group({
+    this.passwordForm = this._fb.group({
       currentPassword: ['', [Validators.required]],
       newPassword: ['', [Validators.required, passwordStrengthValidator]],
       confirmPassword: ['', [Validators.required]],
@@ -205,7 +205,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

@@ -1,4 +1,3 @@
-
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 
@@ -11,8 +10,8 @@ import { Router } from '@angular/router';
 export class LandingPageComponent implements OnInit, OnDestroy {
   isMobileMenuOpen = false;
   activeProgram = 2;
-  private intervalId: any;
-  private router = inject(Router);
+  private _intervalId: any;
+  private _router = inject(Router);
 
   stats = [
     { number: '28', label: 'Exercise Programs' },
@@ -98,14 +97,14 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   ngOnInit() {
     // Auto-rotate programs every 4 seconds
-    this.intervalId = setInterval(() => {
+    this._intervalId = setInterval(() => {
       this.activeProgram = (this.activeProgram + 1) % this.programs.length;
     }, 4000);
   }
 
   ngOnDestroy() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId);
+    if (this._intervalId) {
+      clearInterval(this._intervalId);
     }
   }
 
@@ -118,9 +117,9 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   }
 
   toLogin() {
-    this.router.navigate(['/auth/login']);
+    this._router.navigate(['/auth/login']);
   }
   toSignup() {
-    this.router.navigate(['/auth/signup']);
+    this._router.navigate(['/auth/signup']);
   }
 }

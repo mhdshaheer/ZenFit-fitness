@@ -1,11 +1,11 @@
-
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Program } from '../../../trainer/store/trainer.model';
 import { ProgramService } from '../../../../core/services/program.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { ActivatedRoute } from '@angular/router';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { IPaymentCourse } from '../../../../interface/payment.interface';
+import { Subject, takeUntil } from 'rxjs';
 interface IProgram {
   name: string;
   description: string;
@@ -29,16 +29,17 @@ interface PaymentMethod {
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css',
 })
-export class PaymentComponent implements OnInit {
+export class PaymentComponent implements OnInit, OnDestroy {
   selectedPayment: string = 'card';
   myProgram: Program[] = [];
   programId!: string;
 
   // services
-  private programService = inject(ProgramService);
-  private loggerService = inject(LoggerService);
-  private activatedRoute = inject(ActivatedRoute);
-  private paymentService = inject(PaymentService);
+  private _programService = inject(ProgramService);
+  private _loggerService = inject(LoggerService);
+  private _activatedRoute = inject(ActivatedRoute);
+  private _paymentService = inject(PaymentService);
+  private _destroy$ = new Subject<void>();
 
   program = {} as IProgram;
 
@@ -47,7 +48,7 @@ export class PaymentComponent implements OnInit {
   ];
 
   ngOnInit() {
-    this.programId = this.activatedRoute.snapshot.paramMap.get('id')!;
+    this.programId = this._activatedRoute.snapshot.paramMap.get('id')!;
     this.getProgram(this.programId);
   }
 
@@ -78,33 +79,43 @@ export class PaymentComponent implements OnInit {
       price: this.program.price,
     };
 
-    this.paymentService.createCheckout(course).subscribe((res) => {
-      console.log('to :', res.url);
-      window.location.href = res.url; // redirect to Stripe Checkout
-    });
+    this._paymentService
+      .createCheckout(course)
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((res) => {
+        console.log('to :', res.url);
+        window.location.href = res.url; // redirect to Stripe Checkout
+      });
   }
 
   getProgram(id: string) {
-    this.programService.getProgramByProgramId(id).subscribe({
-      next: (res) => {
-        this.loggerService.info('Program is :', res);
-        const category = JSON.parse(res.category);
-        console.log('category is :', category);
-        this.program = {
-          name: res.title,
-          category: category.name,
-          description: res.description,
-          difficulty: res.difficultyLevel,
-          duration: res.duration,
-          features: [],
-          price: res.price,
-          rating: 0,
-          reviewCount: 0.0,
-        };
-      },
-      error: (err) => {
-        this.loggerService.error('Failed to fetch program :', err);
-      },
-    });
+    this._programService
+      .getProgramByProgramId(id)
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (res) => {
+          this._loggerService.info('Program is :', res);
+          const category = JSON.parse(res.category);
+          console.log('category is :', category);
+          this.program = {
+            name: res.title,
+            category: category.name,
+            description: res.description,
+            difficulty: res.difficultyLevel,
+            duration: res.duration,
+            features: [],
+            price: res.price,
+            rating: 0,
+            reviewCount: 0.0,
+          };
+        },
+        error: (err) => {
+          this._loggerService.error('Failed to fetch program :', err);
+        },
+      });
+  }
+  ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

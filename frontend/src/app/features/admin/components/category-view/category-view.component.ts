@@ -34,9 +34,9 @@ export class CategoryViewComponent {
 
   private _destroy$ = new Subject<void>();
 
-  constructor(private fb: FormBuilder) {
+  constructor(private _fb: FormBuilder) {
     // Initialize create form
-    this.editForm = this.fb.group({
+    this.editForm = this._fb.group({
       name: [
         '',
         [

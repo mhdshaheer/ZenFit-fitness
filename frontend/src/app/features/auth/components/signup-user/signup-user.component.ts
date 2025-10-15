@@ -1,4 +1,3 @@
-
 import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -26,21 +25,21 @@ import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
   styleUrl: './signup-user.component.css',
 })
 export class SignupUserComponent {
-  private fb = inject(FormBuilder);
-  private store = inject(Store);
-  private otpAccessService = inject(OtpAccessService);
-  private logger = inject(LoggerService);
+  private _fb = inject(FormBuilder);
+  private _store = inject(Store);
+  private _otpAccessService = inject(OtpAccessService);
+  private _logger = inject(LoggerService);
 
   signupForm!: FormGroup;
   showPassword = false;
   showConfirmPassword = false;
 
-  isLoading = toSignal(this.store.select(selectAuthLoading), {
+  isLoading = toSignal(this._store.select(selectAuthLoading), {
     initialValue: false,
   });
 
   constructor() {
-    this.signupForm = this.fb.group(
+    this.signupForm = this._fb.group(
       {
         username: [
           '',
@@ -85,17 +84,17 @@ export class SignupUserComponent {
   }
 
   loginWithGoogle() {
-    this.logger.info('clicked google login..');
+    this._logger.info('clicked google login..');
     window.location.href = `${environment.apiUrl}/auth/google`;
-    this.logger.info('after google login : page - signup-user');
+    this._logger.info('after google login : page - signup-user');
   }
 
   onSubmit(): void {
     if (this.signupForm.valid) {
-      this.otpAccessService.allowAccess();
+      this._otpAccessService.allowAccess();
       const formData = this.signupForm.value;
-      this.logger.info('Data is submitted...', formData);
-      this.store.dispatch(
+      this._logger.info('Data is submitted...', formData);
+      this._store.dispatch(
         AuthActions.signup({
           payload: {
             username: formData.username,
