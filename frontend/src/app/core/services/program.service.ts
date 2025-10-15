@@ -26,7 +26,9 @@ export class ProgramService {
   }
 
   getPrograms(): Observable<{ programs: Program[] }> {
-    return this.http.get<{ programs: Program[] }>(`${this.apiUrl}/program`);
+    return this.http.get<{ programs: Program[] }>(
+      `${this.apiUrl}/program/trainer`
+    );
   }
   getProgramCategory() {
     return this.http.get<{ programs: ProgramCategory[] }>(
