@@ -6,6 +6,7 @@ import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ProgramDto } from "../../dtos/program.dtos";
 import { AppError } from "../../shared/utils/appError.util";
+import { HttpResponse } from "../../const/response_message.const";
 
 export class ProgramController implements IProgramController {
   constructor(
@@ -17,19 +18,22 @@ export class ProgramController implements IProgramController {
     const userId = (req as any)?.user?.id;
 
     if (!data)
-      throw new AppError("Program data is required", HttpStatus.BAD_REQUEST);
+      throw new AppError(
+        HttpResponse.PROGRAM_DATA_REQUIRED,
+        HttpStatus.BAD_REQUEST
+      );
 
     data.trainerId = userId;
     const draft = await this.programService.saveProgramDraft(data);
 
     if (!draft)
       throw new AppError(
-        "Failed to save draft",
+        HttpResponse.PROGRAM_SAVED_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
       );
 
     res.status(HttpStatus.OK).json({
-      message: "Program draft is saved successfully",
+      message: HttpResponse.PROGRAM_SAVED_SUCCESSFULLY,
     });
   }
 
@@ -38,19 +42,22 @@ export class ProgramController implements IProgramController {
     const userId = (req as any)?.user?.id;
 
     if (!data)
-      throw new AppError("Program data is required", HttpStatus.BAD_REQUEST);
+      throw new AppError(
+        HttpResponse.PROGRAM_DATA_REQUIRED,
+        HttpStatus.BAD_REQUEST
+      );
 
     data.trainerId = userId;
     const program = await this.programService.saveProgramDraft(data);
 
     if (!program)
       throw new AppError(
-        "Failed to save Training Program",
+        HttpResponse.PROGRAM_SAVED_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
       );
 
     res.status(HttpStatus.OK).json({
-      message: "Training Program is saved successfully",
+      message: HttpResponse.PROGRAM_SAVED_SUCCESSFULLY,
     });
   }
 
@@ -91,7 +98,8 @@ export class ProgramController implements IProgramController {
     const { id } = req.params;
     const program = await this.programService.findProgram(id);
 
-    if (!program) throw new AppError("Program not found", HttpStatus.NOT_FOUND);
+    if (!program)
+      throw new AppError(HttpResponse.PROGRAM_NOT_FOUND, HttpStatus.NOT_FOUND);
 
     return res.status(HttpStatus.OK).json(program);
   }
@@ -110,11 +118,14 @@ export class ProgramController implements IProgramController {
     });
 
     if (!response)
-      throw new AppError("Program updation failed", HttpStatus.NOT_FOUND);
+      throw new AppError(
+        HttpResponse.PROGRAM_UPDATE_FAILED,
+        HttpStatus.NOT_FOUND
+      );
 
     return res
       .status(HttpStatus.OK)
-      .json({ message: "Program updated successfully" });
+      .json({ message: HttpResponse.PROGRAM_UPDATE_SUCCESS });
   }
 
   async updateApprovalStatus(

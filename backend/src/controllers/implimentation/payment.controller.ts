@@ -12,6 +12,7 @@ import {
 import { HttpStatus } from "../../const/statuscode.const";
 import { AppError } from "../../shared/utils/appError.util";
 import { IRevenueData } from "../../interfaces/payment.interface";
+import { HttpResponse } from "../../const/response_message.const";
 
 export class PaymentController implements IPaymentController {
   constructor(
@@ -26,13 +27,13 @@ export class PaymentController implements IPaymentController {
     res.json(response);
   }
   async webhook(req: Request, res: Response): Promise<void> {
-    console.log("i am reached on webhook controller");
     try {
       await this.paymentService.processWebhook(req);
       res.json({ received: true });
     } catch (err: any) {
-      console.error("❌ Webhook error:", err.message);
-      res.status(500).send(`Webhook error: ${err.message}`);
+      res
+        .status(HttpStatus.INTERNAL_SERVER_ERROR)
+        .send(`Webhook error: ${err.message}`);
     }
   }
   async getTrainerPayments(
@@ -66,7 +67,10 @@ export class PaymentController implements IPaymentController {
   ): Promise<Response<{ count: number }>> {
     const { programId } = req.params;
     if (!programId) {
-      throw new AppError("Program ID is missing", HttpStatus.BAD_REQUEST);
+      throw new AppError(
+        HttpResponse.PROGRAM_ID_MISSING,
+        HttpStatus.BAD_REQUEST
+      );
     }
     const entrolledUsers = await this.paymentService.getEntrolledUsers(
       programId

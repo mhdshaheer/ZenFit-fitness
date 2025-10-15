@@ -6,6 +6,7 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ISession } from "../../models/session.model";
 import { AppError } from "../../shared/utils/appError.util";
+import { HttpResponse } from "../../const/response_message.const";
 
 export class SessionController implements ISessionController {
   constructor(
@@ -16,7 +17,10 @@ export class SessionController implements ISessionController {
     const userId = (req as any).user.id;
 
     if (!data) {
-      throw new AppError("Session data is required", HttpStatus.BAD_REQUEST);
+      throw new AppError(
+        HttpResponse.SESSION_DATA_REQUIRED,
+        HttpStatus.BAD_REQUEST
+      );
     }
 
     data.trainerId = userId;
@@ -30,13 +34,13 @@ export class SessionController implements ISessionController {
 
     if (!sessionDraft) {
       throw new AppError(
-        "Failed to save session draft",
+        HttpResponse.SESSION_SAVE_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
 
     res.status(HttpStatus.OK).json({
-      message: "session draft is saved successfully",
+      message: HttpResponse.SESSION_SAVE_SUCCESS,
     });
     return;
   }
@@ -45,7 +49,10 @@ export class SessionController implements ISessionController {
     const userId = (req as any).user?.id;
 
     if (!data) {
-      throw new AppError("Session data is required", HttpStatus.BAD_REQUEST);
+      throw new AppError(
+        HttpResponse.SESSION_DATA_REQUIRED,
+        HttpStatus.BAD_REQUEST
+      );
     }
 
     data.trainerId = userId;
@@ -59,20 +66,20 @@ export class SessionController implements ISessionController {
 
     if (!session) {
       throw new AppError(
-        "Failed to save session",
+        HttpResponse.SESSION_SAVE_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
 
     res.status(HttpStatus.OK).json({
-      message: "Session saved successfully",
+      message: HttpResponse.SESSION_SAVE_SUCCESS,
     });
   }
   async getSession(req: Request, res: Response): Promise<Response<ISession>> {
     const { id } = req.params;
     const session = await this.sessionService.getSession(id);
     if (!session) {
-      throw new AppError("Session not found", HttpStatus.NOT_FOUND);
+      throw new AppError(HttpResponse.SESSION_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     return res.status(HttpStatus.OK).json(session);

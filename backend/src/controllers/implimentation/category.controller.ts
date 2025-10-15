@@ -6,6 +6,7 @@ import { ICategoryService } from "../../services/interface/category.service.inte
 import { HttpStatus } from "../../const/statuscode.const";
 import { CategoryDto } from "../../dtos/category.dtos";
 import { AppError } from "../../shared/utils/appError.util";
+import { HttpResponse } from "../../const/response_message.const";
 
 export class CategoryController implements ICategoryController {
   constructor(
@@ -35,7 +36,6 @@ export class CategoryController implements ICategoryController {
     _next: NextFunction
   ): Promise<Response<CategoryDto>> {
     const categoryData = req.body;
-    console.log("category from frontend :", categoryData);
     const response = await this.categoryService.createCategory(categoryData);
     return res.status(HttpStatus.OK).json(response);
   }
@@ -68,7 +68,10 @@ export class CategoryController implements ICategoryController {
   ): Promise<Response<boolean>> {
     const { name } = req.query;
     if (!name || typeof name !== "string") {
-      throw new AppError("Category name is required", HttpStatus.BAD_REQUEST);
+      throw new AppError(
+        HttpResponse.CATEGORY_NAME_REQUIRED,
+        HttpStatus.BAD_REQUEST
+      );
     }
     const isDuplicate = await this.categoryService.checkDuplicateName(name);
     return res.status(HttpStatus.OK).json(isDuplicate);
@@ -106,7 +109,7 @@ export class CategoryController implements ICategoryController {
 
     if (!result) {
       throw new AppError(
-        "Failed to fetch categories",
+        HttpResponse.CATEGORY_FETCH_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
