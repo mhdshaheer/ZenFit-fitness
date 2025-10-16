@@ -6,12 +6,14 @@ import { UserDto } from "../../dtos/user.dtos";
 import { comparePassword, hashedPassword } from "../../shared/utils/hash.util";
 import { IUserRepository } from "../../repositories/interface/user.repository.interface";
 import { TYPES } from "../../shared/types/inversify.types";
+import { AppError } from "../../shared/utils/appError.util";
+import { HttpResponse } from "../../const/response_message.const";
+import { HttpStatus } from "../../const/statuscode.const";
 
 @injectable()
 export class ProfileService implements IProfileService {
-  constructor(
-    @inject(TYPES.UserRepository) private userRepository: IUserRepository
-  ) {}
+  @inject(TYPES.UserRepository) private userRepository!: IUserRepository;
+
   async getProfile(userId: string): Promise<UserDto> {
     console.log("Reached on getProfile service");
     const user = await this.userRepository.findById(userId);
@@ -55,9 +57,12 @@ export class ProfileService implements IProfileService {
   }
   async verifyResume(userId: string): Promise<boolean> {
     const user = await this.userRepository.findById(userId);
+    if (!user) {
+      throw new AppError(HttpResponse.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
 
     const updated = await this.userRepository.updateById(userId, {
-      resumeVerified: !user?.resumeVerified,
+      resumeVerified: !(user.resumeVerified ?? false),
     });
     return updated?.resumeVerified!;
   }

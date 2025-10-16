@@ -6,10 +6,9 @@ import { TYPES } from "../../shared/types/inversify.types";
 
 @injectable()
 export class SessionService implements ISessionService {
-  constructor(
-    @inject(TYPES.SessionRepository)
-    private sessionRepository: ISessionRepository
-  ) {}
+  @inject(TYPES.SessionRepository)
+  private sessionRepository!: ISessionRepository;
+  constructor() {}
   async saveSession(
     id: string,
     slotStatus: "active" | "inactive" | "draft",
@@ -33,7 +32,7 @@ export class SessionService implements ISessionService {
         throw new Error("Session is not available");
       }
       return session;
-    } catch (error) {
+    } catch {
       throw new Error("Failed get sessions");
     }
   }

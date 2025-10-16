@@ -8,9 +8,7 @@ import { IUserRepository } from "../../repositories/interface/user.repository.in
 @injectable()
 export class FileService implements IFileService {
   private s3Service = new S3Service();
-  constructor(
-    @inject(TYPES.UserRepository) private userRepository: IUserRepository
-  ) {}
+  @inject(TYPES.UserRepository) private userRepository!: IUserRepository;
 
   async upload(
     role: "user" | "trainer" | "admin" | "course",
@@ -24,12 +22,10 @@ export class FileService implements IFileService {
       throw new Error("User not found");
     }
 
-    if (user.profileImage && type == "profile") {
-      console.log("Deleting old image from S3:", user.profileImage);
+    if (user.profileImage !== undefined && type === "profile") {
       await this.s3Service.deleteFile(user.profileImage);
     }
-    if (user.resume && type == "resume") {
-      console.log("Deleting old resume from S3:", user.resume);
+    if (user.resume !== undefined && type === "resume") {
       await this.s3Service.deleteFile(user.resume);
     }
 
@@ -52,12 +48,12 @@ export class FileService implements IFileService {
     type: string | undefined
   ): Promise<string> {
     const user = await this.userRepository.findById(userId);
-    if (!user || !user.profileImage) {
+    if (!user || user.profileImage === undefined) {
       throw new Error("Profile image not found");
     }
-    if (type == "profile") {
+    if (type === "profile") {
       return this.s3Service.getFileUrl(user.profileImage, 3600);
-    } else if (type == "resumes") {
+    } else if (type === "resumes") {
       const res = await this.s3Service.getFileDetails(user.resume!);
       const obj = JSON.parse(res);
       obj.url = await this.s3Service.getFileUrl(user.resume!, 3600);

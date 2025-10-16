@@ -18,19 +18,19 @@ export class ProgramController implements IProgramController {
     const userId = (req as any)?.user?.id;
 
     if (!data)
-      throw new AppError(
+      {throw new AppError(
         HttpResponse.PROGRAM_DATA_REQUIRED,
         HttpStatus.BAD_REQUEST
-      );
+      );}
 
     data.trainerId = userId;
     const draft = await this._programService.saveProgramDraft(data);
 
     if (!draft)
-      throw new AppError(
+      {throw new AppError(
         HttpResponse.PROGRAM_SAVED_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      );}
 
     res.status(HttpStatus.OK).json({
       message: HttpResponse.PROGRAM_SAVED_SUCCESSFULLY,
@@ -42,19 +42,19 @@ export class ProgramController implements IProgramController {
     const userId = (req as any)?.user?.id;
 
     if (!data)
-      throw new AppError(
+      {throw new AppError(
         HttpResponse.PROGRAM_DATA_REQUIRED,
         HttpStatus.BAD_REQUEST
-      );
+      );}
 
     data.trainerId = userId;
     const program = await this._programService.saveProgramDraft(data);
 
     if (!program)
-      throw new AppError(
+      {throw new AppError(
         HttpResponse.PROGRAM_SAVED_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
-      );
+      );}
 
     res.status(HttpStatus.OK).json({
       message: HttpResponse.PROGRAM_SAVED_SUCCESSFULLY,
@@ -99,7 +99,7 @@ export class ProgramController implements IProgramController {
     const program = await this._programService.findProgram(id);
 
     if (!program)
-      throw new AppError(HttpResponse.PROGRAM_NOT_FOUND, HttpStatus.NOT_FOUND);
+      {throw new AppError(HttpResponse.PROGRAM_NOT_FOUND, HttpStatus.NOT_FOUND);}
 
     return res.status(HttpStatus.OK).json(program);
   }
@@ -118,10 +118,10 @@ export class ProgramController implements IProgramController {
     });
 
     if (!response)
-      throw new AppError(
+      {throw new AppError(
         HttpResponse.PROGRAM_UPDATE_FAILED,
         HttpStatus.NOT_FOUND
-      );
+      );}
 
     return res
       .status(HttpStatus.OK)

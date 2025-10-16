@@ -66,6 +66,9 @@ export enum HttpResponse {
   // Categories
   CATEGORY_NAME_REQUIRED = "Category name is required",
   CATEGORY_FETCH_FAILED = "Failed to fetch categories",
+  CATEGOTY_CREATION_FAILED = "Error in category creation.",
+  CATEGORY_NOTFOUND = "Category not found",
+  CATEGORY_UPDATION_FAILED = "Category updation failed",
 
   // Programs
   PROGRAM_ID_MISSING = "Program ID is missing",

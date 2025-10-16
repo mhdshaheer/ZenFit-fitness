@@ -16,14 +16,16 @@ export class AdminService implements IAdminService {
     status: "active" | "blocked"
   ): Promise<IUser | null> {
     const user = await this.userRepository.findById(id);
-    if (!user) throw new Error("User not found");
+    if (!user) {
+      throw new Error("User not found");
+    }
     return await this.userRepository.updateStatus(id, status);
   }
 
   async getUsers(
     params: GetUsersParams
   ): Promise<{ data: UserDto[]; total: number }> {
-    const filter: any = {
+    const filter = {
       role: { $ne: "admin" },
     };
     const { total, data } = await this.userRepository.getAllForTable({

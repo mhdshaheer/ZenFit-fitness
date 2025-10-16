@@ -28,14 +28,13 @@ import {
   IRevenueFilter,
   IRevenueData,
 } from "../../interfaces/payment.interface";
+import logger from "../../shared/services/logger.service";
 
 export class PaymentService implements IPaymentService {
-  constructor(
-    @inject(TYPES.PaymentRepository)
-    private paymentRepository: IPaymentRepository,
-    @inject(TYPES.ProgramRespository)
-    private programRepository: IProgramRepository
-  ) {}
+  @inject(TYPES.PaymentRepository)
+  private _paymentRepository!: IPaymentRepository;
+  @inject(TYPES.ProgramRespository)
+  private programRepository!: IProgramRepository;
   async createCheckoutSession(
     data: CheckoutRequest,
     userId: string
@@ -61,7 +60,7 @@ export class PaymentService implements IPaymentService {
       trainerEarning: sellerAmount,
     };
 
-    const order = await this.paymentRepository.createPayment(purchaseData);
+    const order = await this._paymentRepository.createPayment(purchaseData);
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
@@ -108,7 +107,7 @@ export class PaymentService implements IPaymentService {
         sig,
         env.stripe_web_hook as string
       );
-    } catch (_err) {
+    } catch {
       throw new AppError("Invalid signature", HttpStatus.BAD_REQUEST);
     }
 
@@ -122,18 +121,17 @@ export class PaymentService implements IPaymentService {
     const orderId = session.metadata?.orderDbId!;
     try {
       switch (eventType) {
-        // 1️⃣ Checkout session completed
         case "checkout.session.completed": {
           const paymentIntentId = session.payment_intent as string;
           const chargeId = session.payment_intent as string;
 
-          await this.paymentRepository.updatePaymentStatus(orderId, {
+          await this._paymentRepository.updatePaymentStatus(orderId, {
             paymentStatus: "success",
             paymentIntentId,
             chargeId,
           });
 
-          console.log(`Payment succeeded `);
+          logger.info(`Payment succeeded `);
           break;
         }
 
@@ -143,7 +141,7 @@ export class PaymentService implements IPaymentService {
           const chargeId = charge.id;
           const status = charge.paid ? "success" : "failed";
 
-          await this.paymentRepository.updatePaymentStatus(orderId, {
+          await this._paymentRepository.updatePaymentStatus(orderId, {
             paymentStatus: status,
             paymentIntentId,
             chargeId,
@@ -154,7 +152,7 @@ export class PaymentService implements IPaymentService {
           const paymentIntent = event.data.object as Stripe.PaymentIntent;
           const paymentIntentId = paymentIntent.id;
 
-          await this.paymentRepository.updatePaymentStatus(orderId, {
+          await this._paymentRepository.updatePaymentStatus(orderId, {
             paymentStatus: "failed",
             paymentIntentId,
           });
@@ -162,46 +160,52 @@ export class PaymentService implements IPaymentService {
         }
 
         default:
-          console.log(`Unhandled event type: ${eventType}`);
+          logger.info(`Unhandled event type: ${eventType}`);
       }
 
       console.log("Event data:", event.data.object);
-    } catch (err: any) {
-      console.error("❌ Error processing webhook:", err.message || err);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        logger.error("Error processing webhook:", err.message);
+      } else {
+        logger.error("Error processing webhook:", err);
+      }
     }
   }
 
   async getTrainerPayments(trainerId: string): Promise<PaymentHistoryDto[]> {
-    const payments = await this.paymentRepository.getProgramsByTrainerId(
+    const payments = await this._paymentRepository.getProgramsByTrainerId(
       trainerId
     );
     const paymentDto = payments.map(mapToPaymentHistoryDto);
     return paymentDto;
   }
   async getPayments(): Promise<PaymentHistoryDto[]> {
-    const payments = await this.paymentRepository.getPayments();
+    const payments = await this._paymentRepository.getPayments();
     const paymentDto = payments.map(mapToPaymentHistoryAdminDto);
     return paymentDto;
   }
 
   async getPurchasedProgram(userId: string): Promise<PurchasedProgram[]> {
-    const programs = await this.paymentRepository.findPurchasedProgram(userId);
+    const programs = await this._paymentRepository.findPurchasedProgram(userId);
     return programs;
   }
 
   async getEntrolledUsers(programId: string): Promise<number> {
-    const count = await this.paymentRepository.getEntrolledUsers(programId);
+    const count = await this._paymentRepository.getEntrolledUsers(programId);
     return count;
   }
 
   async getTopSellingCategory(): Promise<ITopSellingCategory[]> {
     const limit = 5;
-    const categoies = await this.paymentRepository.getTopSellingCategory(limit);
+    const categoies = await this._paymentRepository.getTopSellingCategory(
+      limit
+    );
     return categoies;
   }
   async getTopSellingPrograms(): Promise<ITopSellingPrograms[]> {
     const limit = 5;
-    const programs = await this.paymentRepository.getTopSellingPrograms(limit);
+    const programs = await this._paymentRepository.getTopSellingPrograms(limit);
     return programs;
   }
   async getTopSellingCategoryByTrainer(
@@ -209,7 +213,7 @@ export class PaymentService implements IPaymentService {
   ): Promise<ITopSellingCategory[]> {
     const limit = 5;
     const categoies =
-      await this.paymentRepository.getTopSellingCategoryByTrainer(
+      await this._paymentRepository.getTopSellingCategoryByTrainer(
         trainerId,
         limit
       );
@@ -220,21 +224,21 @@ export class PaymentService implements IPaymentService {
   ): Promise<ITopSellingPrograms[]> {
     const limit = 5;
     const programs =
-      await this.paymentRepository.getTopSellingProgramsByTrainer(
+      await this._paymentRepository.getTopSellingProgramsByTrainer(
         trainerId,
         limit
       );
     return programs;
   }
   async getRevenueChart(filter: IRevenueFilter): Promise<IRevenueData[]> {
-    const chartData = await this.paymentRepository.getRevenueByFilter(filter);
+    const chartData = await this._paymentRepository.getRevenueByFilter(filter);
     return chartData;
   }
   async getRevenueChartByTrainer(
     trainerId: string,
     filter: IRevenueFilter
   ): Promise<IRevenueData[]> {
-    const chartData = await this.paymentRepository.getRevenueByFilterByTrainer(
+    const chartData = await this._paymentRepository.getRevenueByFilterByTrainer(
       trainerId,
       filter
     );

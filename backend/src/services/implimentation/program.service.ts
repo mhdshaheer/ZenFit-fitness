@@ -15,12 +15,11 @@ import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
 
 export class ProgramService implements IProgramService {
-  constructor(
-    @inject(TYPES.ProgramRespository)
-    private programRepository: IProgramRepository,
-    @inject(TYPES.CategoryRepository)
-    private categoryRepository: ICategoryRepository
-  ) {}
+  @inject(TYPES.ProgramRespository)
+  private programRepository!: IProgramRepository;
+  @inject(TYPES.CategoryRepository)
+  private categoryRepository!: ICategoryRepository;
+
   async saveProgramDraft(data: IProgram): Promise<IProgram | null> {
     const condition = {
       trainerId: data.trainerId,
@@ -53,7 +52,7 @@ export class ProgramService implements IProgramService {
     const subCategories = await this.categoryRepository.findAllCategory({
       parantId: id,
     });
-    if (subCategories == null) {
+    if (subCategories === null) {
       throw new Error("No sub categories found.");
     }
     const subCategoryIds = subCategories.map((cat) => cat._id);

@@ -129,10 +129,10 @@ export class AuthController implements IAuthController {
   async googleCallback(req: Request, res: Response): Promise<void> {
     const user = req.user as any;
     if (!user)
-      throw new AppError(
+      {throw new AppError(
         HttpResponse.GOOGLE_AUTH_FAILED,
         HttpStatus.UNAUTHORIZED
-      );
+      );}
 
     const accessToken = generateAccessToken({ id: user._id, role: user.role });
     const refreshToken = generateRefreshToken({
