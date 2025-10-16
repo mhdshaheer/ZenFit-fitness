@@ -15,13 +15,12 @@ passport.use(
       callbackURL: env.google_callback_url,
     },
     async (
-      accessToken: string,
-      refreshToken: string,
+      _accessToken: string,
+      _refreshToken: string,
       profile: Profile,
       done: (error: any, user?: any) => void
     ) => {
       try {
-        logger.info("on passport file...");
         const user = await authService.handleGoogleLogin(profile);
         logger.info("on success passport file...");
         done(null, user);

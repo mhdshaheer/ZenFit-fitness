@@ -3,6 +3,8 @@ export enum HttpResponse {
   SERVER_ERROR = "Internal server error",
   PAGE_NOT_FOUND = "Route not found",
   UNAUTHORIZED = "Unauthorized access!",
+  ACCESS_DENIED = "Access denied: User account is blocked",
+  TOO_MANY_LOGIN_ATTEMPTS = "Too many login attempts, please try again later",
 
   UNEXPECTED_KEY_FOUND = "Unexpected key found",
   PROFILE_PICTURE_CHANGED = "Profile picture changed successfully",

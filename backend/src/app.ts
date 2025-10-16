@@ -15,17 +15,18 @@ import programRouter from "./routes/program.routes";
 import sessionRouter from "./routes/session.routes";
 import categoryRouter from "./routes/category.routes";
 import { errorMiddleware } from "./middlewares/errorHandle.middleware";
-import bodyParser from "body-parser";
 import paymentRouter from "./routes/payment.routes";
-import authMiddleware from "./middlewares/verifyToken.middleware";
 import { container } from "./inversify.config";
 import { TYPES } from "./shared/types/inversify.types";
 import { IPaymentController } from "./controllers/interface/payment.controller.interface";
+import { env } from "./config/env.config";
+import { API_ROUTES } from "./const/apiRoutes.const";
+import { HttpResponse } from "./const/response_message.const";
 
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    origin: env.frontend_url,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
@@ -39,7 +40,7 @@ const paymentController = container.get<IPaymentController>(
 );
 
 app.use(
-  "/api/v1/payment/webhook",
+  `${API_ROUTES.PAYMENT}/webhook`,
   express.raw({ type: "application/json" }),
   (req, res) => paymentController.webhook(req, res)
 );
@@ -48,21 +49,21 @@ app.use(express.json());
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
-  message: "Too many login attempts, please try again later",
+  message: HttpResponse.TOO_MANY_LOGIN_ATTEMPTS,
   standardHeaders: true,
   legacyHeaders: false,
 });
 
 // Routes
-app.use("/api/v1/auth/login", loginLimiter);
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/file", router);
-app.use("/api/v1/user", userRouter);
-app.use("/api/v1/program", programRouter);
-app.use("/api/v1/session", sessionRouter);
-app.use("/api/v1/category", categoryRouter);
-app.use("/api/v1/payment", paymentRouter);
+app.use(API_ROUTES.AUTH.LOGIN, loginLimiter);
+app.use(API_ROUTES.AUTH.BASE, authRouter);
+app.use(API_ROUTES.ADMIN, adminRouter);
+app.use(API_ROUTES.FILE, router);
+app.use(API_ROUTES.USER, userRouter);
+app.use(API_ROUTES.PROGRAM, programRouter);
+app.use(API_ROUTES.SESSION, sessionRouter);
+app.use(API_ROUTES.CATEGORY, categoryRouter);
+app.use(API_ROUTES.PAYMENT, paymentRouter);
 
 // Global Error handling
 app.use(errorMiddleware);
