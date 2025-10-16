@@ -10,7 +10,7 @@ import { HttpResponse } from "../../const/response_message.const";
 
 export class ProgramController implements IProgramController {
   constructor(
-    @inject(TYPES.ProgramService) private programService: IProgramService
+    @inject(TYPES.ProgramService) private _programService: IProgramService
   ) {}
 
   async saveProgramDraft(req: Request, res: Response): Promise<void> {
@@ -24,7 +24,7 @@ export class ProgramController implements IProgramController {
       );
 
     data.trainerId = userId;
-    const draft = await this.programService.saveProgramDraft(data);
+    const draft = await this._programService.saveProgramDraft(data);
 
     if (!draft)
       throw new AppError(
@@ -48,7 +48,7 @@ export class ProgramController implements IProgramController {
       );
 
     data.trainerId = userId;
-    const program = await this.programService.saveProgramDraft(data);
+    const program = await this._programService.saveProgramDraft(data);
 
     if (!program)
       throw new AppError(
@@ -63,14 +63,14 @@ export class ProgramController implements IProgramController {
 
   async getPrograms(req: Request, res: Response): Promise<void> {
     const userId = (req as any)?.user?.id;
-    const programs = await this.programService.getPrograms(userId);
+    const programs = await this._programService.getPrograms(userId);
 
     res.status(HttpStatus.OK).json({ programs });
   }
 
   async getProgramsCategories(req: Request, res: Response): Promise<void> {
     const userId = (req as any)?.user?.id;
-    const programs = await this.programService.getProgramsCategories(userId);
+    const programs = await this._programService.getProgramsCategories(userId);
 
     res.status(HttpStatus.OK).json({ programs });
   }
@@ -78,13 +78,13 @@ export class ProgramController implements IProgramController {
     _req: Request,
     res: Response
   ): Promise<Response<ProgramDto[]>> {
-    const programs = await this.programService.getAllPrograms();
+    const programs = await this._programService.getAllPrograms();
     return res.status(HttpStatus.OK).json(programs);
   }
 
   async getProgramsByParantId(req: Request, res: Response): Promise<void> {
     const parantCategoryId = req.params.id;
-    const programs = await this.programService.getProgramsByParentId(
+    const programs = await this._programService.getProgramsByParentId(
       parantCategoryId
     );
 
@@ -96,7 +96,7 @@ export class ProgramController implements IProgramController {
     res: Response
   ): Promise<Response<ProgramDto>> {
     const { id } = req.params;
-    const program = await this.programService.findProgram(id);
+    const program = await this._programService.findProgram(id);
 
     if (!program)
       throw new AppError(HttpResponse.PROGRAM_NOT_FOUND, HttpStatus.NOT_FOUND);
@@ -112,7 +112,7 @@ export class ProgramController implements IProgramController {
     const trainerId = (req as any)?.user?.id;
     const programData = req.body;
 
-    const response = await this.programService.updateProgram(programId, {
+    const response = await this._programService.updateProgram(programId, {
       ...programData,
       trainerId,
     });
@@ -134,7 +134,7 @@ export class ProgramController implements IProgramController {
   ): Promise<Response<ProgramDto>> {
     const { programId } = req.params;
     const approvalStatus = req.body.approvalStatus;
-    const program = await this.programService.updateApprovalStatus(
+    const program = await this._programService.updateApprovalStatus(
       programId,
       approvalStatus
     );

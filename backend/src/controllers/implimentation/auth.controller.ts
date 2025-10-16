@@ -15,7 +15,7 @@ import { AppError } from "../../shared/utils/appError.util";
 
 @injectable()
 export class AuthController implements IAuthController {
-  constructor(@inject(TYPES.AuthService) private authService: IAuthService) {}
+  constructor(@inject(TYPES.AuthService) private _authService: IAuthService) {}
 
   async signup(req: Request, res: Response): Promise<void> {
     const { username, email, password, dob, gender, role } = req.body;
@@ -24,7 +24,7 @@ export class AuthController implements IAuthController {
       throw new AppError(HttpResponse.FIELDS_REQUIRED, HttpStatus.BAD_REQUEST);
     }
 
-    const user = await this.authService.signup({
+    const user = await this._authService.signup({
       username,
       email,
       password,
@@ -46,15 +46,15 @@ export class AuthController implements IAuthController {
     });
   }
   async sendOtp(req: Request, res: Response): Promise<void> {
-    await this.authService.sendOtp(req, res);
+    await this._authService.sendOtp(req, res);
   }
 
   async verifyOtp(req: Request, res: Response): Promise<void> {
-    await this.authService.verifyOtp(req, res);
+    await this._authService.verifyOtp(req, res);
   }
 
   async resendOtp(req: Request, res: Response): Promise<void> {
-    await this.authService.resendOtp(req, res);
+    await this._authService.resendOtp(req, res);
   }
   async login(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
@@ -63,7 +63,7 @@ export class AuthController implements IAuthController {
       throw new AppError(HttpResponse.FIELDS_REQUIRED, HttpStatus.BAD_REQUEST);
     }
 
-    const { user, accessToken, refreshToken } = await this.authService.login(
+    const { user, accessToken, refreshToken } = await this._authService.login(
       email,
       password
     );
@@ -106,7 +106,7 @@ export class AuthController implements IAuthController {
       throw new AppError(HttpResponse.EMAIL_REQUIRED, HttpStatus.BAD_REQUEST);
     }
 
-    const result = await this.authService.sendForgotPasswordOtp(email);
+    const result = await this._authService.sendForgotPasswordOtp(email);
     res.status(HttpStatus.OK).json(result);
   }
   async verifyForgotOtp(req: Request, res: Response): Promise<void> {
@@ -119,11 +119,11 @@ export class AuthController implements IAuthController {
       );
     }
 
-    const result = await this.authService.verifyForgotOtp(email, otp);
+    const result = await this._authService.verifyForgotOtp(email, otp);
     res.status(HttpStatus.OK).json(result);
   }
   async resetPassword(req: Request, res: Response): Promise<void> {
-    await this.authService.resetPassword(req, res);
+    await this._authService.resetPassword(req, res);
   }
 
   async googleCallback(req: Request, res: Response): Promise<void> {
@@ -158,12 +158,12 @@ export class AuthController implements IAuthController {
     );
   }
   async logOut(_req: Request, res: Response): Promise<void> {
-    await this.authService.logout(res);
+    await this._authService.logout(res);
     res.status(HttpStatus.OK).json({ message: HttpResponse.LOGOUT_SUCCESS });
   }
 
   async refreshAccessToken(req: Request, res: Response) {
     const { refreshToken } = req.cookies;
-    await this.authService.handleRefreshToken(refreshToken, res);
+    await this._authService.handleRefreshToken(refreshToken, res);
   }
 }

@@ -10,15 +10,11 @@ import { HttpResponse } from "../../const/response_message.const";
 
 @injectable()
 export class FileController implements IFileController {
-  private fileService: IFileService;
-  private profileService: IProfileService;
 
   constructor(
-    @inject(TYPES.FileService) fileService: IFileService,
-    @inject(TYPES.ProfileService) profileService: IProfileService
+    @inject(TYPES.FileService) private _fileService: IFileService,
+    @inject(TYPES.ProfileService) private _profileService: IProfileService
   ) {
-    this.fileService = fileService;
-    this.profileService = profileService;
   }
 
   async upload(req: Request, res: Response): Promise<void> {
@@ -31,14 +27,14 @@ export class FileController implements IFileController {
       throw new AppError(HttpResponse.FILE_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
 
-    const key = await this.fileService.upload(role, type, id, file);
+    const key = await this._fileService.upload(role, type, id, file);
 
     if (type == "profile") {
-      await this.profileService.updateProfileImage(id, key);
+      await this._profileService.updateProfileImage(id, key);
     } else if (type == "resume") {
-      await this.profileService.updateResumePdf(id, key);
+      await this._profileService.updateResumePdf(id, key);
     }
-    const signedUrl = await this.fileService.getSignedUrl(id, type);
+    const signedUrl = await this._fileService.getSignedUrl(id, type);
     res.status(HttpStatus.OK).json({ key, url: signedUrl });
   }
 
@@ -46,7 +42,7 @@ export class FileController implements IFileController {
     const userId = req.query.id || (req as any).user.id;
     const { key } = req.query;
     const type = key?.toString().split("/")[1];
-    const signedUrl = await this.fileService.getSignedUrl(userId, type!);
+    const signedUrl = await this._fileService.getSignedUrl(userId, type!);
     res.status(HttpStatus.OK).json({ url: signedUrl });
   }
 
@@ -54,11 +50,11 @@ export class FileController implements IFileController {
     const { key } = req.params;
     const userId = await (req as any).user.id;
     const type = key?.toString().split("/")[1];
-    await this.fileService.delete(key);
+    await this._fileService.delete(key);
     if (type == "profile") {
-      await this.profileService.removeProfileImage(userId);
+      await this._profileService.removeProfileImage(userId);
     } else if (type == "resumes") {
-      await this.profileService.removeResumePdf(userId);
+      await this._profileService.removeResumePdf(userId);
     }
 
     res

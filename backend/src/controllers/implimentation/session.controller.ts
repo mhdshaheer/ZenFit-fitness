@@ -10,7 +10,7 @@ import { HttpResponse } from "../../const/response_message.const";
 
 export class SessionController implements ISessionController {
   constructor(
-    @inject(TYPES.SessionService) private sessionService: ISessionService
+    @inject(TYPES.SessionService) private _sessionService: ISessionService
   ) {}
   async saveDraftSession(req: Request, res: Response): Promise<void> {
     const data = req.body;
@@ -26,7 +26,7 @@ export class SessionController implements ISessionController {
     data.trainerId = userId;
     const slotStatus = "draft";
 
-    const sessionDraft = await this.sessionService.saveSession(
+    const sessionDraft = await this._sessionService.saveSession(
       userId,
       slotStatus,
       data
@@ -58,7 +58,7 @@ export class SessionController implements ISessionController {
     data.trainerId = userId;
     const slotStatus = "active";
 
-    const session = await this.sessionService.saveSession(
+    const session = await this._sessionService.saveSession(
       userId,
       slotStatus,
       data
@@ -77,7 +77,7 @@ export class SessionController implements ISessionController {
   }
   async getSession(req: Request, res: Response): Promise<Response<ISession>> {
     const { id } = req.params;
-    const session = await this.sessionService.getSession(id);
+    const session = await this._sessionService.getSession(id);
     if (!session) {
       throw new AppError(HttpResponse.SESSION_NOT_FOUND, HttpStatus.NOT_FOUND);
     }

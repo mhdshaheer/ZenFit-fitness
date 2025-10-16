@@ -12,7 +12,7 @@ import { HttpResponse } from "../../const/response_message.const";
 @injectable()
 export class AdminController implements IAdminController {
   constructor(
-    @inject(TYPES.AdminService) private adminService: IAdminService
+    @inject(TYPES.AdminService) private _adminService: IAdminService
   ) {}
 
   async getUsers(req: Request, res: Response): Promise<void> {
@@ -22,7 +22,7 @@ export class AdminController implements IAdminController {
     const sortBy = (req.query.sortBy as string) || "createdAt";
     const sortOrder = (req.query.sortOrder as string) === "desc" ? -1 : 1;
 
-    const result = await this.adminService.getUsers({
+    const result = await this._adminService.getUsers({
       page,
       pageSize,
       search,
@@ -50,7 +50,7 @@ export class AdminController implements IAdminController {
       );
     }
 
-    const user = await this.adminService.updateUserStatus(id, status);
+    const user = await this._adminService.updateUserStatus(id, status);
 
     if (!user) {
       throw new AppError(HttpResponse.USER_NOT_FOUND, HttpStatus.NOT_FOUND);

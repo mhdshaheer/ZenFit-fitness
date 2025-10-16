@@ -11,6 +11,6 @@ export class PaymentSuccessComponent {
   router = inject(Router);
 
   returnToHomepage(): void {
-    this.router.navigate(['/']);
+    this.router.navigate(['/user/dashboard']);
   }
 }

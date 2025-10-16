@@ -16,11 +16,11 @@ import { HttpResponse } from "../../const/response_message.const";
 
 export class PaymentController implements IPaymentController {
   constructor(
-    @inject(TYPES.PaymentService) private paymentService: IPaymentService
+    @inject(TYPES.PaymentService) private _paymentService: IPaymentService
   ) {}
   async createCheckoutSession(req: Request, res: Response): Promise<void> {
     const userId = (req as any)?.user?.id;
-    const response = await this.paymentService.createCheckoutSession(
+    const response = await this._paymentService.createCheckoutSession(
       req.body,
       userId
     );
@@ -28,7 +28,7 @@ export class PaymentController implements IPaymentController {
   }
   async webhook(req: Request, res: Response): Promise<void> {
     try {
-      await this.paymentService.processWebhook(req);
+      await this._paymentService.processWebhook(req);
       res.json({ received: true });
     } catch (err: any) {
       res
@@ -41,14 +41,14 @@ export class PaymentController implements IPaymentController {
     res: Response
   ): Promise<Response<PaymentHistoryDto[]>> {
     const trainerId = (req as any).user.id;
-    const response = await this.paymentService.getTrainerPayments(trainerId);
+    const response = await this._paymentService.getTrainerPayments(trainerId);
     return res.status(HttpStatus.OK).json(response);
   }
   async getPayment(
     _req: Request,
     res: Response
   ): Promise<Response<PaymentHistoryDto[]>> {
-    const response = await this.paymentService.getPayments();
+    const response = await this._paymentService.getPayments();
     return res.status(HttpStatus.OK).json(response);
   }
   async getPurchasedProgram(
@@ -56,7 +56,7 @@ export class PaymentController implements IPaymentController {
     res: Response
   ): Promise<Response<PurchasedProgram[]>> {
     const userId = (req as any).user.id;
-    const purchasedPrograms = await this.paymentService.getPurchasedProgram(
+    const purchasedPrograms = await this._paymentService.getPurchasedProgram(
       userId
     );
     return res.status(HttpStatus.OK).json(purchasedPrograms);
@@ -72,7 +72,7 @@ export class PaymentController implements IPaymentController {
         HttpStatus.BAD_REQUEST
       );
     }
-    const entrolledUsers = await this.paymentService.getEntrolledUsers(
+    const entrolledUsers = await this._paymentService.getEntrolledUsers(
       programId
     );
     return res.status(HttpStatus.OK).json({ count: entrolledUsers });
@@ -81,14 +81,14 @@ export class PaymentController implements IPaymentController {
     _req: Request,
     res: Response
   ): Promise<Response<ITopSellingCategory[]>> {
-    const categories = await this.paymentService.getTopSellingCategory();
+    const categories = await this._paymentService.getTopSellingCategory();
     return res.status(HttpStatus.OK).json(categories);
   }
   async getTopSellingPrograms(
     _req: Request,
     res: Response
   ): Promise<Response<ITopSellingPrograms[]>> {
-    const programs = await this.paymentService.getTopSellingPrograms();
+    const programs = await this._paymentService.getTopSellingPrograms();
     return res.status(HttpStatus.OK).json(programs);
   }
   async getTopSellingCategoriesByTrainer(
@@ -96,7 +96,7 @@ export class PaymentController implements IPaymentController {
     res: Response
   ): Promise<Response<ITopSellingCategory[]>> {
     const trainerId = (req as any).user.id;
-    const categoies = await this.paymentService.getTopSellingCategoryByTrainer(
+    const categoies = await this._paymentService.getTopSellingCategoryByTrainer(
       trainerId
     );
     return res.status(HttpStatus.OK).json(categoies);
@@ -106,7 +106,7 @@ export class PaymentController implements IPaymentController {
     res: Response
   ): Promise<Response<ITopSellingPrograms[]>> {
     const trainerId = (req as any).user.id;
-    const programs = await this.paymentService.getTopSellingProgramsByTrainer(
+    const programs = await this._paymentService.getTopSellingProgramsByTrainer(
       trainerId
     );
     return res.status(HttpStatus.OK).json(programs);
@@ -121,7 +121,7 @@ export class PaymentController implements IPaymentController {
     const selectedFilter = validFilters.includes(filter as string)
       ? (filter as "weekly" | "monthly" | "yearly")
       : "monthly";
-    const filterData = await this.paymentService.getRevenueChart(
+    const filterData = await this._paymentService.getRevenueChart(
       selectedFilter
     );
     return res.status(HttpStatus.OK).json(filterData);
@@ -137,7 +137,7 @@ export class PaymentController implements IPaymentController {
     const selectedFilter = validFilters.includes(filter as string)
       ? (filter as "weekly" | "monthly" | "yearly")
       : "monthly";
-    const filterData = await this.paymentService.getRevenueChartByTrainer(
+    const filterData = await this._paymentService.getRevenueChartByTrainer(
       trainerId,
       selectedFilter
     );
