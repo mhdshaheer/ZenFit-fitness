@@ -11,54 +11,75 @@ import {
 import { Observable } from 'rxjs';
 import { ITopCategory } from '../../interface/category.interface';
 import { ITopPrograms } from '../../interface/program.interface';
+import { PaymentRoutes } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
-  private http = inject(HttpClient);
-  private api = environment.apiUrl + '/payment';
+  private _http = inject(HttpClient);
+  private _api = environment.apiUrl + PaymentRoutes.BASE;
 
   createCheckout(data: IPaymentCourse) {
-    return this.http.post<{ url: string }>(
-      `${this.api}/create-checkout-session`,
+    return this._http.post<{ url: string }>(
+      this._api + PaymentRoutes.CREATE_CHECKOUT,
       data
     );
   }
   getHistory() {
-    return this.http.get<PaymentHistory[]>(`${this.api}/trainer`);
+    return this._http.get<PaymentHistory[]>(
+      this._api + PaymentRoutes.HISTORY_TRAINER
+    );
   }
   getHistoryAdmin() {
-    return this.http.get<PaymentHistory[]>(`${this.api}`);
-  }
-  getPurchasedPrograms(): Observable<PurchasedProgram[]> {
-    return this.http.get<PurchasedProgram[]>(`${this.api}/purchased`);
-  }
-  getEntrolledUsers(programId: string): Observable<{ count: number }> {
-    return this.http.get<{ count: number }>(
-      `${this.api}/entrolled/${programId}`
+    return this._http.get<PaymentHistory[]>(
+      this._api + PaymentRoutes.HISTORY_ADMIN
     );
   }
   getTopCategories(): Observable<ITopCategory[]> {
-    return this.http.get<ITopCategory[]>(`${this.api}/top-categories`);
+    return this._http.get<ITopCategory[]>(
+      this._api + PaymentRoutes.TOP_CATEGORIES
+    );
   }
   getTopPrograms(): Observable<ITopPrograms[]> {
-    return this.http.get<ITopPrograms[]>(`${this.api}/top-programs`);
+    return this._http.get<ITopPrograms[]>(
+      this._api + PaymentRoutes.TOP_PROGRAMS
+    );
   }
   getTopCategoriesByTrainer(): Observable<ITopCategory[]> {
-    return this.http.get<ITopCategory[]>(`${this.api}/top-categories/trainer`);
+    return this._http.get<ITopCategory[]>(
+      this._api + PaymentRoutes.TOP_CATEGORIES_TRAINER
+    );
   }
   getTopProgramsByTrainer(): Observable<ITopPrograms[]> {
-    return this.http.get<ITopPrograms[]>(`${this.api}/top-programs/trainer`);
+    return this._http.get<ITopPrograms[]>(
+      this._api + PaymentRoutes.TOP_PROGRAMS_TRAINER
+    );
+  }
+  getPurchasedPrograms(): Observable<PurchasedProgram[]> {
+    return this._http.get<PurchasedProgram[]>(
+      this._api + PaymentRoutes.PURCHASED
+    );
+  }
+  getEntrolledUsers(programId: string): Observable<{ count: number }> {
+    return this._http.get<{ count: number }>(
+      this._api + PaymentRoutes.ENTROLLED(programId)
+    );
   }
   getRevenueChart(filter: IRevenueFilter): Observable<IRevenueData[]> {
     const params = { filter };
-    return this.http.get<IRevenueData[]>(`${this.api}/revenue-chart`, {
-      params,
-    });
+    return this._http.get<IRevenueData[]>(
+      this._api + PaymentRoutes.REVENUE_CHART_ADMIN,
+      {
+        params,
+      }
+    );
   }
   getRevenueChartByTrainer(filter: IRevenueFilter): Observable<IRevenueData[]> {
     const params = { filter };
-    return this.http.get<IRevenueData[]>(`${this.api}/revenue-chart/trainer`, {
-      params,
-    });
+    return this._http.get<IRevenueData[]>(
+      this._api + PaymentRoutes.REVENUE_CHART_TRAINER,
+      {
+        params,
+      }
+    );
   }
 }

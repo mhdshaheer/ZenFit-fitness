@@ -7,26 +7,28 @@ import {
 import { environment } from '../../../environments/environment';
 import { catchError, firstValueFrom, map, of, retry, take } from 'rxjs';
 import { LoggerService } from './logger.service';
+import { AuthRoutes } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private http = inject(HttpClient);
-  private logger = inject(LoggerService);
+  private _http = inject(HttpClient);
+  private _logger = inject(LoggerService);
+  private _api = environment.apiUrl + AuthRoutes.BASE;
 
   signup(payload: SignupPayload) {
-    return this.http
+    return this._http
       .post<{ accessToken: string; refreshToken: string }>(
-        `${environment.apiUrl}/auth/signup`,
+        this._api + AuthRoutes.SIGNUP,
         payload,
         { withCredentials: true }
       )
-      .pipe(take(1)); // unsubscribe
+      .pipe(take(1));
   }
 
   refreshToken() {
-    return this.http
+    return this._http
       .post<{ accessToken: string }>(
-        `${environment.apiUrl}/auth/refresh-token`,
+        this._api + AuthRoutes.REFRESH_TOKEN,
         {},
         { withCredentials: true }
       )
@@ -43,9 +45,9 @@ export class AuthService {
   }
 
   verifyOtp(email: string, otp: string) {
-    return this.http
+    return this._http
       .post<{ accessToken: string; email: string; role: string }>(
-        `${environment.apiUrl}/auth/verify-otp`,
+        this._api + AuthRoutes.VERIFY_OTP,
         { email, otp },
         { withCredentials: true }
       )
@@ -53,17 +55,17 @@ export class AuthService {
   }
 
   resentOtp(email: string) {
-    return this.http
-      .post<{ message: string }>(`${environment.apiUrl}/auth/resent-otp`, {
+    return this._http
+      .post<{ message: string }>(this._api + AuthRoutes.RESENT_OTP, {
         email,
       })
       .pipe(take(1));
   }
 
   login(payload: LoginPayload) {
-    return this.http
+    return this._http
       .post<{ accessToken: string; role: string }>(
-        `${environment.apiUrl}/auth/login`,
+        this._api + AuthRoutes.LOGIN,
         payload,
         { withCredentials: true }
       )
@@ -71,9 +73,9 @@ export class AuthService {
   }
 
   logout() {
-    return this.http
+    return this._http
       .post<{ message: string }>(
-        `${environment.apiUrl}/auth/logout`,
+        this._api + AuthRoutes.LOGOUT,
         {},
         { withCredentials: true }
       )
@@ -81,29 +83,25 @@ export class AuthService {
   }
 
   sendOtp(email: string) {
-    return this.http
-      .post<{ message: string }>(`${environment.apiUrl}/auth/send-otp`, {
+    return this._http
+      .post<{ message: string }>(this._api + AuthRoutes.SEND_OTP, {
         email,
       })
       .pipe(take(1));
   }
 
   verifyForgotOtp(email: string, otp: string) {
-    console.log('this verify forgot otp page');
-    return this.http
-      .post<{ message: string }>(
-        `${environment.apiUrl}/auth/verify-forgot-otp`,
-        {
-          email,
-          otp,
-        }
-      )
+    return this._http
+      .post<{ message: string }>(this._api + AuthRoutes.VERIFY_FORGOT_OTP, {
+        email,
+        otp,
+      })
       .pipe(take(1));
   }
 
   resetPassword(email: string, newPassword: string) {
-    return this.http
-      .post<{ message: string }>(`${environment.apiUrl}/auth/reset-password`, {
+    return this._http
+      .post<{ message: string }>(this._api + AuthRoutes.RESET_PASSWORD, {
         email,
         newPassword,
       })
@@ -111,12 +109,12 @@ export class AuthService {
   }
 
   googleSignup(payload: { idToken: string; email: string; username: string }) {
-    return this.http
+    return this._http
       .post<{
         accessToken: string;
         refreshToken: string;
         role: string;
-      }>(`${environment.apiUrl}/auth/google-signup`, payload)
+      }>(this._api + AuthRoutes.GOOGLE_SIGNUP, payload)
       .pipe(take(1));
   }
 
@@ -125,7 +123,7 @@ export class AuthService {
   async isLoggedIn(): Promise<boolean> {
     try {
       await firstValueFrom(
-        this.http.get(`${environment.apiUrl}/auth/protected`, {
+        this._http.get(this._api + AuthRoutes.PROTECTED, {
           withCredentials: true,
         })
       );
@@ -144,7 +142,7 @@ export class AuthService {
       const payload = JSON.parse(atob(token.split('.')[1]));
       return typeof payload.role === 'string' ? payload.role : null;
     } catch (error) {
-      this.logger.error('Failed to decode token', error);
+      this._logger.error('Failed to decode token', error);
       return null;
     }
   }

@@ -3,6 +3,7 @@ import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { IUserResponse } from '../../interface/user.interface';
+import { ProfileRouter } from '../constants/api-routes.const';
 
 @Injectable({
   providedIn: 'root',
@@ -21,7 +22,7 @@ export class ProfileService {
 
     const req = new HttpRequest(
       'POST',
-      `${this.apiUrl}/file/profile/upload`,
+      `${this.apiUrl}${ProfileRouter.FILE_BASE}${ProfileRouter.UPLOAD}`,
       formData,
       {
         reportProgress: true,
@@ -33,43 +34,54 @@ export class ProfileService {
   }
   getFile(key: string, id = '') {
     return this.http.get<{ url: string }>(
-      `${this.apiUrl}/file/profile/image?key=${encodeURIComponent(
-        key
-      )}&id=${id}`
+      `${this.apiUrl}${ProfileRouter.FILE_BASE}${
+        ProfileRouter.IMAGE
+      }?key=${encodeURIComponent(key)}&id=${id}`
     );
   }
   deleteFile(key: string) {
-    return this.http.delete<{ message: string }>(`${this.apiUrl}/file/${key}`);
-  }
-
-  // Personal information
-  getUserById(userId: string): Observable<IUserResponse> {
-    return this.http.get<IUserResponse>(`${this.apiUrl}/user/${userId}`);
-  }
-  getProfile(id = '') {
-    return this.http.get<any>(`${this.apiUrl}/user/profile?id=${id}`);
-  }
-
-  updateProfile(data: any) {
-    return this.http.put<any>(`${this.apiUrl}/user/profile`, data);
-  }
-
-  changePassword(data: { currentPassword: string; newPassword: string }) {
-    return this.http.post<{ message: string }>(
-      `${this.apiUrl}/user/password`,
-      data
+    return this.http.delete<{ message: string }>(
+      `${this.apiUrl}${ProfileRouter.FILE_BASE}/${key}`
     );
   }
 
   deleteS3File(key: string, type: string) {
     return this.http.delete<{ message: string }>(
-      `${this.apiUrl}/file/${type}/${encodeURIComponent(key)}`
+      `${this.apiUrl}${ProfileRouter.FILE_BASE}/${type}/${encodeURIComponent(
+        key
+      )}`
     );
   }
+  // Personal information
+  getUserById(userId: string): Observable<IUserResponse> {
+    return this.http.get<IUserResponse>(
+      `${this.apiUrl}${ProfileRouter.USER_BASE}/${userId}`
+    );
+  }
+  getProfile(id = '') {
+    return this.http.get<any>(
+      `${this.apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PROFILE}?id=${id}`
+    );
+  }
+
+  updateProfile(data: any) {
+    return this.http.put<any>(
+      `${this.apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PROFILE}`,
+      data
+    );
+  }
+
+  changePassword(data: { currentPassword: string; newPassword: string }) {
+    return this.http.post<{ message: string }>(
+      `${this.apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PASSWORD}`,
+      data
+    );
+  }
+
   // Admin side Profie
   verifyResume(id: string) {
     return this.http.put<{ isVerified: boolean }>(
-      `${this.apiUrl}/user/resume`,
+      `${this.apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.VERIFY_RESUME}`,
       { id }
     );
   }
