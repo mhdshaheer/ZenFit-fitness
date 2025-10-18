@@ -10,14 +10,16 @@ import { IProgramService } from "../interface/program.service.interface";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ICategoryRepository } from "../../repositories/interface/category.repository.interface";
 import logger from "../../shared/services/logger.service";
+import { IApprovalStatus } from "../../interfaces/program.interface";
+import { AppError } from "../../shared/utils/appError.util";
+import { HttpStatus } from "../../const/statuscode.const";
 
 export class ProgramService implements IProgramService {
-  constructor(
-    @inject(TYPES.ProgramRespository)
-    private programRepository: IProgramRepository,
-    @inject(TYPES.CategoryRepository)
-    private categoryRepository: ICategoryRepository
-  ) {}
+  @inject(TYPES.ProgramRespository)
+  private programRepository!: IProgramRepository;
+  @inject(TYPES.CategoryRepository)
+  private categoryRepository!: ICategoryRepository;
+
   async saveProgramDraft(data: IProgram): Promise<IProgram | null> {
     const condition = {
       trainerId: data.trainerId,
@@ -28,6 +30,12 @@ export class ProgramService implements IProgramService {
       data
     );
     return savedData;
+  }
+
+  async getAllPrograms(): Promise<ProgramDto[]> {
+    const programs = await this.programRepository.getAllPrograms();
+    const mappedPrograms = programs.map(mapToProgramDto);
+    return mappedPrograms;
   }
   async getPrograms(id: string): Promise<ProgramDto[]> {
     const result = await this.programRepository.getPrograms(id);
@@ -44,12 +52,13 @@ export class ProgramService implements IProgramService {
     const subCategories = await this.categoryRepository.findAllCategory({
       parantId: id,
     });
-    if (subCategories == null) {
+    if (subCategories === null) {
       throw new Error("No sub categories found.");
     }
     const subCategoryIds = subCategories.map((cat) => cat._id);
     const programs = await this.programRepository.getProgramsFilter({
       category: { $in: subCategoryIds },
+      approvalStatus: "Approved",
     });
     const mappedResult = programs.map(mapToProgramDto);
 
@@ -90,5 +99,20 @@ export class ProgramService implements IProgramService {
       logger.error("Error in program updation", error);
       throw new Error("Failed to update program");
     }
+  }
+
+  async updateApprovalStatus(
+    programId: string,
+    approvalStatus: IApprovalStatus
+  ): Promise<ProgramDto> {
+    const program = await this.programRepository.updateApprovalStatus(
+      programId,
+      approvalStatus
+    );
+    if (!program) {
+      throw new AppError("Program is not updated", HttpStatus.NOT_FOUND);
+    }
+    const mappedProgram = mapToProgramDto(program);
+    return mappedProgram;
   }
 }

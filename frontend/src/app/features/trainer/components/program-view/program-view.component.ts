@@ -45,13 +45,13 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   category: Category = { value: '', label: '' };
   categories: Category[] = [];
 
-  private destroy$ = new Subject<void>();
+  private _destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
     // Route param subscription with cleanup
-    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+    this.route.paramMap.pipe(takeUntil(this._destroy$)).subscribe((params) => {
       this.programId = params.get('id') as string;
     });
 
@@ -63,7 +63,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   getSubCategories() {
     this.categoryService
       .getSubcateories()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: ICategory[]) => {
           console.log('sub categories are ..:', res);
@@ -81,7 +81,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   getProgram() {
     this.programService
       .getProgramByProgramId(this.programId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: Program) => {
           this.logger.info('Program :', res);
@@ -117,7 +117,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
     // Watch description changes with cleanup
     this.programForm
       .get('description')
-      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      ?.valueChanges.pipe(takeUntil(this._destroy$))
       .subscribe((value) => {
         this.characterCount = value ? value.length : 0;
       });
@@ -141,7 +141,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
 
       this.programService
         .updateProgram(this.programId, programData)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
             this.toastService.success('Program data is updated');
@@ -217,7 +217,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

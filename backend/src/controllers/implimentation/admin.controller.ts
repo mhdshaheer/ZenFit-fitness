@@ -6,12 +6,13 @@ import { mapToUserStatusDto } from "../../mapper/user.mapper";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IAdminService } from "../../services/interface/admin.service.interface";
 import { AppError } from "../../shared/utils/appError.util";
+import { HttpResponse } from "../../const/response_message.const";
 
 // admin controller
 @injectable()
 export class AdminController implements IAdminController {
   constructor(
-    @inject(TYPES.AdminService) private adminService: IAdminService
+    @inject(TYPES.AdminService) private _adminService: IAdminService
   ) {}
 
   async getUsers(req: Request, res: Response): Promise<void> {
@@ -21,7 +22,7 @@ export class AdminController implements IAdminController {
     const sortBy = (req.query.sortBy as string) || "createdAt";
     const sortOrder = (req.query.sortOrder as string) === "desc" ? -1 : 1;
 
-    const result = await this.adminService.getUsers({
+    const result = await this._adminService.getUsers({
       page,
       pageSize,
       search,
@@ -31,7 +32,7 @@ export class AdminController implements IAdminController {
 
     if (!result) {
       throw new AppError(
-        "Failed to fetch users",
+        HttpResponse.USER_FETCH_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
@@ -44,15 +45,15 @@ export class AdminController implements IAdminController {
 
     if (!["active", "blocked"].includes(status)) {
       throw new AppError(
-        'Invalid status: must be "active" or "blocked"',
+        HttpResponse.INVALID_USER_STATUS,
         HttpStatus.BAD_REQUEST
       );
     }
 
-    const user = await this.adminService.updateUserStatus(id, status);
+    const user = await this._adminService.updateUserStatus(id, status);
 
     if (!user) {
-      throw new AppError("User not found", HttpStatus.NOT_FOUND);
+      throw new AppError(HttpResponse.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     const responseDto = mapToUserStatusDto(user, status);

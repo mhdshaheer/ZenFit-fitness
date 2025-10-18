@@ -12,6 +12,7 @@ import { ActivatedRoute } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ToastService } from '../../../../core/services/toast.service';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { CategoryNameValidator } from '../../../../shared/validators/categoryName.validator';
 
 @Component({
   selector: 'zenfit-category-view',
@@ -26,16 +27,16 @@ export class CategoryViewComponent {
   categoryId!: string;
 
   // Services
-  private categoryService = inject(CategoryService);
-  private activatedRoute = inject(ActivatedRoute);
-  private toastService = inject(ToastService);
-  private logger = inject(LoggerService);
+  private _categoryService = inject(CategoryService);
+  private _activatedRoute = inject(ActivatedRoute);
+  private _toastService = inject(ToastService);
+  private _logger = inject(LoggerService);
 
-  private destroy$ = new Subject<void>();
+  private _destroy$ = new Subject<void>();
 
-  constructor(private fb: FormBuilder) {
+  constructor(private _fb: FormBuilder) {
     // Initialize create form
-    this.editForm = this.fb.group({
+    this.editForm = this._fb.group({
       name: [
         '',
         [
@@ -43,6 +44,7 @@ export class CategoryViewComponent {
           Validators.minLength(CATEGORY_FORM_CONSTANTS.NAME.MIN_LENGTH),
           Validators.maxLength(CATEGORY_FORM_CONSTANTS.NAME.MAX_LENGTH),
         ],
+        [CategoryNameValidator(this._categoryService)],
       ],
       description: [
         '',
@@ -52,7 +54,7 @@ export class CategoryViewComponent {
   }
 
   ngOnInit() {
-    this.categoryId = this.activatedRoute.snapshot.paramMap.get('id')!;
+    this.categoryId = this._activatedRoute.snapshot.paramMap.get('id')!;
     this.getCategory();
   }
 
@@ -61,19 +63,19 @@ export class CategoryViewComponent {
     if (this.editForm.valid) {
       this.isSubmitting = true;
       const formValue = this.editForm.value;
-      this.categoryService
+      this._categoryService
         .updateCategory(this.categoryId, formValue)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
-            this.logger.info('updated category ', res);
-            this.toastService.success('Category updated');
+            this._logger.info('updated category ', res);
+            this._toastService.success('Category updated');
 
             this.editForm.markAsPristine();
           },
           error: (err) => {
-            this.logger.error('Failed to update category', err);
-            this.toastService.error('Category Updation Failed');
+            this._logger.error('Failed to update category', err);
+            this._toastService.error('Category Updation Failed');
           },
         });
       this.isSubmitting = false;
@@ -81,9 +83,9 @@ export class CategoryViewComponent {
   }
 
   getCategory() {
-    this.categoryService
+    this._categoryService
       .getCategory(this.categoryId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
         this.initializeForm(res);
       });
@@ -96,7 +98,7 @@ export class CategoryViewComponent {
   }
 
   ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

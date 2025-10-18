@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
@@ -18,7 +18,7 @@ export interface UserProfile {
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [RouterModule, FormsModule],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
@@ -59,22 +59,8 @@ export class HeaderComponent {
   @Output() mobileMenuToggle = new EventEmitter<boolean>();
 
   // Component state
-  searchQuery = '';
   isUserMenuOpen = false;
   isMobileMenuOpen = false;
-
-  onSearchChange() {
-    this.searchChange.emit(this.searchQuery);
-  }
-
-  onSearchSubmit() {
-    this.searchSubmit.emit(this.searchQuery);
-  }
-
-  clearSearch() {
-    this.searchQuery = '';
-    this.searchChange.emit('');
-  }
 
   toggleUserMenu() {
     this.isUserMenuOpen = !this.isUserMenuOpen;

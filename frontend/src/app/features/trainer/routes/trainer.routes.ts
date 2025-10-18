@@ -65,6 +65,14 @@ export const TRAINER_ROUTES: Routes = [
           );
         },
       },
+      {
+        path: 'wallet',
+        loadComponent: () => {
+          return import(
+            '../components/trainer-wallet/trainer-wallet.component'
+          ).then((m) => m.TrainerWalletComponent);
+        },
+      },
     ],
   },
 ];

@@ -4,7 +4,7 @@ import { UserDto } from "../../dtos/user.dtos";
 export interface IAdminService {
   getUsers(params: GetUsersParams): Promise<{ data: UserDto[]; total: number }>;
   updateUserStatus(
-    id: string,
+    userid: string,
     status: "active" | "blocked"
   ): Promise<IUser | null>;
 }

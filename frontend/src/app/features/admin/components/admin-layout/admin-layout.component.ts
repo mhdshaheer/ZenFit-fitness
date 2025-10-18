@@ -26,8 +26,10 @@ export class AdminLayoutComponent implements OnDestroy {
   userMenu: Menu[] = [
     { label: 'Dashboard', route: '/admin/dashboard', icon: 'fas fa-user' },
     { label: 'Users', route: '/admin/users', icon: 'fas fa-dumbbell' },
+
+    { label: 'Programs', route: '/admin/programs', icon: 'fas fa-cog' },
     { label: 'Category', route: '/admin/category', icon: 'fas fa-cog' },
-    { label: 'Settings', route: '/admin/settings', icon: 'fas fa-cog' },
+    { label: 'Wallet', route: '/admin/wallet', icon: 'fas fa-wallet' },
   ];
   handleMenuClick(item: Menu) {
     console.log('Clicked menu item:', item);

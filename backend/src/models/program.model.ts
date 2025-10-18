@@ -11,6 +11,7 @@ export interface IProgram extends Document {
   duration: string; // e.g., "12 weeks"
   trainerId: string | Types.ObjectId; // reference User._id
   status: "active" | "inactive" | "draft";
+  approvalStatus?: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -33,6 +34,11 @@ const ProgramSchema = new Schema<IProgram>(
       type: String,
       enum: ["active", "inactive", "draft"],
       default: "active",
+    },
+    approvalStatus: {
+      type: String,
+      enum: ["Pending", "Approved", "Rejected"],
+      default: "Pending",
     },
   },
   { timestamps: true }

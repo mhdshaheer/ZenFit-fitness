@@ -6,17 +6,18 @@ import { ICategoryService } from "../../services/interface/category.service.inte
 import { HttpStatus } from "../../const/statuscode.const";
 import { CategoryDto } from "../../dtos/category.dtos";
 import { AppError } from "../../shared/utils/appError.util";
+import { HttpResponse } from "../../const/response_message.const";
 
 export class CategoryController implements ICategoryController {
   constructor(
-    @inject(TYPES.CategoryService) private categoryService: ICategoryService
+    @inject(TYPES.CategoryService) private _categoryService: ICategoryService
   ) {}
   async findAllCategory(
     _req: Request,
     res: Response,
     _next: NextFunction
   ): Promise<Response<CategoryDto[]>> {
-    const categories = await this.categoryService.findAllCategory();
+    const categories = await this._categoryService.findAllCategory();
     return res.status(HttpStatus.OK).json(categories);
   }
   async findAllSubCategory(
@@ -25,7 +26,7 @@ export class CategoryController implements ICategoryController {
     _next: NextFunction
   ): Promise<Response<CategoryDto>> {
     const subCategories: CategoryDto[] =
-      await this.categoryService.findALlSubCategory();
+      await this._categoryService.findALlSubCategory();
     return res.status(HttpStatus.OK).json(subCategories);
   }
 
@@ -35,8 +36,7 @@ export class CategoryController implements ICategoryController {
     _next: NextFunction
   ): Promise<Response<CategoryDto>> {
     const categoryData = req.body;
-    console.log("category from frontend :", categoryData);
-    const response = await this.categoryService.createCategory(categoryData);
+    const response = await this._categoryService.createCategory(categoryData);
     return res.status(HttpStatus.OK).json(response);
   }
 
@@ -47,7 +47,7 @@ export class CategoryController implements ICategoryController {
   ): Promise<Response<CategoryDto>> {
     const { id } = req.params;
     const category = req.body;
-    const response = await this.categoryService.updateCategory(id, category);
+    const response = await this._categoryService.updateCategory(id, category);
     return res.status(HttpStatus.OK).json(response);
   }
 
@@ -57,7 +57,7 @@ export class CategoryController implements ICategoryController {
     _next: NextFunction
   ): Promise<Response<CategoryDto>> {
     const categoryId = req.params.id;
-    const response = await this.categoryService.getCategory(categoryId);
+    const response = await this._categoryService.getCategory(categoryId);
     return res.status(HttpStatus.OK).json(response);
   }
 
@@ -68,9 +68,12 @@ export class CategoryController implements ICategoryController {
   ): Promise<Response<boolean>> {
     const { name } = req.query;
     if (!name || typeof name !== "string") {
-      throw new AppError("Category name is required", HttpStatus.BAD_REQUEST);
+      throw new AppError(
+        HttpResponse.CATEGORY_NAME_REQUIRED,
+        HttpStatus.BAD_REQUEST
+      );
     }
-    const isDuplicate = await this.categoryService.checkDuplicateName(name);
+    const isDuplicate = await this._categoryService.checkDuplicateName(name);
     return res.status(HttpStatus.OK).json(isDuplicate);
   }
 
@@ -81,7 +84,7 @@ export class CategoryController implements ICategoryController {
   ): Promise<Response<CategoryDto>> {
     const { id } = req.params;
     const { isBlocked } = req.body;
-    const category = await this.categoryService.updateStatus(id, isBlocked);
+    const category = await this._categoryService.updateStatus(id, isBlocked);
     return res.status(HttpStatus.OK).json(category);
   }
 
@@ -96,7 +99,7 @@ export class CategoryController implements ICategoryController {
     const sortBy = req.query.sortBy as string;
     const sortOrder = (req.query.sortOrder as string) === "desc" ? -1 : 1;
 
-    const result = await this.categoryService.getTableCategories({
+    const result = await this._categoryService.getTableCategories({
       page,
       pageSize,
       search,
@@ -106,7 +109,7 @@ export class CategoryController implements ICategoryController {
 
     if (!result) {
       throw new AppError(
-        "Failed to fetch categories",
+        HttpResponse.CATEGORY_FETCH_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }

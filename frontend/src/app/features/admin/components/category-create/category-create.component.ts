@@ -1,5 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
+
 import {
   FormBuilder,
   FormGroup,
@@ -17,7 +17,7 @@ import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'zenfit-category-create',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './category-create.component.html',
   styleUrl: './category-create.component.css',
 })
@@ -32,9 +32,9 @@ export class CategoryCreateComponent implements OnInit, OnDestroy {
 
   private _categoryService = inject(CategoryService);
   private _toastService = inject(ToastService);
-  private router = inject(Router);
+  private _router = inject(Router);
 
-  private destroy$ = new Subject<void>();
+  private _destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder) {
     this.createForm = this.fb.group({
@@ -72,13 +72,13 @@ export class CategoryCreateComponent implements OnInit, OnDestroy {
 
       this._categoryService
         .createCategory(formValue)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res: ICategory) => {
             console.log('Category created:', res);
             this._toastService.success('Category is created');
             this.resetCreateForm();
-            this.router.navigate(['/admin/category']);
+            this._router.navigate(['/admin/category']);
             this.isSubmitting = false;
           },
           error: (err) => {
@@ -119,7 +119,7 @@ export class CategoryCreateComponent implements OnInit, OnDestroy {
     });
   }
   ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

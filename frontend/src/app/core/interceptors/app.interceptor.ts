@@ -13,14 +13,13 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
   const logger = inject(LoggerService);
   const toastservice = inject(ToastService);
 
-  // Clone the request to include credentials (like AuthInterceptor)
   const clonedReq = req.clone({ withCredentials: true });
 
   return next(clonedReq).pipe(
     catchError((error: HttpErrorResponse) => {
       logger.error('HTTP Error:', error);
 
-      // Handle blocked user (example: 403 status with message 'User blocked')
+      // 403:Blocked user
       if (
         error.status === 403 &&
         error.error?.message === 'Your account has been blocked.'
@@ -31,17 +30,15 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      // Handle 401 Unauthorized (except login/refresh endpoints)
+      //  401: Unauthorized
       if (
         error.status === 401 &&
         !req.url.includes('/auth/login') &&
         !req.url.includes('/auth/refresh-token')
       ) {
-        // Attempt to refresh token
         return authService.refreshToken().pipe(
           switchMap((success: boolean) => {
             if (success) {
-              // Retry original request with credentials
               const retryReq = req.clone({ withCredentials: true });
               return next(retryReq);
             } else {
@@ -58,7 +55,20 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
         );
       }
 
-      // Other errors
+      // 400 or 404 : not found page
+      if (error.status === 400 || error.status === 404) {
+        toastservice.error('Page not found or invalid request.');
+        router.navigate(['/not-found']);
+        return throwError(() => error);
+      }
+
+      // 500: Internal Server Error
+      if (error.status === 500) {
+        toastservice.error('Something went wrong on the server.');
+        router.navigate(['/error']);
+        return throwError(() => error);
+      }
+
       return throwError(() => error);
     })
   );

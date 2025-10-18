@@ -6,46 +6,61 @@ import {
   ProgramCategory,
 } from '../../features/trainer/store/trainer.model';
 import { Observable } from 'rxjs';
+import { ProgramRoutes } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class ProgramService {
-  apiUrl = environment.apiUrl;
+  apiUrl = environment.apiUrl + ProgramRoutes.BASE;
   http = inject(HttpClient);
 
+  saveProgram(data: Program) {
+    return this.http.post<{ message: string }>(`${this.apiUrl}`, data);
+  }
+  getAllPrograms(): Observable<Program[]> {
+    return this.http.get<Program[]>(`${this.apiUrl}`);
+  }
+  getProgramByProgramId(programId: string) {
+    return this.http.get<Program>(`${this.apiUrl}/${programId}`);
+  }
+
+  updateProgram(programId: string, program: Program) {
+    return this.http.put<{ message: string }>(
+      `${this.apiUrl}/${programId}`,
+      program
+    );
+  }
   saveProgramDraft(data: Program) {
     return this.http.post<{ message: string }>(
-      `${this.apiUrl}/program/draft`,
+      `${this.apiUrl}${ProgramRoutes.DRAFT}`,
       data
     );
   }
-  saveProgram(data: Program) {
-    return this.http.post<{ message: string }>(`${this.apiUrl}/program`, data);
-  }
 
-  getPrograms() {
-    return this.http.get<{ programs: Program[] }>(`${this.apiUrl}/program`);
+  getPrograms(): Observable<{ programs: Program[] }> {
+    return this.http.get<{ programs: Program[] }>(
+      `${this.apiUrl}${ProgramRoutes.TRAINER}`
+    );
   }
   getProgramCategory() {
     return this.http.get<{ programs: ProgramCategory[] }>(
-      `${this.apiUrl}/program/category`
+      `${this.apiUrl}${ProgramRoutes.CATEGORY}`
     );
   }
   getProgramsByParantId(
     categoryId: string
   ): Observable<{ programs: Program[] }> {
     return this.http.get<{ programs: Program[] }>(
-      `${this.apiUrl}/program/category/${categoryId}`
+      `${this.apiUrl}${ProgramRoutes.CATEGORY_BY_ID(categoryId)}`
     );
   }
 
-  getProgramByProgramId(programId: string) {
-    return this.http.get<Program>(`${this.apiUrl}/program/${programId}`);
-  }
-
-  updateProgram(programId: string, program: Program) {
-    return this.http.put<{ message: string }>(
-      `${this.apiUrl}/program/${programId}`,
-      program
+  updateApprovalStatus(
+    programId: string,
+    approvalStatus: string
+  ): Observable<Program> {
+    return this.http.put<Program>(
+      `${this.apiUrl}${ProgramRoutes.APPROVAL_STATUS(programId)}`,
+      { approvalStatus }
     );
   }
 }

@@ -27,10 +27,15 @@ export const TYPES = {
   CategoryService: Symbol.for("CategoryService"),
   CategoryController: Symbol.for("CategoryController"),
 
+  // Payment
+  PaymentService: Symbol.for("PaymentService"),
+  PaymentController: Symbol.for("PaymentController"),
+
   // Repositories
   UserRepository: Symbol.for("UserRepository"),
   TempUserRepository: Symbol.for("TempUserRepository"),
   SessionRepository: Symbol.for("SessionRepository"),
   ProgramRespository: Symbol.for("ProgramRepository"),
   CategoryRepository: Symbol.for("CategoryRepository"),
+  PaymentRepository: Symbol.for("PaymentRepository"),
 };

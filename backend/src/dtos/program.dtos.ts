@@ -10,7 +10,10 @@ export interface ProgramDto {
   rating?: number;
   price: number;
   status: "active" | "inactive" | "draft";
+  approvalStatus?: string;
+  trainerId?: string;
   programId?: string;
+  createdAt?: string;
 }
 export interface ProgramSlotDto {
   id: string;

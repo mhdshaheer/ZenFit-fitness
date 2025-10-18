@@ -46,9 +46,9 @@ export interface ActionEvent {
   styleUrl: './user-manage.component.css',
 })
 export class UserManageComponent implements OnInit {
-  private store = inject(Store);
-  private dialog = inject(MatDialog);
-  private router = inject(Router);
+  private _store = inject(Store);
+  private _dialog = inject(MatDialog);
+  private _router = inject(Router);
 
   users$!: Observable<User[]>;
   loading$!: Observable<boolean>;
@@ -62,17 +62,17 @@ export class UserManageComponent implements OnInit {
   sortOrder: 'asc' | 'desc' = 'asc';
 
   ngOnInit(): void {
-    this.users$ = this.store.select(selectAllUsers);
-    this.store.select(selectTotalUsers).subscribe((total) => {
+    this.users$ = this._store.select(selectAllUsers);
+    this._store.select(selectTotalUsers).subscribe((total) => {
       console.log('total users: ', total);
       this.totalUsers = total;
     });
-    this.loading$ = this.store.select(selectUserLoading);
+    this.loading$ = this._store.select(selectUserLoading);
     this.loadUsersFromBackend();
   }
 
   loadUsersFromBackend(): void {
-    this.store.dispatch(
+    this._store.dispatch(
       loadUsers({
         page: this.page,
         pageSize: this.pageSize,
@@ -147,14 +147,14 @@ export class UserManageComponent implements OnInit {
     const { action, row } = event;
     if (action == 'view') {
       console.log('clicked view option ', row.id);
-      this.router.navigate(['/admin/profile', row.id]);
+      this._router.navigate(['/admin/profile', row.id]);
       return;
     }
     if (action == 'block' || action == 'unblock') {
       const updatedStatus = row.status == 'active' ? 'blocked' : 'active';
       const user_Id = row._id || row.id;
 
-      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      const dialogRef = this._dialog.open(ConfirmDialogComponent, {
         width: '350px',
         data: {
           title: action === 'block' ? 'Block User' : 'Unblock User',
@@ -164,7 +164,7 @@ export class UserManageComponent implements OnInit {
 
       dialogRef.afterClosed().subscribe((confirmed: boolean) => {
         if (confirmed) {
-          this.store.dispatch(
+          this._store.dispatch(
             updateUserStatus({
               id: user_Id,
               status: updatedStatus,

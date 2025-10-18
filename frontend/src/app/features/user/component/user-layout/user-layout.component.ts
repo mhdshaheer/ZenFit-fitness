@@ -30,7 +30,7 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
   router = inject(Router);
   profileService = inject(ProfileService);
 
-  private destroy$ = new Subject<void>();
+  private _destroy$ = new Subject<void>();
 
   // Sidebar
   userMenu: Menu[] = [
@@ -54,7 +54,7 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
   logOutUser() {
     this.authService
       .logout()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           this.logger.info(res.message);
@@ -85,12 +85,12 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
     };
     this.profileService
       .getProfile()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
         if (res.profileImage) {
           this.profileService
             .getFile(res.profileImage)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntil(this._destroy$))
             .subscribe((fileRes) => {
               userData.avatar = fileRes.url;
             });
@@ -168,7 +168,7 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

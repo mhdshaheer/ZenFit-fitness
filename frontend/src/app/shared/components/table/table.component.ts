@@ -1,32 +1,24 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output, OnInit } from '@angular/core';
+import {
+  Component,
+  EventEmitter,
+  Input,
+  Output,
+  OnInit,
+  TemplateRef,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { debounceSearch } from '../../utils.ts/debouce.util';
-export interface TableColumn {
-  key: string;
-  label: string;
-  sortable?: boolean;
-  type?: 'text' | 'email' | 'date' | 'status' | 'avatar';
-  width?: string;
-}
-
-export interface TableAction {
-  label: string;
-  icon: string;
-  color: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'gray';
-  action: string;
-  condition?: (row: any) => boolean;
-}
-
-export interface ActionEvent {
-  action: string;
-  row: any;
-  index: number;
-}
+import {
+  ActionEvent,
+  TableAction,
+  TableColumn,
+} from '../../../interface/shared.interface';
+import { ApprovalStatusColorPipe } from '../../pipes/approval-status-color.pipe';
 
 @Component({
   selector: 'app-table',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, ApprovalStatusColorPipe],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css',
 })
@@ -38,6 +30,7 @@ export class TableComponent implements OnInit {
   @Input() data: any[] = [];
   @Input() actions: TableAction[] = [];
   @Input() showAddButton = true;
+  @Input() customCell?: TemplateRef<any>;
 
   // Pagination
   @Input() pageSize = 10;

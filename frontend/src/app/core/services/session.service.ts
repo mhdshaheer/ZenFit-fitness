@@ -5,25 +5,23 @@ import {
   IProgramSlot,
   SlotFormData,
 } from '../../features/trainer/store/trainer.model';
+import { SessionRoutes } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class SessionService {
-  private apiUrl = environment.apiUrl;
+  private apiUrl = environment.apiUrl + SessionRoutes.BASE;
   private http = inject(HttpClient);
 
   saveSessionDraft(sessionData: SlotFormData) {
     return this.http.post<{ message: string }>(
-      `${this.apiUrl}/session/draft`,
+      `${this.apiUrl}${SessionRoutes.DRAFT}`,
       sessionData
     );
   }
   saveSession(sessionData: SlotFormData) {
-    return this.http.post<{ message: string }>(
-      `${this.apiUrl}/session`,
-      sessionData
-    );
+    return this.http.post<{ message: string }>(`${this.apiUrl}`, sessionData);
   }
   getSession(programId: string) {
-    return this.http.get<IProgramSlot>(`${this.apiUrl}/session/${programId}`);
+    return this.http.get<IProgramSlot>(`${this.apiUrl}/${programId}`);
   }
 }

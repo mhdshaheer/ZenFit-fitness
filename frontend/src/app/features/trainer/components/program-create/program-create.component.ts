@@ -38,7 +38,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
   currentTrainerId = '';
   categories: Category[] = [];
 
-  private destroy$ = new Subject<void>(); // ✅ for cleanup
+  private _destroy$ = new Subject<void>(); // ✅ for cleanup
 
   constructor(private fb: FormBuilder) {}
 
@@ -49,15 +49,15 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
     console.log('Unsubscribed all streams ✅');
   }
 
   getSubCategories() {
     this.categoryService
       .getSubcateories()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: ICategory[]) => {
           console.log('sub categories are ..:', res);
@@ -94,7 +94,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
     // Watch description changes
     this.programForm
       .get('description')
-      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      ?.valueChanges.pipe(takeUntil(this._destroy$))
       .subscribe((value) => {
         this.characterCount = value ? value.length : 0;
       });
@@ -126,7 +126,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
 
       this.programService
         .saveProgram(programData)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
             console.log('Training Program saved successfully:', res);
@@ -158,7 +158,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
 
     this.programService
       .saveProgramDraft(draftData)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           console.log('Draft saved successfully:', res);

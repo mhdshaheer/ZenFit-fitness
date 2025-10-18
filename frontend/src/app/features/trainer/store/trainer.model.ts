@@ -3,6 +3,7 @@ import { ITimeSlot } from '../components/slot-create/slot-create.component';
 export interface Program {
   programId: string;
   _id: string;
+  id?: string;
   title: string;
   description: string;
   category: string;
@@ -11,6 +12,8 @@ export interface Program {
   duration: string;
   trainerId: string;
   status: 'active' | 'inactive' | 'draft';
+  createdAt?: string;
+  approvalStatus?: 'Pending' | 'Approved' | 'Rejected' | undefined;
 }
 export interface ProgramCategory {
   _id: string;

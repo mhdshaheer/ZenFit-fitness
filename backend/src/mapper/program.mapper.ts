@@ -12,6 +12,9 @@ export const mapToProgramDto = (programs: IProgram): ProgramDto => {
     price: programs.price,
     status: programs.status,
     programId: programs.programId,
+    createdAt: programs.createdAt?.toString(),
+    approvalStatus: programs.approvalStatus,
+    trainerId: programs.trainerId.toString(),
     //   image?: programs;
     //   enrolledCount?: programs.entrolledCount,
     //   rating?: number;

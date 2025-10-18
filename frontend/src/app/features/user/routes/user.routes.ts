@@ -45,6 +45,30 @@ export const USER_ROUTES: Routes = [
             (m) => m.ProgramListComponent
           ),
       },
+      {
+        path: 'payment/:id',
+        loadComponent: () => {
+          return import('../component/payment/payment.component').then(
+            (m) => m.PaymentComponent
+          );
+        },
+      },
+      {
+        path: 'payment-success',
+        loadComponent: () => {
+          return import(
+            '../component/payment-success/payment-success.component'
+          ).then((m) => m.PaymentSuccessComponent);
+        },
+      },
+      {
+        path: 'payment-failed',
+        loadComponent: () => {
+          return import(
+            '../component/payment-failed/payment-failed.component'
+          ).then((m) => m.PaymentFailedComponent);
+        },
+      },
     ],
   },
 ];

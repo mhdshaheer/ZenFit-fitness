@@ -1,0 +1,49 @@
+<div class="min-h-screen bg-gray-50 flex flex-col">
+  <!-- Main Content -->
+  <main
+    class="flex-grow flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8"
+  >
+    <div class="w-full max-w-md">
+      <!-- Success Icon -->
+      <div class="flex justify-center mb-6">
+        <div
+          class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-green-100 flex items-center justify-center"
+        >
+          <svg
+            class="w-10 h-10 sm:w-12 sm:h-12 text-green-500"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth="3"
+              d="M5 13l4 4L19 7"
+            />
+          </svg>
+        </div>
+      </div>
+
+      <!-- Success Message -->
+      <div class="text-center mb-8">
+        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
+          Payment Successful
+        </h1>
+        <p class="text-gray-600 text-sm sm:text-base">
+          Thank you for your purchase!
+        </p>
+      </div>
+
+      <!-- Return Button -->
+      <div class="flex justify-center">
+        <button
+          (click)="returnToHomepage()"
+          class="bg-green-600 hover:bg-green-700 text-white font-medium px-8 py-3 rounded-md transition-colors duration-200 text-sm sm:text-base w-full sm:w-auto"
+        >
+          Return to Homepage
+        </button>
+      </div>
+    </div>
+  </main>
+</div>

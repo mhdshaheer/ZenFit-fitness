@@ -25,7 +25,7 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
   categoryCards: CategoryCard[] = [];
   router = inject(Router);
 
-  private destroy$ = new Subject<void>();
+  private _destroy$ = new Subject<void>();
   constructor(private categoryService: CategoryService) {}
 
   categoryExtras: Record<string, { icon: string; color: string }> = {
@@ -40,7 +40,7 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
   getCategories() {
     this.categoryService
       .getCategories()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: ICategory[]) => {
           console.log('categories are :', res);
@@ -77,7 +77,7 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

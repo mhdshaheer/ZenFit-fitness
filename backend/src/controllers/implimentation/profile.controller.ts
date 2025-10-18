@@ -6,24 +6,32 @@ import { IProfileService } from "../../services/interface/profile.service.interf
 import { HttpResponse } from "../../const/response_message.const";
 import { TYPES } from "../../shared/types/inversify.types";
 import { AppError } from "../../shared/utils/appError.util";
+import { UserDto } from "../../dtos/user.dtos";
 
 @injectable()
 export class ProfileController implements IProfileController {
   constructor(
-    @inject(TYPES.ProfileService) private profileService: IProfileService
+    @inject(TYPES.ProfileService) private _profileService: IProfileService
   ) {}
 
+  async getUserByUserId(
+    req: Request,
+    res: Response
+  ): Promise<Response<UserDto>> {
+    const userId = req.params.userId;
+    const userData = await this._profileService.getProfile(userId);
+    return res.status(HttpStatus.OK).json(userData);
+  }
   async getProfile(req: Request, res: Response): Promise<void> {
     const userId = req.query.id || (req as any).user.id;
-    const profile = await this.profileService.getProfile(userId);
+    const profile = await this._profileService.getProfile(userId);
     res.status(HttpStatus.OK).json(profile);
-  
   }
 
   async updateProfile(req: Request, res: Response): Promise<void> {
     const userId = (req as any).user.id;
     const profileData = req.body;
-    const updatedProfile = await this.profileService.updateProfile(
+    const updatedProfile = await this._profileService.updateProfile(
       userId,
       profileData
     );
@@ -32,26 +40,28 @@ export class ProfileController implements IProfileController {
 
   async verifyResume(req: Request, res: Response): Promise<void> {
     const userId = req.body.id;
-    const resumeVerified = await this.profileService.verifyResume(userId);
+    const resumeVerified = await this._profileService.verifyResume(userId);
     res.status(HttpStatus.OK).json({ isVerified: resumeVerified });
   }
 
   async changePassword(req: Request, res: Response): Promise<void> {
+    const userId = (req as any).user.id;
+    const passwords = req.body;
 
-      const userId = (req as any).user.id;
-      const passwords = req.body;
+    const updated = await this._profileService.changePassword(
+      userId,
+      passwords
+    );
 
-      const updated = await this.profileService.changePassword(
-        userId,
-        passwords
+    if (updated) {
+      res.status(HttpStatus.OK).json({
+        message: HttpResponse.PASSWORD_CHANGE_SUCCESS,
+      });
+    } else {
+      throw new AppError(
+        HttpResponse.RESET_PASSWORD_FAILED,
+        HttpStatus.BAD_REQUEST
       );
-
-      if (updated) {
-        res.status(HttpStatus.OK).json({
-          message: HttpResponse.PASSWORD_CHANGE_SUCCESS,
-        });
-      } else {
-        throw new AppError(HttpResponse.RESET_PASSWORD_FAILED,HttpStatus.BAD_REQUEST)
-      }
+    }
   }
 }

@@ -1,0 +1,19 @@
+<app-table
+  [title]="'Program Management'"
+  [subtitle]="'Manage all trainer programs'"
+  [entityName]="'Program'"
+  [data]="programs"
+  [columns]="programsColumn"
+  [actions]="programAction"
+  [customCell]="customCell"
+  [actions]="programAction"
+  (actionClicked)="onViewProgram($event)"
+>
+  <ng-template #customCell let-row let-column="column">
+    @if (column.key === 'approvalStatus') {
+    <span [ngClass]="row.approvalStatus | approvalStatusColor">
+      {{ row.approvalStatus }}
+    </span>
+    }
+  </ng-template>
+</app-table>

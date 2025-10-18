@@ -33,4 +33,7 @@ userRouter.post(
 
 // userRouter.delete("/resume",authMiddleware,profileController.)
 
+userRouter.get("/:userId", (req, res, next) => {
+  profileController.getUserByUserId(req, res).catch(next);
+});
 export default userRouter;

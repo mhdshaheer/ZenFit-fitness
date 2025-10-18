@@ -27,14 +27,16 @@ const authMiddleware = async (
       const user = await userRepository.findById(decoded.id);
 
       if (!user) {
-        res.status(HttpStatus.NOT_FOUND).json({ message: "User not found" });
+        res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ message: HttpResponse.USER_NOT_FOUND });
         return;
       }
 
       if (user.status == "blocked") {
         res
           .status(HttpStatus.FORBIDDEN)
-          .json({ message: "Your account has been blocked." });
+          .json({ message: HttpResponse.ACCESS_DENIED });
         return;
       }
       (req as any).user = decoded;

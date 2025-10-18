@@ -53,7 +53,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
   toastService = inject(ToastService);
   isEditMode = false;
 
-  private destroy$ = new Subject<void>();
+  private _destroy$ = new Subject<void>();
 
   // ========= CV UPLOAD ========
   uploadedFile: UploadFile | null = null;
@@ -83,7 +83,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
 
     this.profileService
       .uploadfile(file, 'profile')
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (event) => {
           if (event.type === HttpEventType.UploadProgress && event.total) {
@@ -92,7 +92,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
             this.profileImageUrl = event.body?.url ?? null;
             this.isUploading = false;
             console.log('Profile image uploaded, key:', event.body?.url);
-            // this.progress = 0; // reset after upload
+            // this.progress = 0;
           }
         },
         error: () => {
@@ -119,7 +119,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
   loadProfile() {
     this.profileService
       .getProfile()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
         console.log('Response of profile: ', res);
         this.profileData = res;
@@ -127,7 +127,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
         if (res.profileImage) {
           this.profileService
             .getFile(res.profileImage)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntil(this._destroy$))
             .subscribe((fileRes) => {
               this.profileImageUrl = fileRes.url;
             });
@@ -136,7 +136,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
           this.resumeKey = res.resume;
           this.profileService
             .getFile(res.resume)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntil(this._destroy$))
             .subscribe(async (fileRes) => {
               const fileDetails = JSON.parse(fileRes.url);
               const response = await fetch(fileDetails.url);
@@ -173,7 +173,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
       console.log('profile data:', this.profileForm.value);
       this.profileService
         .updateProfile(this.profileForm.value)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
             console.log('response from the backend :', res);
@@ -250,7 +250,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
 
     this.profileService
       .uploadfile(file, 'resume')
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (event) => {
           if (event.type === HttpEventType.UploadProgress && event.total) {
@@ -359,7 +359,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
       console.log('Uploaded file is : ', this.uploadedFile);
       this.profileService
         .deleteS3File(this.resumeKey, 'resume')
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
             console.log('resume is deleted :', res);
@@ -412,7 +412,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
       console.log('submitted data :', passwords);
       this.profileService
         .changePassword(passwords)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
             console.log(res);
@@ -449,7 +449,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

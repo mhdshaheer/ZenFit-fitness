@@ -40,7 +40,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   isLoading = signal(false);
 
-  private destroy$ = new Subject<void>(); // ✅ for unsubscribing all observables
+  private _destroy$ = new Subject<void>();
 
   ngOnInit() {
     this.startTimer();
@@ -88,7 +88,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     this.isLoading.set(true);
     this.authService
       .sendOtp(this.form.value.email)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           this.email = this.form.value.email;
@@ -115,7 +115,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     this.isLoading.set(true);
     this.authService
       .verifyForgotOtp(this.email, this.otpForm.value.otp)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: () => {
           Swal.fire('OTP Verified', 'success');
@@ -141,7 +141,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     this.isLoading.set(true);
     this.authService
       .resetPassword(this.email, this.resetForm.value.password)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: () => {
           this.isLoading.set(false);
@@ -171,7 +171,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     this.startTimer();
     this.authService
       .sendOtp(this.email)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           this.email = this.form.value.email;
@@ -200,8 +200,8 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(); // unsubscribe all observables
-    this.destroy$.complete(); // complete the subject
-    clearInterval(this.intervel); // stop the timer
+    this._destroy$.next();
+    this._destroy$.complete();
+    clearInterval(this.intervel);
   }
 }

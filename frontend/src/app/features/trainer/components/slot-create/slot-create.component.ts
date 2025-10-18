@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
   FormBuilder,
@@ -27,7 +26,7 @@ export interface ITimeSlot {
 
 @Component({
   selector: 'app-slot-create',
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule],
   templateUrl: './slot-create.component.html',
   styleUrl: './slot-create.component.css',
 })
@@ -49,7 +48,7 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
   route = inject(ActivatedRoute);
   logger = inject(LoggerService);
 
-  private destroy$ = new Subject<void>();
+  private _destroy$ = new Subject<void>();
 
   programs: ProgramCategory[] = [];
   timeSlots: ITimeSlot[] = [];
@@ -59,7 +58,7 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
 
   constructor(private fb: FormBuilder) {
     // Get CategoryId from params
-    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+    this.route.paramMap.pipe(takeUntil(this._destroy$)).subscribe((params) => {
       this.programId = params.get('id') as string;
     });
 
@@ -94,14 +93,14 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
     // Auto-update end time when start time or duration changes
     this.slotInputForm
       .get('startTime')
-      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      ?.valueChanges.pipe(takeUntil(this._destroy$))
       .subscribe(() => {
         this.updateEndTime();
       });
 
     this.slotForm
       .get('duration')
-      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      ?.valueChanges.pipe(takeUntil(this._destroy$))
       .subscribe(() => {
         this.updateEndTime();
       });
@@ -195,7 +194,7 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
   getProgramCategory(programId: string): void {
     this.programService
       .getProgramByProgramId(programId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           console.log('Program is :', res);
@@ -249,7 +248,7 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
 
     this.sessionService
       .saveSession(formData)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           console.log('Training Sessions saved successfully:', res);
@@ -282,7 +281,7 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
 
     this.sessionService
       .saveSessionDraft(formData)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           console.log('Draft saved successfully:', res);
@@ -302,7 +301,7 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
   getSession(programId: string) {
     this.sessionService
       .getSession(programId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: IProgramSlot) => {
           this.logger.info('Session is :', res);
@@ -386,7 +385,7 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
     this.isEditMode = true;
   }
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

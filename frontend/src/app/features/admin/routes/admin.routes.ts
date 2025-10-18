@@ -25,6 +25,14 @@ export const ADMIN_ROUTES: Routes = [
           ),
       },
       {
+        path: 'programs',
+        loadComponent: () => {
+          return import(
+            '../components/program-list/program-list.component'
+          ).then((m) => m.ProgramListComponent);
+        },
+      },
+      {
         path: 'category',
         loadComponent: () =>
           import('../components/category-list/category-list.component').then(
@@ -53,6 +61,22 @@ export const ADMIN_ROUTES: Routes = [
           return import(
             '../components/category-view/category-view.component'
           ).then((m) => m.CategoryViewComponent);
+        },
+      },
+      {
+        path: 'wallet',
+        loadComponent: () => {
+          return import(
+            '../components/admin-wallet/admin-wallet.component'
+          ).then((m) => m.AdminWalletComponent);
+        },
+      },
+      {
+        path: 'programs/:programId',
+        loadComponent: () => {
+          return import(
+            '../components/program-view/program-view.component'
+          ).then((m) => m.ProgramViewComponent);
         },
       },
     ],

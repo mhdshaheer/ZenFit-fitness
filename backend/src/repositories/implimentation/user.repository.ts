@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { GetUsersParams, IUser } from "../../interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
 import { BaseRepository } from "../base.repository";
@@ -20,6 +21,9 @@ export class UserRepository
     return await this.model.find();
   }
   async findById(id: string): Promise<IUser | null> {
+    if (!mongoose.isValidObjectId(id)) {
+      throw new Error(`Invalid ObjectId: ${id}`);
+    }
     return await this.model.findById(id);
   }
   async updateStatus(

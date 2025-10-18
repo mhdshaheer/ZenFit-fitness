@@ -4,14 +4,16 @@ export interface IUserRepository {
   findByEmail(email: string): Promise<IUser | null>;
   createUser(user: IUser): Promise<IUser>;
   findAll(): Promise<IUser[]>;
-  findById(id: string): Promise<IUser | null>;
+  findById(userId: string): Promise<IUser | null>;
   updateStatus(
-    id: string,
+    userId: string,
     status: "active" | "blocked" | "pending" | "inactive"
   ): Promise<IUser | null>;
-  updateById(id: string, data: Partial<IUser>): Promise<IUser | null>;
+  updateById(userId: string, data: Partial<IUser>): Promise<IUser | null>;
   updatePassword(email: string, newPassword: string): Promise<IUser | null>;
-  getAllForTable(options:GetUsersParams): Promise<{ total: number; data: IUser[] }>;
+  getAllForTable(
+    options: GetUsersParams
+  ): Promise<{ total: number; data: IUser[] }>;
 
   // GOOGLE
   createGoogleUser(userData: {
