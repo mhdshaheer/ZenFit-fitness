@@ -1,0 +1,537 @@
+<!-- trainer-slot-management.component.html -->
+<div class="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 md:p-8">
+  <div class="max-w-7xl mx-auto">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl md:text-4xl font-bold text-gray-800 mb-2">
+        Trainer Slot Management
+      </h1>
+    </div>
+
+    <!-- Slot Creation Form -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8 mb-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-6">Create New Slot</h2>
+
+      <form [formGroup]="slotForm" (ngSubmit)="addSlot()" class="space-y-6">
+        <!-- Program Selection -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-2">
+            Program Type <span class="text-red-500">*</span>
+          </label>
+          <select
+            formControlName="program"
+            class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+          >
+            <option value="">Select a program</option>
+            @for (program of programs; track program) {
+            <option [value]="program.id">
+              {{ program.difficultyLevel }}— {{ program.title }} -
+              {{ program.duration }}
+            </option>
+            }
+          </select>
+          @if ( slotForm.get('program')?.invalid &&
+          slotForm.get('program')?.touched ) {
+          <p class="mt-1 text-sm text-red-600">Program is required</p>
+          }
+        </div>
+
+        <!-- Day Selection -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-3">
+            Select Days <span class="text-red-500">*</span>
+          </label>
+          <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3">
+            @for (day of weekDays; track day) {
+            <button
+              type="button"
+              (click)="onDayToggle(day)"
+              [class]="
+                day.selected
+                  ? 'bg-green-600 text-white border-green-600 shadow-md'
+                  : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'
+              "
+              class="px-4 py-3 border-2 rounded-xl font-medium transition-all duration-200 transform hover:scale-105"
+            >
+              {{ day.value }}
+            </button>
+            }
+          </div>
+        </div>
+
+        <!-- Time Selection -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Start Time <span class="text-red-500">*</span>
+            </label>
+            <select
+              formControlName="startTime"
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+            >
+              <option value="">Select start time</option>
+              @for (time of timeOptions; track time) {
+              <option [value]="time.value">
+                {{ time.display }}
+              </option>
+              }
+            </select>
+            @if ( slotForm.get('startTime')?.invalid &&
+            slotForm.get('startTime')?.touched ) {
+            <p class="mt-1 text-sm text-red-600">Start time is required</p>
+            }
+          </div>
+
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              End Time <span class="text-red-500">*</span>
+            </label>
+            <select
+              formControlName="endTime"
+              class="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent transition-all"
+              [class.border-red-500]="slotForm.hasError('endTimeBeforeStart')"
+            >
+              <option value="">Select end time</option>
+              @for (time of filteredEndTimeOptions; track time) {
+              <option [value]="time.value">
+                {{ time.display }}
+              </option>
+              }
+            </select>
+            @if ( slotForm.get('endTime')?.invalid &&
+            slotForm.get('endTime')?.touched ) {
+            <p class="mt-1 text-sm text-red-600">End time is required</p>
+            } @if ( slotForm.hasError('endTimeBeforeStart') &&
+            slotForm.get('endTime')?.touched ) {
+            <p class="mt-1 text-sm text-red-600 flex items-center gap-1">
+              <span>⚠️</span> End time must be after start time
+            </p>
+            }
+          </div>
+        </div>
+
+        <!-- Helper Text -->
+        <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+          <p class="text-sm text-blue-800">
+            <span class="font-semibold">💡 Smart Collision Detection:</span>
+            The system prevents overlapping slots. If a conflict exists, you'll
+            be notified immediately.
+          </p>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+          type="submit"
+          [disabled]="isFormInvalid"
+          class="w-full md:w-auto px-8 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-all duration-200 transform hover:scale-105 disabled:transform-none"
+        >
+          Add Slot
+        </button>
+      </form>
+    </div>
+
+    <!-- Slots List -->
+    <div class="bg-white rounded-2xl shadow-lg p-6 md:p-8">
+      <h2 class="text-xl font-semibold text-gray-800 mb-6">
+        Existing Slots
+        <span
+          class="ml-2 px-3 py-1 bg-green-100 text-green-700 text-sm rounded-full"
+        >
+          {{ slots().length }} Total
+        </span>
+      </h2>
+
+      <!-- Desktop Table View -->
+      <div class="hidden lg:block overflow-x-auto">
+        <table class="w-full">
+          <thead>
+            <tr class="border-b-2 border-gray-200">
+              <th
+                class="text-left py-4 px-4 text-sm font-semibold text-gray-700"
+              >
+                Program
+              </th>
+              <th
+                class="text-left py-4 px-4 text-sm font-semibold text-gray-700"
+              >
+                Days
+              </th>
+              <th
+                class="text-left py-4 px-4 text-sm font-semibold text-gray-700"
+              >
+                Time Range
+              </th>
+              <th
+                class="text-left py-4 px-4 text-sm font-semibold text-gray-700"
+              >
+                Level
+              </th>
+              <th
+                class="text-left py-4 px-4 text-sm font-semibold text-gray-700"
+              >
+                Status
+              </th>
+              <th
+                class="text-right py-4 px-4 text-sm font-semibold text-gray-700"
+              >
+                Actions
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (slot of slots(); track slot) {
+            <tr
+              class="border-b border-gray-100 hover:bg-gray-50 transition-colors"
+            >
+              <td class="py-4 px-4">
+                <span
+                  class="font-semibold text-gray-800 flex items-center gap-2"
+                >
+                  {{ slot.program.title }}
+                </span>
+                <span
+                  [class]="'bg-yellow-100 text-yellow-700'"
+                  class="px-3 py-1 rounded-full text-xs font-semibold"
+                >
+                  {{ slot.program.duration }}
+                </span>
+              </td>
+              <td class="py-4 px-4">
+                <div class="flex flex-wrap gap-1">
+                  @for (day of slot.days; track day) {
+                  <span
+                    class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-lg"
+                  >
+                    {{ day }}
+                  </span>
+                  }
+                </div>
+              </td>
+              <td class="py-4 px-4">
+                <div class="flex items-center gap-2 text-gray-700">
+                  <span class="font-medium">{{ slot.startTime }}</span>
+                  <span class="text-gray-400">→</span>
+                  <span class="font-medium">{{ slot.endTime }}</span>
+                </div>
+              </td>
+              <td class="py-4 px-4">
+                <span
+                  [class]="'bg-yellow-100 text-yellow-700'"
+                  class="px-3 py-1 rounded-full text-xs font-semibold"
+                >
+                  {{ slot.program.difficultyLevel }}
+                </span>
+              </td>
+              <td class="py-4 px-4">
+                <span
+                  [class]="
+                    slot.status === 'active'
+                      ? 'bg-green-100 text-green-700'
+                      : 'bg-gray-200 text-gray-600'
+                  "
+                  class="px-3 py-1 rounded-full text-xs font-semibold"
+                >
+                  {{ slot.status }}
+                </span>
+              </td>
+              <td class="py-4 px-4">
+                <div class="flex justify-end gap-2">
+                  <!-- Edit Button -->
+                  <button
+                    (click)="openEditModal(slot)"
+                    class="flex items-center gap-1 px-4 py-2 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors font-medium text-sm"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="w-4 h-4"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M16.862 3.487a2.25 2.25 0 013.182 3.182l-9.72 9.721a4.5 4.5 0 01-1.691 1.058l-3.013.904a.75.75 0 01-.927-.927l.904-3.013a4.5 4.5 0 011.058-1.691l9.72-9.721z"
+                      />
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M21 21h-5.25a2.25 2.25 0 01-2.25-2.25V16.5"
+                      />
+                    </svg>
+                    Edit
+                  </button>
+
+                  <!-- Delete Button -->
+                  <button
+                    (click)="deleteSlot(slot.id)"
+                    class="flex items-center gap-1 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors font-medium text-sm"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke-width="1.5"
+                      stroke="currentColor"
+                      class="size-4"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0"
+                      />
+                    </svg>
+
+                    Delete
+                  </button>
+                </div>
+              </td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Mobile/Tablet Card View -->
+      <div class="lg:hidden space-y-4">
+        @for (slot of slots(); track slot) {
+        <div
+          class="bg-gradient-to-br from-gray-50 to-white border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow"
+        >
+          <div class="flex justify-between items-start mb-3">
+            <h3 class="font-bold text-lg text-gray-800 flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-green-500"></span>
+              {{ slot.program.title }}
+            </h3>
+            <div>
+              <span
+                [class]="
+                  slot.status === 'active'
+                    ? 'bg-yellow-100 text-yellow-700'
+                    : 'bg-gray-200 text-gray-600'
+                "
+                class="px-3 py-1 rounded-full text-xs font-semibold"
+              >
+                {{ slot.program.duration }}
+              </span>
+              <span
+                [class]="
+                  slot.status === 'active'
+                    ? 'bg-green-100 text-green-700'
+                    : 'bg-gray-200 text-gray-600'
+                "
+                class="px-3 py-1 rounded-full text-xs font-semibold"
+              >
+                {{ slot.status }}
+              </span>
+            </div>
+          </div>
+          <div class="space-y-2 mb-4">
+            <div class="flex items-center text-sm text-gray-600">
+              <span class="font-medium mr-2">Days:</span>
+              <div class="flex flex-wrap gap-1">
+                @for (day of slot.days; track day) {
+                <span
+                  class="inline-block px-2 py-1 bg-green-100 text-green-700 text-xs font-medium rounded-lg"
+                >
+                  {{ day }}
+                </span>
+                }
+              </div>
+            </div>
+            <div class="flex items-center text-sm text-gray-600">
+              <span class="font-medium mr-2">Time:</span>
+              <span class="font-medium text-gray-800">{{
+                slot.startTime
+              }}</span>
+              <span class="mx-1 text-gray-400">→</span>
+              <span class="font-medium text-gray-800">{{ slot.endTime }}</span>
+            </div>
+          </div>
+          <div class="flex gap-2">
+            <button
+              (click)="openEditModal(slot)"
+              class="flex-1 px-4 py-2 bg-blue-100 text-blue-700 rounded-xl hover:bg-blue-200 transition-colors font-medium text-sm"
+            >
+              ✏️ Edit
+            </button>
+            <button
+              (click)="deleteSlot(slot.id)"
+              class="flex-1 px-4 py-2 bg-red-100 text-red-700 rounded-xl hover:bg-red-200 transition-colors font-medium text-sm"
+            >
+              🗑️ Delete
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Empty State -->
+      @if (slots().length === 0) {
+      <div class="text-center py-12">
+        <div class="text-6xl mb-4">📅</div>
+        <p class="text-gray-500 text-lg">
+          No slots created yet. Add your first slot above!
+        </p>
+      </div>
+      }
+    </div>
+    @if (showEditModal()) {
+    <div
+      class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
+      (click)="closeEditModal()"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 md:p-8 max-h-[90vh] overflow-y-auto"
+        (click)="$event.stopPropagation()"
+      >
+        <!-- Modal Header -->
+        <div class="flex items-center justify-between mb-6">
+          <h2 class="text-2xl font-bold text-gray-800">Edit Slot</h2>
+          <button
+            (click)="closeEditModal()"
+            class="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+        </div>
+        @if (editingSlot()) {
+        <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="space-y-5">
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2">
+              Program
+              <span class="text-gray-400 text-xs">(Cannot be changed)</span>
+            </label>
+            <div
+              class="w-full px-4 py-3 bg-gray-100 border-2 border-gray-200 rounded-xl text-gray-800 font-semibold flex items-center gap-2"
+            >
+              <span class="w-2 h-2 rounded-full bg-green-500"></span>
+              {{ editingSlot()!.program.id }}
+              <span class="ml-auto text-xs text-gray-500">Locked</span>
+            </div>
+            <p class="mt-1 text-xs text-gray-500">
+              To change the program, delete this slot and create a new one
+            </p>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-3">
+              Select Days <span class="text-red-500">*</span>
+            </label>
+            <div class="grid grid-cols-2 gap-2">
+              @for (day of editDays; track day) {
+              <button
+                type="button"
+                (click)="onEditDayToggle(day)"
+                [class]="
+                  day.selected
+                    ? 'bg-green-600 text-white border-green-600 shadow-md'
+                    : 'bg-white text-gray-700 border-gray-300 hover:border-green-500'
+                "
+                class="px-3 py-2 border-2 rounded-lg font-medium transition-all duration-200 text-sm"
+              >
+                {{ day.name }}
+              </button>
+              }
+            </div>
+          </div>
+          <!-- Time Edit -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                Start Time <span class="text-red-500">*</span>
+              </label>
+              <select
+                formControlName="startTime"
+                class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 text-sm"
+              >
+                @for (time of timeOptions; track time) {
+                <option [value]="time.value">
+                  {{ time.display }}
+                </option>
+                }
+              </select>
+            </div>
+            <div>
+              <label class="block text-sm font-medium text-gray-700 mb-2">
+                End Time <span class="text-red-500">*</span>
+              </label>
+              <select
+                formControlName="endTime"
+                [class.border-red-500]="editForm.hasError('endTimeBeforeStart')"
+                class="w-full px-3 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 text-sm"
+              >
+                @for (time of filteredEditEndTimeOptions; track time) {
+                <option [value]="time.value">
+                  {{ time.display }}
+                </option>
+                }
+              </select>
+            </div>
+          </div>
+          @if (editForm.hasError('endTimeBeforeStart')) {
+          <p class="text-sm text-red-600 flex items-center gap-1">
+            End time must be after start time
+          </p>
+          }
+          <!-- Status Toggle -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+              >Status</label
+            >
+            <button
+              type="button"
+              (click)="
+                editingSlot()!.status =
+                  editingSlot()!.status === 'active' ? 'inactive' : 'active'
+              "
+              [class]="
+                editingSlot()!.status === 'active'
+                  ? 'bg-green-600'
+                  : 'bg-red-600'
+              "
+              class="w-full px-4 py-3 text-white font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2"
+            >
+              @if (editingSlot()!.status === 'active') {
+              <span> Active</span>
+              } @if (editingSlot()!.status === 'inactive') {
+              <span>Inactive</span>
+              }
+            </button>
+          </div>
+          <!-- Action Buttons -->
+          <div class="flex gap-3 pt-4">
+            <button
+              type="button"
+              (click)="closeEditModal()"
+              class="flex-1 px-6 py-3 bg-gray-200 text-gray-700 font-semibold rounded-xl hover:bg-gray-300 transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              [disabled]="isEditFormInvalid"
+              class="flex-1 px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              Save Changes
+            </button>
+          </div>
+        </form>
+        }
+      </div>
+    </div>
+    }
+  </div>
+</div>

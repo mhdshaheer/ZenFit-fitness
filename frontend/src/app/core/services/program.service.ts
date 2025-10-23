@@ -7,6 +7,7 @@ import {
 } from '../../features/trainer/store/trainer.model';
 import { Observable } from 'rxjs';
 import { ProgramRoutes } from '../constants/api-routes.const';
+import { IProgramsSlotCreate } from '../../interface/program.interface';
 
 @Injectable({ providedIn: 'root' })
 export class ProgramService {
@@ -36,6 +37,9 @@ export class ProgramService {
     );
   }
 
+  getProgramsForSlotCreate(): Observable<IProgramsSlotCreate[]> {
+    return this.http.get<IProgramsSlotCreate[]>(`${this.apiUrl}/create-slots`);
+  }
   getPrograms(): Observable<{ programs: Program[] }> {
     return this.http.get<{ programs: Program[] }>(
       `${this.apiUrl}${ProgramRoutes.TRAINER}`

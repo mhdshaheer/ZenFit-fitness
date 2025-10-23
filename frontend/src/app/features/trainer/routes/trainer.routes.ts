@@ -73,6 +73,14 @@ export const TRAINER_ROUTES: Routes = [
           ).then((m) => m.TrainerWalletComponent);
         },
       },
+      {
+        path: 'test',
+        loadComponent: () => {
+          return import('../components/create-slot/create-slot.component').then(
+            (m) => m.CreateSlotComponent
+          );
+        },
+      },
     ],
   },
 ];

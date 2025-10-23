@@ -1,3 +1,5 @@
+export type DifficultyLevel = "Beginner" | "Advanced" | "Intermediate";
+
 export interface ProgramDto {
   id: number;
   title: string;
@@ -15,10 +17,18 @@ export interface ProgramDto {
   programId?: string;
   createdAt?: string;
 }
+
 export interface ProgramSlotDto {
   id: string;
   title: string;
   category: string;
   duration: string;
   entrolledCount?: number;
+}
+
+export interface ProgramSlotCreateDto {
+  id: string;
+  title: string;
+  duration: string;
+  difficultyLevel: DifficultyLevel;
 }

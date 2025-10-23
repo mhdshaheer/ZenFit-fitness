@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChartComponent } from '../../../../shared/components/chart/chart.component';
@@ -18,12 +18,11 @@ import {
   selector: 'app-home-admin',
   standalone: true,
   imports: [
-    CommonModule,
     FormsModule,
     ChartComponent,
     ListComponent,
-    ProgressBarComponent,
-  ],
+    ProgressBarComponent
+],
   templateUrl: './home-admin.component.html',
   styleUrl: './home-admin.component.css',
 })

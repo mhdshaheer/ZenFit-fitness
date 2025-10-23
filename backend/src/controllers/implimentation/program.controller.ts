@@ -4,7 +4,7 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { IProgramService } from "../../services/interface/program.service.interface";
 import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
-import { ProgramDto } from "../../dtos/program.dtos";
+import { ProgramDto, ProgramSlotCreateDto } from "../../dtos/program.dtos";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpResponse } from "../../const/response_message.const";
 
@@ -17,20 +17,22 @@ export class ProgramController implements IProgramController {
     const data = req.body;
     const userId = (req as any)?.user?.id;
 
-    if (!data)
-      {throw new AppError(
+    if (!data) {
+      throw new AppError(
         HttpResponse.PROGRAM_DATA_REQUIRED,
         HttpStatus.BAD_REQUEST
-      );}
+      );
+    }
 
     data.trainerId = userId;
     const draft = await this._programService.saveProgramDraft(data);
 
-    if (!draft)
-      {throw new AppError(
+    if (!draft) {
+      throw new AppError(
         HttpResponse.PROGRAM_SAVED_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
-      );}
+      );
+    }
 
     res.status(HttpStatus.OK).json({
       message: HttpResponse.PROGRAM_SAVED_SUCCESSFULLY,
@@ -41,20 +43,22 @@ export class ProgramController implements IProgramController {
     const data = req.body;
     const userId = (req as any)?.user?.id;
 
-    if (!data)
-      {throw new AppError(
+    if (!data) {
+      throw new AppError(
         HttpResponse.PROGRAM_DATA_REQUIRED,
         HttpStatus.BAD_REQUEST
-      );}
+      );
+    }
 
     data.trainerId = userId;
     const program = await this._programService.saveProgramDraft(data);
 
-    if (!program)
-      {throw new AppError(
+    if (!program) {
+      throw new AppError(
         HttpResponse.PROGRAM_SAVED_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
-      );}
+      );
+    }
 
     res.status(HttpStatus.OK).json({
       message: HttpResponse.PROGRAM_SAVED_SUCCESSFULLY,
@@ -82,6 +86,17 @@ export class ProgramController implements IProgramController {
     return res.status(HttpStatus.OK).json(programs);
   }
 
+  async getProgramsForSlotCreate(
+    req: Request,
+    res: Response
+  ): Promise<Response<ProgramSlotCreateDto[]>> {
+    const trainerId = (req as any).user.id;
+    const programs = await this._programService.getProgramsForSlotCreate(
+      trainerId
+    );
+    return res.status(HttpStatus.OK).json(programs);
+  }
+
   async getProgramsByParantId(req: Request, res: Response): Promise<void> {
     const parantCategoryId = req.params.id;
     const programs = await this._programService.getProgramsByParentId(
@@ -98,8 +113,9 @@ export class ProgramController implements IProgramController {
     const { id } = req.params;
     const program = await this._programService.findProgram(id);
 
-    if (!program)
-      {throw new AppError(HttpResponse.PROGRAM_NOT_FOUND, HttpStatus.NOT_FOUND);}
+    if (!program) {
+      throw new AppError(HttpResponse.PROGRAM_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
 
     return res.status(HttpStatus.OK).json(program);
   }
@@ -117,11 +133,12 @@ export class ProgramController implements IProgramController {
       trainerId,
     });
 
-    if (!response)
-      {throw new AppError(
+    if (!response) {
+      throw new AppError(
         HttpResponse.PROGRAM_UPDATE_FAILED,
         HttpStatus.NOT_FOUND
-      );}
+      );
+    }
 
     return res
       .status(HttpStatus.OK)

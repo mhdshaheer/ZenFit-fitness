@@ -1,7 +1,12 @@
 import { inject } from "inversify";
-import { ProgramDto, ProgramSlotDto } from "../../dtos/program.dtos";
+import {
+  ProgramDto,
+  ProgramSlotCreateDto,
+  ProgramSlotDto,
+} from "../../dtos/program.dtos";
 import {
   mapToProgramDto,
+  mapToProgramSlotCreateDto,
   mapToProgramSlotDto,
 } from "../../mapper/program.mapper";
 import { IProgram } from "../../models/program.model";
@@ -37,17 +42,7 @@ export class ProgramService implements IProgramService {
     const mappedPrograms = programs.map(mapToProgramDto);
     return mappedPrograms;
   }
-  async getPrograms(id: string): Promise<ProgramDto[]> {
-    const result = await this.programRepository.getPrograms(id);
-    const mappedResult = result.map(mapToProgramDto);
-    return mappedResult;
-  }
 
-  async getProgramsCategories(id: string): Promise<ProgramSlotDto[]> {
-    const result = await this.programRepository.getPrograms(id);
-    const mappedResult = result.map(mapToProgramSlotDto);
-    return mappedResult;
-  }
   async getProgramsByParentId(id: string): Promise<ProgramDto[]> {
     const subCategories = await this.categoryRepository.findAllCategory({
       parantId: id,
@@ -89,7 +84,6 @@ export class ProgramService implements IProgramService {
         id,
         program
       );
-      console.log("Updated data :", updated);
       if (!updated) {
         throw new Error("Program updation is failed");
       }
@@ -114,5 +108,26 @@ export class ProgramService implements IProgramService {
     }
     const mappedProgram = mapToProgramDto(program);
     return mappedProgram;
+  }
+
+  // OCP
+  async getPrograms(trainerId: string): Promise<ProgramDto[]> {
+    return this._mapPrograms(trainerId, mapToProgramDto);
+  }
+  async getProgramsCategories(trainerId: string): Promise<ProgramSlotDto[]> {
+    return this._mapPrograms(trainerId, mapToProgramSlotDto);
+  }
+  async getProgramsForSlotCreate(
+    trainerId: string
+  ): Promise<ProgramSlotCreateDto[]> {
+    return this._mapPrograms(trainerId, mapToProgramSlotCreateDto);
+  }
+
+  private async _mapPrograms<T>(
+    trainerId: string,
+    mapper: (program: IProgram) => T
+  ): Promise<T[]> {
+    const result = await this.programRepository.getPrograms(trainerId);
+    return result.map(mapper);
   }
 }

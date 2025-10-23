@@ -1,4 +1,8 @@
-import { ProgramDto, ProgramSlotDto } from "../dtos/program.dtos";
+import {
+  ProgramDto,
+  ProgramSlotCreateDto,
+  ProgramSlotDto,
+} from "../dtos/program.dtos";
 import { IProgram } from "../models/program.model";
 
 export const mapToProgramDto = (programs: IProgram): ProgramDto => {
@@ -28,5 +32,16 @@ export const mapToProgramSlotDto = (programs: IProgram): ProgramSlotDto => {
     category: JSON.stringify(programs.category),
     duration: programs.duration,
     // entrolledCount:programs.entrolledCount
+  };
+};
+
+export const mapToProgramSlotCreateDto = (
+  programs: IProgram
+): ProgramSlotCreateDto => {
+  return {
+    id: programs._id,
+    title: programs.title,
+    duration: programs.duration,
+    difficultyLevel: programs.difficultyLevel,
   };
 };

@@ -28,6 +28,9 @@ programRouter.get(
 
   programController.getProgramsCategories.bind(programController)
 );
+programRouter.get("/create-slots", (req, res, next) => {
+  programController.getProgramsForSlotCreate(req, res).catch(next);
+});
 programRouter.get("/:id", (req, res, next) => {
   programController.findProgram(req, res).catch(next);
 });
