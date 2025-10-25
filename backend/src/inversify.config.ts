@@ -45,6 +45,12 @@ import { IPaymentController } from "./controllers/interface/payment.controller.i
 import { PaymentController } from "./controllers/implimentation/payment.controller";
 import { IPaymentRepository } from "./repositories/interface/payment.repostitory.interface";
 import { PaymentRepository } from "./repositories/implimentation/payment.repository";
+import { ISlotRepository } from "./repositories/interface/slot.repository.interface";
+import { SlotRepository } from "./repositories/implimentation/slot.repository";
+import { ISlotService } from "./services/interface/slot.service.interface";
+import { SlotService } from "./services/implimentation/slot.service";
+import { ISlotController } from "./controllers/interface/slot.controller.interface";
+import { SlotController } from "./controllers/implimentation/slot.controller";
 
 const container = new Container();
 
@@ -90,6 +96,10 @@ container
   .bind<IPaymentController>(TYPES.PaymentController)
   .to(PaymentController);
 
+// Slot
+container.bind<ISlotService>(TYPES.SlotService).to(SlotService);
+container.bind<ISlotController>(TYPES.SlotController).to(SlotController);
+
 // Repositories
 container.bind<IUserRepository>(TYPES.UserRepository).to(UserRepository);
 container
@@ -107,4 +117,5 @@ container
 container
   .bind<IPaymentRepository>(TYPES.PaymentRepository)
   .to(PaymentRepository);
+container.bind<ISlotRepository>(TYPES.SlotRepository).to(SlotRepository);
 export { container };

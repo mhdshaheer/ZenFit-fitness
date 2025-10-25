@@ -10,4 +10,5 @@ export const API_ROUTES = {
   SESSION: "/api/v1/session",
   CATEGORY: "/api/v1/category",
   PAYMENT: "/api/v1/payment",
+  SLOT: "/api/v1/slot",
 };

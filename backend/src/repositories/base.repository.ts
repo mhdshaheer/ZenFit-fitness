@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Model, Document } from "mongoose";
 
 export abstract class BaseRepository<T> {
   constructor(protected model: Model<T>) {}
@@ -17,6 +17,14 @@ export abstract class BaseRepository<T> {
       { $set: data },
       { new: true, runValidators: true }
     );
+  }
+
+  async createAndPopulate<P>(
+    data: Partial<T>,
+    populatePaths: string | string[]
+  ): Promise<P> {
+    const doc = await this.model.create(data);
+    return (await (doc as Document).populate(populatePaths)) as P;
   }
 
   async updateCondition(

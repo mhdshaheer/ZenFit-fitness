@@ -1,5 +1,14 @@
+import { MatDialog } from '@angular/material/dialog';
 import { Component, inject, OnInit, signal } from '@angular/core';
-
+import { SlotService } from '../../../../core/services/slot.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { LoggerService } from '../../../../core/services/logger.service';
+import { ProgramService } from '../../../../core/services/program.service';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
+import {
+  IDifficultyLevel,
+  IProgramsSlotCreate,
+} from '../../../../interface/program.interface';
 import {
   FormsModule,
   ReactiveFormsModule,
@@ -9,30 +18,14 @@ import {
   AbstractControl,
   ValidationErrors,
 } from '@angular/forms';
-import { ToastService } from '../../../../core/services/toast.service';
-import { ProgramService } from '../../../../core/services/program.service';
-import { IProgramsSlotCreate } from '../../../../interface/program.interface';
-
-interface IProgramCreateSlot {
-  id: string;
-  title: string;
-  duration: string;
-  difficultyLevel: 'Beginner' | 'Intermediate' | 'Advanced';
-}
-interface ISlotInput {
-  id: string;
-  program: IProgramCreateSlot;
-  days: string[];
-  startTime: string;
-  endTime: string;
-  status: 'active' | 'inactive';
-}
-
-interface TimeOption {
-  display: string;
-  value: string;
-  minutes: number;
-}
+import {
+  IDay,
+  IProgramCreateSlot,
+  ISlotInput,
+  ISlotOutput,
+  ISlotStatus,
+  TimeOption,
+} from '../../../../interface/slot.interface';
 
 @Component({
   selector: 'app-trainer-slot-management',
@@ -42,21 +35,39 @@ interface TimeOption {
 })
 export class CreateSlotComponent implements OnInit {
   // Services
-  private _programService = inject(ProgramService);
-  private _toastService = inject(ToastService);
+  private readonly _programService = inject(ProgramService);
+  private readonly _slotService = inject(SlotService);
+  private readonly _toastService = inject(ToastService);
+  private readonly _loggerService = inject(LoggerService);
+  private readonly _dialog = inject(MatDialog);
 
   slotForm: FormGroup;
   editForm: FormGroup;
-  slots = signal<ISlotInput[]>([]);
+
+  slots = signal<ISlotOutput[]>([]);
+
   showEditModal = signal(false);
-  editingSlot = signal<ISlotInput | null>(null);
+  editingSlot = signal<ISlotOutput | null>(null);
 
   programs: IProgramsSlotCreate[] = [];
 
   ngOnInit() {
+    this.getPrograms();
+    this.getSlots();
+  }
+
+  getPrograms() {
     this._programService.getProgramsForSlotCreate().subscribe({
       next: (res) => {
         this.programs = res;
+      },
+    });
+  }
+  getSlots() {
+    this._slotService.getSlotByTrainer().subscribe({
+      next: (res) => {
+        this._loggerService.info('Slots are :', res);
+        this.slots.set(res);
       },
     });
   }
@@ -65,7 +76,7 @@ export class CreateSlotComponent implements OnInit {
   filteredEndTimeOptions: TimeOption[] = [];
   filteredEditEndTimeOptions: TimeOption[] = [];
 
-  weekDays = [
+  weekDays: IDay[] = [
     { name: 'Monday', value: 'Mon', selected: false },
     { name: 'Tuesday', value: 'Tue', selected: false },
     { name: 'Wednesday', value: 'Wed', selected: false },
@@ -75,7 +86,7 @@ export class CreateSlotComponent implements OnInit {
     { name: 'Sunday', value: 'Sun', selected: false },
   ];
 
-  editDays = [
+  editDays: IDay[] = [
     { name: 'Monday', value: 'Mon', selected: false },
     { name: 'Tuesday', value: 'Tue', selected: false },
     { name: 'Wednesday', value: 'Wed', selected: false },
@@ -102,7 +113,6 @@ export class CreateSlotComponent implements OnInit {
       }
     );
 
-    // Edit slot form (program is read-only, handled separately)
     this.editForm = this.fb.group(
       {
         startTime: ['', Validators.required],
@@ -112,18 +122,12 @@ export class CreateSlotComponent implements OnInit {
         validators: [this.endTimeAfterStartTimeEdit()],
       }
     );
-
-    // Watch start time changes for create form
     this.slotForm.get('startTime')?.valueChanges.subscribe((startTime) => {
       this.updateEndTimeOptions(startTime);
     });
-
-    // Watch start time changes for edit form
     this.editForm.get('startTime')?.valueChanges.subscribe((startTime) => {
       this.updateEditEndTimeOptions(startTime);
     });
-
-    this.loadDemoSlots();
   }
 
   generateTimeOptions() {
@@ -236,6 +240,7 @@ export class CreateSlotComponent implements OnInit {
       return null;
     };
   }
+
   checkTimeCollision(
     newSlot: {
       program: IProgramCreateSlot;
@@ -244,29 +249,23 @@ export class CreateSlotComponent implements OnInit {
       endTime: string;
     },
     excludeSlotId?: string
-  ): { hasCollision: boolean; conflictingSlot?: ISlotInput } {
+  ): { hasCollision: boolean; conflictingSlot?: ISlotOutput } {
     const newStart = this.timeToMinutes(newSlot.startTime);
     const newEnd = this.timeToMinutes(newSlot.endTime);
 
     for (const slot of this.slots()) {
-      // IMPORTANT: Skip the slot being edited
       if (excludeSlotId && slot.id === excludeSlotId) {
         continue;
       }
-
-      // Only check active slots
       if (slot.status !== 'active') {
         continue;
       }
 
-      // Check if any day overlaps
       const dayOverlap = slot.days.some((day) => newSlot.days.includes(day));
 
       if (dayOverlap) {
         const existingStart = this.timeToMinutes(slot.startTime);
         const existingEnd = this.timeToMinutes(slot.endTime);
-
-        // Time overlap detection: start1 < end2 AND start2 < end1
         if (newStart < existingEnd && existingStart < newEnd) {
           return {
             hasCollision: true,
@@ -279,55 +278,11 @@ export class CreateSlotComponent implements OnInit {
     return { hasCollision: false };
   }
 
-  loadDemoSlots() {
-    this.slots.set([
-      {
-        id: '1',
-        program: {
-          title: 'Yoga',
-          id: '9403942823047230',
-          duration: '6 Weeks',
-          difficultyLevel: 'Beginner',
-        },
-        days: ['Mon', 'Wed', 'Fri'],
-        startTime: '6:00 AM',
-        endTime: '7:00 AM',
-        status: 'active',
-      },
-      {
-        id: '2',
-        program: {
-          title: 'Cardio abs',
-          id: '9403942823047230',
-          duration: '6 Weeks',
-          difficultyLevel: 'Intermediate',
-        },
-        days: ['Tue', 'Thu'],
-        startTime: '5:00 PM',
-        endTime: '6:30 PM',
-        status: 'active',
-      },
-      {
-        id: '3',
-        program: {
-          title: 'Cardio',
-          id: '9403942823047230',
-          duration: '6 Weeks',
-          difficultyLevel: 'Advanced',
-        },
-        days: ['Mon', 'Wed', 'Fri'],
-        startTime: '6:00 PM',
-        endTime: '7:00 PM',
-        status: 'active',
-      },
-    ]);
-  }
-
-  onDayToggle(day: any) {
+  onDayToggle(day: IDay) {
     day.selected = !day.selected;
   }
 
-  onEditDayToggle(day: any) {
+  onEditDayToggle(day: IDay) {
     day.selected = !day.selected;
   }
 
@@ -339,6 +294,14 @@ export class CreateSlotComponent implements OnInit {
     return this.editDays.filter((d) => d.selected).map((d) => d.value);
   }
 
+  private _mapToSlotProgram(program: IProgramsSlotCreate): IProgramCreateSlot {
+    return {
+      id: program.id,
+      title: program.title,
+      duration: program.duration,
+      difficultyLevel: program.difficultyLevel as IDifficultyLevel,
+    };
+  }
   addSlot() {
     if (this.slotForm.invalid) {
       this.showError('Please fill all required fields correctly');
@@ -352,45 +315,50 @@ export class CreateSlotComponent implements OnInit {
       return;
     }
 
+    const selectedProgramId = this.slotForm.value.program;
+    const selectedProgram = this.programs.find(
+      (p) => p.id === selectedProgramId
+    );
+
+    if (!selectedProgram) {
+      this.showError('Invalid program selected');
+      return;
+    }
+
     const newSlotData = {
-      program: this.slotForm.value.program,
+      program: this._mapToSlotProgram(selectedProgram),
       days: selectedDays,
       startTime: this.slotForm.value.startTime,
       endTime: this.slotForm.value.endTime,
     };
 
-    console.log('Form data :', newSlotData);
-    // Check for collision (no exclusion needed for new slots)
     const collisionCheck = this.checkTimeCollision(newSlotData);
 
     if (collisionCheck.hasCollision && collisionCheck.conflictingSlot) {
       const conflict = collisionCheck.conflictingSlot;
-      // this._toastService.error(
-      //   `❌ SLOT COLLISION DETECTED!\n\n` +
-      //     `Cannot create slot: ${newSlotData.startTime} - ${newSlotData.endTime}\n\n` +
-      //     `Reason: A slot already exists:\n` +
-      //     `• Program: ${conflict.program}\n` +
-      //     `• Time: ${conflict.startTime} - ${conflict.endTime}\n` +
-      //     `• Days: ${conflict.days.join(', ')}\n\n` +
-      //     `Please choose a different time or day.`
-      // );
-      this._toastService.error(
-        `⚠️ Slot Collision!\n` +
-          `A slot already exists for ${conflict.program.title} (${conflict.startTime} - ${conflict.endTime}).\n` +
-          `Please choose a different time or day.`
+      this._toastService.info(
+        `Slot conflict with ${conflict.program.title} (${conflict.startTime} - ${conflict.endTime})`
       );
       return;
     }
-
-    const newSlot: ISlotInput = {
-      id: Date.now().toString(),
-      ...newSlotData,
-      status: 'active',
+    const slotInput: ISlotInput = {
+      programId: selectedProgramId,
+      days: selectedDays,
+      startTime: this.slotForm.value.startTime,
+      endTime: this.slotForm.value.endTime,
     };
 
-    this.slots.update((current) => [...current, newSlot]);
-    this.showSuccess('✅ Slot created successfully!');
-    this.resetForm();
+    this._slotService.createSlot(slotInput).subscribe({
+      next: (res) => {
+        this.slots.update((current) => [...current, res]);
+        this.showSuccess('Slot created successfully!');
+        this.resetForm();
+      },
+      error: (err) => {
+        this.showError('Failed to create slot');
+        this._loggerService.error(err);
+      },
+    });
   }
 
   resetForm() {
@@ -399,27 +367,20 @@ export class CreateSlotComponent implements OnInit {
     this.filteredEndTimeOptions = [...this.timeOptions];
   }
 
-  /**
-   * Open edit modal - Program is locked to the clicked slot's program
-   */
-  openEditModal(slot: ISlotInput) {
+  openEditModal(slot: ISlotOutput) {
     const slotCopy = { ...slot };
     this.editingSlot.set(slotCopy);
 
-    // Pre-populate edit form
     this.editForm.patchValue({
       startTime: slotCopy.startTime,
       endTime: slotCopy.endTime,
     });
 
-    // Set selected days
     this.editDays.forEach((day) => {
       day.selected = slotCopy.days.includes(day.value);
     });
 
-    // Update end time options based on start time
     this.updateEditEndTimeOptions(slotCopy.startTime);
-
     this.showEditModal.set(true);
   }
 
@@ -445,66 +406,78 @@ export class CreateSlotComponent implements OnInit {
       this.showError('Please select at least one day');
       return;
     }
-
-    // Get updated values from form
     const updatedSlot = {
       ...edited,
       days: selectedDays,
       startTime: this.editForm.value.startTime,
       endTime: this.editForm.value.endTime,
     };
-
-    // CRITICAL: Check collision BUT exclude the current slot being edited
-    const collisionCheck = this.checkTimeCollision(
-      updatedSlot,
-      edited.id // ⬅️ Exclude this slot from collision check
-    );
+    const collisionCheck = this.checkTimeCollision(updatedSlot, edited.id);
 
     if (collisionCheck.hasCollision && collisionCheck.conflictingSlot) {
       const conflict = collisionCheck.conflictingSlot;
       this.showError(
-        `SLOT COLLISION DETECTED!\n\n` +
-          `Cannot update to: ${updatedSlot.startTime} - ${updatedSlot.endTime}\n\n` +
-          `Reason: Another slot already exists:\n` +
-          `• Program: ${conflict.program.id}\n` +
-          `• Time: ${conflict.startTime} - ${conflict.endTime}\n` +
-          `• Days: ${conflict.days.join(', ')}\n\n` +
-          `Please choose a different time or day.`
+        `Slot conflict with ${conflict.program.title} (${conflict.startTime} - ${conflict.endTime})`
       );
       return;
     }
+    const updateInput: ISlotInput = {
+      programId: edited.program.id,
+      days: selectedDays,
+      startTime: this.editForm.value.startTime,
+      endTime: this.editForm.value.endTime,
+    };
+    this._slotService.updateSlotById(edited.id, updateInput).subscribe({
+      next: (res: ISlotOutput) => {
+        this.slots.update((current) =>
+          current.map((slot) => (slot.id === edited.id ? res : slot))
+        );
 
-    this.slots.update((current) =>
-      current.map((slot) => (slot.id === edited.id ? updatedSlot : slot))
-    );
-
-    this.showSuccess('✅ Slot updated successfully!');
-    this.closeEditModal();
+        this.showSuccess('Slot updated successfully!');
+        this.closeEditModal();
+      },
+      error: (err) => {
+        this.showError('Failed to update slot');
+        this._loggerService.error(err);
+      },
+    });
   }
+  statusChange(slotId: string, slotStatus: ISlotStatus): void {
+    const dialogRef = this._dialog.open(ConfirmDialogComponent, {
+      width: '350px',
+      data: {
+        title: slotStatus === 'inactive' ? 'Block Slot' : 'Activate slot',
+        message: `Are you sure you want to ${slotStatus} this slot?`,
+      },
+    });
 
-  toggleSlotStatus(slot: ISlotInput) {
-    this.slots.update((current) =>
-      current.map((s) =>
-        s.id === slot.id
-          ? { ...s, status: s.status === 'active' ? 'inactive' : 'active' }
-          : s
-      )
-    );
-  }
+    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
+      if (confirmed) {
+        const newStatus = slotStatus === 'active' ? 'inactive' : 'active';
 
-  deleteSlot(id: string) {
-    if (confirm('Are you sure you want to delete this slot?')) {
-      this.slots.update((current) => current.filter((slot) => slot.id !== id));
-      this.showSuccess('🗑️ Slot deleted successfully!');
-    }
+        this._slotService.updateSlotStatus(slotId, newStatus).subscribe({
+          next: (updatedSlot: ISlotOutput) => {
+            this._loggerService.info('status updated : ', updatedSlot);
+            this.slots.update((current) =>
+              current.map((slot) => (slot.id === slotId ? updatedSlot : slot))
+            );
+            this.showSuccess('Slot updated successfully!');
+          },
+          error: (err) => {
+            this.showError('Failed to update slot');
+            this._loggerService.error('Failed to update slot status:', err);
+          },
+        });
+      }
+    });
   }
 
   showError(message: string) {
-    alert(message);
+    this._toastService.error(message);
   }
 
   showSuccess(message: string) {
-    alert(message);
+    this._toastService.success(message);
   }
 
   get isFormInvalid(): boolean {

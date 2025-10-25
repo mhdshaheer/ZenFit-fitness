@@ -22,3 +22,5 @@ export interface IProgramsSlotCreate {
   duration: string;
   difficultyLevel: string;
 }
+
+export type IDifficultyLevel = 'Beginner' | 'Intermediate' | 'Advanced';

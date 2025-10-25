@@ -22,6 +22,7 @@ import { IPaymentController } from "./controllers/interface/payment.controller.i
 import { env } from "./config/env.config";
 import { API_ROUTES } from "./const/apiRoutes.const";
 import { HttpResponse } from "./const/response_message.const";
+import slotRouter from "./routes/slot.routes";
 
 const app = express();
 app.use(
@@ -64,6 +65,7 @@ app.use(API_ROUTES.PROGRAM, programRouter);
 app.use(API_ROUTES.SESSION, sessionRouter);
 app.use(API_ROUTES.CATEGORY, categoryRouter);
 app.use(API_ROUTES.PAYMENT, paymentRouter);
+app.use(API_ROUTES.SLOT, slotRouter);
 
 // Global Error handling
 app.use(errorMiddleware);
