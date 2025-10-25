@@ -1,5 +1,5 @@
 import { MatDialog } from '@angular/material/dialog';
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { SlotService } from '../../../../core/services/slot.service';
 import { ToastService } from '../../../../core/services/toast.service';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -26,6 +26,7 @@ import {
   ISlotStatus,
   TimeOption,
 } from '../../../../interface/slot.interface';
+import { Subject, takeUntil } from 'rxjs';
 
 @Component({
   selector: 'app-trainer-slot-management',
@@ -33,13 +34,14 @@ import {
   imports: [FormsModule, ReactiveFormsModule],
   templateUrl: './create-slot.component.html',
 })
-export class CreateSlotComponent implements OnInit {
+export class CreateSlotComponent implements OnInit, OnDestroy {
   // Services
   private readonly _programService = inject(ProgramService);
   private readonly _slotService = inject(SlotService);
   private readonly _toastService = inject(ToastService);
   private readonly _loggerService = inject(LoggerService);
   private readonly _dialog = inject(MatDialog);
+  private _destroy$ = new Subject<void>();
 
   slotForm: FormGroup;
   editForm: FormGroup;
@@ -57,19 +59,25 @@ export class CreateSlotComponent implements OnInit {
   }
 
   getPrograms() {
-    this._programService.getProgramsForSlotCreate().subscribe({
-      next: (res) => {
-        this.programs = res;
-      },
-    });
+    this._programService
+      .getProgramsForSlotCreate()
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (res) => {
+          this.programs = res;
+        },
+      });
   }
   getSlots() {
-    this._slotService.getSlotByTrainer().subscribe({
-      next: (res) => {
-        this._loggerService.info('Slots are :', res);
-        this.slots.set(res);
-      },
-    });
+    this._slotService
+      .getSlotByTrainer()
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (res) => {
+          this._loggerService.info('Slots are :', res);
+          this.slots.set(res);
+        },
+      });
   }
 
   timeOptions: TimeOption[] = [];
@@ -122,12 +130,18 @@ export class CreateSlotComponent implements OnInit {
         validators: [this.endTimeAfterStartTimeEdit()],
       }
     );
-    this.slotForm.get('startTime')?.valueChanges.subscribe((startTime) => {
-      this.updateEndTimeOptions(startTime);
-    });
-    this.editForm.get('startTime')?.valueChanges.subscribe((startTime) => {
-      this.updateEditEndTimeOptions(startTime);
-    });
+    this.slotForm
+      .get('startTime')
+      ?.valueChanges.pipe(takeUntil(this._destroy$))
+      .subscribe((startTime) => {
+        this.updateEndTimeOptions(startTime);
+      });
+    this.editForm
+      .get('startTime')
+      ?.valueChanges.pipe(takeUntil(this._destroy$))
+      .subscribe((startTime) => {
+        this.updateEditEndTimeOptions(startTime);
+      });
   }
 
   generateTimeOptions() {
@@ -348,17 +362,20 @@ export class CreateSlotComponent implements OnInit {
       endTime: this.slotForm.value.endTime,
     };
 
-    this._slotService.createSlot(slotInput).subscribe({
-      next: (res) => {
-        this.slots.update((current) => [...current, res]);
-        this.showSuccess('Slot created successfully!');
-        this.resetForm();
-      },
-      error: (err) => {
-        this.showError('Failed to create slot');
-        this._loggerService.error(err);
-      },
-    });
+    this._slotService
+      .createSlot(slotInput)
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (res) => {
+          this.slots.update((current) => [...current, res]);
+          this.showSuccess('Slot created successfully!');
+          this.resetForm();
+        },
+        error: (err) => {
+          this.showError('Failed to create slot');
+          this._loggerService.error(err);
+        },
+      });
   }
 
   resetForm() {
@@ -427,20 +444,23 @@ export class CreateSlotComponent implements OnInit {
       startTime: this.editForm.value.startTime,
       endTime: this.editForm.value.endTime,
     };
-    this._slotService.updateSlotById(edited.id, updateInput).subscribe({
-      next: (res: ISlotOutput) => {
-        this.slots.update((current) =>
-          current.map((slot) => (slot.id === edited.id ? res : slot))
-        );
+    this._slotService
+      .updateSlotById(edited.id, updateInput)
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (res: ISlotOutput) => {
+          this.slots.update((current) =>
+            current.map((slot) => (slot.id === edited.id ? res : slot))
+          );
 
-        this.showSuccess('Slot updated successfully!');
-        this.closeEditModal();
-      },
-      error: (err) => {
-        this.showError('Failed to update slot');
-        this._loggerService.error(err);
-      },
-    });
+          this.showSuccess('Slot updated successfully!');
+          this.closeEditModal();
+        },
+        error: (err) => {
+          this.showError('Failed to update slot');
+          this._loggerService.error(err);
+        },
+      });
   }
   statusChange(slotId: string, slotStatus: ISlotStatus): void {
     const dialogRef = this._dialog.open(ConfirmDialogComponent, {
@@ -451,25 +471,33 @@ export class CreateSlotComponent implements OnInit {
       },
     });
 
-    dialogRef.afterClosed().subscribe((confirmed: boolean) => {
-      if (confirmed) {
-        const newStatus = slotStatus === 'active' ? 'inactive' : 'active';
+    dialogRef
+      .afterClosed()
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((confirmed: boolean) => {
+        if (confirmed) {
+          const newStatus = slotStatus === 'active' ? 'inactive' : 'active';
 
-        this._slotService.updateSlotStatus(slotId, newStatus).subscribe({
-          next: (updatedSlot: ISlotOutput) => {
-            this._loggerService.info('status updated : ', updatedSlot);
-            this.slots.update((current) =>
-              current.map((slot) => (slot.id === slotId ? updatedSlot : slot))
-            );
-            this.showSuccess('Slot updated successfully!');
-          },
-          error: (err) => {
-            this.showError('Failed to update slot');
-            this._loggerService.error('Failed to update slot status:', err);
-          },
-        });
-      }
-    });
+          this._slotService
+            .updateSlotStatus(slotId, newStatus)
+            .pipe(takeUntil(this._destroy$))
+            .subscribe({
+              next: (updatedSlot: ISlotOutput) => {
+                this._loggerService.info('status updated : ', updatedSlot);
+                this.slots.update((current) =>
+                  current.map((slot) =>
+                    slot.id === slotId ? updatedSlot : slot
+                  )
+                );
+                this.showSuccess('Slot updated successfully!');
+              },
+              error: (err) => {
+                this.showError('Failed to update slot');
+                this._loggerService.error('Failed to update slot status:', err);
+              },
+            });
+        }
+      });
   }
 
   showError(message: string) {
@@ -490,5 +518,9 @@ export class CreateSlotComponent implements OnInit {
     return (
       this.editForm.invalid || this.editForm.hasError('endTimeBeforeStart')
     );
+  }
+  ngOnDestroy() {
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }
