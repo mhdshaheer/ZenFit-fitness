@@ -12,7 +12,10 @@ export interface IProgramService {
   getPrograms(trainerId: string): Promise<ProgramDto[]>;
   getProgramsForSlotCreate(trainerId: string): Promise<ProgramSlotCreateDto[]>;
   getProgramsCategories(trainerId: string): Promise<ProgramSlotDto[]>;
-  getProgramsByParentId(parantId: string): Promise<ProgramDto[]>;
+  getProgramsByParentId(
+    catgoryParantId: string,
+    userId: string
+  ): Promise<ProgramDto[]>;
   findProgram(programId: string): Promise<ProgramDto>;
   updateProgram(
     programId: string,

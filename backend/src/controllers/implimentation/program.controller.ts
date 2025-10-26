@@ -99,8 +99,10 @@ export class ProgramController implements IProgramController {
 
   async getProgramsByParantId(req: Request, res: Response): Promise<void> {
     const parantCategoryId = req.params.id;
+    const userId = (req as any).user.id;
     const programs = await this._programService.getProgramsByParentId(
-      parantCategoryId
+      parantCategoryId,
+      userId
     );
 
     res.status(HttpStatus.OK).json({ programs });

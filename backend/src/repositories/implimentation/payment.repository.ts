@@ -383,4 +383,20 @@ export class PaymentRepository
 
     return revenueData;
   }
+
+  async getPurchasedProgramIds(
+    userId: string
+  ): Promise<{ _id: string; programId: string }[]> {
+    const programIds = await this.model
+      .find({
+        userId: userId,
+        paymentStatus: "success",
+      })
+      .select("programId")
+      .lean();
+    return programIds.map((p) => ({
+      _id: p._id.toString(),
+      programId: p.programId.toString(),
+    }));
+  }
 }

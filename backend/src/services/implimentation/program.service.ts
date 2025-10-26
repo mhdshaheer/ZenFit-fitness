@@ -18,19 +18,22 @@ import logger from "../../shared/services/logger.service";
 import { IApprovalStatus } from "../../interfaces/program.interface";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
+import { IPaymentRepository } from "../../repositories/interface/payment.repostitory.interface";
 
 export class ProgramService implements IProgramService {
   @inject(TYPES.ProgramRespository)
-  private programRepository!: IProgramRepository;
+  private readonly _programRepository!: IProgramRepository;
   @inject(TYPES.CategoryRepository)
-  private categoryRepository!: ICategoryRepository;
+  private readonly _categoryRepository!: ICategoryRepository;
+  @inject(TYPES.PaymentRepository)
+  private readonly _paymentRepository!: IPaymentRepository;
 
   async saveProgramDraft(data: IProgram): Promise<IProgram | null> {
     const condition = {
       trainerId: data.trainerId,
       programId: data.programId,
     };
-    const savedData = await this.programRepository.createProgram(
+    const savedData = await this._programRepository.createProgram(
       condition,
       data
     );
@@ -38,21 +41,30 @@ export class ProgramService implements IProgramService {
   }
 
   async getAllPrograms(): Promise<ProgramDto[]> {
-    const programs = await this.programRepository.getAllPrograms();
+    const programs = await this._programRepository.getAllPrograms();
     const mappedPrograms = programs.map(mapToProgramDto);
     return mappedPrograms;
   }
 
-  async getProgramsByParentId(id: string): Promise<ProgramDto[]> {
-    const subCategories = await this.categoryRepository.findAllCategory({
-      parantId: id,
+  async getProgramsByParentId(
+    catgoryParantId: string,
+    userId: string
+  ): Promise<ProgramDto[]> {
+    const subCategories = await this._categoryRepository.findAllCategory({
+      parantId: catgoryParantId,
     });
     if (subCategories === null) {
       throw new Error("No sub categories found.");
     }
     const subCategoryIds = subCategories.map((cat) => cat._id);
-    const programs = await this.programRepository.getProgramsFilter({
+
+    const purchasedPrograms =
+      await this._paymentRepository.getPurchasedProgramIds(userId);
+    const purchasedProgramIds = purchasedPrograms.map((p) => p.programId);
+
+    const programs = await this._programRepository.getProgramsFilter({
       category: { $in: subCategoryIds },
+      _id: { $nin: purchasedProgramIds },
       approvalStatus: "Approved",
     });
     const mappedResult = programs.map(mapToProgramDto);
@@ -62,7 +74,7 @@ export class ProgramService implements IProgramService {
 
   async findProgram(id: string): Promise<ProgramDto> {
     try {
-      const program = await this.programRepository.findProgramById(id);
+      const program = await this._programRepository.findProgramById(id);
       if (!program) {
         throw new Error("No category is found");
       }
@@ -80,7 +92,7 @@ export class ProgramService implements IProgramService {
   ): Promise<ProgramDto> {
     console.log("service :", id, program);
     try {
-      const updated = await this.programRepository.updateProgramById(
+      const updated = await this._programRepository.updateProgramById(
         id,
         program
       );
@@ -99,7 +111,7 @@ export class ProgramService implements IProgramService {
     programId: string,
     approvalStatus: IApprovalStatus
   ): Promise<ProgramDto> {
-    const program = await this.programRepository.updateApprovalStatus(
+    const program = await this._programRepository.updateApprovalStatus(
       programId,
       approvalStatus
     );
@@ -127,7 +139,7 @@ export class ProgramService implements IProgramService {
     trainerId: string,
     mapper: (program: IProgram) => T
   ): Promise<T[]> {
-    const result = await this.programRepository.getPrograms(trainerId);
+    const result = await this._programRepository.getPrograms(trainerId);
     return result.map(mapper);
   }
 }

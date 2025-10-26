@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import {
   ITopSellingCategory,
   ITopSellingPrograms,
@@ -18,7 +19,11 @@ export interface IPaymentRepository {
   getProgramsByTrainerId(trainerId: string): Promise<IPayment[]>;
   getPayments(): Promise<IPayment[]>;
   findPurchasedProgram(userId: string): Promise<PurchasedProgram[]>;
+  getPurchasedProgramIds(
+    userId: string
+  ): Promise<{ _id: string; programId: string }[]>;
   getEntrolledUsers(programId: string): Promise<number>;
+
   getTopSellingCategory(limit: number): Promise<ITopSellingCategory[]>;
   getTopSellingPrograms(limit: number): Promise<ITopSellingPrograms[]>;
   getTopSellingCategoryByTrainer(
