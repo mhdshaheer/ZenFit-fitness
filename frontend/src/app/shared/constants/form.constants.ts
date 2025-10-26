@@ -21,4 +21,9 @@ export const FORM_CONSTANTS = {
   PHONE: {
     PATTERN: /^\+?[0-9]{10,15}$/,
   },
+  FULLNAME: {
+    MIN_LENGTH: 2,
+    MAX_LENGTH: 100,
+    PATTERN: /^[a-zA-Z\s]*$/,
+  },
 };

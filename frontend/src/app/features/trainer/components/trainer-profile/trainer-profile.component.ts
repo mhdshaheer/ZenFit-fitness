@@ -15,6 +15,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
 import { Subject, takeUntil } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
 
 interface UploadFile {
   name?: string;
@@ -89,7 +90,6 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (event) => {
           if (event.type === HttpEventType.UploadProgress && event.total) {
-            // this.progress = Math.round((100 * event.loaded) / event.total);
           } else if (event.type === HttpEventType.Response) {
             this.profileImageUrl = event.body?.url ?? null;
             this.isUploading = false;
@@ -97,7 +97,6 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
               'Profile image uploaded, key:',
               event.body?.url
             );
-            // this.progress = 0;
           }
         },
         error: () => {
@@ -159,9 +158,27 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
         this.resumeVerified = res.resumeVerified;
 
         this.profileForm = this._fb.group({
-          fullName: [res.fullName],
-          username: [res.username, Validators.required],
-          dob: [res.dob ? res.dob.split('T')[0] : ''],
+          fullName: [
+            res.fullName,
+            [
+              Validators.minLength(FORM_CONSTANTS.FULLNAME.MIN_LENGTH),
+              Validators.maxLength(FORM_CONSTANTS.FULLNAME.MAX_LENGTH),
+              Validators.pattern(FORM_CONSTANTS.FULLNAME.PATTERN),
+            ],
+          ],
+          username: [
+            res.username,
+            [
+              Validators.required,
+              Validators.minLength(FORM_CONSTANTS.USERNAME.MIN_LENGTH),
+              Validators.maxLength(FORM_CONSTANTS.USERNAME.MAX_LENGTH),
+              Validators.pattern(FORM_CONSTANTS.USERNAME.PATTERN),
+            ],
+          ],
+          dob: [
+            res.dob ? res.dob.split('T')[0] : '',
+            [CustomValidators.dateOfBirth(), CustomValidators.minimumAge(13)],
+          ],
           gender: [res.gender],
           email: [res.email, [CustomValidators.email()]],
           phone: [res.phone, optionalPhoneValidator],
@@ -178,11 +195,13 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (res) => {
             this._loggerService.info('response from the backend :', res);
+            this._toastService.success('Profile updated Successfully.');
             this.profileData = res;
             this.isEditMode = false;
           },
           error: (err) => {
             this._loggerService.error('Failed to saved profile ', err);
+            this._toastService.error('Failed to update profile.');
           },
         });
     } else {
