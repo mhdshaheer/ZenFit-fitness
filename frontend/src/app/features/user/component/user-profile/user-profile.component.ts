@@ -14,6 +14,7 @@ import { HttpEventType } from '@angular/common/http';
 import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Subject, takeUntil } from 'rxjs';
+import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
 
 interface ProfileUser {
   fullName: string;
@@ -107,9 +108,27 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         }
 
         this.profileForm = this._fb.group({
-          fullName: [res.fullName],
-          username: [res.username, Validators.required],
-          dob: [res.dob ? res.dob.split('T')[0] : ''],
+          fullName: [
+            res.fullName,
+            [
+              Validators.minLength(FORM_CONSTANTS.FULLNAME.MIN_LENGTH),
+              Validators.maxLength(FORM_CONSTANTS.FULLNAME.MAX_LENGTH),
+              Validators.pattern(FORM_CONSTANTS.FULLNAME.PATTERN),
+            ],
+          ],
+          username: [
+            res.username,
+            [
+              Validators.required,
+              Validators.minLength(FORM_CONSTANTS.USERNAME.MIN_LENGTH),
+              Validators.maxLength(FORM_CONSTANTS.USERNAME.MAX_LENGTH),
+              Validators.pattern(FORM_CONSTANTS.USERNAME.PATTERN),
+            ],
+          ],
+          dob: [
+            res.dob ? res.dob.split('T')[0] : '',
+            [CustomValidators.dateOfBirth(), CustomValidators.minimumAge(13)],
+          ],
           gender: [res.gender],
           email: [res.email, [CustomValidators.email()]],
           phone: [res.phone, optionalPhoneValidator],
