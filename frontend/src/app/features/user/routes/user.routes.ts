@@ -77,6 +77,14 @@ export const USER_ROUTES: Routes = [
           );
         },
       },
+      {
+        path: 'my-programs',
+        loadComponent: () => {
+          return import(
+            '../component/purchased-programs/purchased-programs.component'
+          ).then((m) => m.PurchasedProgramsComponent);
+        },
+      },
     ],
   },
 ];

@@ -109,8 +109,12 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
       icon: 'fas fa-tachometer-alt',
     },
     { label: 'Workouts', route: '/user/workouts', icon: 'fas fa-dumbbell' },
-    { label: 'Progress', route: '/user/progress', icon: 'fas fa-chart-line' },
-    { label: 'Nutrition', route: '/user/nutrition', icon: 'fas fa-apple-alt' },
+    {
+      label: 'My Program',
+      route: '/user/my-programs',
+      icon: 'fas fa-dumbbell',
+    },
+    { label: 'Slot', route: '/user/slots', icon: 'fas fa-chart-line' },
     { label: 'Community', route: '/user/community', icon: 'fas fa-users' },
   ];
 
