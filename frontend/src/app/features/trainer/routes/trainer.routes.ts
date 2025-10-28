@@ -74,7 +74,7 @@ export const TRAINER_ROUTES: Routes = [
         },
       },
       {
-        path: 'test',
+        path: 'slots',
         loadComponent: () => {
           return import('../components/create-slot/create-slot.component').then(
             (m) => m.CreateSlotComponent

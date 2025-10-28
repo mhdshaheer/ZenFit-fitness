@@ -6,7 +6,6 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IBookingService } from "../../services/interface/booking.service.interface";
-import { HttpResponse } from "../../const/response_message.const";
 
 export class BookingController implements IBookingController {
   @inject(TYPES.BookingService)

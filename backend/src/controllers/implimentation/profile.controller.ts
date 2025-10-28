@@ -11,7 +11,8 @@ import { UserDto } from "../../dtos/user.dtos";
 @injectable()
 export class ProfileController implements IProfileController {
   constructor(
-    @inject(TYPES.ProfileService) private _profileService: IProfileService
+    @inject(TYPES.ProfileService)
+    private readonly _profileService: IProfileService
   ) {}
 
   async getUserByUserId(

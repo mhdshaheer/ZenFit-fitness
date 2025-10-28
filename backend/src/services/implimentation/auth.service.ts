@@ -19,11 +19,10 @@ import { sendOtpMail } from "../../shared/services/mail.service";
 import { AppError } from "../../shared/utils/appError.util";
 @injectable()
 export class AuthService implements IAuthService {
-  // DI injection
   @inject(TYPES.UserRepository)
-  private _userRepository!: IUserRepository;
+  private readonly _userRepository!: IUserRepository;
   @inject(TYPES.TempUserRepository)
-  private _tempRepository!: ITempUserRepository;
+  private readonly _tempRepository!: ITempUserRepository;
   // ======================================
 
   async signup(userData: IUser): Promise<IUser> {

@@ -10,7 +10,8 @@ import { HttpResponse } from "../../const/response_message.const";
 
 export class ProgramController implements IProgramController {
   constructor(
-    @inject(TYPES.ProgramService) private _programService: IProgramService
+    @inject(TYPES.ProgramService)
+    private readonly _programService: IProgramService
   ) {}
 
   async saveProgramDraft(req: Request, res: Response): Promise<void> {

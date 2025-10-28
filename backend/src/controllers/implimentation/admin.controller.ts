@@ -2,17 +2,15 @@ import { Request, Response } from "express";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IAdminController } from "../interface/admin.controller.interface";
 import { inject, injectable } from "inversify";
-import { mapToUserStatusDto } from "../../mapper/user.mapper";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IAdminService } from "../../services/interface/admin.service.interface";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpResponse } from "../../const/response_message.const";
 
-// admin controller
 @injectable()
 export class AdminController implements IAdminController {
   constructor(
-    @inject(TYPES.AdminService) private _adminService: IAdminService
+    @inject(TYPES.AdminService) private readonly _adminService: IAdminService
   ) {}
 
   async getUsers(req: Request, res: Response): Promise<void> {
@@ -49,17 +47,9 @@ export class AdminController implements IAdminController {
         HttpStatus.BAD_REQUEST
       );
     }
-
-    const user = await this._adminService.updateUserStatus(id, status);
-
-    if (!user) {
-      throw new AppError(HttpResponse.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-    }
-
-    const responseDto = mapToUserStatusDto(user, status);
-
+    const responseUser = await this._adminService.updateUserStatus(id, status);
     res.status(HttpStatus.OK).json({
-      responseDto,
+      responseUser,
     });
   }
 }

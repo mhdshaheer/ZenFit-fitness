@@ -13,7 +13,7 @@ import { HttpResponse } from "../../const/response_message.const";
 
 export class CategoryService implements ICategoryService {
   @inject(TYPES.CategoryRepository)
-  private _categoryRepository!: ICategoryRepository;
+  private readonly _categoryRepository!: ICategoryRepository;
 
   async findAllCategory(): Promise<CategoryDto[]> {
     try {

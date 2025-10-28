@@ -16,7 +16,8 @@ import { HttpResponse } from "../../const/response_message.const";
 
 export class PaymentController implements IPaymentController {
   constructor(
-    @inject(TYPES.PaymentService) private _paymentService: IPaymentService
+    @inject(TYPES.PaymentService)
+    private readonly _paymentService: IPaymentService
   ) {}
   async createCheckoutSession(req: Request, res: Response): Promise<void> {
     const userId = (req as any)?.user?.id;

@@ -17,7 +17,7 @@ export class BookingRepository
     date: Date,
     slot: ISlot
   ): Promise<IBooking> {
-    const bookedCount = await BookingModel.countDocuments({
+    const bookedCount = await this.model.countDocuments({
       slotId: slot._id,
       day,
       status: "booked",

@@ -111,8 +111,12 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
       icon: 'fas fa-tachometer-alt',
     },
     { label: 'Programs', route: '/trainer/programs', icon: 'fas fa-dumbbell' },
-    { label: 'Progress', route: '/progress', icon: 'fas fa-chart-line' },
-    { label: 'Nutrition', route: '/nutrition', icon: 'fas fa-apple-alt' },
+    {
+      label: 'Create Program',
+      route: '/trainer/program-create',
+      icon: 'fas fa-apple-alt',
+    },
+    { label: 'Slots', route: '/trainer/slots', icon: 'fas fa-chart-line' },
     { label: 'Community', route: '/community', icon: 'fas fa-users' },
   ];
 

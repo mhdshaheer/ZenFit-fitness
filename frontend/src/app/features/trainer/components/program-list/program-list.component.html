@@ -11,14 +11,6 @@
             Manage and monitor your fitness programs
           </p>
         </div>
-        <div class="flex gap-4 mt-4">
-          <button
-            (click)="createProgram()"
-            class="px-6 py-3 bg-green-600 text-sm text-white rounded-lg hover:bg-green-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-          >
-            Create Program
-          </button>
-        </div>
       </div>
 
       <!-- Stats Cards -->
@@ -104,7 +96,7 @@
       @for(program of fitnessPrograms;track program){
       <app-program-card
         [program]="program"
-        [button2Labal]="'Slot'"
+        [button2Labal]="'Users'"
         (editProgram)="onProgramSlot($event)"
         (viewProgram)="onViewProgram($event)"
       ></app-program-card>

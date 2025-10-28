@@ -1,10 +1,10 @@
-import { CommonModule } from '@angular/common';
+
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'zenfit-bmi-calculator',
-  imports: [CommonModule, FormsModule],
+  imports: [FormsModule],
   templateUrl: './bmi-calculator.component.html',
   styleUrl: './bmi-calculator.component.css',
 })

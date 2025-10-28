@@ -32,9 +32,9 @@ import logger from "../../shared/services/logger.service";
 
 export class PaymentService implements IPaymentService {
   @inject(TYPES.PaymentRepository)
-  private _paymentRepository!: IPaymentRepository;
+  private readonly _paymentRepository!: IPaymentRepository;
   @inject(TYPES.ProgramRespository)
-  private programRepository!: IProgramRepository;
+  private readonly programRepository!: IProgramRepository;
   async createCheckoutSession(
     data: CheckoutRequest,
     userId: string

@@ -15,7 +15,9 @@ import { AppError } from "../../shared/utils/appError.util";
 
 @injectable()
 export class AuthController implements IAuthController {
-  constructor(@inject(TYPES.AuthService) private _authService: IAuthService) {}
+  constructor(
+    @inject(TYPES.AuthService) private readonly _authService: IAuthService
+  ) {}
 
   async signup(req: Request, res: Response): Promise<void> {
     const { username, email, password, dob, gender, role } = req.body;

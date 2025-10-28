@@ -3,7 +3,6 @@ import { ProgramService } from '../../../../core/services/program.service';
 import { Router } from '@angular/router';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
 import { firstValueFrom, forkJoin, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 
@@ -71,11 +70,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
 
   onProgramSlot(programId: string): void {
     console.log('Program ID:', programId);
-    this._router.navigate(['/trainer/slot', programId]);
-  }
-
-  createProgram() {
-    this._router.navigate([`/trainer/program-create`]);
+    this._router.navigate(['/trainer/purchased-users', programId]);
   }
 
   ngOnDestroy() {

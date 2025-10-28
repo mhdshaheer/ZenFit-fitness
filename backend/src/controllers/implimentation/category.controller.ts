@@ -10,7 +10,8 @@ import { HttpResponse } from "../../const/response_message.const";
 
 export class CategoryController implements ICategoryController {
   constructor(
-    @inject(TYPES.CategoryService) private _categoryService: ICategoryService
+    @inject(TYPES.CategoryService)
+    private readonly _categoryService: ICategoryService
   ) {}
   async findAllCategory(
     _req: Request,
