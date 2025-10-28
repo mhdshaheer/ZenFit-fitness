@@ -80,3 +80,7 @@ export const ProfileRouter = {
 export const SlotRoutes = {
   Base: '/slot',
 };
+
+export const BookingRoutes = {
+  BASE: '/booking',
+};

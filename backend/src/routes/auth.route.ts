@@ -38,7 +38,10 @@ authRouter.get(
 );
 
 // Private Routes
-authRouter.get("/protected", authMiddleware, (req, res) => {
+authRouter.get("/", authMiddleware, (req, res, next) => {
+  controller.getUserId(req, res).catch(next);
+});
+authRouter.get("/protected", authMiddleware, (_req, res) => {
   res.json({ message: "Welcome to dashboard" });
 });
 authRouter.post(

@@ -26,3 +26,16 @@ export interface ISlotPopulated extends Omit<ISlot, "programId"> {
   programId: IProgram;
 }
 export type ISlotStatus = "active" | "inactive";
+
+export interface ISlotListForUser {
+  _id: string;
+  programId: string;
+  trainerId: string;
+  day: string;
+  startTime: string;
+  endTime: string;
+  capacity: number;
+  booked: number;
+  isAvailable: boolean;
+  bookedUsers: string[];
+}

@@ -15,6 +15,9 @@ slotRouter.post("/", (req, res, next) => {
 slotRouter.get("/", (req, res, next) => {
   controller.getSlotsByTrainerId(req, res).catch(next);
 });
+slotRouter.get("/user/:programId", (req, res, next) => {
+  controller.getSlotOnUser(req, res).catch(next);
+});
 slotRouter.put("/status/:slotId", (req, res, next) => {
   controller.updateSlotStatus(req, res).catch(next);
 });

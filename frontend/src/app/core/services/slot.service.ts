@@ -2,7 +2,12 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { SlotRoutes } from '../constants/api-routes.const';
 import { HttpClient } from '@angular/common/http';
-import { ISlotInput, ISlotOutput, ISlotStatus } from '../../interface/slot.interface';
+import {
+  ISlotInput,
+  ISlotOutput,
+  ISlotStatus,
+  ISlotUserOutput,
+} from '../../interface/slot.interface';
 import { Observable } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
@@ -25,9 +30,13 @@ export class SlotService {
     slotId: string,
     slotStatus: ISlotStatus
   ): Observable<ISlotOutput> {
-    return this._http.put<ISlotOutput>(
-      `${this._apiUrl}/status/${slotId}`,
-      {status:slotStatus}
+    return this._http.put<ISlotOutput>(`${this._apiUrl}/status/${slotId}`, {
+      status: slotStatus,
+    });
+  }
+  getSlotOnUser(programId: string): Observable<ISlotUserOutput[]> {
+    return this._http.get<ISlotUserOutput[]>(
+      `${this._apiUrl}/user/${programId}`
     );
   }
 }

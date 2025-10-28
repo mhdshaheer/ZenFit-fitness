@@ -5,7 +5,15 @@ import {
   SignupPayload,
 } from '../../features/auth/store/auth.model';
 import { environment } from '../../../environments/environment';
-import { catchError, firstValueFrom, map, of, retry, take } from 'rxjs';
+import {
+  catchError,
+  firstValueFrom,
+  map,
+  Observable,
+  of,
+  retry,
+  take,
+} from 'rxjs';
 import { LoggerService } from './logger.service';
 import { AuthRoutes } from '../constants/api-routes.const';
 
@@ -145,5 +153,8 @@ export class AuthService {
       this._logger.error('Failed to decode token', error);
       return null;
     }
+  }
+  getUserId(): Observable<{ userId: string }> {
+    return this._http.get<{ userId: string }>(this._api);
   }
 }

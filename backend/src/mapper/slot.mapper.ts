@@ -11,6 +11,7 @@ export const mapToSlotDisplayDto = (slot: ISlotPopulated): SlotDisplyDto => {
       difficultyLevel: slot.programId.difficultyLevel,
       duration: slot.programId.duration,
     },
+    capacity: slot.capacity,
     startTime: slot.startTime,
     endTime: slot.endTime,
     status: slot.status,

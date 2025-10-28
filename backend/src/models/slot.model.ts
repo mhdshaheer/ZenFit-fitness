@@ -8,6 +8,7 @@ export interface ISlot extends Document {
   startTime: string;
   endTime: string;
   status: ISlotStatus;
+  capacity: number;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -19,6 +20,7 @@ const SlotSchema = new Schema<ISlot>(
     days: { type: [String], required: true },
     startTime: { type: String, required: true },
     endTime: { type: String, required: true },
+    capacity: { type: Number, default: 1 },
     status: { type: String, enum: ["active", "inactive"], default: "active" },
   },
   { timestamps: true }

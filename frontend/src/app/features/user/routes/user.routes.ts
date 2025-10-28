@@ -69,6 +69,14 @@ export const USER_ROUTES: Routes = [
           ).then((m) => m.PaymentFailedComponent);
         },
       },
+      {
+        path: 'slots/:programId',
+        loadComponent: () => {
+          return import('../component/slot-list/slot-list.component').then(
+            (m) => m.SlotListComponent
+          );
+        },
+      },
     ],
   },
 ];

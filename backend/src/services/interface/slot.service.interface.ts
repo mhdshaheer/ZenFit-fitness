@@ -1,5 +1,5 @@
 import { SlotDisplyDto } from "../../dtos/slot.dtos";
-import { ISlotStatus } from "../../interfaces/slot.interface";
+import { ISlotListForUser, ISlotStatus } from "../../interfaces/slot.interface";
 import { ISlot } from "../../models/slot.model";
 
 export interface ISlotService {
@@ -10,4 +10,5 @@ export interface ISlotService {
     slotId: string,
     slotStatus: ISlotStatus
   ): Promise<SlotDisplyDto>;
+  getSlotOnUser(programId: string): Promise<ISlotListForUser[]>;
 }

@@ -51,6 +51,12 @@ import { ISlotService } from "./services/interface/slot.service.interface";
 import { SlotService } from "./services/implimentation/slot.service";
 import { ISlotController } from "./controllers/interface/slot.controller.interface";
 import { SlotController } from "./controllers/implimentation/slot.controller";
+import { IBookingRepository } from "./repositories/interface/booking.repository.interface";
+import { BookingRepository } from "./repositories/implimentation/booking.repository";
+import { IBookingService } from "./services/interface/booking.service.interface";
+import { BookingService } from "./services/implimentation/booking.service";
+import { IBookingController } from "./controllers/interface/booking.controller.interface";
+import { BookingController } from "./controllers/implimentation/booking.controller";
 
 const container = new Container();
 
@@ -100,6 +106,12 @@ container
 container.bind<ISlotService>(TYPES.SlotService).to(SlotService);
 container.bind<ISlotController>(TYPES.SlotController).to(SlotController);
 
+// Booking
+container.bind<IBookingService>(TYPES.BookingService).to(BookingService);
+container
+  .bind<IBookingController>(TYPES.BookingController)
+  .to(BookingController);
+
 // Repositories
 container.bind<IUserRepository>(TYPES.UserRepository).to(UserRepository);
 container
@@ -118,4 +130,7 @@ container
   .bind<IPaymentRepository>(TYPES.PaymentRepository)
   .to(PaymentRepository);
 container.bind<ISlotRepository>(TYPES.SlotRepository).to(SlotRepository);
+container
+  .bind<IBookingRepository>(TYPES.BookingRepository)
+  .to(BookingRepository);
 export { container };

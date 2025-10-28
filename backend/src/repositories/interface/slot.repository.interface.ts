@@ -1,5 +1,9 @@
 import { HydratedDocument } from "mongoose";
-import { ISlotPopulated, ISlotStatus } from "../../interfaces/slot.interface";
+import {
+  ISlotListForUser,
+  ISlotPopulated,
+  ISlotStatus,
+} from "../../interfaces/slot.interface";
 import { ISlot } from "../../models/slot.model";
 
 export interface ISlotRepository {
@@ -13,4 +17,6 @@ export interface ISlotRepository {
     slotId: string,
     slotStatus: ISlotStatus
   ): Promise<HydratedDocument<ISlotPopulated>>;
+  getProgramSlotListOnUser(programId: string): Promise<ISlotListForUser[]>;
+  findSlotById(slotId: string): Promise<ISlot | null>;
 }

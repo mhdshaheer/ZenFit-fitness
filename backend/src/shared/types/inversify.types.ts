@@ -35,6 +35,10 @@ export const TYPES = {
   SlotService: Symbol.for("SlotService"),
   SlotController: Symbol.for("SlotController"),
 
+  // Booking
+  BookingService: Symbol.for("BookingService"),
+  BookingController: Symbol.for("BookingController"),
+
   // Repositories
   UserRepository: Symbol.for("UserRepository"),
   TempUserRepository: Symbol.for("TempUserRepository"),
@@ -43,4 +47,5 @@ export const TYPES = {
   CategoryRepository: Symbol.for("CategoryRepository"),
   PaymentRepository: Symbol.for("PaymentRepository"),
   SlotRepository: Symbol.for("SlotRepository"),
+  BookingRepository: Symbol.for("BookingRepository"),
 };

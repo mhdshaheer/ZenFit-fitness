@@ -5,6 +5,7 @@ import { ISlotService } from "../../services/interface/slot.service.interface";
 import { Request, Response } from "express";
 import { HttpStatus } from "../../const/statuscode.const";
 import { SlotDisplyDto } from "../../dtos/slot.dtos";
+import { ISlotListForUser } from "../../interfaces/slot.interface";
 
 export class SlotController implements ISlotController {
   @inject(TYPES.SlotService)
@@ -50,5 +51,14 @@ export class SlotController implements ISlotController {
       slotStatus
     );
     return res.status(HttpStatus.OK).json(updateSlot);
+  }
+  async getSlotOnUser(
+    req: Request,
+    res: Response
+  ): Promise<Response<ISlotListForUser[]>> {
+    const programId = req.params.programId;
+
+    const slots = await this._slotService.getSlotOnUser(programId);
+    return res.status(HttpStatus.OK).json(slots);
   }
 }

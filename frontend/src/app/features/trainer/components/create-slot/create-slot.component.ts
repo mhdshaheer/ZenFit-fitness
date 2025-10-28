@@ -114,6 +114,10 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
       {
         program: ['', Validators.required],
         startTime: ['', Validators.required],
+        capacity: [
+          1,
+          [Validators.required, Validators.min(1), Validators.max(20)],
+        ],
         endTime: ['', Validators.required],
       },
       {
@@ -125,6 +129,10 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
       {
         startTime: ['', Validators.required],
         endTime: ['', Validators.required],
+        capacity: [
+          ,
+          [Validators.required, Validators.min(1), Validators.max(20)],
+        ],
       },
       {
         validators: [this.endTimeAfterStartTimeEdit()],
@@ -342,6 +350,7 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
     const newSlotData = {
       program: this._mapToSlotProgram(selectedProgram),
       days: selectedDays,
+      capacity: this.slotForm.value.capacity,
       startTime: this.slotForm.value.startTime,
       endTime: this.slotForm.value.endTime,
     };
@@ -358,6 +367,7 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
     const slotInput: ISlotInput = {
       programId: selectedProgramId,
       days: selectedDays,
+      capacity: this.slotForm.value.capacity,
       startTime: this.slotForm.value.startTime,
       endTime: this.slotForm.value.endTime,
     };
@@ -391,6 +401,7 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
     this.editForm.patchValue({
       startTime: slotCopy.startTime,
       endTime: slotCopy.endTime,
+      capacity: slotCopy.capacity,
     });
 
     this.editDays.forEach((day) => {
@@ -426,6 +437,7 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
     const updatedSlot = {
       ...edited,
       days: selectedDays,
+      capacity: this.editForm.value.capacity,
       startTime: this.editForm.value.startTime,
       endTime: this.editForm.value.endTime,
     };
@@ -441,6 +453,7 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
     const updateInput: ISlotInput = {
       programId: edited.program.id,
       days: selectedDays,
+      capacity: this.editForm.value.capacity,
       startTime: this.editForm.value.startTime,
       endTime: this.editForm.value.endTime,
     };
