@@ -41,7 +41,7 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
   private readonly _toastService = inject(ToastService);
   private readonly _loggerService = inject(LoggerService);
   private readonly _dialog = inject(MatDialog);
-  private _destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
 
   slotForm: FormGroup;
   editForm: FormGroup;

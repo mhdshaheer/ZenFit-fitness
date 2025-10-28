@@ -51,7 +51,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
   private readonly _profileService = inject(ProfileService);
   private readonly _toastService = inject(ToastService);
   private readonly _loggerService = inject(LoggerService);
-  private _destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
 
   profileImageUrl: string | null = null;
   defaultImage = 'landing_page/user.png';

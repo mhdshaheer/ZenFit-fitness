@@ -20,9 +20,9 @@ import { ActionEvent } from '../user-manage/user-manage.component';
   styleUrl: './program-list.component.css',
 })
 export class ProgramListComponent implements OnInit {
-  private _programService = inject(ProgramService);
-  private _logger = inject(LoggerService);
-  private _router = inject(Router);
+  private readonly _programService = inject(ProgramService);
+  private readonly _logger = inject(LoggerService);
+  private readonly _router = inject(Router);
 
   programsColumn: TableColumn[] = [
     { key: 'name', label: 'Program Name', sortable: true, width: '200px' },

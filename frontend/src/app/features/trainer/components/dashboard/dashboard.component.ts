@@ -19,9 +19,9 @@ import { LoggerService } from '../../../../core/services/logger.service';
   styleUrl: './dashboard.component.css',
 })
 export class DashboardComponent {
-  private _paymentService = inject(PaymentService);
-  private _destroy$ = new Subject<void>();
-  private _logger = inject(LoggerService);
+  private readonly _paymentService = inject(PaymentService);
+  private readonly _destroy$ = new Subject<void>();
+  private readonly _logger = inject(LoggerService);
 
   topCategories: ITopCategory[] = [];
   topCourses: ITopPrograms[] = [];

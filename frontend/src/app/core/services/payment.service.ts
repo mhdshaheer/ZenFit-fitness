@@ -15,8 +15,8 @@ import { PaymentRoutes } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class PaymentService {
-  private _http = inject(HttpClient);
-  private _api = environment.apiUrl + PaymentRoutes.BASE;
+  private readonly _http = inject(HttpClient);
+  private readonly _api = environment.apiUrl + PaymentRoutes.BASE;
 
   createCheckout(data: IPaymentCourse) {
     return this._http.post<{ url: string }>(

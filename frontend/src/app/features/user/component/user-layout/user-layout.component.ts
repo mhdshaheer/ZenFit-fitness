@@ -25,12 +25,12 @@ interface Menu {
 })
 export class UserLayoutComponent implements OnDestroy, OnInit {
   isMobileMenuOpen = false;
-  authService = inject(AuthService);
-  logger = inject(LoggerService);
-  router = inject(Router);
-  profileService = inject(ProfileService);
+  private readonly _authService = inject(AuthService);
+  private readonly _logger = inject(LoggerService);
+  private readonly _router = inject(Router);
+  private readonly _profileService = inject(ProfileService);
 
-  private _destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
 
   // Sidebar
   userMenu: Menu[] = [
@@ -52,16 +52,16 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
   }
 
   logOutUser() {
-    this.authService
+    this._authService
       .logout()
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
-          this.logger.info(res.message);
-          this.router.navigate(['/auth/login']);
+          this._logger.info(res.message);
+          this._router.navigate(['/auth/login']);
         },
         error: (err) => {
-          this.logger.error(err);
+          this._logger.error(err);
         },
       });
   }
@@ -83,12 +83,12 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
       role: '',
       avatar: '',
     };
-    this.profileService
+    this._profileService
       .getProfile()
       .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
         if (res.profileImage) {
-          this.profileService
+          this._profileService
             .getFile(res.profileImage)
             .pipe(takeUntil(this._destroy$))
             .subscribe((fileRes) => {

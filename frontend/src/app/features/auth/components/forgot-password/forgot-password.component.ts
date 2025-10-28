@@ -29,7 +29,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   email = '';
   router = inject(Router);
   fb = inject(FormBuilder);
-  authService = inject(AuthService);
+  private readonly _authService = inject(AuthService);
   timer!: number;
   intervel: any;
 
@@ -40,7 +40,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   isLoading = signal(false);
 
-  private _destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
 
   ngOnInit() {
     this.startTimer();
@@ -86,7 +86,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     if (this.form.invalid) return;
 
     this.isLoading.set(true);
-    this.authService
+    this._authService
       .sendOtp(this.form.value.email)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
@@ -113,7 +113,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     if (this.otpForm.invalid) return;
 
     this.isLoading.set(true);
-    this.authService
+    this._authService
       .verifyForgotOtp(this.email, this.otpForm.value.otp)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
@@ -139,7 +139,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
     if (this.resetForm.invalid) return;
 
     this.isLoading.set(true);
-    this.authService
+    this._authService
       .resetPassword(this.email, this.resetForm.value.password)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
@@ -169,7 +169,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   resendOtp() {
     this.startTimer();
-    this.authService
+    this._authService
       .sendOtp(this.email)
       .pipe(takeUntil(this._destroy$))
       .subscribe({

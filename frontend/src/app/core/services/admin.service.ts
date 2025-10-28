@@ -7,8 +7,8 @@ import { AdminRoutes } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
-  private _apiUrl = environment.apiUrl + AdminRoutes.BASE;
-  private _http = inject(HttpClient);
+  private readonly _apiUrl = environment.apiUrl + AdminRoutes.BASE;
+  private readonly _http = inject(HttpClient);
 
   updateUserStatus(id: string, status: 'active' | 'blocked') {
     return this._http.patch(this._apiUrl + AdminRoutes.USER_STATUS(id), {

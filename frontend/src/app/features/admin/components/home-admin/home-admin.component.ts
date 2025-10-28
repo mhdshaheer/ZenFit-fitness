@@ -1,4 +1,3 @@
-
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ChartComponent } from '../../../../shared/components/chart/chart.component';
@@ -17,19 +16,14 @@ import {
 @Component({
   selector: 'app-home-admin',
   standalone: true,
-  imports: [
-    FormsModule,
-    ChartComponent,
-    ListComponent,
-    ProgressBarComponent
-],
+  imports: [FormsModule, ChartComponent, ListComponent, ProgressBarComponent],
   templateUrl: './home-admin.component.html',
   styleUrl: './home-admin.component.css',
 })
 export class HomeAdminComponent implements OnInit, OnDestroy {
-  private _paymentService = inject(PaymentService);
-  private _destroy$ = new Subject<void>();
-  private _logger = inject(LoggerService);
+  private readonly _paymentService = inject(PaymentService);
+  private readonly _destroy$ = new Subject<void>();
+  private readonly _logger = inject(LoggerService);
 
   topCategories: ITopCategory[] = [];
   topCourses: ITopPrograms[] = [];

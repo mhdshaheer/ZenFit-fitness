@@ -17,9 +17,9 @@ interface Menu {
   styleUrl: './admin-layout.component.css',
 })
 export class AdminLayoutComponent implements OnDestroy {
-  private router = inject(Router);
-  private authService = inject(AuthService);
-  private logger = inject(LoggerService);
+  private readonly _router = inject(Router);
+  private readonly _authService = inject(AuthService);
+  private readonly _logger = inject(LoggerService);
 
   private destroy$ = new Subject<void>(); // used to unsubscribe
 
@@ -40,16 +40,16 @@ export class AdminLayoutComponent implements OnDestroy {
   }
 
   logOutUser() {
-    this.authService
+    this._authService
       .logout()
       .pipe(takeUntil(this.destroy$))
       .subscribe({
         next: (res) => {
-          this.logger.info(res.message);
-          this.router.navigate(['/auth/login']);
+          this._logger.info(res.message);
+          this._router.navigate(['/auth/login']);
         },
         error: (err) => {
-          this.logger.error(err);
+          this._logger.error(err);
         },
       });
   }

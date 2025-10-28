@@ -17,12 +17,12 @@ import { ToastService } from '../../../../core/services/toast.service';
   styleUrl: './signup-otp.component.css',
 })
 export class SignupOtpComponent implements OnDestroy {
-  private _destroy$ = new Subject<void>();
-  private _logger = inject(LoggerService);
-  private _authService = inject(AuthService);
-  private _router = inject(Router);
-  private _otpService = inject(OtpAccessService);
-  private _toastService = inject(ToastService);
+  private readonly _destroy$ = new Subject<void>();
+  private readonly _logger = inject(LoggerService);
+  private readonly _authService = inject(AuthService);
+  private readonly _router = inject(Router);
+  private readonly _otpService = inject(OtpAccessService);
+  private readonly _toastService = inject(ToastService);
 
   email = localStorage.getItem('signupEmail') || '';
 

@@ -11,14 +11,16 @@ import { WalletComponent } from '../../../../shared/components/wallet/wallet.com
 })
 export class AdminWalletComponent {
   totalAmont = 0;
-  paymentService = inject(PaymentService);
+  private readonly _paymentService = inject(PaymentService);
   paymentHistoryData: PaymentHistory[] = [];
 
   getHistoryPayments() {
-    this.paymentService.getHistoryAdmin().subscribe((res: PaymentHistory[]) => {
-      this.paymentHistoryData = res;
-      this.totalAmont = res.reduce((acc, curr) => acc + curr.price, 0);
-    });
+    this._paymentService
+      .getHistoryAdmin()
+      .subscribe((res: PaymentHistory[]) => {
+        this.paymentHistoryData = res;
+        this.totalAmont = res.reduce((acc, curr) => acc + curr.price, 0);
+      });
   }
 
   ngOnInit() {

@@ -4,8 +4,8 @@ import { AuthService } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class RoleGuard implements CanActivate {
-  private _authService = inject(AuthService);
-  private _router = inject(Router);
+  private readonly _authService = inject(AuthService);
+  private readonly _router = inject(Router);
   canActivate(route: ActivatedRouteSnapshot) {
     const expectedRole = route.data['role'];
     const userRole = this._authService.getUserRole();

@@ -19,9 +19,9 @@ import { AuthRoutes } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private _http = inject(HttpClient);
-  private _logger = inject(LoggerService);
-  private _api = environment.apiUrl + AuthRoutes.BASE;
+  private readonly _http = inject(HttpClient);
+  private readonly _logger = inject(LoggerService);
+  private readonly _api = environment.apiUrl + AuthRoutes.BASE;
 
   signup(payload: SignupPayload) {
     return this._http

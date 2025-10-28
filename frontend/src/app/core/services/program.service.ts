@@ -11,50 +11,52 @@ import { IProgramsSlotCreate } from '../../interface/program.interface';
 
 @Injectable({ providedIn: 'root' })
 export class ProgramService {
-  apiUrl = environment.apiUrl + ProgramRoutes.BASE;
-  http = inject(HttpClient);
+  private readonly _apiUrl = environment.apiUrl + ProgramRoutes.BASE;
+  private readonly _http = inject(HttpClient);
 
   saveProgram(data: Program) {
-    return this.http.post<{ message: string }>(`${this.apiUrl}`, data);
+    return this._http.post<{ message: string }>(`${this._apiUrl}`, data);
   }
   getAllPrograms(): Observable<Program[]> {
-    return this.http.get<Program[]>(`${this.apiUrl}`);
+    return this._http.get<Program[]>(`${this._apiUrl}`);
   }
   getProgramByProgramId(programId: string) {
-    return this.http.get<Program>(`${this.apiUrl}/${programId}`);
+    return this._http.get<Program>(`${this._apiUrl}/${programId}`);
   }
 
   updateProgram(programId: string, program: Program) {
-    return this.http.put<{ message: string }>(
-      `${this.apiUrl}/${programId}`,
+    return this._http.put<{ message: string }>(
+      `${this._apiUrl}/${programId}`,
       program
     );
   }
   saveProgramDraft(data: Program) {
-    return this.http.post<{ message: string }>(
-      `${this.apiUrl}${ProgramRoutes.DRAFT}`,
+    return this._http.post<{ message: string }>(
+      `${this._apiUrl}${ProgramRoutes.DRAFT}`,
       data
     );
   }
 
   getProgramsForSlotCreate(): Observable<IProgramsSlotCreate[]> {
-    return this.http.get<IProgramsSlotCreate[]>(`${this.apiUrl}/create-slots`);
+    return this._http.get<IProgramsSlotCreate[]>(
+      `${this._apiUrl}/create-slots`
+    );
   }
   getPrograms(): Observable<{ programs: Program[] }> {
-    return this.http.get<{ programs: Program[] }>(
-      `${this.apiUrl}${ProgramRoutes.TRAINER}`
+    return this._http.get<{ programs: Program[] }>(
+      `${this._apiUrl}${ProgramRoutes.TRAINER}`
     );
   }
   getProgramCategory() {
-    return this.http.get<{ programs: ProgramCategory[] }>(
-      `${this.apiUrl}${ProgramRoutes.CATEGORY}`
+    return this._http.get<{ programs: ProgramCategory[] }>(
+      `${this._apiUrl}${ProgramRoutes.CATEGORY}`
     );
   }
   getProgramsByParantId(
     categoryId: string
   ): Observable<{ programs: Program[] }> {
-    return this.http.get<{ programs: Program[] }>(
-      `${this.apiUrl}${ProgramRoutes.CATEGORY_BY_ID(categoryId)}`
+    return this._http.get<{ programs: Program[] }>(
+      `${this._apiUrl}${ProgramRoutes.CATEGORY_BY_ID(categoryId)}`
     );
   }
 
@@ -62,8 +64,8 @@ export class ProgramService {
     programId: string,
     approvalStatus: string
   ): Observable<Program> {
-    return this.http.put<Program>(
-      `${this.apiUrl}${ProgramRoutes.APPROVAL_STATUS(programId)}`,
+    return this._http.put<Program>(
+      `${this._apiUrl}${ProgramRoutes.APPROVAL_STATUS(programId)}`,
       { approvalStatus }
     );
   }

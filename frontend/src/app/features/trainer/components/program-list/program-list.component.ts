@@ -28,14 +28,14 @@ export interface FitnessProgram {
   styleUrl: './program-list.component.css',
 })
 export class ProgramListComponent implements OnInit, OnDestroy {
-  private _programService = inject(ProgramService);
-  private _paymentService = inject(PaymentService);
-  private _router = inject(Router);
-  private _logger = inject(LoggerService);
+  private readonly _programService = inject(ProgramService);
+  private readonly _paymentService = inject(PaymentService);
+  private readonly _router = inject(Router);
+  private readonly _logger = inject(LoggerService);
 
   fitnessPrograms: FitnessProgram[] = [];
   defaultImage = '/trainer/fitness_program.jpg';
-  private destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
 
   ngOnInit() {
     this.getPrograms();
@@ -74,7 +74,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

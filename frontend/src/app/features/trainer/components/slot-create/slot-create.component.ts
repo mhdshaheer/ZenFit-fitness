@@ -40,13 +40,12 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
   maxDate: string;
 
   // Services
-  programService = inject(ProgramService);
-  sessionService = inject(SessionService);
-  categoryService = inject(CategoryService);
-  toastService = inject(ToastService);
-  router = inject(Router);
-  route = inject(ActivatedRoute);
-  logger = inject(LoggerService);
+  private readonly _programService = inject(ProgramService);
+  private readonly _sessionService = inject(SessionService);
+  private readonly _toastService = inject(ToastService);
+  private readonly _router = inject(Router);
+  private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _logger = inject(LoggerService);
 
   private _destroy$ = new Subject<void>();
 
@@ -57,20 +56,19 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
   isEditMode = false;
 
   constructor(private fb: FormBuilder) {
-    // Get CategoryId from params
-    this.route.paramMap.pipe(takeUntil(this._destroy$)).subscribe((params) => {
-      this.programId = params.get('id') as string;
-    });
+    this._activatedRoute.paramMap
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((params) => {
+        this.programId = params.get('id') as string;
+      });
 
-    // Set date constraints
     const today = new Date();
     this.minDate = today.toISOString().split('T')[0];
 
     const maxDate = new Date(today);
-    maxDate.setDate(today.getDate() + 30); // Allow booking 30 days ahead
+    maxDate.setDate(today.getDate() + 30);
     this.maxDate = maxDate.toISOString().split('T')[0];
 
-    // Main form for program details
     this.slotForm = this.fb.group({
       programId: [this.programId, Validators.required],
       duration: [
@@ -160,7 +158,7 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
       );
 
       if (duplicate) {
-        this.toastService.error('This time slot already exists');
+        this._toastService.error('This time slot already exists');
         return;
       }
 
@@ -176,15 +174,15 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
 
       this.timeSlots.push(newSlot);
       this.clearSlotInputs();
-      this.toastService.success('Time slot added successfully');
+      this._toastService.success('Time slot added successfully');
     } else {
-      this.toastService.error('Please fill in all required fields');
+      this._toastService.error('Please fill in all required fields');
     }
   }
 
   removeTimeSlot(index: number): void {
     this.timeSlots.splice(index, 1);
-    this.toastService.success('Time slot removed');
+    this._toastService.success('Time slot removed');
   }
 
   clearSlotInputs(): void {
@@ -192,7 +190,7 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
   }
 
   getProgramCategory(programId: string): void {
-    this.programService
+    this._programService
       .getProgramByProgramId(programId)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
@@ -204,7 +202,7 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
         },
         error: (err) => {
           console.error('Error loading programs:', err);
-          this.toastService.error('Failed to load programs');
+          this._toastService.error('Failed to load programs');
         },
       });
   }
@@ -213,12 +211,12 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
     this.isSubmitted = true;
 
     if (this.slotForm.invalid) {
-      this.toastService.error('Please fill in all required program details');
+      this._toastService.error('Please fill in all required program details');
       return false;
     }
 
     if (this.timeSlots.length === 0) {
-      this.toastService.error('Please add at least one time slot');
+      this._toastService.error('Please add at least one time slot');
       return false;
     }
 
@@ -246,22 +244,22 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
 
     console.log('Saving training sessions:', formData);
 
-    this.sessionService
+    this._sessionService
       .saveSession(formData)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           console.log('Training Sessions saved successfully:', res);
           this.showSuccessMessage = true;
-          this.toastService.success('Training Sessions created successfully');
+          this._toastService.success('Training Sessions created successfully');
 
           setTimeout(() => {
-            this.router.navigate(['/trainer/programs']);
+            this._router.navigate(['/trainer/programs']);
           }, 2000);
         },
         error: (err) => {
           console.error('Error saving Training Sessions:', err);
-          this.toastService.error('❌ Failed to save Training Sessions');
+          this._toastService.error('❌ Failed to save Training Sessions');
           this.isLoading = false;
         },
       });
@@ -279,32 +277,32 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
 
     console.log('Saving as draft:', formData);
 
-    this.sessionService
+    this._sessionService
       .saveSessionDraft(formData)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           console.log('Draft saved successfully:', res);
-          this.toastService.success('Draft saved successfully');
+          this._toastService.success('Draft saved successfully');
 
           setTimeout(() => {
-            this.router.navigate(['/trainer/programs']);
+            this._router.navigate(['/trainer/programs']);
           }, 2000);
         },
         error: (err) => {
           console.error('Error saving draft:', err);
-          this.toastService.error('Failed to save draft');
+          this._toastService.error('Failed to save draft');
         },
       });
   }
 
   getSession(programId: string) {
-    this.sessionService
+    this._sessionService
       .getSession(programId)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: IProgramSlot) => {
-          this.logger.info('Session is :', res);
+          this._logger.info('Session is :', res);
           this.timeSlots = res.timeSlots.map((item) => {
             return {
               ...item,
@@ -315,7 +313,7 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
           });
         },
         error: (error) => {
-          this.logger.error('Failed to fetch session :', error);
+          this._logger.error('Failed to fetch session :', error);
         },
       });
   }
@@ -325,10 +323,10 @@ export class SlotCreateComponent implements OnDestroy, OnInit {
       if (
         confirm('You have unsaved changes. Are you sure you want to go back?')
       ) {
-        this.router.navigate(['/trainer/programs']);
+        this._router.navigate(['/trainer/programs']);
       }
     } else {
-      this.router.navigate(['/trainer/programs']);
+      this._router.navigate(['/trainer/programs']);
     }
   }
 

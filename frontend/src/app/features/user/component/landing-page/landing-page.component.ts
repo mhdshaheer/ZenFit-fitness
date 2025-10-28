@@ -11,7 +11,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   isMobileMenuOpen = false;
   activeProgram = 2;
   private _intervalId: any;
-  private _router = inject(Router);
+  private readonly _router = inject(Router);
 
   stats = [
     { number: '28', label: 'Exercise Programs' },

@@ -11,11 +11,11 @@ import { PaymentService } from '../../../../core/services/payment.service';
 })
 export class TrainerWalletComponent {
   totalAmont = 0;
-  paymentService = inject(PaymentService);
+  private readonly _paymentService = inject(PaymentService);
   paymentHistoryData: PaymentHistory[] = [];
 
   getHistoryPayments() {
-    this.paymentService.getHistory().subscribe((res: PaymentHistory[]) => {
+    this._paymentService.getHistory().subscribe((res: PaymentHistory[]) => {
       this.paymentHistoryData = res;
       this.totalAmont = res.reduce((acc, curr) => acc + curr.price, 0);
     });
