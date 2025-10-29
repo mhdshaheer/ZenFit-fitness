@@ -14,6 +14,7 @@ import { AppError } from "../../shared/utils/appError.util";
 import {
   IPurchasedProgramFilters,
   IRevenueData,
+  ITrainerPurchasedProgramFilters,
 } from "../../interfaces/payment.interface";
 import { HttpResponse } from "../../const/response_message.const";
 
@@ -175,5 +176,47 @@ export class PaymentController implements IPaymentController {
     const result = await this._paymentService.getPurchasedPrograms(filters);
 
     res.status(HttpStatus.OK).json(result);
+  }
+
+  async getTrainerPurchasedPrograms(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    const trainerId = (req as any).user?.id;
+
+    if (!trainerId) {
+      res.status(401).json({
+        success: false,
+        message: "Unauthorized",
+      });
+      return;
+    }
+
+    const {
+      page = "1",
+      limit = "10",
+      paymentStatus,
+      startDate,
+      endDate,
+      search,
+      programId,
+    } = req.query;
+
+    const filters: ITrainerPurchasedProgramFilters = {
+      trainerId,
+      page: parseInt(page as string),
+      limit: parseInt(limit as string),
+      paymentStatus: paymentStatus as string,
+      startDate: startDate ? new Date(startDate as string) : undefined,
+      endDate: endDate ? new Date(endDate as string) : undefined,
+      search: search as string,
+      programId: programId as string,
+    };
+
+    const result = await this._paymentService.getTrainerPurchasedPrograms(
+      filters
+    );
+
+    res.status(200).json(result);
   }
 }

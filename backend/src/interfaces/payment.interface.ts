@@ -1,12 +1,14 @@
 import { Types } from "mongoose";
 
+// ========= REVENUE ===============
 export interface IRevenueData {
   name: string;
   revenue: number;
 }
+
 export type IRevenueFilter = "weekly" | "monthly" | "yearly";
 
-// ========= PURCHASED PROGRAM ===============
+// ========= USER DETAILS ===============
 export interface IUserDetails {
   _id: Types.ObjectId | string;
   fullName: string;
@@ -16,6 +18,7 @@ export interface IUserDetails {
   status: string;
 }
 
+// ========= TRAINER DETAILS ===============
 export interface ITrainerDetails {
   _id: Types.ObjectId | string;
   fullName: string;
@@ -25,11 +28,13 @@ export interface ITrainerDetails {
   experience: number;
 }
 
+// ========= CATEGORY ===============
 export interface ICategoryDetails {
   _id: Types.ObjectId | string;
   name: string;
 }
 
+// ========= PROGRAM DETAILS ===============
 export interface IProgramDetails {
   _id: Types.ObjectId | string;
   programId: string;
@@ -42,6 +47,7 @@ export interface IProgramDetails {
   status: string;
 }
 
+// ========= PAYMENT DETAILS ===============
 export interface IPaymentDetails {
   amount: number;
   platformFee: number;
@@ -54,6 +60,7 @@ export interface IPaymentDetails {
   receiptUrl?: string;
 }
 
+// ========= PURCHASED PROGRAM ===============
 export interface IPurchasedProgramItem {
   _id: Types.ObjectId | string;
   purchaseDate: Date;
@@ -64,6 +71,7 @@ export interface IPurchasedProgramItem {
   payment: IPaymentDetails;
 }
 
+// ========= FILTERS ===============
 export interface IPurchasedProgramFilters {
   paymentStatus?: string;
   startDate?: Date;
@@ -75,6 +83,7 @@ export interface IPurchasedProgramFilters {
   limit?: number;
 }
 
+// ========= PAGINATION ===============
 export interface IPaginationResult {
   total: number;
   page: number;
@@ -82,23 +91,42 @@ export interface IPaginationResult {
   totalPages: number;
 }
 
+// ========= RESPONSE STRUCTURES ===============
 export interface IPurchasedProgramsResponse {
   data: IPurchasedProgramItem[];
   pagination: IPaginationResult;
 }
 
-// interfaces/response.interface.ts
 export interface IApiResponse<T = any> {
   success: boolean;
   message?: string;
   data?: T;
-  pagination?: {
-    total: number;
-    page: number;
-    limit: number;
-    totalPages: number;
-  };
+  pagination?: IPaginationResult;
   error?: string;
 }
 
-// ========= PURCHASED PROGRAM ===============
+// ========= TRAINER PURCHASED PROGRAM  ===============
+export interface ITrainerPurchasedProgram {
+  _id: Types.ObjectId | string;
+  purchaseDate: Date;
+  updatedAt: Date;
+  user: IUserDetails;
+  program: IProgramDetails;
+  payment: IPaymentDetails;
+}
+
+export interface ITrainerPurchasedProgramFilters {
+  trainerId: string;
+  paymentStatus?: string;
+  startDate?: Date;
+  endDate?: Date;
+  search?: string;
+  programId?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface ITrainerPurchasedProgramsResponse {
+  data: ITrainerPurchasedProgram[];
+  pagination: IPaginationResult;
+}

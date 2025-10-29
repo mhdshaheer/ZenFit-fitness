@@ -9,6 +9,8 @@ import {
   PurchasedProgram,
   PurchasedProgramFilters,
   PurchasedProgramsResponse,
+  TrainerPurchasedProgramFilters,
+  TrainerPurchasedProgramsResponse,
 } from '../../interface/payment.interface';
 import { Observable } from 'rxjs';
 import { ITopCategory } from '../../interface/category.interface';
@@ -103,6 +105,28 @@ export class PaymentService {
 
     return this._http.get<PurchasedProgramsResponse>(
       `${this._api}/purchased-programs`,
+      { params }
+    );
+  }
+
+  getTrainerPurchasedPrograms(
+    filters: TrainerPurchasedProgramFilters
+  ): Observable<TrainerPurchasedProgramsResponse> {
+    let params = new HttpParams();
+
+    if (filters.page !== undefined)
+      params = params.set('page', filters.page.toString());
+    if (filters.limit !== undefined)
+      params = params.set('limit', filters.limit.toString());
+    if (filters.paymentStatus)
+      params = params.set('paymentStatus', filters.paymentStatus);
+    if (filters.startDate) params = params.set('startDate', filters.startDate);
+    if (filters.endDate) params = params.set('endDate', filters.endDate);
+    if (filters.search) params = params.set('search', filters.search);
+    if (filters.programId) params = params.set('programId', filters.programId);
+
+    return this._http.get<TrainerPurchasedProgramsResponse>(
+      `${this._api}/trainer/purchased-programs`,
       { params }
     );
   }

@@ -8,6 +8,8 @@ import {
   IPurchasedProgramsResponse,
   IRevenueData,
   IRevenueFilter,
+  ITrainerPurchasedProgramFilters,
+  ITrainerPurchasedProgramsResponse,
 } from "../../interfaces/payment.interface";
 import { IPayment } from "../../models/payment.model";
 
@@ -43,4 +45,7 @@ export interface IPaymentRepository {
   getPurchasedPrograms(
     filters: IPurchasedProgramFilters
   ): Promise<IPurchasedProgramsResponse>;
+  getTrainerPurchasedPrograms(
+    filters: ITrainerPurchasedProgramFilters
+  ): Promise<ITrainerPurchasedProgramsResponse>;
 }

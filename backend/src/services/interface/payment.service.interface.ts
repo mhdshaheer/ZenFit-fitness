@@ -15,6 +15,7 @@ import {
   IPurchasedProgramFilters,
   IRevenueData,
   IRevenueFilter,
+  ITrainerPurchasedProgramFilters,
 } from "../../interfaces/payment.interface";
 
 export interface IPaymentService {
@@ -43,5 +44,8 @@ export interface IPaymentService {
   ): Promise<IRevenueData[]>;
   getPurchasedPrograms(
     filters: IPurchasedProgramFilters
+  ): Promise<IApiResponse>;
+  getTrainerPurchasedPrograms(
+    filters: ITrainerPurchasedProgramFilters
   ): Promise<IApiResponse>;
 }

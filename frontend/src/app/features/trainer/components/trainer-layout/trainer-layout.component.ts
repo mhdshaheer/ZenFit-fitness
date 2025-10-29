@@ -116,8 +116,12 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
       route: '/trainer/program-create',
       icon: 'fas fa-apple-alt',
     },
+    {
+      label: 'Purchased Programs',
+      route: '/trainer/purchased-programs',
+      icon: 'fas fa-users',
+    },
     { label: 'Slots', route: '/trainer/slots', icon: 'fas fa-chart-line' },
-    { label: 'Community', route: '/community', icon: 'fas fa-users' },
   ];
 
   userMenuItems: NavMenuItem[] = [

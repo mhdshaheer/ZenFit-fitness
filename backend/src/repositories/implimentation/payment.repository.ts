@@ -13,6 +13,9 @@ import {
   IPurchasedProgramFilters,
   IPurchasedProgramsResponse,
   IPurchasedProgramItem,
+  ITrainerPurchasedProgramFilters,
+  ITrainerPurchasedProgramsResponse,
+  ITrainerPurchasedProgram,
 } from "../../interfaces/payment.interface";
 
 export class PaymentRepository
@@ -566,6 +569,161 @@ export class PaymentRepository
     pipeline.push({ $skip: (page - 1) * limit }, { $limit: limit });
 
     const data = await PaymentModel.aggregate<IPurchasedProgramItem>(pipeline);
+
+    return {
+      data,
+      pagination: {
+        total: totalCount,
+        page,
+        limit,
+        totalPages: Math.ceil(totalCount / limit),
+      },
+    };
+  }
+
+  async getTrainerPurchasedPrograms(
+    filters: ITrainerPurchasedProgramFilters
+  ): Promise<ITrainerPurchasedProgramsResponse> {
+    const {
+      trainerId,
+      paymentStatus,
+      startDate,
+      endDate,
+      search,
+      programId,
+      page = 1,
+      limit = 10,
+    } = filters;
+
+    const matchStage: any = {
+      trainerId: new Types.ObjectId(trainerId),
+    };
+
+    if (paymentStatus) {
+      matchStage.paymentStatus = paymentStatus;
+    }
+
+    if (programId) {
+      matchStage.programId = new Types.ObjectId(programId);
+    }
+
+    if (startDate && endDate) {
+      matchStage.createdAt = {
+        $gte: new Date(startDate),
+        $lte: new Date(endDate),
+      };
+    }
+
+    const pipeline: any[] = [
+      { $match: matchStage },
+
+      // Populate User
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "user",
+        },
+      },
+      { $unwind: "$user" },
+
+      // Populate Program
+      {
+        $lookup: {
+          from: "programs",
+          localField: "programId",
+          foreignField: "_id",
+          as: "program",
+        },
+      },
+      { $unwind: "$program" },
+
+      // Populate Category
+      {
+        $lookup: {
+          from: "categories",
+          localField: "program.category",
+          foreignField: "_id",
+          as: "category",
+        },
+      },
+      {
+        $unwind: {
+          path: "$category",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+    ];
+
+    // Search filter
+    if (search) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { "user.fullName": { $regex: search, $options: "i" } },
+            { "user.email": { $regex: search, $options: "i" } },
+            { "program.title": { $regex: search, $options: "i" } },
+          ],
+        },
+      });
+    }
+
+    // Project fields
+    pipeline.push({
+      $project: {
+        _id: 1,
+        purchaseDate: "$createdAt",
+        updatedAt: 1,
+        user: {
+          _id: "$user._id",
+          fullName: "$user.fullName",
+          email: "$user.email",
+          phone: "$user.phone",
+          profileImage: "$user.profileImage",
+          status: "$user.status",
+        },
+        program: {
+          _id: "$program._id",
+          programId: "$program.programId",
+          title: "$program.title",
+          description: "$program.description",
+          category: {
+            _id: "$category._id",
+            name: "$category.name",
+          },
+          difficultyLevel: "$program.difficultyLevel",
+          price: "$program.price",
+          duration: "$program.duration",
+          status: "$program.status",
+        },
+        payment: {
+          amount: "$amount",
+          platformFee: "$platformFee",
+          trainerEarning: "$trainerEarning",
+          currency: "$currency",
+          paymentStatus: "$paymentStatus",
+          paymentMethod: "$paymentMethod",
+          paymentIntentId: "$paymentIntentId",
+          chargeId: "$chargeId",
+          receiptUrl: "$receiptUrl",
+        },
+      },
+    });
+
+    pipeline.push({ $sort: { purchaseDate: -1 } });
+
+    // Count total
+    const countPipeline = [...pipeline, { $count: "total" }];
+    const countResult = await PaymentModel.aggregate(countPipeline);
+    const totalCount = countResult.length > 0 ? countResult[0].total : 0;
+
+    // Pagination
+    pipeline.push({ $skip: (page - 1) * limit }, { $limit: limit });
+
+    const data = await PaymentModel.aggregate<ITrainerPurchasedProgram>(
+      pipeline
+    );
 
     return {
       data,
