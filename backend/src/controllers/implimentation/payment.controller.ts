@@ -11,7 +11,10 @@ import {
 } from "../../dtos/payment.dtos";
 import { HttpStatus } from "../../const/statuscode.const";
 import { AppError } from "../../shared/utils/appError.util";
-import { IRevenueData } from "../../interfaces/payment.interface";
+import {
+  IPurchasedProgramFilters,
+  IRevenueData,
+} from "../../interfaces/payment.interface";
 import { HttpResponse } from "../../const/response_message.const";
 
 export class PaymentController implements IPaymentController {
@@ -143,5 +146,34 @@ export class PaymentController implements IPaymentController {
       selectedFilter
     );
     return res.status(HttpStatus.OK).json(filterData);
+  }
+
+  // Get purchased program on adminside:
+  async getPurchasedPrograms(req: Request, res: Response): Promise<void> {
+    const {
+      page = "1",
+      limit = "20",
+      paymentStatus,
+      startDate,
+      endDate,
+      search,
+      trainerId,
+      categoryId,
+    } = req.query;
+
+    const filters: IPurchasedProgramFilters = {
+      page: parseInt(page as string),
+      limit: parseInt(limit as string),
+      paymentStatus: paymentStatus as string,
+      startDate: startDate ? new Date(startDate as string) : undefined,
+      endDate: endDate ? new Date(endDate as string) : undefined,
+      search: search as string,
+      trainerId: trainerId as string,
+      categoryId: categoryId as string,
+    };
+
+    const result = await this._paymentService.getPurchasedPrograms(filters);
+
+    res.status(HttpStatus.OK).json(result);
   }
 }

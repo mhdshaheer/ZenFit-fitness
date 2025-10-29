@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
@@ -7,6 +7,8 @@ import {
   IRevenueFilter,
   PaymentHistory,
   PurchasedProgram,
+  PurchasedProgramFilters,
+  PurchasedProgramsResponse,
 } from '../../interface/payment.interface';
 import { Observable } from 'rxjs';
 import { ITopCategory } from '../../interface/category.interface';
@@ -80,6 +82,28 @@ export class PaymentService {
       {
         params,
       }
+    );
+  }
+
+  getPurchasedProgramsOnAdmin(
+    filters: PurchasedProgramFilters
+  ): Observable<PurchasedProgramsResponse> {
+    let params = new HttpParams();
+
+    if (filters.page) params = params.set('page', filters.page.toString());
+    if (filters.limit) params = params.set('limit', filters.limit.toString());
+    if (filters.paymentStatus)
+      params = params.set('paymentStatus', filters.paymentStatus);
+    if (filters.startDate) params = params.set('startDate', filters.startDate);
+    if (filters.endDate) params = params.set('endDate', filters.endDate);
+    if (filters.search) params = params.set('search', filters.search);
+    if (filters.trainerId) params = params.set('trainerId', filters.trainerId);
+    if (filters.categoryId)
+      params = params.set('categoryId', filters.categoryId);
+
+    return this._http.get<PurchasedProgramsResponse>(
+      `${this._api}/purchased-programs`,
+      { params }
     );
   }
 }

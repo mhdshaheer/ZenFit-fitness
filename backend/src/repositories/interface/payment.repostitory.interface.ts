@@ -1,10 +1,11 @@
-import { Types } from "mongoose";
 import {
   ITopSellingCategory,
   ITopSellingPrograms,
   PurchasedProgram,
 } from "../../dtos/payment.dtos";
 import {
+  IPurchasedProgramFilters,
+  IPurchasedProgramsResponse,
   IRevenueData,
   IRevenueFilter,
 } from "../../interfaces/payment.interface";
@@ -39,4 +40,7 @@ export interface IPaymentRepository {
     trainerId: string,
     filter: IRevenueFilter
   ): Promise<IRevenueData[]>;
+  getPurchasedPrograms(
+    filters: IPurchasedProgramFilters
+  ): Promise<IPurchasedProgramsResponse>;
 }

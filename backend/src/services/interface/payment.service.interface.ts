@@ -11,6 +11,8 @@ import {
   PurchasedProgram,
 } from "../../dtos/payment.dtos";
 import {
+  IApiResponse,
+  IPurchasedProgramFilters,
   IRevenueData,
   IRevenueFilter,
 } from "../../interfaces/payment.interface";
@@ -39,4 +41,7 @@ export interface IPaymentService {
     trainerId: string,
     filter: IRevenueFilter
   ): Promise<IRevenueData[]>;
+  getPurchasedPrograms(
+    filters: IPurchasedProgramFilters
+  ): Promise<IApiResponse>;
 }

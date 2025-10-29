@@ -21,13 +21,18 @@ export class AdminLayoutComponent implements OnDestroy {
   private readonly _authService = inject(AuthService);
   private readonly _logger = inject(LoggerService);
 
-  private destroy$ = new Subject<void>(); // used to unsubscribe
+  private readonly _destroy$ = new Subject<void>();
 
   userMenu: Menu[] = [
     { label: 'Dashboard', route: '/admin/dashboard', icon: 'fas fa-user' },
     { label: 'Users', route: '/admin/users', icon: 'fas fa-dumbbell' },
 
     { label: 'Programs', route: '/admin/programs', icon: 'fas fa-cog' },
+    {
+      label: 'Purchased Programs',
+      route: '/admin/purchased-programs',
+      icon: 'fas fa-cog',
+    },
     { label: 'Category', route: '/admin/category', icon: 'fas fa-cog' },
     { label: 'Wallet', route: '/admin/wallet', icon: 'fas fa-wallet' },
   ];
@@ -42,7 +47,7 @@ export class AdminLayoutComponent implements OnDestroy {
   logOutUser() {
     this._authService
       .logout()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           this._logger.info(res.message);
@@ -55,7 +60,7 @@ export class AdminLayoutComponent implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next(); // trigger unsubscribe
-    this.destroy$.complete(); // complete the subject
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

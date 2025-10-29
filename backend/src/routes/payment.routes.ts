@@ -6,6 +6,10 @@ import authMiddleware from "../middlewares/verifyToken.middleware";
 
 const paymentRouter = Router();
 const controller = container.get<IPaymentController>(TYPES.PaymentController);
+paymentRouter.get(
+  "/purchased-programs",
+  controller.getPurchasedPrograms.bind(controller)
+);
 
 paymentRouter.post("/create-checkout-session", authMiddleware, (req, res) =>
   controller.createCheckoutSession(req, res)

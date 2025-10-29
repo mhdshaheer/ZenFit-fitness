@@ -27,6 +27,8 @@ import {
 import {
   IRevenueFilter,
   IRevenueData,
+  IApiResponse,
+  IPurchasedProgramFilters,
 } from "../../interfaces/payment.interface";
 import logger from "../../shared/services/logger.service";
 
@@ -243,5 +245,16 @@ export class PaymentService implements IPaymentService {
       filter
     );
     return chartData;
+  }
+  async getPurchasedPrograms(
+    filters: IPurchasedProgramFilters
+  ): Promise<IApiResponse> {
+    const result = await this._paymentRepository.getPurchasedPrograms(filters);
+
+    return {
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+    };
   }
 }
