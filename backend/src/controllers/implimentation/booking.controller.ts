@@ -6,10 +6,16 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IBookingService } from "../../services/interface/booking.service.interface";
+import { INotificationService } from "../../services/interface/notification.service.interface";
+import { ISlotService } from "../../services/interface/slot.service.interface";
 
 export class BookingController implements IBookingController {
   @inject(TYPES.BookingService)
   private readonly _bookingService!: IBookingService;
+  @inject(TYPES.NotificationService)
+  private readonly _notificationService!: INotificationService;
+  @inject(TYPES.SlotService)
+  private readonly _slotService!: ISlotService;
   async createBooking(
     req: Request,
     res: Response
@@ -21,13 +27,32 @@ export class BookingController implements IBookingController {
       throw new AppError("Missing required fields", HttpStatus.BAD_REQUEST);
     }
 
-    const result = await this._bookingService.createBooking(
+    const booking = await this._bookingService.createBooking(
       slotId,
       userId,
       day,
       new Date(date)
     );
 
-    return res.status(HttpStatus.OK).json(result);
+    const currentSlot = await this._slotService.getSlotBySlotId(slotId);
+    if (!currentSlot) {
+      throw new AppError("Slot not found", HttpStatus.NOT_FOUND);
+    }
+
+    await this._notificationService.createNotification(
+      currentSlot.trainerId.toString(),
+      "trainer",
+      "New Slot Booking",
+      `User booked a slot for "${currentSlot.programId.title}" on ${currentSlot.startTime}.`
+    );
+
+    // await this._notificationService.createNotification(
+    //   adminId,
+    //   "admin",
+    //   "New Slot Booking Alert",
+    //   `User ${userName} booked a slot with trainer ${trainerName}.`
+    // );
+
+    return res.status(HttpStatus.OK).json(booking);
   }
 }

@@ -19,4 +19,5 @@ export interface ISlotRepository {
   ): Promise<HydratedDocument<ISlotPopulated>>;
   getProgramSlotListOnUser(programId: string): Promise<ISlotListForUser[]>;
   findSlotById(slotId: string): Promise<ISlot | null>;
+  getSlotBySlotId(slotId: string): Promise<HydratedDocument<ISlotPopulated>>;
 }

@@ -21,6 +21,13 @@ export class CategoryController implements ICategoryController {
     const categories = await this._categoryService.findAllCategory();
     return res.status(HttpStatus.OK).json(categories);
   }
+  /**
+   *
+   * @param _req
+   * @param res
+   * @param _next
+   * @returns
+   */
   async findAllSubCategory(
     _req: Request,
     res: Response,

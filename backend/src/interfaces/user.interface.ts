@@ -29,3 +29,8 @@ export interface GetUsersParams {
   sortBy?: string;
   sortOrder?: 1 | -1;
 }
+
+export interface ILoggedUser {
+  userId: string;
+  role: "user" | "trainer" | "admin";
+}

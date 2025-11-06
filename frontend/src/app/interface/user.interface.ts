@@ -12,3 +12,8 @@ export interface IUserResponse {
   role: 'trainer';
   status: 'active' | 'inactive' | 'blocked';
 }
+
+export interface ILoggedUser {
+  id: string;
+  role: 'user' | 'trainer' | 'admin';
+}

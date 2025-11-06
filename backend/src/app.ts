@@ -24,7 +24,7 @@ import { API_ROUTES } from "./const/apiRoutes.const";
 import { HttpResponse } from "./const/response_message.const";
 import slotRouter from "./routes/slot.routes";
 import bookingRouter from "./routes/booking.route";
-
+import notificationRouter from "./routes/notification.routes";
 const app = express();
 app.use(
   cors({
@@ -68,6 +68,7 @@ app.use(API_ROUTES.CATEGORY, categoryRouter);
 app.use(API_ROUTES.PAYMENT, paymentRouter);
 app.use(API_ROUTES.SLOT, slotRouter);
 app.use(API_ROUTES.BOOKING, bookingRouter);
+app.use(API_ROUTES.NOTIFICATION, notificationRouter);
 
 // Global Error handling
 app.use(errorMiddleware);

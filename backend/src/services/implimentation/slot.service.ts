@@ -5,7 +5,11 @@ import { TYPES } from "../../shared/types/inversify.types";
 import { ISlotRepository } from "../../repositories/interface/slot.repository.interface";
 import { mapToSlotDisplayDto } from "../../mapper/slot.mapper";
 import { SlotDisplyDto } from "../../dtos/slot.dtos";
-import { ISlotListForUser, ISlotStatus } from "../../interfaces/slot.interface";
+import {
+  ISlotListForUser,
+  ISlotPopulated,
+  ISlotStatus,
+} from "../../interfaces/slot.interface";
 
 export class SlotService implements ISlotService {
   @inject(TYPES.SlotRepository)
@@ -45,5 +49,10 @@ export class SlotService implements ISlotService {
       programId
     );
     return slots;
+  }
+
+  async getSlotBySlotId(slotId: string): Promise<ISlotPopulated> {
+    const slot = await this._slotRepository.getSlotBySlotId(slotId);
+    return slot;
   }
 }

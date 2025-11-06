@@ -57,6 +57,12 @@ import { IBookingService } from "./services/interface/booking.service.interface"
 import { BookingService } from "./services/implimentation/booking.service";
 import { IBookingController } from "./controllers/interface/booking.controller.interface";
 import { BookingController } from "./controllers/implimentation/booking.controller";
+import { INotificationRepository } from "./repositories/interface/notification.repository.interface";
+import { NotificationRepository } from "./repositories/implimentation/notification.repository";
+import { INotificationService } from "./services/interface/notification.service.interface";
+import { NotificationService } from "./services/implimentation/notification.service";
+import { INotificationController } from "./controllers/interface/notification.controller.interface";
+import { NotificationController } from "./controllers/implimentation/notification.controller";
 
 const container = new Container();
 
@@ -112,6 +118,14 @@ container
   .bind<IBookingController>(TYPES.BookingController)
   .to(BookingController);
 
+// Notification
+container
+  .bind<INotificationService>(TYPES.NotificationService)
+  .to(NotificationService);
+container
+  .bind<INotificationController>(TYPES.NotificationController)
+  .to(NotificationController);
+
 // Repositories
 container.bind<IUserRepository>(TYPES.UserRepository).to(UserRepository);
 container
@@ -133,4 +147,7 @@ container.bind<ISlotRepository>(TYPES.SlotRepository).to(SlotRepository);
 container
   .bind<IBookingRepository>(TYPES.BookingRepository)
   .to(BookingRepository);
+container
+  .bind<INotificationRepository>(TYPES.NotificationRepository)
+  .to(NotificationRepository);
 export { container };

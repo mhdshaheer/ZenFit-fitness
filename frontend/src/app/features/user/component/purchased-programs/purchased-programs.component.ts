@@ -3,6 +3,7 @@ import { PaymentService } from '../../../../core/services/payment.service';
 import { PurchasedProgram } from '../../../../interface/payment.interface';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
+import { Router } from '@angular/router';
 interface Course {
   id: string;
   title: string;
@@ -20,6 +21,7 @@ interface Course {
 export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   private readonly _paymentService = inject(PaymentService);
   private readonly _destroy$ = new Subject<void>();
+  private _router = inject(Router);
   ngOnInit() {
     this.getPurchasedPrograms();
   }
@@ -59,6 +61,7 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
 
   continueCourse(course: Course): void {
     console.log('Continue course:', course);
+    this._router.navigate(['/user/slots', course.id]);
   }
   ngOnDestroy() {
     this._destroy$.next();

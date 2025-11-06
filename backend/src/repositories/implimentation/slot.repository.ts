@@ -111,4 +111,18 @@ export class SlotRepository
   async findSlotById(slotId: string): Promise<ISlot | null> {
     return await this.model.findById(slotId);
   }
+
+  async getSlotBySlotId(
+    slotId: string
+  ): Promise<HydratedDocument<ISlotPopulated>> {
+    const slot = await this.model
+      .findOne({ _id: slotId })
+      .populate<{ programId: IProgram }>("programId")
+      .exec();
+
+    if (!slot) {
+      throw new Error(`Slot not found for id: ${slotId}`);
+    }
+    return slot;
+  }
 }

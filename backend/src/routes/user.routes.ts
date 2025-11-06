@@ -16,6 +16,10 @@ userRouter.get(
   profileController.getProfile.bind(profileController)
 );
 
+userRouter.get("/current", (req, res, next) => {
+  profileController.getCurrentUserId(req, res).catch(next);
+});
+
 userRouter.put(
   "/profile",
   profileController.updateProfile.bind(profileController)

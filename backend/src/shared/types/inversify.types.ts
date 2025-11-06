@@ -39,6 +39,10 @@ export const TYPES = {
   BookingService: Symbol.for("BookingService"),
   BookingController: Symbol.for("BookingController"),
 
+  // Notification
+  NotificationService: Symbol.for("NotificationService"),
+  NotificationController: Symbol.for("NotificationController"),
+
   // Repositories
   UserRepository: Symbol.for("UserRepository"),
   TempUserRepository: Symbol.for("TempUserRepository"),
@@ -48,4 +52,5 @@ export const TYPES = {
   PaymentRepository: Symbol.for("PaymentRepository"),
   SlotRepository: Symbol.for("SlotRepository"),
   BookingRepository: Symbol.for("BookingRepository"),
+  NotificationRepository: Symbol.for("NotificationRepository"),
 };

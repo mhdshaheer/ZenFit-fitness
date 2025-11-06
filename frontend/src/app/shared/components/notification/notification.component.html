@@ -1,0 +1,279 @@
+<div class="relative">
+  <!-- Notification Bell -->
+  <button
+    type="button"
+    class="relative flex items-center justify-center w-10 h-10 bg-gray-200 rounded-full hover:bg-gray-300 transition disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+    (click)="toggleDropdown()"
+    [disabled]="!isConnected"
+    [attr.aria-label]="
+      'Notifications' +
+      (hasUnreadNotifications ? ' (' + unreadCount + ' unread)' : '')
+    "
+  >
+    <!-- Bell Icon SVG -->
+    <svg
+      class="w-6 h-6 text-gray-700"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+      />
+    </svg>
+
+    <!-- Unread Count Badge -->
+    @if (hasUnreadNotifications) {
+    <span
+      class="absolute top-0 right-0 min-w-[18px] h-[18px] bg-red-600 text-white text-xs font-bold rounded-full flex items-center justify-center px-1 shadow-sm"
+    >
+      {{ unreadCount > 9 ? "9+" : unreadCount }}
+    </span>
+    }
+
+    <!-- Connection Status Indicator -->
+    @if (!isConnected) {
+    <span
+      class="absolute bottom-0 right-0 w-3 h-3 bg-yellow-500 rounded-full border-2 border-white shadow-sm"
+    ></span>
+    }
+  </button>
+
+  <!-- Dropdown -->
+  @if (isDropdownOpen) {
+  <div
+    class="absolute right-0 mt-2 w-96 bg-white shadow-xl rounded-2xl border border-gray-200 z-50"
+  >
+    <!-- Header with Tabs -->
+    <div class="px-4 pt-4 pb-2 border-b border-gray-100">
+      <!-- Title and Mark All Read -->
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="font-semibold text-gray-900 text-lg">Notifications</h3>
+        @if (hasUnreadNotifications && activeTab === 'unread') {
+        <button
+          type="button"
+          class="text-xs text-blue-600 hover:text-blue-800 font-medium hover:bg-blue-50 px-2 py-1 rounded transition-colors"
+          (click)="markAllAsRead()"
+        >
+          Mark all read
+        </button>
+        }
+      </div>
+
+      <!-- ✅ Tabs - Unread & Read Only -->
+      <div class="flex gap-1 bg-gray-100 p-1 rounded-lg">
+        <!-- Unread Tab -->
+        <button
+          type="button"
+          class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200"
+          [class.bg-white]="activeTab === 'unread'"
+          [class.text-gray-900]="activeTab === 'unread'"
+          [class.shadow-sm]="activeTab === 'unread'"
+          [class.text-gray-600]="activeTab !== 'unread'"
+          [class.hover:text-gray-900]="activeTab !== 'unread'"
+          (click)="setActiveTab('unread')"
+          role="tab"
+          [attr.aria-selected]="activeTab === 'unread'"
+        >
+          Unread @if (unreadCount > 0) {
+          <span
+            class="ml-1.5 text-xs px-1.5 py-0.5 rounded-full"
+            [class.bg-blue-100]="activeTab === 'unread'"
+            [class.text-blue-700]="activeTab === 'unread'"
+            [class.bg-red-100]="activeTab !== 'unread'"
+            [class.text-red-700]="activeTab !== 'unread'"
+          >
+            {{ unreadCount > 99 ? "99+" : unreadCount }}
+          </span>
+          }
+        </button>
+
+        <!-- Read Tab -->
+        <button
+          type="button"
+          class="flex-1 px-3 py-2 text-sm font-medium rounded-md transition-all duration-200"
+          [class.bg-white]="activeTab === 'read'"
+          [class.text-gray-900]="activeTab === 'read'"
+          [class.shadow-sm]="activeTab === 'read'"
+          [class.text-gray-600]="activeTab !== 'read'"
+          [class.hover:text-gray-900]="activeTab !== 'read'"
+          (click)="setActiveTab('read')"
+          role="tab"
+          [attr.aria-selected]="activeTab === 'read'"
+        >
+          Read @if (readCount > 0) {
+          <span
+            class="ml-1.5 text-xs px-1.5 py-0.5 rounded-full"
+            [class.bg-green-100]="activeTab === 'read'"
+            [class.text-green-700]="activeTab === 'read'"
+            [class.bg-gray-200]="activeTab !== 'read'"
+            [class.text-gray-600]="activeTab !== 'read'"
+          >
+            {{ readCount }}
+          </span>
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Notifications List -->
+    <div class="max-h-80 overflow-y-auto">
+      @if (isLoading) {
+      <!-- Loading State -->
+      <div class="flex flex-col items-center justify-center py-12 px-4">
+        <div class="relative">
+          <div class="w-12 h-12 border-4 border-blue-200 rounded-full"></div>
+          <div
+            class="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin absolute top-0 left-0"
+          ></div>
+        </div>
+        <p class="text-gray-500 text-sm mt-4">Loading notifications...</p>
+      </div>
+      } @else if (filteredNotifications.length === 0) {
+      <!-- Empty State -->
+      <div
+        class="flex flex-col items-center justify-center py-12 px-4 text-center"
+      >
+        <div
+          class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4"
+        >
+          <svg
+            class="w-8 h-8 text-gray-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+            />
+          </svg>
+        </div>
+        <p class="text-gray-900 font-medium mb-1">
+          {{
+            activeTab === "unread"
+              ? "No unread notifications"
+              : "No read notifications"
+          }}
+        </p>
+        <p class="text-gray-500 text-sm">
+          {{
+            activeTab === "unread"
+              ? "You're all caught up!"
+              : "Read notifications will appear here"
+          }}
+        </p>
+      </div>
+      } @else {
+      <!-- Notification Items -->
+      <div class="divide-y divide-gray-100">
+        @for (n of filteredNotifications; track n._id) {
+        <div
+          class="group px-4 py-3 hover:bg-gray-50 cursor-pointer transition-all duration-150 relative"
+          [class.bg-blue-50]="!n.isRead"
+          [class.hover:bg-blue-100]="!n.isRead"
+          (click)="markAsRead(n)"
+          role="button"
+          tabindex="0"
+        >
+          <!-- Unread Indicator Line -->
+          @if (!n.isRead) {
+          <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-600"></div>
+          }
+
+          <div class="flex items-start gap-3">
+            <!-- Icon -->
+            <div
+              class="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center"
+              [class.bg-blue-100]="!n.isRead"
+              [class.bg-gray-100]="n.isRead"
+            >
+              <svg
+                class="w-5 h-5"
+                [class.text-blue-600]="!n.isRead"
+                [class.text-gray-500]="n.isRead"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+            </div>
+
+            <!-- Content -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-start justify-between gap-2 mb-1">
+                <h4
+                  class="text-sm font-semibold text-gray-900"
+                  [class.font-bold]="!n.isRead"
+                >
+                  {{ n.title }}
+                </h4>
+                @if (!n.isRead) {
+                <span
+                  class="flex-shrink-0 w-2 h-2 bg-blue-600 rounded-full mt-1.5"
+                ></span>
+                }
+              </div>
+
+              <p
+                class="text-sm text-gray-600 mb-2"
+                [class.text-gray-700]="!n.isRead"
+              >
+                {{ n.message }}
+              </p>
+
+              <time class="text-xs text-gray-500 flex items-center gap-1">
+                <svg
+                  class="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                {{ n.createdAt | date : "short" }}
+              </time>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+    </div>
+
+    <!-- Connection Status -->
+    @if (!isConnected) {
+    <div
+      class="px-4 py-2 bg-yellow-50 border-t border-yellow-100 flex items-center gap-2 rounded-b-2xl"
+    >
+      <div class="flex h-2 w-2">
+        <span
+          class="animate-ping absolute inline-flex h-2 w-2 rounded-full bg-yellow-400 opacity-75"
+        ></span>
+        <span
+          class="relative inline-flex rounded-full h-2 w-2 bg-yellow-500"
+        ></span>
+      </div>
+      <p class="text-xs text-yellow-800">Reconnecting to server...</p>
+    </div>
+    }
+  </div>
+  }
+</div>

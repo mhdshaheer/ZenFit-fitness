@@ -7,6 +7,7 @@ import { HttpResponse } from "../../const/response_message.const";
 import { TYPES } from "../../shared/types/inversify.types";
 import { AppError } from "../../shared/utils/appError.util";
 import { UserDto } from "../../dtos/user.dtos";
+import { ILoggedUser } from "../../interfaces/user.interface";
 
 @injectable()
 export class ProfileController implements IProfileController {
@@ -64,5 +65,14 @@ export class ProfileController implements IProfileController {
         HttpStatus.BAD_REQUEST
       );
     }
+  }
+
+  async getCurrentUserId(
+    req: Request,
+    res: Response
+  ): Promise<Response<ILoggedUser>> {
+    const user = (req as any).user;
+
+    return res.status(HttpStatus.OK).json({ id: user.id, role: user.role });
   }
 }

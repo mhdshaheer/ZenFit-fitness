@@ -1,8 +1,8 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { IUserResponse } from '../../interface/user.interface';
+import { ILoggedUser, IUserResponse } from '../../interface/user.interface';
 import { ProfileRouter } from '../constants/api-routes.const';
 
 @Injectable({
@@ -75,6 +75,12 @@ export class ProfileService {
     return this._http.post<{ message: string }>(
       `${this._apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PASSWORD}`,
       data
+    );
+  }
+
+  getCurrentUserId(): Observable<ILoggedUser> {
+    return this._http.get<ILoggedUser>(
+      `${this._apiUrl}${ProfileRouter.USER_BASE}/current`
     );
   }
 
