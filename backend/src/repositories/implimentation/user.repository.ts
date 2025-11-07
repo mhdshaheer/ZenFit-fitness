@@ -14,6 +14,9 @@ export class UserRepository
   async findByEmail(email: string): Promise<IUser | null> {
     return await this.findOne({ email });
   }
+  async getAllUsers(): Promise<IUser[]> {
+    return await this.model.find();
+  }
   async createUser(user: IUser): Promise<IUser> {
     return await this.create(user);
   }

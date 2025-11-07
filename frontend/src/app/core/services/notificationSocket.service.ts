@@ -1,14 +1,16 @@
-import { Injectable, NgZone } from '@angular/core';
+import { inject, Injectable, NgZone } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { Observable, Subject } from 'rxjs';
 import { INotification } from '../../interface/notification.interface';
 import { environment } from '../../../environments/environment';
+import { LoggerService } from './logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class NotificationSocketService {
   private _socket!: Socket;
   private _notificationSubject = new Subject<INotification>();
   private _connectionStatus = new Subject<boolean>();
+  private _loggerService = inject(LoggerService);
 
   constructor(private _ngZone: NgZone) {
     this.initializeSocket();
@@ -24,17 +26,17 @@ export class NotificationSocketService {
 
     // Handle connection events
     this._socket.on('connect', () => {
-      console.log('Socket connected:', this._socket.id);
+      this._loggerService.info('Socket connected:', this._socket.id);
       this._connectionStatus.next(true);
     });
 
     this._socket.on('disconnect', (reason) => {
-      console.warn('Socket disconnected:', reason);
+      this._loggerService.warn('Socket disconnected:', reason);
       this._connectionStatus.next(false);
     });
 
     this._socket.on('connect_error', (error) => {
-      console.error('Socket connection error:', error);
+      this._loggerService.error('Socket connection error:', error);
     });
 
     // Listen for notifications
@@ -49,7 +51,10 @@ export class NotificationSocketService {
   // ✅ FIXED: Send room name as string
   joinRoom(id: string, type: 'user' | 'trainer' | 'admin'): void {
     if (!id || !type) {
-      console.error('❌ Cannot join room: missing id or type', { id, type });
+      this._loggerService.error('Cannot join room: missing id or type', {
+        id,
+        type,
+      });
       return;
     }
 
@@ -57,14 +62,14 @@ export class NotificationSocketService {
     const roomData = { id, type };
 
     if (this._socket.connected) {
-      this._socket.emit('join', roomData); // ✅ Send as string
-      console.log(`✅ Joined room: ${roomName}`);
+      this._socket.emit('join', roomData);
+      this._loggerService.info(`Joined room: ${roomName}`);
     } else {
-      console.error('❌ Cannot join room: Socket not connected');
+      this._loggerService.error('Cannot join room: Socket not connected');
       // ✅ Retry when connected
       this._socket.once('connect', () => {
         this._socket.emit('join', roomData);
-        console.log(`Joined room after reconnect: ${roomName}`);
+        this._loggerService.info(`Joined room after reconnect: ${roomName}`);
       });
     }
   }

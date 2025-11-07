@@ -7,8 +7,15 @@ import { TYPES } from "../../shared/types/inversify.types";
 import { ProgramDto, ProgramSlotCreateDto } from "../../dtos/program.dtos";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpResponse } from "../../const/response_message.const";
+import { INotificationService } from "../../services/interface/notification.service.interface";
+import { IProfileService } from "../../services/interface/profile.service.interface";
 
 export class ProgramController implements IProgramController {
+  @inject(TYPES.NotificationService)
+  private readonly _notificationService!: INotificationService;
+
+  @inject(TYPES.ProfileService)
+  private readonly _profileService!: IProfileService;
   constructor(
     @inject(TYPES.ProgramService)
     private readonly _programService: IProgramService
@@ -52,7 +59,7 @@ export class ProgramController implements IProgramController {
     }
 
     data.trainerId = userId;
-    const program = await this._programService.saveProgramDraft(data);
+    const program = await this._programService.saveProgram(data);
 
     if (!program) {
       throw new AppError(
@@ -60,6 +67,21 @@ export class ProgramController implements IProgramController {
         HttpStatus.INTERNAL_SERVER_ERROR
       );
     }
+    await this._notificationService.createNotification(
+      data.trainerId,
+      "trainer",
+      "Program Created Successfully",
+      `Your new program, "${program.title}", has been created.`
+    );
+    const admins = await this._profileService.getUsersByRole("admin");
+    admins.forEach(async (item) => {
+      await this._notificationService.createNotification(
+        item.id,
+        "admin",
+        "New Program Added",
+        `Trainer has just added a new program: "${program.title}".`
+      );
+    });
 
     res.status(HttpStatus.OK).json({
       message: HttpResponse.PROGRAM_SAVED_SUCCESSFULLY,
@@ -157,6 +179,21 @@ export class ProgramController implements IProgramController {
     const program = await this._programService.updateApprovalStatus(
       programId,
       approvalStatus
+    );
+    const users = await this._profileService.getUsersByRole("user");
+    users.forEach(async (item) => {
+      await this._notificationService.createNotification(
+        item.id,
+        "user",
+        `Discover a New Program: ${program.title}!`,
+        `Exciting news! New Program is lauched: "${program.title}". Check it out now!`
+      );
+    });
+    await this._notificationService.createNotification(
+      program.programId!,
+      "trainer",
+      "Program Approved",
+      `${program.title} has been approved.`
     );
     return res.status(HttpStatus.OK).json(program);
   }

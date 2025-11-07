@@ -85,4 +85,11 @@ export class ProfileService implements IProfileService {
     });
     return !!updatedUser;
   }
+
+  async getUsersByRole(role: string): Promise<UserDto[]> {
+    const users = await this._userRepository.getAllUsers();
+    const filteredUsers = users.filter((item) => item.role == role);
+    const mappedUsers = filteredUsers.map(mapToUserDto);
+    return mappedUsers;
+  }
 }

@@ -15,6 +15,7 @@ import { INotification } from '../../../interface/notification.interface';
 import { environment } from '../../../../environments/environment';
 import { NotificationService } from '../../../core/services/notificaiton.service';
 import { ProfileService } from '../../../core/services/profile.service';
+import { ToastService } from '../../../core/services/toast.service';
 
 type NotificationTab = 'unread' | 'read';
 
@@ -40,6 +41,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
   private readonly _notificationService = inject(NotificationService);
   private readonly _profileService = inject(ProfileService);
   private readonly _cdr = inject(ChangeDetectorRef);
+  private readonly _toastService = inject(ToastService);
 
   ngOnInit(): void {
     this.initializeNotifications();
@@ -79,6 +81,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
         next: (notification) => {
           this.notifications.unshift(notification);
           this._cdr.markForCheck();
+          this._toastService.info(notification.message);
           this.showBrowserNotification(notification);
         },
         error: (error) => console.error('Notification stream error:', error),

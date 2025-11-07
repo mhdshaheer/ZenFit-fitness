@@ -8,6 +8,7 @@ import { IProgram } from "../../models/program.model";
 
 export interface IProgramService {
   saveProgramDraft(data: IProgram): Promise<IProgram | null>;
+  saveProgram(data: IProgram): Promise<IProgram | null>;
   getAllPrograms(): Promise<ProgramDto[]>;
   getPrograms(trainerId: string): Promise<ProgramDto[]>;
   getProgramsForSlotCreate(trainerId: string): Promise<ProgramSlotCreateDto[]>;

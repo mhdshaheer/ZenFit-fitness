@@ -39,6 +39,17 @@ export class ProgramService implements IProgramService {
     );
     return savedData;
   }
+  async saveProgram(data: IProgram): Promise<IProgram | null> {
+    const condition = {
+      trainerId: data.trainerId,
+      programId: data.programId,
+    };
+    const savedData = await this._programRepository.createProgram(condition, {
+      ...data,
+      status: "active",
+    });
+    return savedData;
+  }
 
   async getAllPrograms(): Promise<ProgramDto[]> {
     const programs = await this._programRepository.getAllPrograms();
