@@ -4,6 +4,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { SidebarComponent } from '../../../../shared/components/sidebar/sidebar.component';
 import { Subject, takeUntil } from 'rxjs';
+import { NotificationComponent } from '../../../../shared/components/notification/notification.component';
 
 interface Menu {
   label: string;
@@ -12,7 +13,7 @@ interface Menu {
 }
 @Component({
   selector: 'app-admin-layout',
-  imports: [RouterModule, SidebarComponent],
+  imports: [RouterModule, SidebarComponent,NotificationComponent],
   templateUrl: './admin-layout.component.html',
   styleUrl: './admin-layout.component.css',
 })
