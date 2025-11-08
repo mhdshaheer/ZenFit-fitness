@@ -10,12 +10,11 @@ import { HttpResponse } from "../../const/response_message.const";
 
 @injectable()
 export class FileController implements IFileController {
-
   constructor(
-    @inject(TYPES.FileService) private _fileService: IFileService,
-    @inject(TYPES.ProfileService) private _profileService: IProfileService
-  ) {
-  }
+    @inject(TYPES.FileService) private readonly _fileService: IFileService,
+    @inject(TYPES.ProfileService)
+    private readonly _profileService: IProfileService
+  ) {}
 
   async upload(req: Request, res: Response): Promise<void> {
     const { type } = req.body;

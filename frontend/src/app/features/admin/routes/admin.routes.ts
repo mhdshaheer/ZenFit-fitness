@@ -79,6 +79,14 @@ export const ADMIN_ROUTES: Routes = [
           ).then((m) => m.ProgramViewComponent);
         },
       },
+      {
+        path: 'purchased-programs',
+        loadComponent: () => {
+          return import(
+            '../components/purchased-programs/purchased-programs.component'
+          ).then((m) => m.PurchasedProgramsComponent);
+        },
+      },
     ],
   },
 ];

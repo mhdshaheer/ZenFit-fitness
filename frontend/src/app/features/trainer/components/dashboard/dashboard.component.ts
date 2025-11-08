@@ -1,5 +1,5 @@
-import { Component, inject } from '@angular/core';
-import { Subject, takeUntil } from 'rxjs';
+import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Subject, takeUntil, filter, take } from 'rxjs'; // Add filter
 import { ITopPrograms } from '../../../../interface/program.interface';
 import { ITopCategory } from '../../../../interface/category.interface';
 import { PaymentService } from '../../../../core/services/payment.service';
@@ -18,10 +18,10 @@ import { LoggerService } from '../../../../core/services/logger.service';
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css',
 })
-export class DashboardComponent {
-  private _paymentService = inject(PaymentService);
-  private _destroy$ = new Subject<void>();
-  private _logger = inject(LoggerService);
+export class DashboardComponent implements OnInit, OnDestroy {
+  private readonly _paymentService = inject(PaymentService);
+  private readonly _destroy$ = new Subject<void>();
+  private readonly _logger = inject(LoggerService);
 
   topCategories: ITopCategory[] = [];
   topCourses: ITopPrograms[] = [];
@@ -66,6 +66,7 @@ export class DashboardComponent {
         },
       });
   }
+
   getTopPrograms() {
     this._paymentService
       .getTopProgramsByTrainer()
@@ -76,6 +77,7 @@ export class DashboardComponent {
         },
       });
   }
+
   getRevenueChart(filter: IRevenueFilter) {
     this._paymentService
       .getRevenueChart(filter)
@@ -90,6 +92,7 @@ export class DashboardComponent {
         },
       });
   }
+
   ngOnDestroy() {
     this._destroy$.next();
     this._destroy$.complete();

@@ -73,6 +73,22 @@ export const TRAINER_ROUTES: Routes = [
           ).then((m) => m.TrainerWalletComponent);
         },
       },
+      {
+        path: 'slots',
+        loadComponent: () => {
+          return import('../components/create-slot/create-slot.component').then(
+            (m) => m.CreateSlotComponent
+          );
+        },
+      },
+      {
+        path: 'purchased-programs',
+        loadComponent: () => {
+          return import(
+            '../components/purchased-programs/purchased-programs.component'
+          ).then((m) => m.PurchasedProgramsComponent);
+        },
+      },
     ],
   },
 ];

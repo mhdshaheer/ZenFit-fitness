@@ -27,14 +27,14 @@ export class CategoryViewComponent {
   categoryId!: string;
 
   // Services
-  private _categoryService = inject(CategoryService);
-  private _activatedRoute = inject(ActivatedRoute);
-  private _toastService = inject(ToastService);
-  private _logger = inject(LoggerService);
+  private readonly _categoryService = inject(CategoryService);
+  private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _toastService = inject(ToastService);
+  private readonly _logger = inject(LoggerService);
 
-  private _destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
 
-  constructor(private _fb: FormBuilder) {
+  constructor(private readonly _fb: FormBuilder) {
     // Initialize create form
     this.editForm = this._fb.group({
       name: [

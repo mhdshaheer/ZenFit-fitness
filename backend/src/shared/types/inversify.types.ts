@@ -31,6 +31,18 @@ export const TYPES = {
   PaymentService: Symbol.for("PaymentService"),
   PaymentController: Symbol.for("PaymentController"),
 
+  // Slot
+  SlotService: Symbol.for("SlotService"),
+  SlotController: Symbol.for("SlotController"),
+
+  // Booking
+  BookingService: Symbol.for("BookingService"),
+  BookingController: Symbol.for("BookingController"),
+
+  // Notification
+  NotificationService: Symbol.for("NotificationService"),
+  NotificationController: Symbol.for("NotificationController"),
+
   // Repositories
   UserRepository: Symbol.for("UserRepository"),
   TempUserRepository: Symbol.for("TempUserRepository"),
@@ -38,4 +50,7 @@ export const TYPES = {
   ProgramRespository: Symbol.for("ProgramRepository"),
   CategoryRepository: Symbol.for("CategoryRepository"),
   PaymentRepository: Symbol.for("PaymentRepository"),
+  SlotRepository: Symbol.for("SlotRepository"),
+  BookingRepository: Symbol.for("BookingRepository"),
+  NotificationRepository: Symbol.for("NotificationRepository"),
 };

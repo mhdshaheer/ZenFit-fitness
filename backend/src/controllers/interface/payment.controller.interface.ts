@@ -50,4 +50,7 @@ export interface IPaymentController {
     req: Request,
     res: Response
   ): Promise<Response<IRevenueData[]>>;
+
+  getPurchasedPrograms(req: Request, res: Response): Promise<void>;
+  getTrainerPurchasedPrograms(req: Request, res: Response): Promise<void>;
 }

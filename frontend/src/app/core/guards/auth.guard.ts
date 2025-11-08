@@ -4,8 +4,8 @@ import { AuthService } from '../services/auth.service';
 
 @Injectable({ providedIn: 'root' })
 export class AuthGuard implements CanActivate {
-  private _authService = inject(AuthService);
-  private _router = inject(Router);
+  private readonly _authService = inject(AuthService);
+  private readonly _router = inject(Router);
   async canActivate(): Promise<boolean> {
     if (await this._authService.isLoggedIn()) {
       return true;

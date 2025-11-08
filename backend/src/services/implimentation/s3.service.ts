@@ -8,7 +8,8 @@ import { IUserRepository } from "../../repositories/interface/user.repository.in
 @injectable()
 export class FileService implements IFileService {
   private s3Service = new S3Service();
-  @inject(TYPES.UserRepository) private userRepository!: IUserRepository;
+  @inject(TYPES.UserRepository)
+  private readonly _userRepository!: IUserRepository;
 
   async upload(
     role: "user" | "trainer" | "admin" | "course",
@@ -16,7 +17,7 @@ export class FileService implements IFileService {
     id: string,
     file: Express.Multer.File
   ): Promise<string> {
-    const user = await this.userRepository.findById(id);
+    const user = await this._userRepository.findById(id);
 
     if (!user) {
       throw new Error("User not found");
@@ -47,7 +48,7 @@ export class FileService implements IFileService {
     userId: string,
     type: string | undefined
   ): Promise<string> {
-    const user = await this.userRepository.findById(userId);
+    const user = await this._userRepository.findById(userId);
     if (!user || user.profileImage === undefined) {
       throw new Error("Profile image not found");
     }

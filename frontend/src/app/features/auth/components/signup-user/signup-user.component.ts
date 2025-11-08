@@ -25,10 +25,10 @@ import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
   styleUrl: './signup-user.component.css',
 })
 export class SignupUserComponent {
-  private _fb = inject(FormBuilder);
-  private _store = inject(Store);
-  private _otpAccessService = inject(OtpAccessService);
-  private _logger = inject(LoggerService);
+  private readonly _fb = inject(FormBuilder);
+  private readonly _store = inject(Store);
+  private readonly _otpAccessService = inject(OtpAccessService);
+  private readonly _logger = inject(LoggerService);
 
   signupForm!: FormGroup;
   showPassword = false;

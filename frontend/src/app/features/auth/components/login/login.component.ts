@@ -24,9 +24,9 @@ import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
-  private _fb = inject(FormBuilder);
-  private _store = inject(Store);
-  private _logger = inject(LoggerService);
+  private readonly _fb = inject(FormBuilder);
+  private readonly _store = inject(Store);
+  private readonly _logger = inject(LoggerService);
   loginForm!: FormGroup;
   submitted = signal(false);
   showPassword = signal(false);

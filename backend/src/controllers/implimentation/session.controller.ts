@@ -10,7 +10,8 @@ import { HttpResponse } from "../../const/response_message.const";
 
 export class SessionController implements ISessionController {
   constructor(
-    @inject(TYPES.SessionService) private _sessionService: ISessionService
+    @inject(TYPES.SessionService)
+    private readonly _sessionService: ISessionService
   ) {}
   async saveDraftSession(req: Request, res: Response): Promise<void> {
     const data = req.body;

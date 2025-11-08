@@ -8,9 +8,9 @@ import { Router } from '@angular/router';
   styleUrl: './payment-failed.component.css',
 })
 export class PaymentFailedComponent {
-  router = inject(Router);
+  private readonly _router = inject(Router);
 
   returnToHomepage(): void {
-    this.router.navigate(['/user/dashboard']);
+    this._router.navigate(['/user/dashboard']);
   }
 }

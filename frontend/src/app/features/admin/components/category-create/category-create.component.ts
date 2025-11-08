@@ -30,11 +30,11 @@ export class CategoryCreateComponent implements OnInit, OnDestroy {
   isSubcategory = false;
   categories: ICategory[] = [];
 
-  private _categoryService = inject(CategoryService);
-  private _toastService = inject(ToastService);
-  private _router = inject(Router);
+  private readonly _categoryService = inject(CategoryService);
+  private readonly _toastService = inject(ToastService);
+  private readonly _router = inject(Router);
 
-  private _destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
 
   constructor(private fb: FormBuilder) {
     this.createForm = this.fb.group({

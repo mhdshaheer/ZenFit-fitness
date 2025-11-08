@@ -76,3 +76,15 @@ export const ProfileRouter = {
   UPLOAD: `/profile/upload`,
   IMAGE: '/profile/image',
 };
+
+export const SlotRoutes = {
+  Base: '/slot',
+};
+
+export const BookingRoutes = {
+  BASE: '/booking',
+};
+
+export const NotificationRoutes = {
+  BASE: '/notifications',
+};

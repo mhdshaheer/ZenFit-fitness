@@ -35,11 +35,11 @@ export class PaymentComponent implements OnInit, OnDestroy {
   programId!: string;
 
   // services
-  private _programService = inject(ProgramService);
-  private _loggerService = inject(LoggerService);
-  private _activatedRoute = inject(ActivatedRoute);
-  private _paymentService = inject(PaymentService);
-  private _destroy$ = new Subject<void>();
+  private readonly _programService = inject(ProgramService);
+  private readonly _loggerService = inject(LoggerService);
+  private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _paymentService = inject(PaymentService);
+  private readonly _destroy$ = new Subject<void>();
 
   program = {} as IProgram;
 

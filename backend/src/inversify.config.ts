@@ -45,6 +45,24 @@ import { IPaymentController } from "./controllers/interface/payment.controller.i
 import { PaymentController } from "./controllers/implimentation/payment.controller";
 import { IPaymentRepository } from "./repositories/interface/payment.repostitory.interface";
 import { PaymentRepository } from "./repositories/implimentation/payment.repository";
+import { ISlotRepository } from "./repositories/interface/slot.repository.interface";
+import { SlotRepository } from "./repositories/implimentation/slot.repository";
+import { ISlotService } from "./services/interface/slot.service.interface";
+import { SlotService } from "./services/implimentation/slot.service";
+import { ISlotController } from "./controllers/interface/slot.controller.interface";
+import { SlotController } from "./controllers/implimentation/slot.controller";
+import { IBookingRepository } from "./repositories/interface/booking.repository.interface";
+import { BookingRepository } from "./repositories/implimentation/booking.repository";
+import { IBookingService } from "./services/interface/booking.service.interface";
+import { BookingService } from "./services/implimentation/booking.service";
+import { IBookingController } from "./controllers/interface/booking.controller.interface";
+import { BookingController } from "./controllers/implimentation/booking.controller";
+import { INotificationRepository } from "./repositories/interface/notification.repository.interface";
+import { NotificationRepository } from "./repositories/implimentation/notification.repository";
+import { INotificationService } from "./services/interface/notification.service.interface";
+import { NotificationService } from "./services/implimentation/notification.service";
+import { INotificationController } from "./controllers/interface/notification.controller.interface";
+import { NotificationController } from "./controllers/implimentation/notification.controller";
 
 const container = new Container();
 
@@ -90,6 +108,24 @@ container
   .bind<IPaymentController>(TYPES.PaymentController)
   .to(PaymentController);
 
+// Slot
+container.bind<ISlotService>(TYPES.SlotService).to(SlotService);
+container.bind<ISlotController>(TYPES.SlotController).to(SlotController);
+
+// Booking
+container.bind<IBookingService>(TYPES.BookingService).to(BookingService);
+container
+  .bind<IBookingController>(TYPES.BookingController)
+  .to(BookingController);
+
+// Notification
+container
+  .bind<INotificationService>(TYPES.NotificationService)
+  .to(NotificationService);
+container
+  .bind<INotificationController>(TYPES.NotificationController)
+  .to(NotificationController);
+
 // Repositories
 container.bind<IUserRepository>(TYPES.UserRepository).to(UserRepository);
 container
@@ -107,4 +143,11 @@ container
 container
   .bind<IPaymentRepository>(TYPES.PaymentRepository)
   .to(PaymentRepository);
+container.bind<ISlotRepository>(TYPES.SlotRepository).to(SlotRepository);
+container
+  .bind<IBookingRepository>(TYPES.BookingRepository)
+  .to(BookingRepository);
+container
+  .bind<INotificationRepository>(TYPES.NotificationRepository)
+  .to(NotificationRepository);
 export { container };

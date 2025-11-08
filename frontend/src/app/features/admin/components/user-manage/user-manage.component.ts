@@ -46,9 +46,9 @@ export interface ActionEvent {
   styleUrl: './user-manage.component.css',
 })
 export class UserManageComponent implements OnInit {
-  private _store = inject(Store);
-  private _dialog = inject(MatDialog);
-  private _router = inject(Router);
+  private readonly _store = inject(Store);
+  private readonly _dialog = inject(MatDialog);
+  private readonly _router = inject(Router);
 
   users$!: Observable<User[]>;
   loading$!: Observable<boolean>;

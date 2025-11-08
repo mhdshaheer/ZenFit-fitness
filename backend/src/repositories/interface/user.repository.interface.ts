@@ -2,6 +2,7 @@ import { GetUsersParams, IUser } from "../../interfaces/user.interface";
 
 export interface IUserRepository {
   findByEmail(email: string): Promise<IUser | null>;
+  getAllUsers(): Promise<IUser[]>;
   createUser(user: IUser): Promise<IUser>;
   findAll(): Promise<IUser[]>;
   findById(userId: string): Promise<IUser | null>;

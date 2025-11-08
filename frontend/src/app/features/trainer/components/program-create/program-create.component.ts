@@ -27,10 +27,11 @@ export interface Category {
   styleUrl: './program-create.component.css',
 })
 export class ProgramCreateComponent implements OnInit, OnDestroy {
-  programService = inject(ProgramService);
-  toastService = inject(ToastService);
-  router = inject(Router);
-  categoryService = inject(CategoryService);
+  private readonly _programService = inject(ProgramService);
+  private readonly _toastService = inject(ToastService);
+  private readonly _router = inject(Router);
+  private readonly _categoryService = inject(CategoryService);
+  private readonly _destroy$ = new Subject<void>();
 
   programForm!: FormGroup;
   characterCount = 0;
@@ -38,9 +39,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
   currentTrainerId = '';
   categories: Category[] = [];
 
-  private _destroy$ = new Subject<void>(); // ✅ for cleanup
-
-  constructor(private fb: FormBuilder) {}
+  constructor(private readonly _fb: FormBuilder) {}
 
   ngOnInit() {
     this.initializeForm();
@@ -51,11 +50,10 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
   ngOnDestroy() {
     this._destroy$.next();
     this._destroy$.complete();
-    console.log('Unsubscribed all streams ✅');
   }
 
   getSubCategories() {
-    this.categoryService
+    this._categoryService
       .getSubcateories()
       .pipe(takeUntil(this._destroy$))
       .subscribe({
@@ -73,7 +71,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
   }
 
   initializeForm() {
-    this.programForm = this.fb.group({
+    this.programForm = this._fb.group({
       programId: ['', [Validators.required, Validators.minLength(3)]],
       title: [
         '',
@@ -124,20 +122,20 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
         status: 'active',
       };
 
-      this.programService
+      this._programService
         .saveProgram(programData)
         .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
             console.log('Training Program saved successfully:', res);
-            this.toastService.success('Training Program saved successfully');
+            this._toastService.success('Training Program saved successfully');
             this.isSubmitting = false;
             this.resetForm();
-            this.router.navigate(['/trainer/programs']);
+            this._router.navigate(['/trainer/programs']);
           },
           error: (err) => {
             console.error('Error saving Training Program:', err);
-            this.toastService.error('Failed to save Training Program');
+            this._toastService.error('Failed to save Training Program');
             this.isSubmitting = false;
           },
         });
@@ -156,20 +154,20 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
       status: 'draft',
     };
 
-    this.programService
+    this._programService
       .saveProgramDraft(draftData)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           console.log('Draft saved successfully:', res);
-          this.toastService.success('Draft saved successfully');
+          this._toastService.success('Draft saved successfully');
           this.isSubmitting = false;
           this.resetForm();
-          this.router.navigate(['/trainer/programs']);
+          this._router.navigate(['/trainer/programs']);
         },
         error: (err) => {
           console.error('Error saving draft:', err);
-          this.toastService.error('Failed to save draft');
+          this._toastService.error('Failed to save draft');
           this.isSubmitting = false;
         },
       });

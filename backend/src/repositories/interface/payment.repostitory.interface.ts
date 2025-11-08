@@ -4,8 +4,12 @@ import {
   PurchasedProgram,
 } from "../../dtos/payment.dtos";
 import {
+  IPurchasedProgramFilters,
+  IPurchasedProgramsResponse,
   IRevenueData,
   IRevenueFilter,
+  ITrainerPurchasedProgramFilters,
+  ITrainerPurchasedProgramsResponse,
 } from "../../interfaces/payment.interface";
 import { IPayment } from "../../models/payment.model";
 
@@ -18,7 +22,11 @@ export interface IPaymentRepository {
   getProgramsByTrainerId(trainerId: string): Promise<IPayment[]>;
   getPayments(): Promise<IPayment[]>;
   findPurchasedProgram(userId: string): Promise<PurchasedProgram[]>;
+  getPurchasedProgramIds(
+    userId: string
+  ): Promise<{ _id: string; programId: string }[]>;
   getEntrolledUsers(programId: string): Promise<number>;
+
   getTopSellingCategory(limit: number): Promise<ITopSellingCategory[]>;
   getTopSellingPrograms(limit: number): Promise<ITopSellingPrograms[]>;
   getTopSellingCategoryByTrainer(
@@ -34,4 +42,10 @@ export interface IPaymentRepository {
     trainerId: string,
     filter: IRevenueFilter
   ): Promise<IRevenueData[]>;
+  getPurchasedPrograms(
+    filters: IPurchasedProgramFilters
+  ): Promise<IPurchasedProgramsResponse>;
+  getTrainerPurchasedPrograms(
+    filters: ITrainerPurchasedProgramFilters
+  ): Promise<ITrainerPurchasedProgramsResponse>;
 }

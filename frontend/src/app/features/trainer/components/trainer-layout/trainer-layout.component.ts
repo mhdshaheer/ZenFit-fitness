@@ -10,6 +10,7 @@ import {
 } from '../../../../shared/components/header/header.component';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { Subject, takeUntil } from 'rxjs';
+import { NotificationSocketService } from '../../../../core/services/notificationSocket.service';
 
 interface Menu {
   label: string;
@@ -25,12 +26,15 @@ interface Menu {
 })
 export class TrainerLayoutComponent implements OnDestroy, OnInit {
   isMobileMenuOpen = false;
-  authService = inject(AuthService);
-  logger = inject(LoggerService);
-  router = inject(Router);
-  profileService = inject(ProfileService);
+  private readonly _authService = inject(AuthService);
+  private _notificationSocketService = inject(NotificationSocketService);
 
-  private _destroy$ = new Subject<void>();
+  private readonly _logger = inject(LoggerService);
+  private readonly _router = inject(Router);
+  private readonly _profileService = inject(ProfileService);
+
+  private readonly _destroy$ = new Subject<void>();
+  userid!: string;
 
   // Sidebar
   userMenu: Menu[] = [
@@ -57,16 +61,16 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
   }
 
   logOutUser() {
-    this.authService
+    this._authService
       .logout()
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
-          this.logger.info(res.message);
-          this.router.navigate(['/auth/login']);
+          this._logger.info(res.message);
+          this._router.navigate(['/auth/login']);
         },
         error: (err) => {
-          this.logger.error(err);
+          this._logger.error(err);
         },
       });
   }
@@ -78,32 +82,36 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
     role: '',
     avatar: '',
   };
-
   getUserProfile() {
-    const userData = {
-      name: '',
-      email: '',
-      role: '',
-      avatar: '',
-    };
-    this.profileService
+    this._profileService
       .getProfile()
       .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
+        this.userid = res.id;
+
+        const userData: UserProfile = {
+          name: res.fullName,
+          email: res.email,
+          role: res.role,
+          avatar: '',
+        };
+
+        this.currentUser = userData;
+
         if (res.profileImage) {
-          this.profileService
+          this._profileService
             .getFile(res.profileImage)
             .pipe(takeUntil(this._destroy$))
             .subscribe((fileRes) => {
-              userData.avatar = fileRes.url;
+              this.currentUser = {
+                ...this.currentUser,
+                avatar: fileRes.url,
+              };
             });
         }
-        userData.name = res.fullName;
-        userData.email = res.email;
-        userData.role = res.role;
-        this.currentUser = userData;
       });
   }
+
   navItems: NavMenuItem[] = [
     {
       label: 'Dashboard',
@@ -111,9 +119,17 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
       icon: 'fas fa-tachometer-alt',
     },
     { label: 'Programs', route: '/trainer/programs', icon: 'fas fa-dumbbell' },
-    { label: 'Progress', route: '/progress', icon: 'fas fa-chart-line' },
-    { label: 'Nutrition', route: '/nutrition', icon: 'fas fa-apple-alt' },
-    { label: 'Community', route: '/community', icon: 'fas fa-users' },
+    {
+      label: 'Create Program',
+      route: '/trainer/program-create',
+      icon: 'fas fa-apple-alt',
+    },
+    {
+      label: 'Purchased Programs',
+      route: '/trainer/purchased-programs',
+      icon: 'fas fa-users',
+    },
+    { label: 'Slots', route: '/trainer/slots', icon: 'fas fa-chart-line' },
   ];
 
   userMenuItems: NavMenuItem[] = [
@@ -174,5 +190,6 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
+    this._notificationSocketService.disconnect();
   }
 }

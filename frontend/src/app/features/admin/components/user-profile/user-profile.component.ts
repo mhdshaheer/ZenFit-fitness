@@ -40,10 +40,10 @@ interface UploadFile {
 export class UserProfileComponent implements OnDestroy, OnInit {
   uploadedFile: UploadFile | null = null;
   profileImage = '';
-  private _route = inject(ActivatedRoute);
-  private _profileService = inject(ProfileService);
+  private readonly _route = inject(ActivatedRoute);
+  private readonly _profileService = inject(ProfileService);
 
-  private _destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
   trainer: TrainerProfile | null = null;
 
   onImageError(event: any) {

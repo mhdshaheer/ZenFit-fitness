@@ -3,7 +3,6 @@ import { ProgramService } from '../../../../core/services/program.service';
 import { Router } from '@angular/router';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
 import { firstValueFrom, forkJoin, Subject } from 'rxjs';
-import { takeUntil } from 'rxjs/operators';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 
@@ -29,14 +28,14 @@ export interface FitnessProgram {
   styleUrl: './program-list.component.css',
 })
 export class ProgramListComponent implements OnInit, OnDestroy {
-  private _programService = inject(ProgramService);
-  private _paymentService = inject(PaymentService);
-  private _router = inject(Router);
-  private _logger = inject(LoggerService);
+  private readonly _programService = inject(ProgramService);
+  private readonly _paymentService = inject(PaymentService);
+  private readonly _router = inject(Router);
+  private readonly _logger = inject(LoggerService);
 
   fitnessPrograms: FitnessProgram[] = [];
   defaultImage = '/trainer/fitness_program.jpg';
-  private destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
 
   ngOnInit() {
     this.getPrograms();
@@ -71,15 +70,11 @@ export class ProgramListComponent implements OnInit, OnDestroy {
 
   onProgramSlot(programId: string): void {
     console.log('Program ID:', programId);
-    this._router.navigate(['/trainer/slot', programId]);
-  }
-
-  createProgram() {
-    this._router.navigate([`/trainer/program-create`]);
+    this._router.navigate(['/trainer/purchased-users', programId]);
   }
 
   ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

@@ -15,3 +15,12 @@ export interface ITopPrograms {
   totalPurchases: number;
   totalRevenue: number;
 }
+
+export interface IProgramsSlotCreate {
+  id: string;
+  title: string;
+  duration: string;
+  difficultyLevel: string;
+}
+
+export type IDifficultyLevel = 'Beginner' | 'Intermediate' | 'Advanced';

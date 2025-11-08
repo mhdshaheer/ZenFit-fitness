@@ -13,7 +13,7 @@ import { HttpResponse } from "../../const/response_message.const";
 
 export class CategoryService implements ICategoryService {
   @inject(TYPES.CategoryRepository)
-  private _categoryRepository!: ICategoryRepository;
+  private readonly _categoryRepository!: ICategoryRepository;
 
   async findAllCategory(): Promise<CategoryDto[]> {
     try {
@@ -102,7 +102,9 @@ export class CategoryService implements ICategoryService {
     return mappedCategory;
   }
   async checkDuplicateName(name: string): Promise<boolean> {
-    const category = await this._categoryRepository.findByCategoryName(name);
+    const category = await this._categoryRepository.findByCategoryName(
+      name.trim()
+    );
     return !!category;
   }
   async updateStatus(

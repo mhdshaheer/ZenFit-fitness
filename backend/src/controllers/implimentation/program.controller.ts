@@ -4,33 +4,43 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { IProgramService } from "../../services/interface/program.service.interface";
 import { inject } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
-import { ProgramDto } from "../../dtos/program.dtos";
+import { ProgramDto, ProgramSlotCreateDto } from "../../dtos/program.dtos";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpResponse } from "../../const/response_message.const";
+import { INotificationService } from "../../services/interface/notification.service.interface";
+import { IProfileService } from "../../services/interface/profile.service.interface";
 
 export class ProgramController implements IProgramController {
+  @inject(TYPES.NotificationService)
+  private readonly _notificationService!: INotificationService;
+
+  @inject(TYPES.ProfileService)
+  private readonly _profileService!: IProfileService;
   constructor(
-    @inject(TYPES.ProgramService) private _programService: IProgramService
+    @inject(TYPES.ProgramService)
+    private readonly _programService: IProgramService
   ) {}
 
   async saveProgramDraft(req: Request, res: Response): Promise<void> {
     const data = req.body;
     const userId = (req as any)?.user?.id;
 
-    if (!data)
-      {throw new AppError(
+    if (!data) {
+      throw new AppError(
         HttpResponse.PROGRAM_DATA_REQUIRED,
         HttpStatus.BAD_REQUEST
-      );}
+      );
+    }
 
     data.trainerId = userId;
     const draft = await this._programService.saveProgramDraft(data);
 
-    if (!draft)
-      {throw new AppError(
+    if (!draft) {
+      throw new AppError(
         HttpResponse.PROGRAM_SAVED_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
-      );}
+      );
+    }
 
     res.status(HttpStatus.OK).json({
       message: HttpResponse.PROGRAM_SAVED_SUCCESSFULLY,
@@ -41,20 +51,37 @@ export class ProgramController implements IProgramController {
     const data = req.body;
     const userId = (req as any)?.user?.id;
 
-    if (!data)
-      {throw new AppError(
+    if (!data) {
+      throw new AppError(
         HttpResponse.PROGRAM_DATA_REQUIRED,
         HttpStatus.BAD_REQUEST
-      );}
+      );
+    }
 
     data.trainerId = userId;
-    const program = await this._programService.saveProgramDraft(data);
+    const program = await this._programService.saveProgram(data);
 
-    if (!program)
-      {throw new AppError(
+    if (!program) {
+      throw new AppError(
         HttpResponse.PROGRAM_SAVED_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
-      );}
+      );
+    }
+    await this._notificationService.createNotification(
+      data.trainerId,
+      "trainer",
+      "Program Created Successfully",
+      `Your new program, "${program.title}", has been created.`
+    );
+    const admins = await this._profileService.getUsersByRole("admin");
+    admins.forEach(async (item) => {
+      await this._notificationService.createNotification(
+        item.id,
+        "admin",
+        "New Program Added",
+        `Trainer has just added a new program: "${program.title}".`
+      );
+    });
 
     res.status(HttpStatus.OK).json({
       message: HttpResponse.PROGRAM_SAVED_SUCCESSFULLY,
@@ -82,10 +109,23 @@ export class ProgramController implements IProgramController {
     return res.status(HttpStatus.OK).json(programs);
   }
 
+  async getProgramsForSlotCreate(
+    req: Request,
+    res: Response
+  ): Promise<Response<ProgramSlotCreateDto[]>> {
+    const trainerId = (req as any).user.id;
+    const programs = await this._programService.getProgramsForSlotCreate(
+      trainerId
+    );
+    return res.status(HttpStatus.OK).json(programs);
+  }
+
   async getProgramsByParantId(req: Request, res: Response): Promise<void> {
     const parantCategoryId = req.params.id;
+    const userId = (req as any).user.id;
     const programs = await this._programService.getProgramsByParentId(
-      parantCategoryId
+      parantCategoryId,
+      userId
     );
 
     res.status(HttpStatus.OK).json({ programs });
@@ -98,8 +138,9 @@ export class ProgramController implements IProgramController {
     const { id } = req.params;
     const program = await this._programService.findProgram(id);
 
-    if (!program)
-      {throw new AppError(HttpResponse.PROGRAM_NOT_FOUND, HttpStatus.NOT_FOUND);}
+    if (!program) {
+      throw new AppError(HttpResponse.PROGRAM_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
 
     return res.status(HttpStatus.OK).json(program);
   }
@@ -117,11 +158,12 @@ export class ProgramController implements IProgramController {
       trainerId,
     });
 
-    if (!response)
-      {throw new AppError(
+    if (!response) {
+      throw new AppError(
         HttpResponse.PROGRAM_UPDATE_FAILED,
         HttpStatus.NOT_FOUND
-      );}
+      );
+    }
 
     return res
       .status(HttpStatus.OK)
@@ -137,6 +179,21 @@ export class ProgramController implements IProgramController {
     const program = await this._programService.updateApprovalStatus(
       programId,
       approvalStatus
+    );
+    const users = await this._profileService.getUsersByRole("user");
+    users.forEach(async (item) => {
+      await this._notificationService.createNotification(
+        item.id,
+        "user",
+        `Discover a New Program: ${program.title}!`,
+        `Exciting news! New Program is lauched: "${program.title}". Check it out now!`
+      );
+    });
+    await this._notificationService.createNotification(
+      program.programId!,
+      "trainer",
+      "Program Approved",
+      `${program.title} has been approved.`
     );
     return res.status(HttpStatus.OK).json(program);
   }

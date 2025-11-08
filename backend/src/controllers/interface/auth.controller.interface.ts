@@ -11,6 +11,8 @@ export interface IAuthController {
   resetPassword(req: Request, res: Response): Promise<void>;
   googleCallback(req: Request, res: Response): Promise<void>;
 
+  getUserId(req: Request, res: Response): Promise<Response<{ userId: string }>>;
+
   logOut(req: Request, res: Response): Promise<void>;
   refreshAccessToken(req: Request, res: Response): Promise<void>;
 }

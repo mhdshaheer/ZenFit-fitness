@@ -33,11 +33,11 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   subcategories: ISubCategory[] = [];
   programTypes: IProgramType[] = [];
 
-  private _programService = inject(ProgramService);
-  private _activatedRoute = inject(ActivatedRoute);
-  private _route = inject(Router);
+  private readonly _programService = inject(ProgramService);
+  private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _route = inject(Router);
 
-  private _destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
 
   // UI
   btn2Label = 'Purchase';

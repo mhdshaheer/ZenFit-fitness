@@ -1,16 +1,16 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { IUserResponse } from '../../interface/user.interface';
+import { ILoggedUser, IUserResponse } from '../../interface/user.interface';
 import { ProfileRouter } from '../constants/api-routes.const';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ProfileService {
-  private apiUrl = environment.apiUrl;
-  private http = inject(HttpClient);
+  private readonly _apiUrl = environment.apiUrl;
+  private readonly _http = inject(HttpClient);
 
   uploadfile(
     file: File,
@@ -22,7 +22,7 @@ export class ProfileService {
 
     const req = new HttpRequest(
       'POST',
-      `${this.apiUrl}${ProfileRouter.FILE_BASE}${ProfileRouter.UPLOAD}`,
+      `${this._apiUrl}${ProfileRouter.FILE_BASE}${ProfileRouter.UPLOAD}`,
       formData,
       {
         reportProgress: true,
@@ -30,58 +30,64 @@ export class ProfileService {
       }
     );
 
-    return this.http.request<{ key: string; url: string }>(req);
+    return this._http.request<{ key: string; url: string }>(req);
   }
   getFile(key: string, id = '') {
-    return this.http.get<{ url: string }>(
-      `${this.apiUrl}${ProfileRouter.FILE_BASE}${
+    return this._http.get<{ url: string }>(
+      `${this._apiUrl}${ProfileRouter.FILE_BASE}${
         ProfileRouter.IMAGE
       }?key=${encodeURIComponent(key)}&id=${id}`
     );
   }
   deleteFile(key: string) {
-    return this.http.delete<{ message: string }>(
-      `${this.apiUrl}${ProfileRouter.FILE_BASE}/${key}`
+    return this._http.delete<{ message: string }>(
+      `${this._apiUrl}${ProfileRouter.FILE_BASE}/${key}`
     );
   }
 
   deleteS3File(key: string, type: string) {
-    return this.http.delete<{ message: string }>(
-      `${this.apiUrl}${ProfileRouter.FILE_BASE}/${type}/${encodeURIComponent(
+    return this._http.delete<{ message: string }>(
+      `${this._apiUrl}${ProfileRouter.FILE_BASE}/${type}/${encodeURIComponent(
         key
       )}`
     );
   }
   // Personal information
   getUserById(userId: string): Observable<IUserResponse> {
-    return this.http.get<IUserResponse>(
-      `${this.apiUrl}${ProfileRouter.USER_BASE}/${userId}`
+    return this._http.get<IUserResponse>(
+      `${this._apiUrl}${ProfileRouter.USER_BASE}/${userId}`
     );
   }
   getProfile(id = '') {
-    return this.http.get<any>(
-      `${this.apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PROFILE}?id=${id}`
+    return this._http.get<any>(
+      `${this._apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PROFILE}?id=${id}`
     );
   }
 
   updateProfile(data: any) {
-    return this.http.put<any>(
-      `${this.apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PROFILE}`,
+    return this._http.put<any>(
+      `${this._apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PROFILE}`,
       data
     );
   }
 
   changePassword(data: { currentPassword: string; newPassword: string }) {
-    return this.http.post<{ message: string }>(
-      `${this.apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PASSWORD}`,
+    return this._http.post<{ message: string }>(
+      `${this._apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PASSWORD}`,
       data
+    );
+  }
+
+  getCurrentUserId(): Observable<ILoggedUser> {
+    return this._http.get<ILoggedUser>(
+      `${this._apiUrl}${ProfileRouter.USER_BASE}/current`
     );
   }
 
   // Admin side Profie
   verifyResume(id: string) {
-    return this.http.put<{ isVerified: boolean }>(
-      `${this.apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.VERIFY_RESUME}`,
+    return this._http.put<{ isVerified: boolean }>(
+      `${this._apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.VERIFY_RESUME}`,
       { id }
     );
   }

@@ -33,13 +33,13 @@ interface Trainer {
   styleUrl: './program-view.component.css',
 })
 export class ProgramViewComponent implements OnInit, OnDestroy {
-  private _programService = inject(ProgramService);
-  private _profileService = inject(ProfileService);
-  private _logger = inject(LoggerService);
-  private _dialog = inject(MatDialog);
-  private _toastService = inject(ToastService);
-  private _activatedRoute = inject(ActivatedRoute);
-  private _destroy$ = new Subject<void>();
+  private readonly _programService = inject(ProgramService);
+  private readonly _profileService = inject(ProfileService);
+  private readonly _logger = inject(LoggerService);
+  private readonly _dialog = inject(MatDialog);
+  private readonly _toastService = inject(ToastService);
+  private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _destroy$ = new Subject<void>();
 
   programId!: string;
   program!: Program;

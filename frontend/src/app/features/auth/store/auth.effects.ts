@@ -129,7 +129,6 @@ export class AuthEffects {
     { dispatch: false }
   );
 
-  
   // google signup
   googleSignup$ = createEffect(() =>
     this.actions$.pipe(

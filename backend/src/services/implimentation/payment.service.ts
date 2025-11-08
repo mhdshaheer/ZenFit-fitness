@@ -27,14 +27,17 @@ import {
 import {
   IRevenueFilter,
   IRevenueData,
+  IApiResponse,
+  IPurchasedProgramFilters,
+  ITrainerPurchasedProgramFilters,
 } from "../../interfaces/payment.interface";
 import logger from "../../shared/services/logger.service";
 
 export class PaymentService implements IPaymentService {
   @inject(TYPES.PaymentRepository)
-  private _paymentRepository!: IPaymentRepository;
+  private readonly _paymentRepository!: IPaymentRepository;
   @inject(TYPES.ProgramRespository)
-  private programRepository!: IProgramRepository;
+  private readonly programRepository!: IProgramRepository;
   async createCheckoutSession(
     data: CheckoutRequest,
     userId: string
@@ -243,5 +246,30 @@ export class PaymentService implements IPaymentService {
       filter
     );
     return chartData;
+  }
+  async getPurchasedPrograms(
+    filters: IPurchasedProgramFilters
+  ): Promise<IApiResponse> {
+    const result = await this._paymentRepository.getPurchasedPrograms(filters);
+
+    return {
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+    };
+  }
+
+  async getTrainerPurchasedPrograms(
+    filters: ITrainerPurchasedProgramFilters
+  ): Promise<IApiResponse> {
+    const result = await this._paymentRepository.getTrainerPurchasedPrograms(
+      filters
+    );
+
+    return {
+      success: true,
+      data: result.data,
+      pagination: result.pagination,
+    };
   }
 }

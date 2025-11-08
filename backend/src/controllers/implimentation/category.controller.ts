@@ -10,7 +10,8 @@ import { HttpResponse } from "../../const/response_message.const";
 
 export class CategoryController implements ICategoryController {
   constructor(
-    @inject(TYPES.CategoryService) private _categoryService: ICategoryService
+    @inject(TYPES.CategoryService)
+    private readonly _categoryService: ICategoryService
   ) {}
   async findAllCategory(
     _req: Request,
@@ -20,6 +21,13 @@ export class CategoryController implements ICategoryController {
     const categories = await this._categoryService.findAllCategory();
     return res.status(HttpStatus.OK).json(categories);
   }
+  /**
+   *
+   * @param _req
+   * @param res
+   * @param _next
+   * @returns
+   */
   async findAllSubCategory(
     _req: Request,
     res: Response,

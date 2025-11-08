@@ -1,0 +1,438 @@
+<div class="min-h-screen bg-gray-50">
+  <!-- Header -->
+  <div
+    class="bg-gradient-to-r from-emerald-700 to-emerald-600 text-white shadow-lg"
+  >
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div class="flex items-center gap-4">
+        <button
+          routerLink="/my-programs"
+          class="p-2 hover:bg-white/10 rounded-lg transition-colors"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 19l-7-7 7-7"
+            />
+          </svg>
+        </button>
+        <div>
+          <h1 class="text-lg font-semibold">Available Slots</h1>
+          <p class="text-sm text-emerald-100">
+            {{ availableSlotCount() }} slots available
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    <!-- Program Info -->
+    @if (program()) {
+    <div
+      class="bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-xl shadow-lg p-6"
+    >
+      <div class="flex flex-col md:flex-row gap-6">
+        <div class="flex-1">
+          <span
+            class="inline-block px-3 py-1 bg-white/20 backdrop-blur-sm text-white text-xs font-medium rounded-full mb-3"
+          >
+            {{ program()?.category }}
+          </span>
+          <h2 class="text-2xl font-bold mb-2">{{ program()?.name }}</h2>
+          <p class="text-emerald-50 mb-4">{{ program()?.description }}</p>
+          <div class="flex flex-wrap items-center gap-4 text-sm">
+            <div class="flex items-center gap-2">
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <span class="font-semibold">{{
+                program()?.price | currency : "INR"
+              }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+
+    <!-- Day Filter -->
+    <div class="bg-white rounded-xl shadow-md p-4 border border-gray-200">
+      <div class="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+        <button
+          (click)="filterByDay('all')"
+          [class]="
+            selectedDayFilter() === 'all'
+              ? 'px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg whitespace-nowrap shadow-md'
+              : 'px-4 py-2 bg-gray-50 text-gray-700 text-sm font-medium rounded-lg hover:bg-emerald-50 hover:text-emerald-700 whitespace-nowrap border border-gray-200'
+          "
+        >
+          All
+        </button>
+        @for (day of daysOfWeek; track day) {
+        <button
+          (click)="filterByDay(day)"
+          [class]="
+            selectedDayFilter() === day
+              ? 'px-4 py-2 bg-emerald-600 text-white text-sm font-medium rounded-lg whitespace-nowrap shadow-md'
+              : 'px-4 py-2 bg-gray-50 text-gray-700 text-sm font-medium rounded-lg hover:bg-emerald-50 hover:text-emerald-700 whitespace-nowrap border border-gray-200'
+          "
+        >
+          {{ day }}
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Loading -->
+    @if (isLoading()) {
+    <div class="flex items-center justify-center py-16">
+      <div class="text-center">
+        <div
+          class="animate-spin rounded-full h-12 w-12 border-3 border-gray-200 border-t-emerald-600 mx-auto mb-4"
+        ></div>
+        <p class="text-gray-600 font-medium">Loading slots...</p>
+      </div>
+    </div>
+    }
+
+    <!-- Slots by Day -->
+    @if (!isLoading()) {
+    <div class="space-y-8">
+      @for (group of filteredDayGroups(); track group) {
+      <div>
+        <!-- Day Header -->
+        <div
+          class="bg-gradient-to-r from-emerald-50 to-green-50 rounded-xl p-5 border border-emerald-200"
+        >
+          <div class="flex items-center gap-4">
+            <div
+              class="w-16 h-16 bg-gradient-to-br from-emerald-600 to-emerald-700 text-white rounded-xl flex flex-col items-center justify-center shadow-lg"
+            >
+              <span class="text-xs font-semibold">{{ group.dayOfWeek }}</span>
+              <span class="text-2xl font-bold">{{ group.dayNumber }}</span>
+            </div>
+            <div>
+              <h3 class="text-lg font-bold text-gray-900">
+                {{ group.dayName }}, {{ group.month }} {{ group.dayNumber }}
+              </h3>
+              <p class="text-sm text-gray-600">
+                {{ group.occurrences.length }} slot{{
+                  group.occurrences.length !== 1 ? "s" : ""
+                }}
+                available
+              </p>
+            </div>
+            @if (group.isToday) {
+            <span
+              class="ml-auto px-4 py-1.5 bg-emerald-600 text-white text-xs font-semibold rounded-full shadow-md"
+            >
+              Today
+            </span>
+            }
+          </div>
+        </div>
+        <!-- Time Slots Grid -->
+        <div
+          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4"
+        >
+          @for (occurrence of group.occurrences; track occurrence) {
+          <button
+            (click)="selectOccurrence(occurrence)"
+            [disabled]="!canBook(occurrence)"
+            [class]="
+              occurrence.isBooked
+                ? 'p-5 border-2 border-emerald-600 rounded-xl bg-emerald-50 cursor-not-allowed'
+                : !canBook(occurrence)
+                ? 'p-5 border-2 border-gray-200 rounded-xl bg-gray-50 cursor-not-allowed opacity-50'
+                : 'p-5 border-2 border-gray-200 rounded-xl bg-white hover:border-emerald-500 hover:shadow-xl transition-all duration-300'
+            "
+          >
+            <!-- Time -->
+            <div class="mb-4">
+              <div class="flex items-center gap-2 mb-1">
+                <svg
+                  class="w-5 h-5 text-emerald-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                <p class="text-lg font-bold text-gray-900">
+                  {{ occurrence.startTime }}
+                </p>
+              </div>
+              <p class="text-xs text-gray-600 pl-7">
+                to {{ occurrence.endTime }}
+              </p>
+            </div>
+            <!-- Capacity -->
+            <div class="mb-4">
+              <div class="flex items-center justify-between mb-2">
+                <div class="flex items-center gap-2">
+                  <svg
+                    class="w-4 h-4 text-emerald-600"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                    />
+                  </svg>
+                  <span class="text-xs font-semibold text-gray-700"
+                    >Capacity</span
+                  >
+                </div>
+                <span class="text-sm font-bold text-emerald-700">
+                  {{
+                    occurrence.capacity === 0
+                      ? "No spots"
+                      : occurrence.booked + " booked / " + occurrence.capacity
+                  }}
+                </span>
+              </div>
+              <!-- Progress Bar -->
+              <div class="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                <div
+                  class="h-2 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-full transition-all duration-500"
+                  [style.width.%]="
+                    occurrence.capacity === 0
+                      ? 0
+                      : (occurrence.booked / occurrence.capacity) * 100
+                  "
+                ></div>
+              </div>
+            </div>
+            <!-- Status -->
+            <div class="text-center">
+              @if (occurrence.isBooked) {
+              <span
+                class="inline-block w-full px-3 py-2 bg-emerald-600 text-white text-xs font-semibold rounded-lg"
+              >
+                Already Booked
+              </span>
+              } @if (occurrence.isPast && !occurrence.isBooked) {
+              <span
+                class="inline-block w-full px-3 py-2 bg-gray-200 text-gray-600 text-xs font-medium rounded-lg"
+              >
+                Past Slot
+              </span>
+              } @if ( !occurrence.isPast && !occurrence.isAvailable &&
+              !occurrence.isBooked ) {
+              <span
+                class="inline-block w-full px-3 py-2 bg-gray-200 text-gray-600 text-xs font-medium rounded-lg"
+              >
+                Fully Booked
+              </span>
+              } @if (canBook(occurrence)) {
+              <span
+                class="inline-block w-full px-3 py-2 bg-white border-2 border-emerald-600 text-emerald-700 text-xs font-bold rounded-lg hover:bg-emerald-600 hover:text-white transition-colors duration-200"
+              >
+                Book Slot
+              </span>
+              }
+            </div>
+          </button>
+          }
+        </div>
+      </div>
+      }
+      <!-- Empty State -->
+      @if (filteredDayGroups().length === 0) {
+      <div
+        class="bg-white border-2 border-gray-200 rounded-xl p-12 text-center"
+      >
+        <div
+          class="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-4"
+        >
+          <svg
+            class="w-10 h-10 text-emerald-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+        </div>
+        <h3 class="text-xl font-bold text-gray-900 mb-2">No Slots Available</h3>
+        <p class="text-gray-600 mb-6">
+          {{
+            selectedDayFilter() === "all"
+              ? "There are no available slots for this program."
+              : "No slots available on " + selectedDayFilter() + "."
+          }}
+        </p>
+        @if (selectedDayFilter() !== 'all') {
+        <button
+          (click)="filterByDay('all')"
+          class="px-6 py-3 bg-emerald-600 text-white text-sm font-semibold rounded-lg hover:bg-emerald-700 transition-colors shadow-md"
+        >
+          View All Days
+        </button>
+        }
+      </div>
+      }
+    </div>
+    }
+  </div>
+</div>
+
+<!-- Booking Modal -->
+@if (showBookingModal()) {
+<div
+  class="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn"
+  (click)="cancelBooking()"
+>
+  <div
+    class="bg-white rounded-2xl max-w-md w-full overflow-hidden shadow-2xl animate-scaleIn"
+    (click)="$event.stopPropagation()"
+  >
+    <div
+      class="bg-gradient-to-r from-emerald-600 to-emerald-700 text-white p-6"
+    >
+      <div class="flex items-center gap-3">
+        <div
+          class="w-12 h-12 bg-white/20 backdrop-blur-sm rounded-xl flex items-center justify-center"
+        >
+          <svg
+            class="w-6 h-6"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-xl font-bold">Confirm Booking</h3>
+          <p class="text-sm text-emerald-100">Review your slot details</p>
+        </div>
+      </div>
+    </div>
+    <div class="p-6 space-y-4">
+      <div class="border-2 border-gray-200 rounded-xl p-4 bg-gray-50">
+        <p class="text-xs text-gray-600 mb-1 font-medium">Date & Time</p>
+        <p class="text-base font-bold text-gray-900">
+          {{ selectedOccurrence()?.date | date : "EEEE, MMMM d, y" }}
+        </p>
+        <p class="text-sm font-semibold text-emerald-700 mt-1">
+          {{ selectedOccurrence()?.startTime }} -
+          {{ selectedOccurrence()?.endTime }}
+        </p>
+      </div>
+      <div class="border-2 border-gray-200 rounded-xl p-4 bg-gray-50">
+        <p class="text-xs text-gray-600 mb-2 font-medium">Available Spots</p>
+        <div class="flex items-center gap-2">
+          <svg
+            class="w-5 h-5 text-emerald-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+            />
+          </svg>
+          <span class="text-lg font-bold text-emerald-700">
+            {{ getAvailableSpots(selectedOccurrence()!) }} /
+            {{ selectedOccurrence()?.capacity }}
+          </span>
+        </div>
+      </div>
+      <div class="flex gap-3 p-6 border-t-2 border-gray-100 bg-gray-50">
+        <button
+          (click)="cancelBooking()"
+          class="flex-1 px-4 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-100 transition-colors"
+        >
+          Cancel
+        </button>
+        <button
+          (click)="confirmBooking()"
+          class="flex-1 px-4 py-3 bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-bold rounded-xl hover:from-emerald-700 hover:to-emerald-800 transition-all shadow-lg"
+        >
+          Confirm Booking
+        </button>
+      </div>
+    </div>
+  </div>
+  <!-- Success Modal -->
+  @if (showSuccessModal()) {
+  <div
+    class="fixed inset-0 bg-black/40 backdrop-blur-md flex items-center justify-center p-4 z-50 animate-fadeIn"
+  >
+    <div
+      class="bg-white rounded-2xl p-8 max-w-sm w-full text-center shadow-2xl animate-scaleIn"
+    >
+      <div
+        class="w-20 h-20 bg-gradient-to-br from-emerald-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-xl"
+      >
+        <svg
+          class="w-10 h-10 text-white"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="3"
+            d="M5 13l4 4L19 7"
+          />
+        </svg>
+      </div>
+      <h3 class="text-2xl font-bold text-gray-900 mb-2">Booking Confirmed!</h3>
+      <p class="text-gray-600 mb-4">Your slot has been successfully booked</p>
+      <div class="p-4 bg-emerald-50 rounded-xl border-2 border-emerald-200">
+        <p class="text-sm font-bold text-emerald-900">
+          {{ selectedOccurrence()?.date | date : "EEEE, MMMM d, y" }}
+        </p>
+        <p class="text-sm font-semibold text-emerald-700 mt-1">
+          {{ selectedOccurrence()?.startTime }} -
+          {{ selectedOccurrence()?.endTime }}
+        </p>
+      </div>
+    </div>
+  </div>
+  }
+</div>
+}

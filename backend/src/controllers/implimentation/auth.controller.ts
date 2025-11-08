@@ -15,7 +15,9 @@ import { AppError } from "../../shared/utils/appError.util";
 
 @injectable()
 export class AuthController implements IAuthController {
-  constructor(@inject(TYPES.AuthService) private _authService: IAuthService) {}
+  constructor(
+    @inject(TYPES.AuthService) private readonly _authService: IAuthService
+  ) {}
 
   async signup(req: Request, res: Response): Promise<void> {
     const { username, email, password, dob, gender, role } = req.body;
@@ -128,11 +130,12 @@ export class AuthController implements IAuthController {
 
   async googleCallback(req: Request, res: Response): Promise<void> {
     const user = req.user as any;
-    if (!user)
-      {throw new AppError(
+    if (!user) {
+      throw new AppError(
         HttpResponse.GOOGLE_AUTH_FAILED,
         HttpStatus.UNAUTHORIZED
-      );}
+      );
+    }
 
     const accessToken = generateAccessToken({ id: user._id, role: user.role });
     const refreshToken = generateRefreshToken({
@@ -165,5 +168,12 @@ export class AuthController implements IAuthController {
   async refreshAccessToken(req: Request, res: Response) {
     const { refreshToken } = req.cookies;
     await this._authService.handleRefreshToken(refreshToken, res);
+  }
+  async getUserId(
+    req: Request,
+    res: Response
+  ): Promise<Response<{ userId: string }>> {
+    const userId = (req as any).user.id;
+    return res.status(HttpStatus.OK).json({ userId });
   }
 }

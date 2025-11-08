@@ -9,19 +9,19 @@ import { SessionRoutes } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class SessionService {
-  private apiUrl = environment.apiUrl + SessionRoutes.BASE;
-  private http = inject(HttpClient);
+  private readonly _apiUrl = environment.apiUrl + SessionRoutes.BASE;
+  private readonly _http = inject(HttpClient);
 
   saveSessionDraft(sessionData: SlotFormData) {
-    return this.http.post<{ message: string }>(
-      `${this.apiUrl}${SessionRoutes.DRAFT}`,
+    return this._http.post<{ message: string }>(
+      `${this._apiUrl}${SessionRoutes.DRAFT}`,
       sessionData
     );
   }
   saveSession(sessionData: SlotFormData) {
-    return this.http.post<{ message: string }>(`${this.apiUrl}`, sessionData);
+    return this._http.post<{ message: string }>(`${this._apiUrl}`, sessionData);
   }
   getSession(programId: string) {
-    return this.http.get<IProgramSlot>(`${this.apiUrl}/${programId}`);
+    return this._http.get<IProgramSlot>(`${this._apiUrl}/${programId}`);
   }
 }

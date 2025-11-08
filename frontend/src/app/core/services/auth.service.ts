@@ -5,15 +5,23 @@ import {
   SignupPayload,
 } from '../../features/auth/store/auth.model';
 import { environment } from '../../../environments/environment';
-import { catchError, firstValueFrom, map, of, retry, take } from 'rxjs';
+import {
+  catchError,
+  firstValueFrom,
+  map,
+  Observable,
+  of,
+  retry,
+  take,
+} from 'rxjs';
 import { LoggerService } from './logger.service';
 import { AuthRoutes } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  private _http = inject(HttpClient);
-  private _logger = inject(LoggerService);
-  private _api = environment.apiUrl + AuthRoutes.BASE;
+  private readonly _http = inject(HttpClient);
+  private readonly _logger = inject(LoggerService);
+  private readonly _api = environment.apiUrl + AuthRoutes.BASE;
 
   signup(payload: SignupPayload) {
     return this._http
@@ -145,5 +153,8 @@ export class AuthService {
       this._logger.error('Failed to decode token', error);
       return null;
     }
+  }
+  getUserId(): Observable<{ userId: string }> {
+    return this._http.get<{ userId: string }>(this._api);
   }
 }

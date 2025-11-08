@@ -10,4 +10,5 @@ export interface IProfileService {
   removeResumePdf(userId: string): void;
   verifyResume(userId: string): Promise<boolean>;
   changePassword(userId: string, passwords: IPassword): Promise<boolean>;
+  getUsersByRole(role: string): Promise<UserDto[]>;
 }

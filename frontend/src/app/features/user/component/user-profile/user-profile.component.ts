@@ -14,6 +14,7 @@ import { HttpEventType } from '@angular/common/http';
 import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Subject, takeUntil } from 'rxjs';
+import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
 
 interface ProfileUser {
   fullName: string;
@@ -32,19 +33,19 @@ interface ProfileUser {
   styleUrl: './user-profile.component.css',
 })
 export class UserProfileComponent implements OnInit, OnDestroy {
+  private readonly _profileService = inject(ProfileService);
+  private readonly _toastService = inject(ToastService);
+  private readonly _destroy$ = new Subject<void>();
+
   profileImageUrl: string | null = null;
   defaultImage = 'landing_page/user.png';
   isUploading = false;
-  profileService = inject(ProfileService);
-  toastService = inject(ToastService);
   isEditMode = false;
-
-  private _destroy$ = new Subject<void>();
 
   // ==============
   profileForm!: FormGroup;
   profileData!: ProfileUser;
-  private _fb = inject(FormBuilder);
+  private readonly _fb = inject(FormBuilder);
   // ==============
 
   onFileSelected(event: Event): void {
@@ -53,7 +54,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
     const file: File = input.files[0];
     this.isUploading = true;
-    this.profileService
+    this._profileService
       .uploadfile(file, 'profile')
       .pipe(takeUntil(this._destroy$))
       .subscribe({
@@ -64,12 +65,12 @@ export class UserProfileComponent implements OnInit, OnDestroy {
             this.profileImageUrl = event.body?.url ?? null;
             this.isUploading = false;
             console.log('Profile image uploaded, key:', event.body?.key);
-            this.toastService.success('Profile image is updated successfully');
+            this._toastService.success('Profile image is updated successfully');
             // this.progress = 0; // reset after upload
           }
         },
         error: () => {
-          this.toastService.error('Image upload failed');
+          this._toastService.error('Image upload failed');
           this.isUploading = false;
           // this.progress = 0;
         },
@@ -90,7 +91,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this.initializePasswordForm();
   }
   loadProfile() {
-    this.profileService
+    this._profileService
       .getProfile()
       .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
@@ -98,7 +99,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         this.profileData = res;
 
         if (res.profileImage) {
-          this.profileService
+          this._profileService
             .getFile(res.profileImage)
             .pipe(takeUntil(this._destroy$))
             .subscribe((fileRes) => {
@@ -107,9 +108,27 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         }
 
         this.profileForm = this._fb.group({
-          fullName: [res.fullName],
-          username: [res.username, Validators.required],
-          dob: [res.dob ? res.dob.split('T')[0] : ''],
+          fullName: [
+            res.fullName,
+            [
+              Validators.minLength(FORM_CONSTANTS.FULLNAME.MIN_LENGTH),
+              Validators.maxLength(FORM_CONSTANTS.FULLNAME.MAX_LENGTH),
+              Validators.pattern(FORM_CONSTANTS.FULLNAME.PATTERN),
+            ],
+          ],
+          username: [
+            res.username,
+            [
+              Validators.required,
+              Validators.minLength(FORM_CONSTANTS.USERNAME.MIN_LENGTH),
+              Validators.maxLength(FORM_CONSTANTS.USERNAME.MAX_LENGTH),
+              Validators.pattern(FORM_CONSTANTS.USERNAME.PATTERN),
+            ],
+          ],
+          dob: [
+            res.dob ? res.dob.split('T')[0] : '',
+            [CustomValidators.dateOfBirth(), CustomValidators.minimumAge(13)],
+          ],
           gender: [res.gender],
           email: [res.email, [CustomValidators.email()]],
           phone: [res.phone, optionalPhoneValidator],
@@ -125,19 +144,19 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   saveProfile() {
     if (this.profileForm.valid) {
       console.log('profile data:', this.profileForm.value);
-      this.profileService
+      this._profileService
         .updateProfile(this.profileForm.value)
         .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
             console.log('response from the backend :', res);
-            this.toastService.success('Profile data is updated Successfully');
+            this._toastService.success('Profile data is updated Successfully');
             this.profileData = res;
             this.isEditMode = false;
           },
           error: (err) => {
             console.error('Error updating profile:', err);
-            this.toastService.error(
+            this._toastService.error(
               'Failed to update profile. Please try again later.'
             );
           },
@@ -168,19 +187,19 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         newPassword: this.passwordForm.get('newPassword')?.value,
       };
       console.log('submitted data :', passwords);
-      this.profileService
+      this._profileService
         .changePassword(passwords)
         .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
             console.log(res);
-            this.toastService.success('Password changed successfully');
+            this._toastService.success('Password changed successfully');
             this.resetPasswordForm();
             this.activeTab = 'personal';
           },
           error: (err) => {
             console.log(err);
-            this.toastService.error('Failed to change password');
+            this._toastService.error('Failed to change password');
           },
         });
     }
