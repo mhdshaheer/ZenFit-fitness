@@ -8,7 +8,7 @@ import {
 import { IPaymentService } from "../interface/payment.service.interface";
 import Stripe from "stripe";
 import { IPaymentRepository } from "../../repositories/interface/payment.repostitory.interface";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IProgramRepository } from "../../repositories/interface/program.repository.interface";
 import { AppError } from "../../shared/utils/appError.util";
@@ -33,6 +33,7 @@ import {
 } from "../../interfaces/payment.interface";
 import logger from "../../shared/services/logger.service";
 
+@injectable()
 export class PaymentService implements IPaymentService {
   @inject(TYPES.PaymentRepository)
   private readonly _paymentRepository!: IPaymentRepository;

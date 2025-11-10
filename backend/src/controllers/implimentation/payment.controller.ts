@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { IPaymentController } from "../interface/payment.controller.interface";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IPaymentService } from "../../services/interface/payment.service.interface";
 import {
@@ -18,11 +18,12 @@ import {
 } from "../../interfaces/payment.interface";
 import { HttpResponse } from "../../const/response_message.const";
 
+@injectable()
 export class PaymentController implements IPaymentController {
   constructor(
     @inject(TYPES.PaymentService)
     private readonly _paymentService: IPaymentService
-  ) {}
+  ) { }
   async createCheckoutSession(req: Request, res: Response): Promise<void> {
     const userId = (req as any)?.user?.id;
     const response = await this._paymentService.createCheckoutSession(

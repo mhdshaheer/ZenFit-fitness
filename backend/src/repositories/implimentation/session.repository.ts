@@ -1,11 +1,12 @@
 import { ISession, SessionModel } from "../../models/session.model";
 import { BaseRepository } from "../base.repository";
 import { ISessionRepository } from "../interface/session.repository.interface";
+import { injectable } from "inversify";
 
+@injectable()
 export class SessionRepository
   extends BaseRepository<ISession>
-  implements ISessionRepository
-{
+  implements ISessionRepository {
   constructor() {
     super(SessionModel);
   }

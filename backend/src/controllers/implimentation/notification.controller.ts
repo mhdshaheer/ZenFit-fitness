@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { INotificationController } from "../interface/notification.controller.interface";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { INotificationService } from "../../services/interface/notification.service.interface";
 
-// @controller('/notifications')
+@injectable()
 export class NotificationController implements INotificationController {
   @inject(TYPES.NotificationService)
   private readonly _notificationService!: INotificationService;

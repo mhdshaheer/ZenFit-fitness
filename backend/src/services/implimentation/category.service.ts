@@ -1,4 +1,4 @@
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { ICategoryService } from "../interface/category.service.interface";
 import { ICategoryRepository } from "../../repositories/interface/category.repository.interface";
 import { TYPES } from "../../shared/types/inversify.types";
@@ -11,6 +11,7 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { GetCategoryParams } from "../../interfaces/category.interface";
 import { HttpResponse } from "../../const/response_message.const";
 
+@injectable()
 export class CategoryService implements ICategoryService {
   @inject(TYPES.CategoryRepository)
   private readonly _categoryRepository!: ICategoryRepository;

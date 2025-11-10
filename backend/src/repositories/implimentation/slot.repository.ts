@@ -8,11 +8,12 @@ import {
 } from "../../interfaces/slot.interface";
 import { HydratedDocument, PipelineStage, Types } from "mongoose";
 import { IProgram } from "../../models/program.model";
+import { injectable } from "inversify";
 
+@injectable()
 export class SlotRepository
   extends BaseRepository<ISlot>
-  implements ISlotRepository
-{
+  implements ISlotRepository {
   constructor() {
     super(SlotModel);
   }

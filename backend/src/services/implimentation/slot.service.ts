@@ -1,4 +1,4 @@
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { ISlot } from "../../models/slot.model";
 import { ISlotService } from "../interface/slot.service.interface";
 import { TYPES } from "../../shared/types/inversify.types";
@@ -11,6 +11,7 @@ import {
   ISlotStatus,
 } from "../../interfaces/slot.interface";
 
+@injectable()
 export class SlotService implements ISlotService {
   @inject(TYPES.SlotRepository)
   private readonly _slotRepository!: ISlotRepository;

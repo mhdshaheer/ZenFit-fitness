@@ -1,4 +1,4 @@
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { ISlotController } from "../interface/slot.controller.interface";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ISlotService } from "../../services/interface/slot.service.interface";
@@ -7,6 +7,7 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { SlotDisplyDto } from "../../dtos/slot.dtos";
 import { ISlotListForUser } from "../../interfaces/slot.interface";
 
+@injectable()
 export class SlotController implements ISlotController {
   @inject(TYPES.SlotService)
   private readonly _slotService!: ISlotService;

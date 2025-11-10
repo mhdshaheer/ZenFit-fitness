@@ -17,11 +17,12 @@ import {
   ITrainerPurchasedProgramsResponse,
   ITrainerPurchasedProgram,
 } from "../../interfaces/payment.interface";
+import { injectable } from "inversify";
 
+@injectable()
 export class PaymentRepository
   extends BaseRepository<IPayment>
-  implements IPaymentRepository
-{
+  implements IPaymentRepository {
   constructor() {
     super(PaymentModel);
   }

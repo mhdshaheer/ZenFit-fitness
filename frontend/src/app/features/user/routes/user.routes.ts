@@ -85,6 +85,13 @@ export const USER_ROUTES: Routes = [
           ).then((m) => m.PurchasedProgramsComponent);
         },
       },
+      {
+        path: 'chat/:programId',
+        loadComponent: () =>
+          import('../component/user-chat/user-chat.component').then(
+            (m) => m.UserChatComponent
+          ),
+      },
     ],
   },
 ];

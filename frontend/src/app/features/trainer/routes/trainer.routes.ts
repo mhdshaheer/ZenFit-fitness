@@ -89,6 +89,13 @@ export const TRAINER_ROUTES: Routes = [
           ).then((m) => m.PurchasedProgramsComponent);
         },
       },
+      {
+        path:'chat',
+        loadComponent:()=>{
+          return import('../components/trainer-chat/trainer-chat.component').then(m=>m.TrainerChatComponent)
+        }
+      }
+
     ],
   },
 ];

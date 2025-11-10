@@ -63,6 +63,13 @@ import { INotificationService } from "./services/interface/notification.service.
 import { NotificationService } from "./services/implimentation/notification.service";
 import { INotificationController } from "./controllers/interface/notification.controller.interface";
 import { NotificationController } from "./controllers/implimentation/notification.controller";
+import { IChatService } from "./services/interface/chat.service.interface";
+import { IChatController } from "./controllers/interface/chat.controller.interface";
+import { ChatService } from "./services/implimentation/chat.service";
+import { ChatController } from "./controllers/implimentation/chat.controller";
+import { IChatRepository } from "./repositories/interface/chat.repository.interface";
+import { ChatRepository } from "./repositories/implimentation/chat.repository";
+
 
 const container = new Container();
 
@@ -150,4 +157,13 @@ container
 container
   .bind<INotificationRepository>(TYPES.NotificationRepository)
   .to(NotificationRepository);
+container.bind<IChatRepository>(TYPES.ChatRepository).to(ChatRepository);
+console.log('ChatRepository bound to container with type:', TYPES.ChatRepository);
+
+// Chat (after repositories are bound)
+container.bind<IChatService>(TYPES.ChatService).to(ChatService);
+console.log('ChatService bound to container with type:', TYPES.ChatService);
+container.bind<IChatController>(TYPES.ChatController).to(ChatController);
+console.log('ChatController bound to container with type:', TYPES.ChatController);
+
 export { container };

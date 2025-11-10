@@ -3,11 +3,12 @@ import { IProgram, ProgramModel } from "../../models/program.model";
 import { BaseRepository } from "../base.repository";
 import { IProgramRepository } from "../interface/program.repository.interface";
 import { IApprovalStatus } from "../../interfaces/program.interface";
+import { injectable } from "inversify";
 
+@injectable()
 export class ProgramRepositoy
   extends BaseRepository<IProgram>
-  implements IProgramRepository
-{
+  implements IProgramRepository {
   constructor() {
     super(ProgramModel);
   }

@@ -1,0 +1,140 @@
+<div class="trainer-chat-container">
+  <!-- Sidebar - Thread List -->
+  <div class="threads-sidebar">
+    <div class="sidebar-header">
+      <h2 class="sidebar-title">Messages</h2>
+      <span class="thread-count">{{ threads.length }}</span>
+    </div>
+
+    <div class="threads-list">
+      @if (threads.length === 0) {
+        <div class="empty-threads">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-12 h-12 text-gray-300">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+          </svg>
+          <p class="text-sm text-gray-400 mt-2">No conversations yet</p>
+        </div>
+      }
+
+      @for (t of threads; track t) {
+        <button
+          (click)="select(t)"
+          class="thread-item"
+          [class.active]="active?._id === t._id"
+          >
+          <div class="thread-avatar">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+            </svg>
+          </div>
+          <div class="thread-info">
+            <div class="thread-header">
+              <span class="thread-name text-light">Client</span>
+              @if (t.lastMessageAt) {
+                <span class="thread-time">{{ t.lastMessageAt | date:'shortTime' }}</span>
+              }
+            </div>
+            <div class="thread-preview">
+              <span class="last-message">{{ t.lastMessage || 'No messages yet' }}</span>
+              @if (t.trainerUnread > 0) {
+                <span class="unread-badge">{{ t.trainerUnread }}</span>
+              }
+            </div>
+          </div>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- Main Chat Area -->
+  <div class="chat-main">
+    @if (!active) {
+      <div class="no-chat-selected">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-20 h-20 text-gray-300">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.625 12a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H8.25m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0H12m4.125 0a.375.375 0 11-.75 0 .375.375 0 01.75 0zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 01-2.555-.337A5.972 5.972 0 015.41 20.97a5.969 5.969 0 01-.474-.065 4.48 4.48 0 00.978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25z" />
+        </svg>
+        <p class="text-gray-400 mt-4">Select a conversation to start messaging</p>
+      </div>
+    }
+
+    @if (active) {
+      <div class="chat-active">
+        <!-- Chat Header -->
+        <div class="chat-header">
+          <div class="flex items-center gap-3">
+            <div class="avatar">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+            </div>
+            <div>
+              <h3 class="font-semibold text-light">Client</h3>
+              <p class="text-xs text-gray-500">
+                <span class="online-indicator text-gray-900"></span>
+                Online
+              </p>
+            </div>
+          </div>
+        </div>
+        <!-- Messages Area -->
+        <div class="messages-area" #messagesContainer>
+          @if (messages.length === 0) {
+            <div class="empty-state">
+              <p class="text-gray-400">No messages yet</p>
+              <p class="text-sm text-gray-400">Start the conversation</p>
+            </div>
+          }
+          @for (m of messages; track m) {
+            <div class="message-wrapper" [class.sent]="m.senderType === 'trainer'" [class.received]="m.senderType !== 'trainer'">
+              <div class="message-bubble" [class.sent]="m.senderType === 'trainer'" [class.received]="m.senderType !== 'trainer'">
+                <div class="message-content">{{ m.content }}</div>
+                <div class="message-time">
+                  {{ m.createdAt | date:'shortTime' }}
+                  @if (m.senderType === 'trainer') {
+                    <span class="message-status">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                        <path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+                      </svg>
+                    </span>
+                  }
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+        <!-- Input Area -->
+        <div class="input-area">
+          <div class="input-container">
+            <button class="icon-button" type="button" title="Attach file">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
+              </svg>
+            </button>
+            <input
+              [(ngModel)]="input"
+              (keydown.enter)="send()"
+              class="message-input"
+              placeholder="Type a message..."
+              type="text"
+              />
+            <button class="icon-button" type="button" title="Emoji">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
+              </svg>
+            </button>
+            <button
+              (click)="send()"
+              [disabled]="!input.trim()"
+              class="send-button"
+              type="button"
+              >
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-5 h-5">
+                <path d="M3.105 2.289a.75.75 0 00-.826.95l1.414 4.925A1.5 1.5 0 005.135 9.25h6.115a.75.75 0 010 1.5H5.135a1.5 1.5 0 00-1.442 1.086l-1.414 4.926a.75.75 0 00.826.95 28.896 28.896 0 0015.293-7.154.75.75 0 000-1.115A28.897 28.897 0 003.105 2.289z" />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+  </div>
+</div>

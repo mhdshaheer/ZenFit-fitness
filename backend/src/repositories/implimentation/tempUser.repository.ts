@@ -1,6 +1,8 @@
 import { ITempUser, TempUserModel } from "../../models/tempUser.model";
 import { ITempUserRepository } from "../interface/tempUser.repository.interface";
+import { injectable } from "inversify";
 
+@injectable()
 export class TempUserRepository implements ITempUserRepository {
   async saveTempUser(
     email: string,

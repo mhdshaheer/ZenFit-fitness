@@ -3,11 +3,12 @@ import { BookingModel, IBooking } from "../../models/booking.model";
 import { BaseRepository } from "../base.repository";
 import { IBookingRepository } from "../interface/booking.repository.interface";
 import { ISlot } from "../../models/slot.model";
+import { injectable } from "inversify";
 
+@injectable()
 export class BookingRepository
   extends BaseRepository<IBooking>
-  implements IBookingRepository
-{
+  implements IBookingRepository {
   constructor() {
     super(BookingModel);
   }

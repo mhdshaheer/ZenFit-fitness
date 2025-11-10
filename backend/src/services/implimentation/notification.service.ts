@@ -1,10 +1,11 @@
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { INotification } from "../../models/notification.model";
 import { getIO } from "../../shared/sockets/socket";
 import { INotificationService } from "../interface/notification.service.interface";
 import { TYPES } from "../../shared/types/inversify.types";
 import { INotificationRepository } from "../../repositories/interface/notification.repository.interface";
 
+@injectable()
 export class NotificationService implements INotificationService {
   @inject(TYPES.NotificationRepository)
   private readonly _notificationRepository!: INotificationRepository;

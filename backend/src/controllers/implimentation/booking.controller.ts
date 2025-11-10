@@ -3,12 +3,13 @@ import { IBooking } from "../../models/booking.model";
 import { IBookingController } from "../interface/booking.controller.interface";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IBookingService } from "../../services/interface/booking.service.interface";
 import { INotificationService } from "../../services/interface/notification.service.interface";
 import { ISlotService } from "../../services/interface/slot.service.interface";
 
+@injectable()
 export class BookingController implements IBookingController {
   @inject(TYPES.BookingService)
   private readonly _bookingService!: IBookingService;

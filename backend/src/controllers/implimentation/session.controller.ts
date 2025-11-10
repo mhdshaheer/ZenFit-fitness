@@ -1,18 +1,19 @@
 import { Request, Response } from "express";
 import { ISessionController } from "../interface/session.controller.interface";
 import { ISessionService } from "../../services/interface/session.service.interface";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { HttpStatus } from "../../const/statuscode.const";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ISession } from "../../models/session.model";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpResponse } from "../../const/response_message.const";
 
+@injectable()
 export class SessionController implements ISessionController {
   constructor(
     @inject(TYPES.SessionService)
     private readonly _sessionService: ISessionService
-  ) {}
+  ) { }
   async saveDraftSession(req: Request, res: Response): Promise<void> {
     const data = req.body;
     const userId = (req as any).user.id;
