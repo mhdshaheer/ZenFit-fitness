@@ -79,14 +79,19 @@ export class ChatController implements IChatController {
     // Emit real-time event to all clients in the thread
     try {
       const io = getIO();
+      console.log('📤 Emitting chat:newMessage to thread:', `thread-${threadId}`);
+      console.log('📨 Message data:', JSON.stringify(message, null, 2));
       io.to(`thread-${threadId}`).emit("chat:newMessage", message);
       
       // Notify participants about new message
       const participants = await this.chat.getThreadParticipants(threadId);
+      console.log('👥 Thread participants:', participants);
       if (participants.userId) {
+        console.log('📤 Emitting delivered to user:', `user-${participants.userId}`);
         io.to(`user-${participants.userId}`).emit("chat:delivered", { threadId });
       }
       if (participants.trainerId) {
+        console.log('📤 Emitting delivered to trainer:', `trainer-${participants.trainerId}`);
         io.to(`trainer-${participants.trainerId}`).emit("chat:delivered", { threadId });
       }
     } catch (error) {
@@ -94,5 +99,31 @@ export class ChatController implements IChatController {
     }
     
     res.status(HttpStatus.OK).json({ success: true, data: message });
+  }
+
+  async deleteMessage(req: Request, res: Response): Promise<void> {
+    const messageId = req.params.messageId;
+    const deleterId = (req as any).user.id;
+    
+    try {
+      const deleted = await this.chat.deleteMessage(messageId, deleterId);
+      
+      if (deleted) {
+        // Emit real-time delete event
+        try {
+          const io = getIO();
+          // Emit to all clients to remove the message
+          io.emit("chat:messageDeleted", { messageId });
+        } catch (error) {
+          console.error("Error emitting delete event:", error);
+        }
+        
+        res.status(HttpStatus.OK).json({ success: true, message: "Message deleted successfully" });
+      } else {
+        res.status(HttpStatus.NOT_FOUND).json({ success: false, message: "Message not found" });
+      }
+    } catch (error: any) {
+      res.status(HttpStatus.FORBIDDEN).json({ success: false, message: error.message });
+    }
   }
 }

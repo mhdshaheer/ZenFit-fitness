@@ -11,4 +11,5 @@ export interface IChatRepository {
     listMessages(threadId: string, page: number, limit: number): Promise<IChatMessage[]>;
     markThreadRead(threadId: string, readerType: "user" | "trainer"): Promise<void>;
     getParticipants(threadId: string): Promise<{ userId: string; trainerId: string; programId: string }>;
+    deleteMessage(messageId: string, deleterId: string): Promise<boolean>;
 }

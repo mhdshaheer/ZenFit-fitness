@@ -23,13 +23,27 @@
           [class.active]="active?._id === t._id"
           >
           <div class="thread-avatar">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-            </svg>
+            @if (t.userId && typeof t.userId === 'object') {
+              @if (t.userId.profileImage) {
+                <img [src]="t.userId.profileImage" [alt]="t.userId.fullName" class="avatar-img-sidebar">
+              } @else {
+                <div class="avatar-placeholder-sidebar">
+                  {{ getInitials(t.userId.fullName || t.userId.username) }}
+                </div>
+              }
+            } @else {
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0014.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+              </svg>
+            }
           </div>
           <div class="thread-info">
             <div class="thread-header">
-              <span class="thread-name text-light">Client</span>
+              @if (t.userId && typeof t.userId === 'object') {
+                <span class="thread-name text-light">{{ t.userId.fullName || t.userId.username }}</span>
+              } @else {
+                <span class="thread-name text-light">Client</span>
+              }
               @if (t.lastMessageAt) {
                 <span class="thread-time">{{ t.lastMessageAt | date:'shortTime' }}</span>
               }
@@ -62,18 +76,37 @@
         <!-- Chat Header -->
         <div class="chat-header">
           <div class="flex items-center gap-3">
-            <div class="avatar">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-              </svg>
-            </div>
-            <div>
-              <h3 class="font-semibold text-light">Client</h3>
-              <p class="text-xs text-gray-500">
-                <span class="online-indicator text-gray-900"></span>
-                Online
-              </p>
-            </div>
+            @if (active.userId && typeof active.userId === 'object') {
+              <div class="avatar">
+                @if (active.userId.profileImage) {
+                  <img [src]="active.userId.profileImage" [alt]="active.userId.fullName" class="avatar-img">
+                } @else {
+                  <div class="avatar-placeholder">
+                    {{ getInitials(active.userId.fullName || active.userId.username) }}
+                  </div>
+                }
+              </div>
+              <div>
+                <h3 class="font-semibold text-light">{{ active.userId.fullName || active.userId.username }}</h3>
+                <p class="text-xs text-gray-500">
+                  <span class="online-indicator text-gray-900"></span>
+                  Client
+                </p>
+              </div>
+            } @else {
+              <div class="avatar">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0014.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="font-semibold text-light">Client</h3>
+                <p class="text-xs text-gray-500">
+                  <span class="online-indicator text-gray-900"></span>
+                  Online
+                </p>
+              </div>
+            }
           </div>
         </div>
         <!-- Messages Area -->
@@ -84,10 +117,31 @@
               <p class="text-sm text-gray-400">Start the conversation</p>
             </div>
           }
+          
           @for (m of messages; track m) {
             <div class="message-wrapper" [class.sent]="m.senderType === 'trainer'" [class.received]="m.senderType !== 'trainer'">
+              @if (m.senderType !== 'trainer' && m.senderId && typeof m.senderId === 'object') {
+                <div class="message-avatar">
+                  @if (m.senderId.profileImage) {
+                    <img [src]="m.senderId.profileImage" [alt]="m.senderId.fullName" class="avatar-img-small">
+                  } @else {
+                    <div class="avatar-placeholder-small">
+                      {{ getInitials(m.senderId.fullName || m.senderId.username) }}
+                    </div>
+                  }
+                </div>
+              }
               <div class="message-bubble" [class.sent]="m.senderType === 'trainer'" [class.received]="m.senderType !== 'trainer'">
-                <div class="message-content">{{ m.content }}</div>
+                <div class="message-header">
+                  <div class="message-content">{{ m.content }}</div>
+                  @if (m.senderType === 'trainer') {
+                    <button (click)="openDeleteConfirmation(m._id)" class="delete-button" title="Delete message">
+                      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
+                        <path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5zM10 4c.84 0 1.673.025 2.5.075V3.75c0-.69-.56-1.25-1.25-1.25h-2.5c-.69 0-1.25.56-1.25 1.25v.325C8.327 4.025 9.16 4 10 4zM8.58 7.72a.75.75 0 00-1.5.06l.3 7.5a.75.75 0 101.5-.06l-.3-7.5zm4.34.06a.75.75 0 10-1.5-.06l-.3 7.5a.75.75 0 101.5.06l.3-7.5z" clip-rule="evenodd" />
+                      </svg>
+                    </button>
+                  }
+                </div>
                 <div class="message-time">
                   {{ m.createdAt | date:'shortTime' }}
                   @if (m.senderType === 'trainer') {
@@ -105,11 +159,6 @@
         <!-- Input Area -->
         <div class="input-area">
           <div class="input-container">
-            <button class="icon-button" type="button" title="Attach file">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M18.375 12.739l-7.693 7.693a4.5 4.5 0 01-6.364-6.364l10.94-10.94A3 3 0 1119.5 7.372L8.552 18.32m.009-.01l-.01.01m5.699-9.941l-7.81 7.81a1.5 1.5 0 002.112 2.13" />
-              </svg>
-            </button>
             <input
               [(ngModel)]="input"
               (keydown.enter)="send()"
@@ -117,11 +166,6 @@
               placeholder="Type a message..."
               type="text"
               />
-            <button class="icon-button" type="button" title="Emoji">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z" />
-              </svg>
-            </button>
             <button
               (click)="send()"
               [disabled]="!input.trim()"
@@ -138,3 +182,15 @@
     }
   </div>
 </div>
+
+<!-- Confirmation Dialog -->
+<app-confirmation-dialog
+  [isOpen]="showDeleteConfirm"
+  [title]="'Delete Message?'"
+  [message]="'Are you sure you want to delete this message? This action cannot be undone.'"
+  [confirmText]="'Delete'"
+  [cancelText]="'Cancel'"
+  [type]="'danger'"
+  (confirmed)="confirmDelete()"
+  (cancelled)="cancelDelete()"
+></app-confirmation-dialog>

@@ -10,13 +10,34 @@ export class ChatSocketService {
   private typing$ = new Subject<{ threadId: string; senderType: 'user' | 'trainer' }>();
   private read$ = new Subject<{ threadId: string; readerId: string; readerType: 'user' | 'trainer' }>();
   private delivered$ = new Subject<{ threadId: string }>();
+  private messageDeleted$ = new Subject<{ messageId: string }>();
 
   constructor(private zone: NgZone) {
     this.socket = io(environment.socketUrl, { reconnection: true, withCredentials: true, transports: ['websocket', 'polling'] });
-    this.socket.on('chat:newMessage', (data) => this.zone.run(() => this.newMessage$.next(data)));
+    
+    // Connection events
+    this.socket.on('connect', () => {
+      console.log('✅ Socket connected:', this.socket.id);
+    });
+    
+    this.socket.on('disconnect', (reason) => {
+      console.log('❌ Socket disconnected:', reason);
+    });
+    
+    this.socket.on('connect_error', (error) => {
+      console.error('🔴 Socket connection error:', error);
+    });
+    
+    // Chat events
+    this.socket.on('chat:newMessage', (data) => {
+      console.log('📨 Received new message:', data);
+      this.zone.run(() => this.newMessage$.next(data));
+    });
+    
     this.socket.on('chat:typing', (data) => this.zone.run(() => this.typing$.next(data)));
     this.socket.on('chat:read', (data) => this.zone.run(() => this.read$.next(data)));
     this.socket.on('chat:delivered', (data) => this.zone.run(() => this.delivered$.next(data)));
+    this.socket.on('chat:messageDeleted', (data) => this.zone.run(() => this.messageDeleted$.next(data)));
   }
 
   // Join user/trainer room for notifications
@@ -25,6 +46,7 @@ export class ChatSocketService {
   }
 
   joinThread(threadId: string, userId: string, role: 'user' | 'trainer') {
+    console.log('🔗 Joining thread:', { threadId, userId, role });
     this.socket.emit('chat:joinThread', { threadId, userId, role });
   }
 
@@ -55,5 +77,8 @@ export class ChatSocketService {
   onDelivered(): Observable<{ threadId: string }> {
     return this.delivered$.asObservable();
   }
-  
+
+  onMessageDeleted(): Observable<{ messageId: string }> {
+    return this.messageDeleted$.asObservable();
+  }
 }

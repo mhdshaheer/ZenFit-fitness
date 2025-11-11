@@ -10,4 +10,5 @@ export interface IChatService {
     markThreadRead(threadId: string, readerType: "user" | "trainer"): Promise<void>;
     canAccessThread(threadId: string, actorId: string, role: "user" | "trainer"): Promise<boolean>;
     getThreadParticipants(threadId: string): Promise<{ userId: string; trainerId: string; programId: string }>;
+    deleteMessage(messageId: string, deleterId: string): Promise<boolean>;
 }

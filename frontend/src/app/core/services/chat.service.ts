@@ -4,10 +4,17 @@ import { environment } from "../../../environments/environment";
 import { Observable } from "rxjs";
 
 
+export interface UserProfile {
+  _id: string;
+  fullName: string;
+  username: string;
+  profileImage?: string;
+}
+
 export interface ChatThread {
   _id: string;
-  userId: string;
-  trainerId: string;
+  userId: string | UserProfile;
+  trainerId: string | UserProfile;
   programId: string;
   lastMessage?: string;
   lastMessageAt?: string;
@@ -18,7 +25,7 @@ export interface ChatThread {
 export interface ChatMessage {
   _id: string;
   threadId: string;
-  senderId: string;
+  senderId: string | UserProfile;
   senderType: 'user' | 'trainer';
   content: string;
   createdAt: string;
@@ -53,5 +60,9 @@ export class ChatService {
 
   sendMessage(threadId: string, content: string): Observable<{ success: boolean; data: ChatMessage }> {
     return this.http.post<{ success: boolean; data: ChatMessage }>(`${this.api}/${threadId}/message`, { content });
+  }
+
+  deleteMessage(messageId: string): Observable<{ success: boolean; message: string }> {
+    return this.http.delete<{ success: boolean; message: string }>(`${this.api}/message/${messageId}`);
   }
 }

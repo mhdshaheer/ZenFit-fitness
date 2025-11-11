@@ -34,4 +34,8 @@ chatRouter.post("/:threadId/message", (req, res, next) => {
   controller.sendMessage(req, res).catch(next);
 });
 
+chatRouter.delete("/message/:messageId", (req, res, next) => {
+  controller.deleteMessage(req, res).catch(next);
+});
+
 export default chatRouter;

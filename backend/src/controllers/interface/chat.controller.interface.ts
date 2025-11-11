@@ -7,4 +7,5 @@ export interface IChatController {
     getMessages(req: Request, res: Response): Promise<void>;
     markRead(req: Request, res: Response): Promise<void>;
     sendMessage(req: Request, res: Response): Promise<void>;
+    deleteMessage(req: Request, res: Response): Promise<void>;
 }

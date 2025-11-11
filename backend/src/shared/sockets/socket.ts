@@ -28,10 +28,15 @@ export const initializeSocket = (server: HttpServer): Server => {
 
     socket.on("chat:joinThread", async (data: { threadId: string; userId: string; role: "user" | "trainer" }) => {
       try {
+        console.log('🔗 Socket joining thread:', data);
         const chatService = container.get<IChatService>(TYPES.ChatService);
         const ok = await chatService.canAccessThread(data.threadId, data.userId, data.role);
-        if (!ok) return;
+        if (!ok) {
+          console.log('❌ Access denied to thread:', data.threadId);
+          return;
+        }
         socket.join(`thread-${data.threadId}`);
+        console.log('✅ Socket joined thread room:', `thread-${data.threadId}`, 'Socket ID:', socket.id);
       } catch (e) {
         console.error("joinThread error", e);
       }
