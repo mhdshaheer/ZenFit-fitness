@@ -56,4 +56,20 @@ export class BookingController implements IBookingController {
 
     return res.status(HttpStatus.OK).json(booking);
   }
+
+  async getMyBookings(req: Request, res: Response): Promise<Response<any>> {
+    const userId = (req as any).user?.id;
+    const { programId } = req.query;
+
+    if (!userId) {
+      throw new AppError("User not authenticated", HttpStatus.UNAUTHORIZED);
+    }
+
+    const bookings = await this._bookingService.getMyBookings(
+      userId,
+      programId as string | undefined
+    );
+
+    return res.status(HttpStatus.OK).json(bookings);
+  }
 }

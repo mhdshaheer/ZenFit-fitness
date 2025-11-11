@@ -1,9 +1,9 @@
 .chat-container {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 160px);
+  height: calc(100vh - 200px);
   max-width: 900px;
-  margin: 0 auto;
+  margin: 2rem auto;
   background: white;
   border-radius: 16px;
   box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
@@ -318,8 +318,9 @@
 /* Responsive */
 @media (max-width: 768px) {
   .chat-container {
-    height: calc(100vh - 80px);
-    border-radius: 0;
+    height: calc(100vh - 120px);
+    margin: 1rem;
+    border-radius: 12px;
   }
   
   .message-bubble {

@@ -47,4 +47,39 @@ export class BookingRepository
     });
     return booking;
   }
+
+  async getMyBookings(userId: string, programId?: string): Promise<IBooking[]> {
+    const query: any = {
+      userId: new Types.ObjectId(userId),
+    };
+
+    // Build aggregation pipeline
+    const pipeline: any[] = [
+      { $match: query },
+      {
+        $lookup: {
+          from: "slots",
+          localField: "slotId",
+          foreignField: "_id",
+          as: "slotDetails",
+        },
+      },
+      { $unwind: "$slotDetails" },
+    ];
+
+    // Filter by programId if provided
+    if (programId) {
+      pipeline.push({
+        $match: {
+          "slotDetails.programId": new Types.ObjectId(programId),
+        },
+      });
+    }
+
+    // Sort by date descending (newest first)
+    pipeline.push({ $sort: { date: -1 } });
+
+    const bookings = await this.model.aggregate(pipeline);
+    return bookings;
+  }
 }

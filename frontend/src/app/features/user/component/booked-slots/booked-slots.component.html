@@ -1,0 +1,229 @@
+<div class="min-h-screen bg-gradient-to-br from-neutral-50 via-emerald-50/20 to-neutral-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <!-- Header -->
+    <div class="mb-8">
+      <h1 class="text-3xl sm:text-5xl font-bold bg-gradient-to-r from-neutral-900 via-emerald-800 to-neutral-900 bg-clip-text text-transparent mb-3">
+        My Booked Sessions
+      </h1>
+      <p class="text-base sm:text-lg text-neutral-600 flex items-center gap-2">
+        <svg class="w-5 h-5 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        </svg>
+        Manage your training schedule
+      </p>
+    </div>
+
+    <!-- Tabs -->
+    <div class="mb-8">
+      <div class="bg-white rounded-xl shadow-md border border-neutral-200 p-1.5 inline-flex gap-2">
+        <button
+          (click)="switchTab('upcoming')"
+          [class]="activeTab === 'upcoming' 
+            ? 'bg-gradient-to-r from-emerald-600 to-emerald-700 text-white shadow-md' 
+            : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'"
+          class="px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+          Upcoming
+          @if (upcomingSlots.length > 0) {
+            <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold" 
+                  [class]="activeTab === 'upcoming' ? 'bg-white/20' : 'bg-emerald-100 text-emerald-700'">
+              {{ upcomingSlots.length }}
+            </span>
+          }
+        </button>
+        <button
+          (click)="switchTab('past')"
+          [class]="activeTab === 'past' 
+            ? 'bg-gradient-to-r from-neutral-700 to-neutral-800 text-white shadow-md' 
+            : 'text-neutral-600 hover:text-neutral-900 hover:bg-neutral-50'"
+          class="px-6 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center gap-2"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          Past Sessions
+          @if (pastSlots.length > 0) {
+            <span class="ml-1 px-2 py-0.5 rounded-full text-xs font-bold"
+                  [class]="activeTab === 'past' ? 'bg-white/20' : 'bg-neutral-100 text-neutral-700'">
+              {{ pastSlots.length }}
+            </span>
+          }
+        </button>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    @if (isLoading) {
+      <div class="flex items-center justify-center py-20">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-emerald-600"></div>
+      </div>
+    }
+
+    <!-- Upcoming Sessions -->
+    @if (!isLoading && activeTab === 'upcoming') {
+      @if (upcomingSlots.length > 0) {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          @for (slot of upcomingSlots; track slot._id) {
+            <div class="slot-card upcoming-card bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-500 border border-emerald-100 hover:border-emerald-300 group">
+              <!-- Gradient Header -->
+              <div class="h-2 bg-gradient-to-r from-emerald-500 via-emerald-600 to-emerald-700"></div>
+              
+              <div class="p-6">
+                <!-- Program Name & Status -->
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex-1">
+                    <h3 class="text-xl font-bold text-neutral-900 mb-2 group-hover:text-emerald-900 transition-colors">
+                      {{ slot.programName }}
+                    </h3>
+                    <span [ngClass]="getStatusColor(slot.status)" class="inline-block px-3 py-1 text-xs font-semibold rounded-full border">
+                      {{ slot.status }}
+                    </span>
+                  </div>
+                  <div class="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                    </svg>
+                  </div>
+                </div>
+
+                <!-- Date & Time Info -->
+                <div class="space-y-3 mb-6">
+                  <div class="flex items-center gap-3 p-3 bg-gradient-to-br from-emerald-50 to-emerald-100/50 rounded-xl border border-emerald-200/50">
+                    <div class="flex-shrink-0 w-10 h-10 bg-emerald-600 rounded-lg flex items-center justify-center">
+                      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-xs font-semibold text-emerald-900 mb-0.5">{{ slot.day }}</p>
+                      <p class="text-sm font-bold text-emerald-700">{{ formatDate(slot.date) }}</p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3 p-3 bg-gradient-to-br from-neutral-50 to-neutral-100/50 rounded-xl border border-neutral-200/50">
+                    <div class="flex-shrink-0 w-10 h-10 bg-neutral-700 rounded-lg flex items-center justify-center">
+                      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-xs font-semibold text-neutral-900 mb-0.5">Session Time</p>
+                      <p class="text-sm font-bold text-neutral-700">{{ formatTime(slot.startTime) }} - {{ formatTime(slot.endTime) }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Join Button -->
+                <button
+                  (click)="joinMeeting(slot)"
+                  class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                >
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                  </svg>
+                  Join Meeting
+                </button>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- Empty State for Upcoming -->
+        <div class="text-center py-20">
+          <div class="relative inline-block mb-6">
+            <div class="w-24 h-24 mx-auto rounded-full bg-gradient-to-br from-emerald-100 to-emerald-200 flex items-center justify-center shadow-lg">
+              <svg class="w-12 h-12 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </div>
+          </div>
+          <h3 class="text-2xl font-bold text-neutral-900 mb-3">No Upcoming Sessions</h3>
+          <p class="text-neutral-600 text-base mb-8 max-w-md mx-auto">
+            You don't have any scheduled sessions. Book a slot to start your training!
+          </p>
+        </div>
+      }
+    }
+
+    <!-- Past Sessions -->
+    @if (!isLoading && activeTab === 'past') {
+      @if (pastSlots.length > 0) {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          @for (slot of pastSlots; track slot._id) {
+            <div class="slot-card past-card bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-lg transition-all duration-500 border border-neutral-200 hover:border-neutral-300 group opacity-75">
+              <!-- Muted Header -->
+              <div class="h-2 bg-gradient-to-r from-neutral-300 via-neutral-400 to-neutral-500"></div>
+              
+              <div class="p-6">
+                <!-- Program Name & Status -->
+                <div class="flex items-start justify-between mb-4">
+                  <div class="flex-1">
+                    <h3 class="text-xl font-bold text-neutral-700 mb-2">
+                      {{ slot.programName }}
+                    </h3>
+                    <span class="inline-block px-3 py-1 text-xs font-semibold rounded-full border bg-neutral-100 text-neutral-600 border-neutral-200">
+                      Completed
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Date & Time Info -->
+                <div class="space-y-3 mb-6">
+                  <div class="flex items-center gap-3 p-3 bg-neutral-50 rounded-xl border border-neutral-200">
+                    <div class="flex-shrink-0 w-10 h-10 bg-neutral-400 rounded-lg flex items-center justify-center">
+                      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-xs font-semibold text-neutral-600 mb-0.5">{{ slot.day }}</p>
+                      <p class="text-sm font-bold text-neutral-700">{{ formatDate(slot.date) }}</p>
+                    </div>
+                  </div>
+
+                  <div class="flex items-center gap-3 p-3 bg-neutral-50 rounded-xl border border-neutral-200">
+                    <div class="flex-shrink-0 w-10 h-10 bg-neutral-400 rounded-lg flex items-center justify-center">
+                      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      </svg>
+                    </div>
+                    <div class="flex-1">
+                      <p class="text-xs font-semibold text-neutral-600 mb-0.5">Session Time</p>
+                      <p class="text-sm font-bold text-neutral-700">{{ formatTime(slot.startTime) }} - {{ formatTime(slot.endTime) }}</p>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Completed Badge -->
+                <div class="flex items-center justify-center gap-2 py-3 px-4 bg-neutral-100 rounded-xl border border-neutral-200">
+                  <svg class="w-5 h-5 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                  </svg>
+                  <span class="text-sm font-semibold text-neutral-600">Session Completed</span>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+      } @else {
+        <!-- Empty State for Past -->
+        <div class="text-center py-20">
+          <div class="relative inline-block mb-6">
+            <div class="w-24 h-24 mx-auto rounded-full bg-neutral-100 flex items-center justify-center shadow-md">
+              <svg class="w-12 h-12 text-neutral-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+          </div>
+          <h3 class="text-2xl font-bold text-neutral-900 mb-3">No Past Sessions</h3>
+          <p class="text-neutral-600 text-base mb-8 max-w-md mx-auto">
+            Your completed sessions will appear here.
+          </p>
+        </div>
+      }
+    }
+  </div>
+</div>

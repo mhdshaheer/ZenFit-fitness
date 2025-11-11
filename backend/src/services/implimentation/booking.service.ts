@@ -27,4 +27,22 @@ export class BookingService implements IBookingService {
     );
     return booking;
   }
+
+  async getMyBookings(userId: string, programId?: string): Promise<any[]> {
+    const bookings = await this._bookingRepository.getMyBookings(userId, programId);
+    
+    // Transform the data to match frontend interface
+    return bookings.map((booking: any) => ({
+      _id: booking._id,
+      slotId: booking.slotId,
+      userId: booking.userId,
+      programId: booking.slotDetails?.programId,
+      day: booking.day,
+      date: booking.date,
+      startTime: booking.slotDetails?.startTime,
+      endTime: booking.slotDetails?.endTime,
+      status: booking.status === 'booked' ? 'confirmed' : booking.status,
+      createdAt: booking.createdAt,
+    }));
+  }
 }

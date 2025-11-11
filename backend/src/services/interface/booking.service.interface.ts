@@ -7,5 +7,5 @@ export interface IBookingService {
     day: string,
     date: Date
   ): Promise<IBooking>;
-
+  getMyBookings(userId: string, programId?: string): Promise<any[]>;
 }
