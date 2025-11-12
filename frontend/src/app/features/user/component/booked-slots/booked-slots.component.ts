@@ -1,14 +1,18 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { BookingService, BookedSlot } from '../../../../core/services/booking.service';
 import { MeetingService } from '../../../../core/services/meeting.service';
 import { MeetingRoomComponent } from '../../../../shared/components/meeting-room/meeting-room.component';
 import { ToastService } from '../../../../core/services/toast.service';
 import { Router } from '@angular/router';
+import { ProgramService } from '../../../../core/services/program.service';
+import { Program } from '../../../trainer/store/trainer.model';
 
 interface SlotWithProgram extends BookedSlot {
   programName?: string;
+  programDuration?: string;
+  programDifficulty?: string;
   isUpcoming?: boolean;
 }
 
@@ -23,6 +27,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
   private readonly _meetingService = inject(MeetingService);
   private readonly _toastService = inject(ToastService);
   private readonly _router = inject(Router);
+  private readonly _programService = inject(ProgramService);
   private readonly _destroy$ = new Subject<void>();
 
   upcomingSlots: SlotWithProgram[] = [];
@@ -47,44 +52,113 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (slots) => {
-          const now = new Date();
+          if (slots.length === 0) {
+            this.upcomingSlots = [];
+            this.pastSlots = [];
+            this.isLoading = false;
+            return;
+          }
 
-          // Separate upcoming and past slots
-          const upcoming: SlotWithProgram[] = [];
-          const past: SlotWithProgram[] = [];
-
-          slots.forEach(slot => {
-            const slotDateTime = new Date(slot.date);
-            const slotWithProgram: SlotWithProgram = {
-              ...slot,
-              programName: 'Fitness Program', // Will be populated from API
-              isUpcoming: slotDateTime >= now
-            };
-
-            if (slotDateTime >= now) {
-              upcoming.push(slotWithProgram);
-            } else {
-              past.push(slotWithProgram);
-            }
-          });
-
-          // Sort upcoming by date ascending (nearest first)
-          this.upcomingSlots = upcoming.sort((a, b) =>
-            new Date(a.date).getTime() - new Date(b.date).getTime()
+          // Get unique program IDs
+          const uniqueProgramIds = [...new Set(slots.map(slot => slot.programId))];
+          
+          // Fetch all program details
+          const programRequests = uniqueProgramIds.map(programId => 
+            this._programService.getProgramByProgramId(programId)
           );
 
-          // Sort past by date descending (most recent first)
-          this.pastSlots = past.sort((a, b) =>
-            new Date(b.date).getTime() - new Date(a.date).getTime()
-          );
+          forkJoin(programRequests)
+            .pipe(takeUntil(this._destroy$))
+            .subscribe({
+              next: (programs) => {
+                // Create a map of programId to program details
+                const programMap = new Map<string, Program>();
+                programs.forEach((program, index) => {
+                  programMap.set(uniqueProgramIds[index], program);
+                });
 
-          this.isLoading = false;
+                const now = new Date();
+                const upcoming: SlotWithProgram[] = [];
+                const past: SlotWithProgram[] = [];
+
+                slots.forEach(slot => {
+                  const slotDateTime = new Date(slot.date);
+                  const program = programMap.get(slot.programId);
+                  
+                  const slotWithProgram: SlotWithProgram = {
+                    ...slot,
+                    programName: program?.title || 'Fitness Program',
+                    programDuration: program?.duration || 'N/A',
+                    programDifficulty: program?.difficultyLevel || 'Beginner',
+                    isUpcoming: slotDateTime >= now
+                  };
+
+                  if (slotDateTime >= now) {
+                    upcoming.push(slotWithProgram);
+                  } else {
+                    past.push(slotWithProgram);
+                  }
+                });
+
+                // Sort upcoming by date ascending (nearest first)
+                this.upcomingSlots = upcoming.sort((a, b) =>
+                  new Date(a.date).getTime() - new Date(b.date).getTime()
+                );
+
+                // Sort past by date descending (most recent first)
+                this.pastSlots = past.sort((a, b) =>
+                  new Date(b.date).getTime() - new Date(a.date).getTime()
+                );
+
+                this.isLoading = false;
+              },
+              error: (error) => {
+                console.error('Error loading program details:', error);
+                // Fallback: show slots without program details
+                this.loadSlotsWithoutProgramDetails(slots);
+              }
+            });
         },
         error: (error) => {
           console.error('Error loading booked slots:', error);
           this.isLoading = false;
         }
       });
+  }
+
+  private loadSlotsWithoutProgramDetails(slots: BookedSlot[]): void {
+    const now = new Date();
+    const upcoming: SlotWithProgram[] = [];
+    const past: SlotWithProgram[] = [];
+
+    slots.forEach(slot => {
+      const slotDateTime = new Date(slot.date);
+      const slotWithProgram: SlotWithProgram = {
+        ...slot,
+        programName: 'Fitness Program',
+        programDuration: 'N/A',
+        programDifficulty: 'Beginner',
+        isUpcoming: slotDateTime >= now
+      };
+
+      if (slotDateTime >= now) {
+        upcoming.push(slotWithProgram);
+      } else {
+        past.push(slotWithProgram);
+      }
+    });
+
+    // Sort upcoming by date ascending (nearest first)
+    this.upcomingSlots = upcoming.sort((a, b) =>
+      new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+
+    // Sort past by date descending (most recent first)
+    this.pastSlots = past.sort((a, b) =>
+      new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+
+    this.isLoading = false;
   }
 
   switchTab(tab: 'upcoming' | 'past'): void {
@@ -159,6 +233,34 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
         return 'bg-neutral-100 text-neutral-700 border-neutral-200';
       case 'cancelled':
         return 'bg-red-100 text-red-700 border-red-200';
+      default:
+        return 'bg-neutral-100 text-neutral-700 border-neutral-200';
+    }
+  }
+
+  getDifficultyColor(difficulty?: string, muted: boolean = false): string {
+    if (muted) {
+      // Muted colors for past sessions
+      switch (difficulty) {
+        case 'Beginner':
+          return 'bg-neutral-100 text-neutral-600 border-neutral-200';
+        case 'Intermediate':
+          return 'bg-neutral-100 text-neutral-600 border-neutral-200';
+        case 'Advanced':
+          return 'bg-neutral-100 text-neutral-600 border-neutral-200';
+        default:
+          return 'bg-neutral-100 text-neutral-600 border-neutral-200';
+      }
+    }
+    
+    // Vibrant colors for upcoming sessions
+    switch (difficulty) {
+      case 'Beginner':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      case 'Intermediate':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+      case 'Advanced':
+        return 'bg-red-100 text-red-800 border-red-200';
       default:
         return 'bg-neutral-100 text-neutral-700 border-neutral-200';
     }
