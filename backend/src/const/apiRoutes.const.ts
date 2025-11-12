@@ -11,7 +11,6 @@ export const API_ROUTES = {
   PAYMENT: "/api/v1/payment",
   BOOKING: "/api/v1/booking",
   PROGRAM: "/api/v1/program",
-  SESSION: "/api/v1/session",
   CATEGORY: "/api/v1/category",
   NOTIFICATION: "/api/v1/notifications",
 };

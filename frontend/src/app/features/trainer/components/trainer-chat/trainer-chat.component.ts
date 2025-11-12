@@ -1,4 +1,4 @@
-import { CommonModule, DatePipe, NgClass } from "@angular/common";
+import { CommonModule, DatePipe } from "@angular/common";
 import { FormsModule } from "@angular/forms";
 import { Component, inject, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewChecked } from "@angular/core";
 import { Subject, takeUntil } from "rxjs";
@@ -11,7 +11,7 @@ import { ConfirmationDialogComponent } from '../../../../shared/components/confi
 @Component({
   selector: 'zenfit-trainer-chat',
   standalone: true,
-  imports: [CommonModule, FormsModule, NgClass, DatePipe, ConfirmationDialogComponent],
+  imports: [CommonModule, FormsModule, DatePipe, ConfirmationDialogComponent],
   templateUrl: './trainer-chat.component.html',
   styleUrls: ['./trainer-chat.component.css'],
 })
