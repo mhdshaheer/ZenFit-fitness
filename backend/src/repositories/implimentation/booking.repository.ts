@@ -82,4 +82,92 @@ export class BookingRepository
     const bookings = await this.model.aggregate(pipeline);
     return bookings;
   }
+
+  async getTrainerBookings(trainerId: string): Promise<any[]> {
+    console.log('🔍 Fetching bookings for trainerId:', trainerId);
+    
+    const pipeline: any[] = [
+      {
+        $lookup: {
+          from: "slots",
+          localField: "slotId",
+          foreignField: "_id",
+          as: "slotDetails",
+        },
+      },
+      { $unwind: "$slotDetails" },
+      {
+        $match: {
+          "slotDetails.trainerId": new Types.ObjectId(trainerId),
+        },
+      },
+      {
+        $lookup: {
+          from: "programs",
+          localField: "slotDetails.programId",
+          foreignField: "_id",
+          as: "programDetails",
+        },
+      },
+      { $unwind: "$programDetails" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      { $unwind: "$userDetails" },
+      {
+        $group: {
+          _id: {
+            slotId: "$slotId",
+            day: "$day",
+            date: "$date",
+          },
+          slotId: { $first: "$slotId" },
+          day: { $first: "$day" },
+          date: { $first: "$date" },
+          startTime: { $first: "$slotDetails.startTime" },
+          endTime: { $first: "$slotDetails.endTime" },
+          capacity: { $first: "$slotDetails.capacity" },
+          programName: { $first: "$programDetails.title" },
+          duration: { $first: "$programDetails.duration" },
+          difficultyLevel: { $first: "$programDetails.difficultyLevel" },
+          bookedCount: { $sum: 1 },
+          students: {
+            $push: {
+              name: "$userDetails.fullName",
+              email: "$userDetails.email",
+              bookingId: "$_id",
+              status: "$status",
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 0,
+          slotId: 1,
+          day: 1,
+          date: 1,
+          startTime: 1,
+          endTime: 1,
+          capacity: 1,
+          programName: 1,
+          duration: 1,
+          difficultyLevel: 1,
+          bookedCount: 1,
+          students: 1,
+        },
+      },
+      { $sort: { date: -1 } },
+    ];
+
+    const sessions = await this.model.aggregate(pipeline);
+    console.log('📊 Found grouped sessions:', sessions.length);
+    console.log('📊 Sample session:', sessions[0]);
+    return sessions;
+  }
 }

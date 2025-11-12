@@ -80,6 +80,14 @@ export const TRAINER_ROUTES: Routes = [
         loadComponent:()=>{
           return import('../components/trainer-chat/trainer-chat.component').then(m=>m.TrainerChatComponent)
         }
+      },
+      {
+        path: 'sessions',
+        loadComponent: () => {
+          return import('../components/trainer-sessions/trainer-sessions.component').then(
+            (m) => m.TrainerSessionsComponent
+          );
+        },
       }
 
     ],

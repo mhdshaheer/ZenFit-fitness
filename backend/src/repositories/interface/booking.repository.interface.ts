@@ -9,4 +9,5 @@ export interface IBookingRepository {
     slot: ISlot
   ): Promise<IBooking>;
   getMyBookings(userId: string, programId?: string): Promise<IBooking[]>;
+  getTrainerBookings(trainerId: string): Promise<any[]>;
 }

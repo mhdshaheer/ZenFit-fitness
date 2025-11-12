@@ -8,4 +8,5 @@ export interface IBookingService {
     date: Date
   ): Promise<IBooking>;
   getMyBookings(userId: string, programId?: string): Promise<any[]>;
+  getTrainerBookings(trainerId: string): Promise<any[]>;
 }

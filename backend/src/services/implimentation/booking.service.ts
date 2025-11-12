@@ -45,4 +45,9 @@ export class BookingService implements IBookingService {
       createdAt: booking.createdAt,
     }));
   }
+
+  async getTrainerBookings(trainerId: string): Promise<any[]> {
+    const bookings = await this._bookingRepository.getTrainerBookings(trainerId);
+    return bookings;
+  }
 }

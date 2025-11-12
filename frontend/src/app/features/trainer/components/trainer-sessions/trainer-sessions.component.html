@@ -1,0 +1,292 @@
+<div class="sessions-container">
+  <!-- Header -->
+  <div class="sessions-header">
+    <div class="header-content">
+      <h1 class="page-title">My Training Sessions</h1>
+      <p class="page-subtitle">Manage your scheduled training sessions with students</p>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs-container">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'upcoming'"
+      (click)="setActiveTab('upcoming')">
+      <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+      Upcoming Sessions
+      <span class="tab-badge">{{ upcomingSessions.length }}</span>
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'past'"
+      (click)="setActiveTab('past')">
+      <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      Past Sessions
+      <span class="tab-badge">{{ pastSessions.length }}</span>
+    </button>
+  </div>
+
+  <!-- Loading State -->
+  @if (isLoading) {
+    <div class="loading-container">
+      <div class="spinner"></div>
+      <p class="loading-text">Loading sessions...</p>
+    </div>
+  }
+
+  <!-- Upcoming Sessions Tab -->
+  @if (!isLoading && activeTab === 'upcoming') {
+    <div class="sessions-grid">
+      @if (upcomingSessions.length === 0) {
+        <div class="empty-state">
+          <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+          </svg>
+          <h3 class="empty-title">No Upcoming Sessions</h3>
+          <p class="empty-description">You don't have any upcoming training sessions scheduled.</p>
+        </div>
+      } @else {
+        @for (session of upcomingSessions; track session.slotId) {
+          <div class="session-card">
+            <!-- Card Header -->
+            <div class="card-header">
+              <div class="program-info">
+                <h3 class="program-name">{{ session.programName }}</h3>
+                <div class="program-meta">
+                  <span class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ session.duration }} weeks
+                  </span>
+                  <span class="difficulty-badge" [ngClass]="getDifficultyColor(session.difficultyLevel)">
+                    {{ session.difficultyLevel }}
+                  </span>
+                </div>
+              </div>
+              <span class="capacity-badge">
+                {{ session.bookedCount }}/{{ session.capacity }} Booked
+              </span>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body">
+              <!-- Students Count -->
+              <div class="info-section">
+                <div class="students-count-section">
+                  <div class="count-info">
+                    <svg class="count-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span class="count-text">{{ session.bookedCount }} Student{{ session.bookedCount !== 1 ? 's' : '' }} Booked</span>
+                  </div>
+                  <button class="view-users-btn" (click)="viewBookedUsers(session)">
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    View Booked Users
+                  </button>
+                </div>
+              </div>
+
+              <!-- Schedule Info -->
+              <div class="schedule-grid">
+                <div class="schedule-item">
+                  <div class="schedule-label">
+                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    Date
+                  </div>
+                  <p class="schedule-value">{{ formatDate(session.date) }}</p>
+                </div>
+
+                <div class="schedule-item">
+                  <div class="schedule-label">
+                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Time
+                  </div>
+                  <p class="schedule-value">{{ session.startTime }} - {{ session.endTime }}</p>
+                </div>
+
+                <div class="schedule-item">
+                  <div class="schedule-label">
+                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    Day
+                  </div>
+                  <p class="schedule-value">{{ session.day }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Card Footer -->
+            <div class="card-footer">
+              <button class="start-button" (click)="startMeeting(session)">
+                <svg class="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                </svg>
+                Start Meeting
+              </button>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+
+  <!-- Past Sessions Tab -->
+  @if (!isLoading && activeTab === 'past') {
+    <div class="sessions-grid">
+      @if (pastSessions.length === 0) {
+        <div class="empty-state">
+          <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+          </svg>
+          <h3 class="empty-title">No Past Sessions</h3>
+          <p class="empty-description">You don't have any completed training sessions yet.</p>
+        </div>
+      } @else {
+        @for (session of pastSessions; track session.slotId) {
+          <div class="session-card past">
+            <!-- Card Header -->
+            <div class="card-header">
+              <div class="program-info">
+                <h3 class="program-name">{{ session.programName }}</h3>
+                <div class="program-meta">
+                  <span class="meta-item">
+                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    {{ session.duration }} weeks
+                  </span>
+                  <span class="difficulty-badge" [ngClass]="getDifficultyColor(session.difficultyLevel)">
+                    {{ session.difficultyLevel }}
+                  </span>
+                </div>
+              </div>
+              <span class="capacity-badge past-badge">
+                {{ session.bookedCount }}/{{ session.capacity }} Attended
+              </span>
+            </div>
+
+            <!-- Card Body -->
+            <div class="card-body">
+              <!-- Students Count -->
+              <div class="info-section">
+                <div class="students-count-section">
+                  <div class="count-info">
+                    <svg class="count-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <span class="count-text">{{ session.bookedCount }} Student{{ session.bookedCount !== 1 ? 's' : '' }} Attended</span>
+                  </div>
+                  <button class="view-users-btn" (click)="viewBookedUsers(session)">
+                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                    </svg>
+                    View Booked Users
+                  </button>
+                </div>
+              </div>
+
+              <!-- Schedule Info -->
+              <div class="schedule-grid">
+                <div class="schedule-item">
+                  <div class="schedule-label">
+                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    Date
+                  </div>
+                  <p class="schedule-value">{{ formatDate(session.date) }}</p>
+                </div>
+
+                <div class="schedule-item">
+                  <div class="schedule-label">
+                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    Time
+                  </div>
+                  <p class="schedule-value">{{ session.startTime }} - {{ session.endTime }}</p>
+                </div>
+
+                <div class="schedule-item">
+                  <div class="schedule-label">
+                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    Day
+                  </div>
+                  <p class="schedule-value">{{ session.day }}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      }
+    </div>
+  }
+</div>
+
+<!-- Students Modal -->
+@if (showStudentsModal && selectedSession) {
+  <div class="modal-overlay" (click)="closeStudentsModal()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title-section">
+          <h2 class="modal-title">Booked Students</h2>
+          <p class="modal-subtitle">{{ selectedSession.programName }} - {{ formatDate(selectedSession.date) }}</p>
+        </div>
+        <button class="modal-close" (click)="closeStudentsModal()">
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      
+      <div class="modal-body">
+        <div class="modal-stats">
+          <div class="stat-item">
+            <span class="stat-label">Total Capacity:</span>
+            <span class="stat-value">{{ selectedSession.capacity }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Booked:</span>
+            <span class="stat-value booked">{{ selectedSession.bookedCount }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Available:</span>
+            <span class="stat-value available">{{ selectedSession.capacity - selectedSession.bookedCount }}</span>
+          </div>
+        </div>
+
+        <div class="students-list-modal">
+          @for (student of selectedSession.students; track student.bookingId) {
+            <div class="student-item-modal">
+              <div class="student-avatar-modal">{{ student.name.charAt(0).toUpperCase() }}</div>
+              <div class="student-details-modal">
+                <p class="student-name-modal">{{ student.name }}</p>
+                <p class="student-email-modal">{{ student.email }}</p>
+              </div>
+              <span class="student-status-badge" [ngClass]="student.status">
+                {{ student.status }}
+              </span>
+            </div>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+}

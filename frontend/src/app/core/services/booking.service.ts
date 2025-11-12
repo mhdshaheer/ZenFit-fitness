@@ -17,6 +17,27 @@ export interface BookedSlot {
   createdAt: Date;
 }
 
+export interface Student {
+  name: string;
+  email: string;
+  bookingId: string;
+  status: string;
+}
+
+export interface TrainerSession {
+  slotId: string;
+  day: string;
+  date: Date;
+  startTime: string;
+  endTime: string;
+  capacity: number;
+  programName: string;
+  duration: number;
+  difficultyLevel: string;
+  bookedCount: number;
+  students: Student[];
+}
+
 @Injectable({ providedIn: 'root' })
 export class BookingService {
   private readonly _http = inject(HttpClient);
@@ -31,5 +52,11 @@ export class BookingService {
       ? `${this._apiUrl}/my-bookings?programId=${programId}`
       : `${this._apiUrl}/my-bookings`;
     return this._http.get<BookedSlot[]>(url);
+  }
+
+  getTrainerSessions(): Observable<TrainerSession[]> {
+    const url = `${this._apiUrl}/trainer-bookings`;
+    console.log('🔗 Calling API:', url);
+    return this._http.get<TrainerSession[]>(url);
   }
 }
