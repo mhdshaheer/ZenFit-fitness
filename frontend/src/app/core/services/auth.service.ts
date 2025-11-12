@@ -15,7 +15,7 @@ import {
   take,
 } from 'rxjs';
 import { LoggerService } from './logger.service';
-import { AuthRoutes } from '../constants/api-routes.const';
+import { AuthRoutes, ProfileRouter } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -156,5 +156,12 @@ export class AuthService {
   }
   getUserId(): Observable<{ userId: string }> {
     return this._http.get<{ userId: string }>(this._api);
+  }
+
+  getUserProfile(): Observable<{ username: string; email: string; role: string }> {
+    return this._http.get<{ username: string; email: string; role: string }>(
+      environment.apiUrl + ProfileRouter.USER_BASE + ProfileRouter.PROFILE,
+      { withCredentials: true }
+    );
   }
 }

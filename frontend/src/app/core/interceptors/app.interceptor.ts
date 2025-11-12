@@ -13,7 +13,26 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
   const logger = inject(LoggerService);
   const toastservice = inject(ToastService);
 
-  const clonedReq = req.clone({ withCredentials: true });
+  // List of public endpoints that don't require authentication
+  const publicEndpoints = [
+    '/auth/login',
+    '/auth/signup',
+    '/auth/refresh-token',
+    '/auth/send-otp',
+    '/auth/verify-otp',
+    '/auth/verify-forgot-otp',
+    '/auth/reset-password',
+    '/program' // Allow public access to program list for landing page
+  ];
+
+  // Check if the request is to a public endpoint
+  const isPublicEndpoint = publicEndpoints.some(endpoint => req.url.includes(endpoint));
+  
+  // Only add credentials if user has a token and it's not a public endpoint
+  const hasToken = !!authService.getAccessToken();
+  const clonedReq = (hasToken && !isPublicEndpoint) || req.url.includes('/auth/') 
+    ? req.clone({ withCredentials: true })
+    : req.clone();
 
   return next(clonedReq).pipe(
     catchError((error: HttpErrorResponse) => {
@@ -30,11 +49,12 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      //  401: Unauthorized
+      //  401: Unauthorized - only try to refresh if user has a token
       if (
         error.status === 401 &&
         !req.url.includes('/auth/login') &&
-        !req.url.includes('/auth/refresh-token')
+        !req.url.includes('/auth/refresh-token') &&
+        hasToken
       ) {
         return authService.refreshToken().pipe(
           switchMap((success: boolean) => {
@@ -53,6 +73,11 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
             return throwError(() => error);
           })
         );
+      }
+
+      // For 401 errors on public endpoints or when no token exists, just return the error
+      if (error.status === 401 && (!hasToken || isPublicEndpoint)) {
+        return throwError(() => error);
       }
 
       // 400 or 404 : not found page
