@@ -16,6 +16,7 @@ export interface Program {
 }
 export interface ProgramCategory {
   _id: string;
+  name: string;
   duration?: number;
   title?: string;
   category?: string;
