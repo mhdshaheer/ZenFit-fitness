@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import {
   PaginationResult,
   TrainerPurchasedProgram,
@@ -14,7 +14,7 @@ import { FormsModule } from '@angular/forms';
   templateUrl: './purchased-programs.component.html',
   styleUrl: './purchased-programs.component.css',
 })
-export class PurchasedProgramsComponent {
+export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   purchasedPrograms: TrainerPurchasedProgram[] = [];
   pagination: PaginationResult = {
     total: 0,
@@ -34,6 +34,8 @@ export class PurchasedProgramsComponent {
   loading = false;
   selectedProgram: TrainerPurchasedProgram | null = null;
   showDetailsModal = false;
+  activeView: 'table' | 'cards' = 'table';
+  private searchTimeout: any;
 
   statusOptions = [
     { value: '', label: 'All Status' },
@@ -47,6 +49,12 @@ export class PurchasedProgramsComponent {
 
   ngOnInit(): void {
     this.loadPurchasedPrograms();
+  }
+
+  ngOnDestroy(): void {
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
   }
 
   loadPurchasedPrograms(): void {
@@ -77,6 +85,19 @@ export class PurchasedProgramsComponent {
     this.loadPurchasedPrograms();
   }
 
+  onRealTimeSearch(): void {
+    // Clear existing timeout
+    if (this.searchTimeout) {
+      clearTimeout(this.searchTimeout);
+    }
+
+    // Set new timeout for debouncing (300ms delay)
+    this.searchTimeout = setTimeout(() => {
+      this.filters.page = 1;
+      this.loadPurchasedPrograms();
+    }, 300);
+  }
+
   onPageChange(page: number): void {
     this.filters.page = page;
     this.loadPurchasedPrograms();
@@ -92,30 +113,59 @@ export class PurchasedProgramsComponent {
     this.selectedProgram = null;
   }
 
+  setActiveView(view: 'table' | 'cards'): void {
+    this.activeView = view;
+  }
+
   getStatusColor(status: string): string {
     switch (status) {
       case 'success':
-        return 'bg-gray-900 text-white';
+        return 'status-success';
       case 'pending':
-        return 'bg-gray-400 text-white';
+        return 'status-pending';
       case 'failed':
-        return 'bg-gray-600 text-white';
+        return 'status-failed';
       default:
-        return 'bg-gray-500 text-white';
+        return 'status-success';
     }
   }
 
   getDifficultyColor(level: string): string {
     switch (level) {
       case 'Beginner':
-        return 'bg-gray-300 text-gray-800';
+        return 'difficulty-beginner';
       case 'Intermediate':
-        return 'bg-gray-500 text-white';
+        return 'difficulty-intermediate';
       case 'Advanced':
-        return 'bg-gray-900 text-white';
+        return 'difficulty-advanced';
       default:
-        return 'bg-gray-400 text-gray-800';
+        return 'difficulty-beginner';
     }
+  }
+
+  // Summary card methods
+  getTotalEarnings(): number {
+    const total = this.purchasedPrograms.reduce((total, program) => {
+      return total + (program.payment.trainerEarning || 0);
+    }, 0);
+    return Math.round(total * 100) / 100; // Fix floating point precision
+  }
+
+  getTotalSales(): number {
+    return this.purchasedPrograms.length;
+  }
+
+  getPendingPayments(): number {
+    return this.purchasedPrograms.filter(
+      program => program.payment.paymentStatus === 'pending'
+    ).length;
+  }
+
+  getUniqueStudents(): number {
+    const uniqueStudents = new Set(
+      this.purchasedPrograms.map(program => program.user._id)
+    );
+    return uniqueStudents.size;
   }
 
   formatDate(date: Date | string): string {
