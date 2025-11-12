@@ -84,8 +84,142 @@ export const initializeSocket = (server: HttpServer): Server => {
       }
     );
 
+    // Meeting socket events
+    socket.on("meeting:join", (data: { meetingId: string; slotId: string; isHost: boolean; userId?: string; name?: string }) => {
+      try {
+        const meetingRoom = `meeting-${data.meetingId}`;
+        socket.join(meetingRoom);
+        console.log(`👤 User joined meeting room: ${meetingRoom}, Socket: ${socket.id}`);
+
+        // Notify other participants
+        socket.to(meetingRoom).emit("meeting:participant-joined", {
+          userId: data.userId || socket.id,
+          name: data.name || 'Guest',
+          isHost: data.isHost,
+          socketId: socket.id
+        });
+
+        // Send current participants to the new joiner
+        io.in(meetingRoom).allSockets().then((sockets) => {
+          const participantCount = sockets.size;
+          socket.emit("meeting:participant-count", { count: participantCount });
+          console.log(`📊 Meeting ${data.meetingId} now has ${participantCount} participants`);
+        });
+      } catch (e) {
+        console.error("meeting:join error", e);
+      }
+    });
+
+    socket.on("meeting:leave", (data: { meetingId: string; userId?: string }) => {
+      try {
+        const meetingRoom = `meeting-${data.meetingId}`;
+        socket.leave(meetingRoom);
+        console.log(`👋 User left meeting room: ${meetingRoom}, User ID: ${data.userId || socket.id}`);
+
+        // Notify other participants
+        socket.to(meetingRoom).emit("meeting:participant-left", {
+          userId: data.userId || socket.id,
+          socketId: socket.id
+        });
+
+        // Update participant count for remaining participants
+        io.in(meetingRoom).allSockets().then((sockets) => {
+          const participantCount = sockets.size;
+          io.to(meetingRoom).emit("meeting:participant-count", { count: participantCount });
+          console.log(`📊 Meeting ${data.meetingId} now has ${participantCount} participants after leave`);
+        });
+      } catch (e) {
+        console.error("meeting:leave error", e);
+      }
+    });
+
+    socket.on("meeting:end", (data: { meetingId: string }) => {
+      try {
+        const meetingRoom = `meeting-${data.meetingId}`;
+        console.log(`🛑 Meeting ended: ${data.meetingId}`);
+
+        // Notify all participants
+        io.to(meetingRoom).emit("meeting:ended", { meetingId: data.meetingId });
+      } catch (e) {
+        console.error("meeting:end error", e);
+      }
+    });
+
+    // WebRTC signaling events
+    socket.on("webrtc:offer", (data: { meetingId: string; targetUserId: string; fromUserId: string; offer: any }) => {
+      try {
+        const meetingRoom = `meeting-${data.meetingId}`;
+        console.log(`📤 Forwarding WebRTC offer from ${data.fromUserId} to ${data.targetUserId}`);
+
+        // Forward offer to target user
+        socket.to(meetingRoom).emit("webrtc:offer", {
+          fromUserId: data.fromUserId,
+          offer: data.offer
+        });
+      } catch (e) {
+        console.error("webrtc:offer error", e);
+      }
+    });
+
+    socket.on("webrtc:answer", (data: { meetingId: string; targetUserId: string; fromUserId: string; answer: any }) => {
+      try {
+        const meetingRoom = `meeting-${data.meetingId}`;
+        console.log(`📤 Forwarding WebRTC answer from ${data.fromUserId} to ${data.targetUserId}`);
+
+        // Forward answer to target user
+        socket.to(meetingRoom).emit("webrtc:answer", {
+          fromUserId: data.fromUserId,
+          answer: data.answer
+        });
+      } catch (e) {
+        console.error("webrtc:answer error", e);
+      }
+    });
+
+    socket.on("webrtc:ice-candidate", (data: { meetingId: string; targetUserId: string; fromUserId: string; candidate: any }) => {
+      try {
+        const meetingRoom = `meeting-${data.meetingId}`;
+        console.log(`🧊 Forwarding ICE candidate from ${data.fromUserId} to ${data.targetUserId}`);
+
+        // Forward ICE candidate to target user
+        socket.to(meetingRoom).emit("webrtc:ice-candidate", {
+          fromUserId: data.fromUserId,
+          candidate: data.candidate
+        });
+      } catch (e) {
+        console.error("webrtc:ice-candidate error", e);
+      }
+    });
+
     socket.on("disconnect", (reason) => {
       console.log(`Client disconnected: ${socket.id}, reason: ${reason}`);
+
+      // Clean up any meeting rooms this socket was in
+      // Note: Socket.IO automatically removes the socket from all rooms on disconnect
+      // but we should notify other participants in meeting rooms
+      const rooms = Array.from(socket.rooms);
+      rooms.forEach(room => {
+        if (room.startsWith('meeting-')) {
+          const meetingId = room.replace('meeting-', '');
+          console.log(`🧹 Cleaning up meeting room: ${room} for disconnected socket: ${socket.id}`);
+
+          // Notify other participants that someone left
+          socket.to(room).emit("meeting:participant-left", {
+            userId: socket.id, // Use socket.id as fallback
+            socketId: socket.id,
+            reason: 'disconnect'
+          });
+
+          // Update participant count for remaining participants
+          setTimeout(() => {
+            io.in(room).allSockets().then((sockets) => {
+              const participantCount = sockets.size;
+              io.to(room).emit("meeting:participant-count", { count: participantCount });
+              console.log(`📊 Meeting ${meetingId} now has ${participantCount} participants after disconnect cleanup`);
+            });
+          }, 100); // Small delay to ensure socket is fully removed
+        }
+      });
     });
 
     socket.on("error", (error) => {

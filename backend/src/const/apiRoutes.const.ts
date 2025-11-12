@@ -13,4 +13,5 @@ export const API_ROUTES = {
   PROGRAM: "/api/v1/program",
   CATEGORY: "/api/v1/category",
   NOTIFICATION: "/api/v1/notifications",
+  MEETING: "/api/v1/meeting",
 };

@@ -119,12 +119,20 @@
                 <!-- Join Button -->
                 <button
                   (click)="joinMeeting(slot)"
-                  class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
+                  [disabled]="isJoiningMeeting && joiningSlotId === slot.slotId"
+                  [class]="(isJoiningMeeting && joiningSlotId === slot.slotId) 
+                    ? 'w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg opacity-70 cursor-not-allowed'
+                    : 'w-full bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-semibold py-4 px-6 rounded-xl transition-all duration-300 flex items-center justify-center gap-3 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]'"
                 >
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                  </svg>
-                  Join Meeting
+                  @if (isJoiningMeeting && joiningSlotId === slot.slotId) {
+                    <div class="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Joining...</span>
+                  } @else {
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                    </svg>
+                    <span>Join Meeting</span>
+                  }
                 </button>
               </div>
             </div>
@@ -227,3 +235,14 @@
     }
   </div>
 </div>
+
+<!-- Meeting Room -->
+@if (showMeetingRoom && currentMeetingId && currentMeetingSlotId) {
+  <zenfit-meeting-room
+    [meetingId]="currentMeetingId"
+    [slotId]="currentMeetingSlotId"
+    [isHost]="false"
+    [sessionTitle]="currentMeetingTitle"
+    (meetingClose)="closeMeetingRoom()">
+  </zenfit-meeting-room>
+}

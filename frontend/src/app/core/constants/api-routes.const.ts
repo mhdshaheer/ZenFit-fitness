@@ -85,3 +85,7 @@ export const BookingRoutes = {
 export const NotificationRoutes = {
   BASE: '/notifications',
 };
+
+export const MeetingRoutes = {
+  BASE: '/meeting',
+};

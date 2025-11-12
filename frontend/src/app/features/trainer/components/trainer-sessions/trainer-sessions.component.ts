@@ -2,16 +2,21 @@ import { Component, OnInit, OnDestroy, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { BookingService, TrainerSession } from '../../../../core/services/booking.service';
+import { MeetingService } from '../../../../core/services/meeting.service';
+import { MeetingRoomComponent } from '../../../../shared/components/meeting-room/meeting-room.component';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'zenfit-trainer-sessions',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, MeetingRoomComponent],
   templateUrl: './trainer-sessions.component.html',
   styleUrl: './trainer-sessions.component.css'
 })
 export class TrainerSessionsComponent implements OnInit, OnDestroy {
   private readonly _bookingService = inject(BookingService);
+  private readonly _meetingService = inject(MeetingService);
+  private readonly _toastService = inject(ToastService);
   private readonly _destroy$ = new Subject<void>();
 
   sessions: TrainerSession[] = [];
@@ -23,6 +28,13 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
   // Modal state
   showStudentsModal = false;
   selectedSession: TrainerSession | null = null;
+  
+  // Meeting state
+  showMeetingRoom = false;
+  currentMeetingId: string | null = null;
+  currentMeetingSlotId: string | null = null;
+  currentMeetingTitle: string = '';
+  isStartingMeeting = false;
 
   ngOnInit(): void {
     this.loadSessions();
@@ -92,9 +104,38 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
     this.selectedSession = null;
   }
 
-  startMeeting(session: TrainerSession): void {
-    console.log('🎥 Start meeting for session:', session);
-    // TODO: Implement meeting functionality
+  async startMeeting(session: TrainerSession): Promise<void> {
+    if (this.isStartingMeeting) return;
+    
+    try {
+      this.isStartingMeeting = true;
+      console.log('🎥 Starting meeting for session:', session);
+
+      // Create meeting
+      const response = await this._meetingService.createMeeting(session.slotId).toPromise();
+      
+      if (response?.meetingId) {
+        this.currentMeetingId = response.meetingId;
+        this.currentMeetingSlotId = session.slotId;
+        this.currentMeetingTitle = `${session.programName} - ${this.formatDate(session.date)}`;
+        this.showMeetingRoom = true;
+        this._toastService.success('Meeting started successfully!');
+        console.log('✅ Meeting created:', response.meetingId);
+      }
+    } catch (error) {
+      console.error('❌ Error starting meeting:', error);
+      this._toastService.error('Failed to start meeting. Please try again.');
+    } finally {
+      this.isStartingMeeting = false;
+    }
+  }
+
+  closeMeetingRoom(): void {
+    this.showMeetingRoom = false;
+    this.currentMeetingId = null;
+    this.currentMeetingSlotId = null;
+    this.currentMeetingTitle = '';
+    this._meetingService.cleanup();
   }
 
   formatDate(date: Date): string {

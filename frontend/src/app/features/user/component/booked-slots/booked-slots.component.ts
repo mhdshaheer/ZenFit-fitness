@@ -2,6 +2,9 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { BookingService, BookedSlot } from '../../../../core/services/booking.service';
+import { MeetingService } from '../../../../core/services/meeting.service';
+import { MeetingRoomComponent } from '../../../../shared/components/meeting-room/meeting-room.component';
+import { ToastService } from '../../../../core/services/toast.service';
 import { Router } from '@angular/router';
 
 interface SlotWithProgram extends BookedSlot {
@@ -11,12 +14,14 @@ interface SlotWithProgram extends BookedSlot {
 
 @Component({
   selector: 'zenfit-booked-slots',
-  imports: [CommonModule],
+  imports: [CommonModule, MeetingRoomComponent],
   templateUrl: './booked-slots.component.html',
   styleUrl: './booked-slots.component.css'
 })
 export class BookedSlotsComponent implements OnInit, OnDestroy {
   private readonly _bookingService = inject(BookingService);
+  private readonly _meetingService = inject(MeetingService);
+  private readonly _toastService = inject(ToastService);
   private readonly _router = inject(Router);
   private readonly _destroy$ = new Subject<void>();
 
@@ -24,6 +29,14 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
   pastSlots: SlotWithProgram[] = [];
   activeTab: 'upcoming' | 'past' = 'upcoming';
   isLoading = true;
+
+  // Meeting state
+  showMeetingRoom = false;
+  currentMeetingId: string | null = null;
+  currentMeetingSlotId: string | null = null;
+  currentMeetingTitle: string = '';
+  isJoiningMeeting = false;
+  joiningSlotId: string | null = null;
 
   ngOnInit(): void {
     this.loadBookedSlots();
@@ -35,7 +48,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (slots) => {
           const now = new Date();
-          
+
           // Separate upcoming and past slots
           const upcoming: SlotWithProgram[] = [];
           const past: SlotWithProgram[] = [];
@@ -56,12 +69,12 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
           });
 
           // Sort upcoming by date ascending (nearest first)
-          this.upcomingSlots = upcoming.sort((a, b) => 
+          this.upcomingSlots = upcoming.sort((a, b) =>
             new Date(a.date).getTime() - new Date(b.date).getTime()
           );
 
           // Sort past by date descending (most recent first)
-          this.pastSlots = past.sort((a, b) => 
+          this.pastSlots = past.sort((a, b) =>
             new Date(b.date).getTime() - new Date(a.date).getTime()
           );
 
@@ -78,10 +91,51 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     this.activeTab = tab;
   }
 
-  joinMeeting(slot: SlotWithProgram): void {
-    // Dummy functionality for now
-    console.log('Joining meeting for slot:', slot);
-    alert(`Joining meeting for ${slot.programName} on ${this.formatDate(slot.date)}`);
+  async joinMeeting(slot: SlotWithProgram): Promise<void> {
+    if (this.isJoiningMeeting) return;
+
+    try {
+      this.isJoiningMeeting = true;
+      this.joiningSlotId = slot.slotId;
+      console.log('🎥 Joining meeting for slot:', slot);
+
+      // Validate access first
+      const validation = await this._meetingService.validateMeetingAccess(slot.slotId, slot._id).toPromise();
+
+      if (!validation?.isValid || !validation?.canJoin) {
+        this._toastService.warning(validation?.message || 'You cannot join this meeting. The meeting may not have started yet.');
+        return;
+      }
+
+      // Join the meeting
+      if (validation.meetingId) {
+        const meetingSession = await this._meetingService.joinMeeting(validation.meetingId, slot.slotId).toPromise();
+
+        if (meetingSession) {
+          this.currentMeetingId = validation.meetingId;
+          this.currentMeetingSlotId = slot.slotId;
+          this.currentMeetingTitle = `${slot.programName || 'Training Session'} - ${this.formatDate(slot.date)}`;
+          this.showMeetingRoom = true;
+          this._toastService.success('Successfully joined the meeting!');
+          console.log('✅ Joined meeting:', validation.meetingId);
+        }
+      }
+    } catch (error: any) {
+      console.error('❌ Error joining meeting:', error);
+      const message = error?.error?.message || 'Failed to join meeting. Please try again or contact the trainer.';
+      this._toastService.error(message);
+    } finally {
+      this.isJoiningMeeting = false;
+      this.joiningSlotId = null;
+    }
+  }
+
+  closeMeetingRoom(): void {
+    this.showMeetingRoom = false;
+    this.currentMeetingId = null;
+    this.currentMeetingSlotId = null;
+    this.currentMeetingTitle = '';
+    this._meetingService.cleanup();
   }
 
   formatDate(date: Date): string {
