@@ -60,10 +60,7 @@ export const ProgramRoutes = {
   APPROVAL_STATUS: (programId: string) => `/approvalStatus/${programId}`,
 };
 
-export const SessionRoutes = {
-  BASE: '/session',
-  DRAFT: '/draft',
-};
+
 
 export const ProfileRouter = {
   USER_BASE: '/user',
