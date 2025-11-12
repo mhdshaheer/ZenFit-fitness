@@ -65,7 +65,6 @@ export class PaymentRepository
           programId: "$programDetails._id",
           title: "$programDetails.title",
           category: "$programDetails.category",
-          duration: "$programDetails.duration",
           difficultyLevel: "$programDetails.difficultyLevel",
           description: "$programDetails.description",
           trainerId: "$programDetails.trainerId",
@@ -75,6 +74,200 @@ export class PaymentRepository
         },
       },
     ]);
+  }
+
+  // Recommended database indexes for optimal pagination performance:
+  // 1. { userId: 1, paymentStatus: 1, createdAt: -1 } - for main query and sorting
+  // 2. { programId: 1 } - for program lookup
+  // 3. { trainerId: 1 } - for trainer lookup
+  async findPurchasedProgramWithPagination(
+    userId: string,
+    limit: number,
+    offset: number,
+    search?: string,
+    status?: string
+  ): Promise<PurchasedProgram[]> {
+    const matchStage: any = {
+      userId: new mongoose.Types.ObjectId(userId),
+      paymentStatus: "success",
+    };
+
+    // Add status filter if provided
+    if (status && status !== 'all') {
+      matchStage.paymentStatus = status;
+    }
+
+    const pipeline: any[] = [
+      { $match: matchStage },
+      // Sort early to optimize pagination
+      { $sort: { createdAt: -1 } },
+      {
+        $lookup: {
+          from: "programs",
+          localField: "programId",
+          foreignField: "_id",
+          as: "programDetails",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                title: 1,
+                category: 1,
+                difficultyLevel: 1,
+                description: 1,
+                trainerId: 1
+              }
+            }
+          ]
+        },
+      },
+      { $unwind: "$programDetails" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "programDetails.trainerId",
+          foreignField: "_id",
+          as: "trainerDetails",
+          pipeline: [
+            {
+              $project: {
+                _id: 1,
+                fullName: 1,
+                username: 1,
+                email: 1
+              }
+            }
+          ]
+        },
+      },
+      { $unwind: "$trainerDetails" },
+      {
+        $project: {
+          _id: 0,
+          programId: "$programDetails._id",
+          title: "$programDetails.title",
+          category: "$programDetails.category",
+          difficultyLevel: "$programDetails.difficultyLevel",
+          description: "$programDetails.description",
+          trainerId: "$programDetails.trainerId",
+          trainerName: {
+            $cond: {
+              if: { $and: [{ $ne: ["$trainerDetails.fullName", null] }, { $ne: ["$trainerDetails.fullName", ""] }] },
+              then: "$trainerDetails.fullName",
+              else: "$trainerDetails.username"
+            }
+          },
+          trainerEmail: "$trainerDetails.email",
+          amountPaid: "$amount",
+          paymentMethod: 1,
+          purchasedAt: "$createdAt",
+        },
+      },
+    ];
+
+    // Add search filter if provided
+    if (search && search.trim()) {
+      pipeline.push({
+        $match: {
+          $or: [
+            { title: { $regex: search.trim(), $options: "i" } },
+            { trainerName: { $regex: search.trim(), $options: "i" } },
+            { description: { $regex: search.trim(), $options: "i" } }
+          ]
+        }
+      });
+    }
+
+    // Apply pagination at the end
+    pipeline.push(
+      { $skip: offset },
+      { $limit: limit }
+    );
+
+    return await this.model.aggregate(pipeline);
+  }
+
+  async countPurchasedPrograms(userId: string, search?: string, status?: string): Promise<number> {
+    const matchStage: any = {
+      userId: new mongoose.Types.ObjectId(userId),
+      paymentStatus: "success",
+    };
+
+    // Add status filter if provided
+    if (status && status !== 'all') {
+      matchStage.paymentStatus = status;
+    }
+
+    // If no search, use simple count for better performance
+    if (!search || !search.trim()) {
+      return await this.model.countDocuments(matchStage);
+    }
+
+    // If search is provided, use optimized aggregation to count filtered results
+    const pipeline: any[] = [
+      { $match: matchStage },
+      {
+        $lookup: {
+          from: "programs",
+          localField: "programId",
+          foreignField: "_id",
+          as: "programDetails",
+          pipeline: [
+            {
+              $project: {
+                title: 1,
+                description: 1,
+                trainerId: 1
+              }
+            }
+          ]
+        },
+      },
+      { $unwind: "$programDetails" },
+      {
+        $lookup: {
+          from: "users",
+          localField: "programDetails.trainerId",
+          foreignField: "_id",
+          as: "trainerDetails",
+          pipeline: [
+            {
+              $project: {
+                fullName: 1,
+                username: 1
+              }
+            }
+          ]
+        },
+      },
+      { $unwind: "$trainerDetails" },
+      {
+        $project: {
+          title: "$programDetails.title",
+          trainerName: {
+            $cond: {
+              if: { $and: [{ $ne: ["$trainerDetails.fullName", null] }, { $ne: ["$trainerDetails.fullName", ""] }] },
+              then: "$trainerDetails.fullName",
+              else: "$trainerDetails.username"
+            }
+          },
+          description: "$programDetails.description",
+        },
+      },
+      {
+        $match: {
+          $or: [
+            { title: { $regex: search.trim(), $options: "i" } },
+            { trainerName: { $regex: search.trim(), $options: "i" } },
+            { description: { $regex: search.trim(), $options: "i" } }
+          ]
+        }
+      },
+      { $count: "total" }
+    ];
+
+    const result = await this.model.aggregate(pipeline);
+    return result.length > 0 ? result[0].total : 0;
   }
   async getEntrolledUsers(programId: string): Promise<number> {
     let count = await this.model.countDocuments({

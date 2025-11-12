@@ -195,6 +195,33 @@ export class PaymentService implements IPaymentService {
     return programs;
   }
 
+  async getUserTransactionHistory(
+    userId: string,
+    page: number,
+    limit: number,
+    search?: string,
+    status?: string
+  ): Promise<{ data: PurchasedProgram[]; total: number; page: number; limit: number; totalPages: number }> {
+    const offset = (page - 1) * limit;
+    const programs = await this._paymentRepository.findPurchasedProgramWithPagination(
+      userId,
+      limit,
+      offset,
+      search,
+      status
+    );
+    const total = await this._paymentRepository.countPurchasedPrograms(userId, search, status);
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: programs,
+      total,
+      page,
+      limit,
+      totalPages
+    };
+  }
+
   async getEntrolledUsers(programId: string): Promise<number> {
     const count = await this._paymentRepository.getEntrolledUsers(programId);
     return count;

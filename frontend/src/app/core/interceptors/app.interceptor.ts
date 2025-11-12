@@ -21,16 +21,18 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
     '/auth/send-otp',
     '/auth/verify-otp',
     '/auth/verify-forgot-otp',
-    '/auth/reset-password',
-    '/program' // Allow public access to program list for landing page
+    '/auth/reset-password'
+    // Note: /program endpoints require authentication on backend
   ];
 
   // Check if the request is to a public endpoint
   const isPublicEndpoint = publicEndpoints.some(endpoint => req.url.includes(endpoint));
   
-  // Only add credentials if user has a token and it's not a public endpoint
-  const hasToken = !!authService.getAccessToken();
-  const clonedReq = (hasToken && !isPublicEndpoint) || req.url.includes('/auth/') 
+  // Add credentials for all auth endpoints and protected endpoints
+  // Since we use httpOnly cookies, we need to send credentials for all protected routes
+  const hasUserRole = !!authService.getUserRole(); // Check if user is logged in
+  const shouldAddCredentials = req.url.includes('/auth/') || (hasUserRole && !isPublicEndpoint);
+  const clonedReq = shouldAddCredentials 
     ? req.clone({ withCredentials: true })
     : req.clone();
 
@@ -49,12 +51,12 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      //  401: Unauthorized - only try to refresh if user has a token
+      //  401: Unauthorized - only try to refresh if user is logged in
       if (
         error.status === 401 &&
         !req.url.includes('/auth/login') &&
         !req.url.includes('/auth/refresh-token') &&
-        hasToken
+        hasUserRole
       ) {
         return authService.refreshToken().pipe(
           switchMap((success: boolean) => {
@@ -75,8 +77,8 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
         );
       }
 
-      // For 401 errors on public endpoints or when no token exists, just return the error
-      if (error.status === 401 && (!hasToken || isPublicEndpoint)) {
+      // For 401 errors on public endpoints or when user not logged in, just return the error
+      if (error.status === 401 && (!hasUserRole || isPublicEndpoint)) {
         return throwError(() => error);
       }
 

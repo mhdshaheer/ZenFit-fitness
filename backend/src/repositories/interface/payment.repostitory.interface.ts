@@ -22,6 +22,14 @@ export interface IPaymentRepository {
   getProgramsByTrainerId(trainerId: string): Promise<IPayment[]>;
   getPayments(): Promise<IPayment[]>;
   findPurchasedProgram(userId: string): Promise<PurchasedProgram[]>;
+  findPurchasedProgramWithPagination(
+    userId: string,
+    limit: number,
+    offset: number,
+    search?: string,
+    status?: string
+  ): Promise<PurchasedProgram[]>;
+  countPurchasedPrograms(userId: string, search?: string, status?: string): Promise<number>;
   getPurchasedProgramIds(
     userId: string
   ): Promise<{ _id: string; programId: string }[]>;

@@ -61,9 +61,9 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
 
           // Get unique program IDs
           const uniqueProgramIds = [...new Set(slots.map(slot => slot.programId))];
-          
+
           // Fetch all program details
-          const programRequests = uniqueProgramIds.map(programId => 
+          const programRequests = uniqueProgramIds.map(programId =>
             this._programService.getProgramByProgramId(programId)
           );
 
@@ -84,7 +84,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
                 slots.forEach(slot => {
                   const slotDateTime = new Date(slot.date);
                   const program = programMap.get(slot.programId);
-                  
+
                   const slotWithProgram: SlotWithProgram = {
                     ...slot,
                     programName: program?.title || 'Fitness Program',
@@ -252,7 +252,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
           return 'bg-neutral-100 text-neutral-600 border-neutral-200';
       }
     }
-    
+
     // Vibrant colors for upcoming sessions
     switch (difficulty) {
       case 'Beginner':

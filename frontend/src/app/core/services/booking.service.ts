@@ -48,7 +48,7 @@ export class BookingService {
   }
 
   getMyBookings(programId?: string): Observable<BookedSlot[]> {
-    const url = programId 
+    const url = programId
       ? `${this._apiUrl}/my-bookings?programId=${programId}`
       : `${this._apiUrl}/my-bookings`;
     return this._http.get<BookedSlot[]>(url);

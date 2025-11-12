@@ -130,4 +130,40 @@ export class PaymentService {
       { params }
     );
   }
+
+  // Get user transaction history with pagination
+  getUserTransactionHistory(
+    page: number = 1,
+    limit: number = 10,
+    search?: string,
+    status?: string
+  ): Observable<{
+    success: boolean;
+    data: PurchasedProgram[];
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+  }> {
+    let params = new HttpParams()
+      .set('page', page.toString())
+      .set('limit', limit.toString());
+
+    if (search && search.trim()) {
+      params = params.set('search', search.trim());
+    }
+
+    if (status && status !== 'all') {
+      params = params.set('status', status);
+    }
+
+    return this._http.get<{
+      success: boolean;
+      data: PurchasedProgram[];
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    }>(`${this._api}/user/transaction-history`, { params });
+  }
 }

@@ -108,6 +108,13 @@ export const USER_ROUTES: Routes = [
             (m) => m.UserChatComponent
           ),
       },
+      {
+        path: 'transaction-history',
+        loadComponent: () =>
+          import('../component/transaction-history/transaction-history.component').then(
+            (m) => m.TransactionHistoryComponent
+          ),
+      },
     ],
   },
 ];

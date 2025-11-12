@@ -28,6 +28,13 @@ export interface IPaymentService {
   getTrainerPayments(trainerId: string): Promise<PaymentHistoryDto[]>;
   getPayments(): Promise<PaymentHistoryDto[]>;
   getPurchasedProgram(userId: string): Promise<PurchasedProgram[]>;
+  getUserTransactionHistory(
+    userId: string,
+    page: number,
+    limit: number,
+    search?: string,
+    status?: string
+  ): Promise<{ data: PurchasedProgram[]; total: number; page: number; limit: number; totalPages: number }>;
   getEntrolledUsers(programId: string): Promise<number>;
   getTopSellingCategory(): Promise<ITopSellingCategory[]>;
   getTopSellingPrograms(): Promise<ITopSellingPrograms[]>;

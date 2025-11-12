@@ -9,7 +9,6 @@ interface Course {
   title: string;
   description: string;
   difficultyLevel: string;
-  duration: string;
   purchasedAt: Date;
 }
 @Component({
@@ -36,7 +35,6 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
             title: item.title,
             description: item.description,
             difficultyLevel: item.difficultyLevel,
-            duration: item.duration,
             purchasedAt: item.purchasedAt,
           };
         });

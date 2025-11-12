@@ -115,6 +115,7 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
       icon: 'fas fa-dumbbell',
     },
     { label: 'Sessions', route: '/user/booked-slots', icon: 'fas fa-chart-line' },
+    { label: 'Transactions', route: '/user/transaction-history', icon: 'fas fa-receipt' },
   ];
 
   userMenuItems: NavMenuItem[] = [

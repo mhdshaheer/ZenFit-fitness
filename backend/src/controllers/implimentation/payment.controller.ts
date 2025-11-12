@@ -67,6 +67,60 @@ export class PaymentController implements IPaymentController {
     );
     return res.status(HttpStatus.OK).json(purchasedPrograms);
   }
+
+  async getUserTransactionHistory(
+    req: Request,
+    res: Response
+  ): Promise<void> {
+    try {
+      const userId = (req as any).user.id;
+      
+      // Validate and sanitize pagination parameters
+      let page = parseInt(req.query.page as string) || 1;
+      let limit = parseInt(req.query.limit as string) || 10;
+      
+      // Ensure page is at least 1
+      page = Math.max(1, page);
+      
+      // Limit the maximum items per page to prevent performance issues
+      limit = Math.min(Math.max(1, limit), 100);
+      
+      const search = req.query.search as string || '';
+      const status = req.query.status as string || '';
+
+      // Validate status parameter
+      const validStatuses = ['all', 'success', 'pending', 'failed'];
+      const validatedStatus = validStatuses.includes(status) ? status : 'all';
+
+      // Log pagination request for monitoring
+      console.log(`Transaction history request - User: ${userId}, Page: ${page}, Limit: ${limit}, Search: "${search.trim()}", Status: ${validatedStatus}`);
+
+      const startTime = Date.now();
+      const result = await this._paymentService.getUserTransactionHistory(
+        userId,
+        page,
+        limit,
+        search.trim(),
+        validatedStatus
+      );
+      const endTime = Date.now();
+
+      // Log performance metrics
+      console.log(`Transaction history query completed in ${endTime - startTime}ms - Total: ${result.total}, Pages: ${result.totalPages}`);
+
+      res.status(HttpStatus.OK).json({
+        success: true,
+        ...result
+      });
+    } catch (error) {
+      console.error('Error in getUserTransactionHistory:', error);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: 'Failed to fetch transaction history',
+        error: process.env.NODE_ENV === 'development' ? (error as Error).message : 'Internal server error'
+      });
+    }
+  }
   async getEntrolledUsers(
     req: Request,
     res: Response
