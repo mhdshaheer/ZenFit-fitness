@@ -170,4 +170,32 @@ export class BookingRepository
     console.log('📊 Sample session:', sessions[0]);
     return sessions;
   }
+
+  async getBookingsBySlotId(slotId: string): Promise<IBooking[]> {
+    const bookings = await this.model.find({
+      slotId: new Types.ObjectId(slotId),
+      status: "booked"
+    }).populate('userId', 'fullName email');
+    return bookings;
+  }
+
+  async cancelBookingsBySlotId(slotId: string): Promise<IBooking[]> {
+    const bookings = await this.model.find({
+      slotId: new Types.ObjectId(slotId),
+      status: "booked"
+    }).populate('userId', 'fullName email');
+
+    // Update all booked slots to cancelled
+    await this.model.updateMany(
+      {
+        slotId: new Types.ObjectId(slotId),
+        status: "booked"
+      },
+      {
+        $set: { status: "cancelled" }
+      }
+    );
+
+    return bookings;
+  }
 }

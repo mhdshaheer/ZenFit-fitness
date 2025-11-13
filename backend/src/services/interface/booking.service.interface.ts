@@ -9,4 +9,6 @@ export interface IBookingService {
   ): Promise<IBooking>;
   getMyBookings(userId: string, programId?: string): Promise<any[]>;
   getTrainerBookings(trainerId: string): Promise<any[]>;
+  getAffectedUsersForSlotUpdate(slotId: string): Promise<IBooking[]>;
+  cancelBookingsForSlotUpdate(slotId: string): Promise<IBooking[]>;
 }

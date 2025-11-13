@@ -50,4 +50,14 @@ export class BookingService implements IBookingService {
     const bookings = await this._bookingRepository.getTrainerBookings(trainerId);
     return bookings;
   }
+
+  async getAffectedUsersForSlotUpdate(slotId: string): Promise<IBooking[]> {
+    const bookings = await this._bookingRepository.getBookingsBySlotId(slotId);
+    return bookings;
+  }
+
+  async cancelBookingsForSlotUpdate(slotId: string): Promise<IBooking[]> {
+    const cancelledBookings = await this._bookingRepository.cancelBookingsBySlotId(slotId);
+    return cancelledBookings;
+  }
 }

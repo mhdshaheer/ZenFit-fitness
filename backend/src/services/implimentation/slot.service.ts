@@ -3,6 +3,8 @@ import { ISlot } from "../../models/slot.model";
 import { ISlotService } from "../interface/slot.service.interface";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ISlotRepository } from "../../repositories/interface/slot.repository.interface";
+import { IBookingService } from "../interface/booking.service.interface";
+import { INotificationService } from "../interface/notification.service.interface";
 import { mapToSlotDisplayDto } from "../../mapper/slot.mapper";
 import { SlotDisplyDto } from "../../dtos/slot.dtos";
 import {
@@ -15,6 +17,10 @@ import {
 export class SlotService implements ISlotService {
   @inject(TYPES.SlotRepository)
   private readonly _slotRepository!: ISlotRepository;
+  @inject(TYPES.BookingService)
+  private readonly _bookingService!: IBookingService;
+  @inject(TYPES.NotificationService)
+  private readonly _notificationService!: INotificationService;
 
   async createSlot(slotData: Partial<ISlot>): Promise<SlotDisplyDto> {
     const createdData = await this._slotRepository.createSlot(slotData);
@@ -30,6 +36,42 @@ export class SlotService implements ISlotService {
     slotId: string,
     slotData: Partial<ISlot>
   ): Promise<SlotDisplyDto> {
+    // Get the original slot data before update (with populated program data)
+    const originalSlot = await this._slotRepository.getSlotBySlotId(slotId);
+    if (!originalSlot) {
+      throw new Error("Slot not found");
+    }
+
+    // Check if time or day is being changed
+    const isTimeChanged = slotData.startTime && slotData.startTime !== originalSlot.startTime;
+    const isEndTimeChanged = slotData.endTime && slotData.endTime !== originalSlot.endTime;
+    const isDayChanged = slotData.days && JSON.stringify(slotData.days) !== JSON.stringify(originalSlot.days);
+
+    // If time or day is changed, handle existing bookings
+    if (isTimeChanged || isEndTimeChanged || isDayChanged) {
+      // Get all affected users who have booked this slot
+      const affectedBookings = await this._bookingService.getAffectedUsersForSlotUpdate(slotId);
+      
+      if (affectedBookings.length > 0) {
+        // Cancel all existing bookings for this slot
+        await this._bookingService.cancelBookingsForSlotUpdate(slotId);
+
+        // Send notifications to all affected users
+        for (const booking of affectedBookings) {
+          const user = booking.userId as any;
+          const program = originalSlot.programId as any;
+          
+          await this._notificationService.createNotification(
+            user._id.toString(),
+            "user",
+            "Slot Booking Cancelled",
+            `Your booked slot for "${program.title}" on ${originalSlot.startTime} has been cancelled due to schedule changes. Please book a new slot.`
+          );
+        }
+      }
+    }
+
+    // Update the slot
     const updatedSlot = await this._slotRepository.updateSlot(slotId, slotData);
     const mappedSlot = mapToSlotDisplayDto(updatedSlot);
     return mappedSlot;

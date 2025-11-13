@@ -10,4 +10,6 @@ export interface IBookingRepository {
   ): Promise<IBooking>;
   getMyBookings(userId: string, programId?: string): Promise<IBooking[]>;
   getTrainerBookings(trainerId: string): Promise<any[]>;
+  getBookingsBySlotId(slotId: string): Promise<IBooking[]>;
+  cancelBookingsBySlotId(slotId: string): Promise<IBooking[]>;
 }
