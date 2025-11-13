@@ -199,9 +199,9 @@
                   {{ slot.programDifficulty }}
                 </span>
               </div>
-              <span
-                class="inline-block px-2 py-0.5 text-xs font-medium rounded-full border bg-neutral-100 text-neutral-600 border-neutral-200">
-                Completed
+              <span [ngClass]="getStatusColor(slot.status)"
+                class="inline-block px-2 py-0.5 text-xs font-medium rounded-full border">
+                {{ slot.status }}
               </span>
             </div>
           </div>
@@ -236,7 +236,17 @@
             </div>
           </div>
 
-          <!-- Completed Badge -->
+          <!-- Status Badge -->
+          @if (slot.status === 'cancelled') {
+          <div
+            class="flex items-center justify-center gap-2 py-2.5 px-3 bg-red-50 rounded-lg border border-red-200">
+            <svg class="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+            <span class="text-sm font-medium text-red-600">Session Cancelled</span>
+          </div>
+          } @else {
           <div
             class="flex items-center justify-center gap-2 py-2.5 px-3 bg-neutral-100 rounded-lg border border-neutral-200">
             <svg class="w-4 h-4 text-neutral-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -245,6 +255,7 @@
             </svg>
             <span class="text-sm font-medium text-neutral-600">Session Completed</span>
           </div>
+          }
         </div>
       </div>
       }

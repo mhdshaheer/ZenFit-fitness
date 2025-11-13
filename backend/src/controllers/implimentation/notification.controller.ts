@@ -45,4 +45,25 @@ export class NotificationController implements INotificationController {
       next(error);
     }
   }
+
+  async markAllAsRead(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const receiverId = (req as any).user.id;
+      const { ids } = req.body;
+
+      if (!ids || !Array.isArray(ids)) {
+        res.status(400).json({ message: "Invalid notification IDs provided" });
+        return;
+      }
+
+      await this._notificationService.markAllAsRead(receiverId, ids);
+      res.status(200).json({ message: "All notifications marked as read" });
+    } catch (error) {
+      next(error);
+    }
+  }
 }

@@ -42,4 +42,16 @@ export class NotificationService implements INotificationService {
   async markAsRead(notificationId: string): Promise<INotification | null> {
     return await this._notificationRepository.markAsRead(notificationId);
   }
+
+  async markAllAsRead(receiverId: string, notificationIds: string[]): Promise<void> {
+    // Filter notifications to only mark those belonging to the receiver
+    const userNotifications = await this._notificationRepository.getNotificationsByReceiver(receiverId);
+    const validIds = notificationIds.filter(id => 
+      userNotifications.some(notification => (notification._id as any).toString() === id)
+    );
+    
+    if (validIds.length > 0) {
+      await this._notificationRepository.markMultipleAsRead(validIds);
+    }
+  }
 }

@@ -94,8 +94,12 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
                   };
 
                   if (slotDateTime >= now) {
-                    upcoming.push(slotWithProgram);
+                    // For upcoming sessions, exclude cancelled slots
+                    if (slot.status !== 'cancelled') {
+                      upcoming.push(slotWithProgram);
+                    }
                   } else {
+                    // For past sessions, include all slots (including cancelled)
                     past.push(slotWithProgram);
                   }
                 });
@@ -142,8 +146,12 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
       };
 
       if (slotDateTime >= now) {
-        upcoming.push(slotWithProgram);
+        // For upcoming sessions, exclude cancelled slots
+        if (slot.status !== 'cancelled') {
+          upcoming.push(slotWithProgram);
+        }
       } else {
+        // For past sessions, include all slots (including cancelled)
         past.push(slotWithProgram);
       }
     });

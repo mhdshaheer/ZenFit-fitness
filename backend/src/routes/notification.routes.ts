@@ -16,5 +16,9 @@ notificationRouter.patch(
   "/:notificationId/read",
   controller.markAsRead.bind(controller)
 );
+notificationRouter.patch(
+  "/mark-all-read",
+  controller.markAllAsRead.bind(controller)
+);
 
 export default notificationRouter;
