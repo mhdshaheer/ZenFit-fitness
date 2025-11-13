@@ -34,35 +34,35 @@ export interface ChatMessage {
 
 @Injectable({ providedIn: 'root' })
 export class ChatService {
-  private http = inject(HttpClient);
-  private api = `${environment.apiUrl}/chat`;
+  private _http = inject(HttpClient);
+  private _api = `${environment.apiUrl}/chat`;
 
   initThread(programId: string): Observable<{ success: boolean; data: ChatThread }> {
-    return this.http.post<{ success: boolean; data: ChatThread }>(`${this.api}/init/${programId}`, {});
+    return this._http.post<{ success: boolean; data: ChatThread }>(`${this._api}/init/${programId}`, {});
   }
 
   getThreads(): Observable<{ success: boolean; data: ChatThread[] }> {
-    return this.http.get<{ success: boolean; data: ChatThread[] }>(`${this.api}/threads`);
+    return this._http.get<{ success: boolean; data: ChatThread[] }>(`${this._api}/threads`);
   }
 
   getTrainerThreads(): Observable<{ success: boolean; data: ChatThread[] }> {
-    return this.http.get<{ success: boolean; data: ChatThread[] }>(`${this.api}/trainer/threads`);
+    return this._http.get<{ success: boolean; data: ChatThread[] }>(`${this._api}/trainer/threads`);
   }
 
   getMessages(threadId: string, page = 1, limit = 50): Observable<{ success: boolean; data: ChatMessage[] }> {
     let params = new HttpParams().set('page', page).set('limit', limit);
-    return this.http.get<{ success: boolean; data: ChatMessage[] }>(`${this.api}/${threadId}/messages`, { params });
+    return this._http.get<{ success: boolean; data: ChatMessage[] }>(`${this._api}/${threadId}/messages`, { params });
   }
 
   markRead(threadId: string): Observable<{ success: boolean }> {
-    return this.http.post<{ success: boolean }>(`${this.api}/${threadId}/read`, {});
+    return this._http.post<{ success: boolean }>(`${this._api}/${threadId}/read`, {});
   }
 
   sendMessage(threadId: string, content: string): Observable<{ success: boolean; data: ChatMessage }> {
-    return this.http.post<{ success: boolean; data: ChatMessage }>(`${this.api}/${threadId}/message`, { content });
+    return this._http.post<{ success: boolean; data: ChatMessage }>(`${this._api}/${threadId}/message`, { content });
   }
 
   deleteMessage(messageId: string): Observable<{ success: boolean; message: string }> {
-    return this.http.delete<{ success: boolean; message: string }>(`${this.api}/message/${messageId}`);
+    return this._http.delete<{ success: boolean; message: string }>(`${this._api}/message/${messageId}`);
   }
 }

@@ -5,27 +5,27 @@ import { environment } from '../../../environments/environment';
 
 @Injectable({ providedIn: 'root' })
 export class SocketService {
-  private socket!: Socket;
-  private meetingEvents: Map<string, Subject<any>> = new Map();
+  private _socket!: Socket;
+  private _meetingEvents: Map<string, Subject<any>> = new Map();
 
   constructor(private zone: NgZone) {
-    this.socket = io(environment.socketUrl, { 
+    this._socket = io(environment.socketUrl, { 
       reconnection: true, 
       withCredentials: true, 
       transports: ['websocket', 'polling'] 
     });
     
     // Connection events
-    this.socket.on('connect', () => {
-      console.log('✅ Socket connected:', this.socket.id);
+    this._socket.on('connect', () => {
+      console.log('Socket connected:', this._socket.id);
     });
     
-    this.socket.on('disconnect', (reason) => {
-      console.log('❌ Socket disconnected:', reason);
+    this._socket.on('disconnect', (reason) => {
+      console.log('Socket disconnected:', reason);
     });
     
-    this.socket.on('connect_error', (error) => {
-      console.error('🔴 Socket connection error:', error);
+    this._socket.on('connect_error', (error) => {
+      console.error('Socket connection error:', error);
     });
   }
 
@@ -33,35 +33,35 @@ export class SocketService {
    * Emit a socket event
    */
   emit(event: string, data: any): void {
-    console.log('📤 Emitting event:', event, data);
-    this.socket.emit(event, data);
+    console.log('Emitting event:', event, data);
+    this._socket.emit(event, data);
   }
 
   /**
    * Listen to a socket event
    */
   on(event: string): Observable<any> {
-    if (!this.meetingEvents.has(event)) {
+    if (!this._meetingEvents.has(event)) {
       const subject = new Subject<any>();
-      this.meetingEvents.set(event, subject);
+      this._meetingEvents.set(event, subject);
       
-      this.socket.on(event, (data) => {
+      this._socket.on(event, (data) => {
         console.log('📨 Received event:', event, data);
         this.zone.run(() => subject.next(data));
       });
     }
     
-    return this.meetingEvents.get(event)!.asObservable();
+    return this._meetingEvents.get(event)!.asObservable();
   }
 
   /**
    * Stop listening to a specific event
    */
   off(event: string): void {
-    if (this.meetingEvents.has(event)) {
-      this.socket.off(event);
-      this.meetingEvents.get(event)?.complete();
-      this.meetingEvents.delete(event);
+    if (this._meetingEvents.has(event)) {
+      this._socket.off(event);
+      this._meetingEvents.get(event)?.complete();
+      this._meetingEvents.delete(event);
     }
   }
 
@@ -69,13 +69,13 @@ export class SocketService {
    * Disconnect socket
    */
   disconnect(): void {
-    this.socket.disconnect();
+    this._socket.disconnect();
   }
 
   /**
    * Get socket ID
    */
   getSocketId(): string | undefined {
-    return this.socket.id;
+    return this._socket.id;
   }
 }

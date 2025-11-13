@@ -42,8 +42,8 @@ export class MeetingService {
 
   // WebRTC
   private localStream: MediaStream | null = null;
-  private peerConnections: Map<string, RTCPeerConnection> = new Map();
-  private remoteStreams: Map<string, MediaStream> = new Map();
+  private _peerConnections: Map<string, RTCPeerConnection> = new Map();
+  private _remoteStreams: Map<string, MediaStream> = new Map();
   private _remoteStreams$ = new BehaviorSubject<Map<string, MediaStream>>(new Map());
 
   // WebRTC Configuration
@@ -169,7 +169,7 @@ export class MeetingService {
     const current = this._participants$.value;
     this._participants$.next(current.filter(p => p.userId !== userId));
 
-    // Clean up peer connection for removed participant
+ 
     this.closePeerConnection(userId);
   }
 
@@ -188,17 +188,14 @@ export class MeetingService {
 
     // Handle remote stream
     peerConnection.ontrack = (event) => {
-      console.log('📹 Received remote stream from:', userId);
       const [remoteStream] = event.streams;
-      this.remoteStreams.set(userId, remoteStream);
-      this._remoteStreams$.next(new Map(this.remoteStreams));
+      this._remoteStreams.set(userId, remoteStream);
+      this._remoteStreams$.next(new Map(this._remoteStreams));
     };
 
     // Handle ICE candidates
     peerConnection.onicecandidate = (event) => {
       if (event.candidate) {
-        console.log('🧊 Sending ICE candidate to:', userId);
-        // This will be handled by the component through socket
         this.onIceCandidate?.(userId, event.candidate);
       }
     };
@@ -212,7 +209,7 @@ export class MeetingService {
       }
     };
 
-    this.peerConnections.set(userId, peerConnection);
+    this._peerConnections.set(userId, peerConnection);
     return peerConnection;
   }
 
@@ -243,7 +240,7 @@ export class MeetingService {
    * Handle received answer
    */
   async handleAnswer(userId: string, answer: RTCSessionDescriptionInit): Promise<void> {
-    const peerConnection = this.peerConnections.get(userId);
+    const peerConnection = this._peerConnections.get(userId);
     if (peerConnection) {
       await peerConnection.setRemoteDescription(answer);
       console.log('✅ Set remote description for:', userId);
@@ -254,7 +251,7 @@ export class MeetingService {
    * Handle received ICE candidate
    */
   async handleIceCandidate(userId: string, candidate: RTCIceCandidateInit): Promise<void> {
-    const peerConnection = this.peerConnections.get(userId);
+    const peerConnection = this._peerConnections.get(userId);
     if (peerConnection) {
       await peerConnection.addIceCandidate(candidate);
       console.log('🧊 Added ICE candidate from:', userId);
@@ -265,16 +262,16 @@ export class MeetingService {
    * Close peer connection for a participant
    */
   private closePeerConnection(userId: string): void {
-    const peerConnection = this.peerConnections.get(userId);
+    const peerConnection = this._peerConnections.get(userId);
     if (peerConnection) {
       peerConnection.close();
-      this.peerConnections.delete(userId);
+      this._peerConnections.delete(userId);
     }
 
     // Remove remote stream
-    if (this.remoteStreams.has(userId)) {
-      this.remoteStreams.delete(userId);
-      this._remoteStreams$.next(new Map(this.remoteStreams));
+    if (this._remoteStreams.has(userId)) {
+      this._remoteStreams.delete(userId);
+      this._remoteStreams$.next(new Map(this._remoteStreams));
     }
   }
 
@@ -282,7 +279,7 @@ export class MeetingService {
    * Get remote stream for a participant
    */
   getRemoteStream(userId: string): MediaStream | undefined {
-    return this.remoteStreams.get(userId);
+    return this._remoteStreams.get(userId);
   }
 
   /**
@@ -301,11 +298,11 @@ export class MeetingService {
     }
 
     // Close all peer connections
-    this.peerConnections.forEach(pc => pc.close());
-    this.peerConnections.clear();
+    this._peerConnections.forEach(pc => pc.close());
+    this._peerConnections.clear();
 
     // Clear remote streams
-    this.remoteStreams.clear();
+    this._remoteStreams.clear();
     this._remoteStreams$.next(new Map());
 
     // Reset state
