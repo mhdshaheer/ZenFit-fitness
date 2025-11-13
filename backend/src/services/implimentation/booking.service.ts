@@ -30,7 +30,7 @@ export class BookingService implements IBookingService {
 
   async getMyBookings(userId: string, programId?: string): Promise<any[]> {
     const bookings = await this._bookingRepository.getMyBookings(userId, programId);
-    
+
     // Transform the data to match frontend interface
     return bookings.map((booking: any) => ({
       _id: booking._id,
@@ -43,6 +43,7 @@ export class BookingService implements IBookingService {
       endTime: booking.slotDetails?.endTime,
       status: booking.status === 'booked' ? 'confirmed' : booking.status,
       createdAt: booking.createdAt,
+      feedback: booking.feedback,
     }));
   }
 

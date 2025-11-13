@@ -65,6 +65,41 @@ export class BookingRepository
         },
       },
       { $unwind: "$slotDetails" },
+      {
+        $lookup: {
+          from: "feedbacks",
+          let: { slotId: "$slotId", sessionDate: "$date" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$slotId", "$$slotId"] },
+                    {
+                      $eq: [
+                        { $dateToString: { format: "%Y-%m-%d", date: "$sessionDate" } },
+                        { $dateToString: { format: "%Y-%m-%d", date: "$$sessionDate" } }
+                      ]
+                    }
+                  ]
+                }
+              }
+            }
+          ],
+          as: "feedbackDetails",
+        },
+      },
+      {
+        $addFields: {
+          feedback: {
+            $cond: {
+              if: { $gt: [{ $size: "$feedbackDetails" }, 0] },
+              then: { $arrayElemAt: ["$feedbackDetails.feedback", 0] },
+              else: null
+            }
+          }
+        }
+      }
     ];
 
     // Filter by programId if provided
@@ -85,7 +120,7 @@ export class BookingRepository
 
   async getTrainerBookings(trainerId: string): Promise<any[]> {
     console.log('🔍 Fetching bookings for trainerId:', trainerId);
-    
+
     const pipeline: any[] = [
       {
         $lookup: {

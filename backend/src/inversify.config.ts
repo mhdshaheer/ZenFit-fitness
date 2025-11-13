@@ -63,6 +63,12 @@ import { ChatService } from "./services/implimentation/chat.service";
 import { ChatController } from "./controllers/implimentation/chat.controller";
 import { IChatRepository } from "./repositories/interface/chat.repository.interface";
 import { ChatRepository } from "./repositories/implimentation/chat.repository";
+import { IFeedbackService } from "./services/interface/feedback.service.interface";
+import { FeedbackService } from "./services/implimentation/feedback.service";
+import { IFeedbackController } from "./controllers/interface/feedback.controller.interface";
+import { FeedbackController } from "./controllers/implimentation/feedback.controller";
+import { IFeedbackRepository } from "./repositories/interface/feedback.repository.interface";
+import { FeedbackRepository } from "./repositories/implimentation/feedback.repository";
 
 
 const container = new Container();
@@ -152,5 +158,10 @@ container.bind<IChatService>(TYPES.ChatService).to(ChatService);
 console.log('ChatService bound to container with type:', TYPES.ChatService);
 container.bind<IChatController>(TYPES.ChatController).to(ChatController);
 console.log('ChatController bound to container with type:', TYPES.ChatController);
+
+// Feedback
+container.bind<IFeedbackRepository>(TYPES.FeedbackRepository).to(FeedbackRepository);
+container.bind<IFeedbackService>(TYPES.FeedbackService).to(FeedbackService);
+container.bind<IFeedbackController>(TYPES.FeedbackController).to(FeedbackController);
 
 export { container };

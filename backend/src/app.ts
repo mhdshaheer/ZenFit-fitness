@@ -26,6 +26,7 @@ import bookingRouter from "./routes/booking.route";
 import notificationRouter from "./routes/notification.routes";
 import chatRouter from "./routes/chat.routes";
 import meetingRouter from "./routes/meeting.route";
+import feedbackRouter from "./routes/feedback.routes";
 const app = express();
 app.use(
   cors({
@@ -71,6 +72,7 @@ app.use(API_ROUTES.BOOKING, bookingRouter);
 app.use(API_ROUTES.NOTIFICATION, notificationRouter);
 app.use(API_ROUTES.CHAT, chatRouter);
 app.use(API_ROUTES.MEETING, meetingRouter);
+app.use(API_ROUTES.FEEDBACK, feedbackRouter);
 
 // Global Error handling
 app.use(errorMiddleware);

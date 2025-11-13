@@ -47,6 +47,10 @@ export const TYPES = {
   ChatService: Symbol.for("ChatService"),
   ChatController: Symbol.for("ChatController"),
 
+  // Feedback
+  FeedbackService: Symbol.for("FeedbackService"),
+  FeedbackController: Symbol.for("FeedbackController"),
+
   // Repositories
   UserRepository: Symbol.for("UserRepository"),
   TempUserRepository: Symbol.for("TempUserRepository"),
@@ -58,4 +62,5 @@ export const TYPES = {
   BookingRepository: Symbol.for("BookingRepository"),
   NotificationRepository: Symbol.for("NotificationRepository"),
   ChatRepository: Symbol.for("ChatRepository"),
+  FeedbackRepository: Symbol.for("FeedbackRepository"),
 };

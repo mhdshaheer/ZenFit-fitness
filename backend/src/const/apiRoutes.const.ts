@@ -14,4 +14,5 @@ export const API_ROUTES = {
   CATEGORY: "/api/v1/category",
   NOTIFICATION: "/api/v1/notifications",
   MEETING: "/api/v1/meeting",
+  FEEDBACK: "/api/v1/feedback",
 };

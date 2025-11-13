@@ -15,6 +15,7 @@ export interface BookedSlot {
   endTime: string;
   status: 'confirmed' | 'cancelled' | 'completed';
   createdAt: Date;
+  feedback?: string;
 }
 
 export interface Student {
