@@ -62,4 +62,12 @@ export const env = {
   get stripe_web_hook() {
     return process.env.STRIPE_WEB_HOOK;
   },
+
+  // Cookies
+  get accessTokenMaxAge() {
+    return process.env.ACCESS_TOKEN_MAX_AGE;
+  },
+  get refreshTokenMaxAge() {
+    return process.env.REFRESH_TOKEN_MAX_AGE;
+  },
 };
