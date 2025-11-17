@@ -6,13 +6,60 @@ import { IMeeting } from "../../models/meeting.model";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
 import { v4 as uuidv4 } from 'uuid';
+import { INotificationService } from "../interface/notification.service.interface";
 
 export class MeetingService implements IMeetingService {
   constructor(
     private _meetingRepository: IMeetingRepository,
     private _bookingRepository: IBookingRepository,
-    private _slotRepository: ISlotRepository
-  ) {}
+    private _slotRepository: ISlotRepository,
+    private _notificationService: INotificationService
+  ) { }
+
+  private async notifySlotUsers(
+    slotId: string,
+    title: string,
+    messageFactory: (slot: any) => string,
+    options?: { date?: Date; fallbackToAll?: boolean }
+  ): Promise<void> {
+    const slot = await this._slotRepository.getSlotBySlotId(slotId);
+
+    let bookings = options?.date
+      ? await this._bookingRepository.getBookingsForSlotOnDate(slotId, options.date)
+      : await this._bookingRepository.getBookingsBySlotId(slotId);
+
+    if ((!bookings || bookings.length === 0) && options?.date && options?.fallbackToAll !== false) {
+      bookings = await this._bookingRepository.getBookingsBySlotId(slotId);
+    }
+
+    if (!bookings.length) {
+      console.log(`ℹ️ No booked users to notify for slot ${slotId}`);
+      return;
+    }
+
+    const message = messageFactory(slot);
+
+    const uniqueReceiverIds = Array.from(
+      new Set(
+        bookings
+          .map((b: any) => (b.userId?._id ?? b.userId)?.toString())
+          .filter((id): id is string => Boolean(id))
+      )
+    );
+
+    await Promise.all(
+      uniqueReceiverIds.map(async (receiverId) => {
+        await this._notificationService.createNotification(
+          receiverId,
+          'user',
+          title,
+          message
+        );
+      })
+    );
+
+    console.log(`🔔 Sent "${title}" notifications to ${uniqueReceiverIds.length} users for slot ${slotId}`);
+  }
 
   async createMeeting(slotId: string, hostId: string): Promise<{ meetingId: string }> {
     console.log('📝 Creating meeting for slot:', slotId, 'host:', hostId);
@@ -36,6 +83,22 @@ export class MeetingService implements IMeetingService {
     } as any);
 
     console.log('✅ Meeting created:', meeting.meetingId);
+
+    try {
+      await this.notifySlotUsers(
+        slotId,
+        'Session started',
+        (slot) => {
+          const programTitle = (slot as any)?.programId?.title ?? 'your program';
+          const startTime = (slot as any)?.startTime ?? '';
+          const endTime = (slot as any)?.endTime ?? '';
+          return `Your ${programTitle} session (${startTime} - ${endTime}) has started. Join now.`;
+        },
+        { date: new Date(), fallbackToAll: true }
+      );
+    } catch (err) {
+      console.error('Failed to send meeting start notifications:', err);
+    }
     return { meetingId: meeting.meetingId };
   }
 
@@ -49,7 +112,7 @@ export class MeetingService implements IMeetingService {
     // For now, allow access if meeting exists (booking validation can be added later)
     // Check if meeting exists and is active
     const meeting = await this._meetingRepository.findActiveBySlotId(slotId);
-    
+
     if (!meeting) {
       console.log('❌ No active meeting found');
       return {
@@ -73,7 +136,7 @@ export class MeetingService implements IMeetingService {
 
     // Find meeting
     const meeting = await this._meetingRepository.findByMeetingId(meetingId);
-    
+
     if (!meeting) {
       throw new AppError("Meeting not found", HttpStatus.NOT_FOUND);
     }
@@ -96,7 +159,7 @@ export class MeetingService implements IMeetingService {
 
     // Add participant
     const updatedMeeting = await this._meetingRepository.addParticipant(meetingId, userId);
-    
+
     if (!updatedMeeting) {
       throw new AppError("Failed to join meeting", HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -109,7 +172,7 @@ export class MeetingService implements IMeetingService {
     console.log('🛑 Ending meeting:', meetingId);
 
     const meeting = await this._meetingRepository.findByMeetingId(meetingId);
-    
+
     if (!meeting) {
       throw new AppError("Meeting not found", HttpStatus.NOT_FOUND);
     }
@@ -124,15 +187,30 @@ export class MeetingService implements IMeetingService {
       return;
     }
 
+    const slotId = meeting.slotId.toString();
     await this._meetingRepository.endMeeting(meetingId);
     console.log('✅ Meeting ended');
+
+    try {
+      await this.notifySlotUsers(
+        slotId,
+        'Session ended',
+        (slot) => {
+          const programTitle = (slot as any)?.programId?.title ?? 'your program';
+          return `Your ${programTitle} session has ended. Thanks for joining!`;
+        },
+        { fallbackToAll: true }
+      );
+    } catch (err) {
+      console.error('Failed to send meeting end notifications:', err);
+    }
   }
 
   async leaveMeeting(meetingId: string, userId: string): Promise<void> {
     console.log('👋 User leaving meeting:', meetingId);
 
     const meeting = await this._meetingRepository.findByMeetingId(meetingId);
-    
+
     if (!meeting) {
       throw new AppError("Meeting not found", HttpStatus.NOT_FOUND);
     }

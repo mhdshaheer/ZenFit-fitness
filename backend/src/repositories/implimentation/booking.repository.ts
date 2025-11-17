@@ -214,6 +214,21 @@ export class BookingRepository
     return bookings;
   }
 
+  async getBookingsForSlotOnDate(slotId: string, date: Date): Promise<IBooking[]> {
+    const start = new Date(date);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(date);
+    end.setHours(23, 59, 59, 999);
+
+    const bookings = await this.model.find({
+      slotId: new Types.ObjectId(slotId),
+      status: "booked",
+      date: { $gte: start, $lte: end },
+    }).populate('userId', 'fullName email');
+
+    return bookings;
+  }
+
   async cancelBookingsBySlotId(slotId: string): Promise<IBooking[]> {
     const bookings = await this.model.find({
       slotId: new Types.ObjectId(slotId),

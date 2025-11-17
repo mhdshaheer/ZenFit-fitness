@@ -8,19 +8,24 @@ import { MeetingModel } from "../models/meeting.model";
 import { BookingModel } from "../models/booking.model";
 import { SlotModel } from "../models/slot.model";
 import authMiddleware from "../middlewares/verifyToken.middleware";
+import { container } from "../inversify.config";
+import { TYPES } from "../shared/types/inversify.types";
+import { INotificationService } from "../services/interface/notification.service.interface";
 
 const meetingRouter = Router();
 
 // Initialize repositories
 const meetingRepository = new MeetingRepository(MeetingModel);
-const bookingRepository = new BookingRepository(BookingModel);
-const slotRepository = new SlotRepository(SlotModel);
+const bookingRepository = new BookingRepository();
+const slotRepository = new SlotRepository();
+const notificationService = container.get<INotificationService>(TYPES.NotificationService);
 
 // Initialize service
 const meetingService = new MeetingService(
   meetingRepository,
   bookingRepository,
-  slotRepository
+  slotRepository,
+  notificationService
 );
 
 // Initialize controller
