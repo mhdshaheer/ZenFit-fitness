@@ -38,10 +38,7 @@ export class HeaderComponent {
     { label: 'Nutrition', route: '/nutrition', icon: 'fas fa-apple-alt' },
   ];
 
-  @Input() userMenuItems: NavMenuItem[] = [
-    { label: 'My Profile', route: '/profile', icon: 'fas fa-user' },
-    { label: 'Settings', route: '/settings', icon: 'fas fa-cog' },
-  ];
+  @Input() userMenuItems: NavMenuItem[] = [];
 
   // Event outputs
   @Output() searchChange = new EventEmitter<string>();

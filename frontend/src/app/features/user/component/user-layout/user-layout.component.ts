@@ -120,8 +120,6 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
 
   userMenuItems: NavMenuItem[] = [
     { label: 'My Profile', route: '/user/profile', icon: 'fas fa-user' },
-
-    { label: 'Help & Support', route: '/help', icon: 'fas fa-question-circle' },
   ];
 
   searchResults: any[] = [];
