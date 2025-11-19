@@ -6,14 +6,27 @@ import { env } from "../../config/env.config";
  */
 const COOKIE_CONFIG = {
   httpOnly: true,
-  secure: false, 
+  secure: false,
   sameSite: "lax" as const,
   path: "/",
 };
 
+const DEFAULT_EXPIRY = {
+  ACCESS_TOKEN: 15 * 60 * 1000,
+  REFRESH_TOKEN: 7 * 24 * 60 * 60 * 1000, 
+};
+
+const parseExpiry = (value: string | undefined, fallback: number): number => {
+  const parsed = Number(value);
+  return Number.isFinite(parsed) && parsed > 0 ? parsed : fallback;
+};
+
 const TOKEN_EXPIRY = {
-  ACCESS_TOKEN: parseInt(env.accessTokenMaxAge!),
-  REFRESH_TOKEN: parseInt(env.refreshTokenMaxAge!),
+  ACCESS_TOKEN: parseExpiry(env.accessTokenMaxAge, DEFAULT_EXPIRY.ACCESS_TOKEN),
+  REFRESH_TOKEN: parseExpiry(
+    env.refreshTokenMaxAge,
+    DEFAULT_EXPIRY.REFRESH_TOKEN
+  ),
 };
 
 /**

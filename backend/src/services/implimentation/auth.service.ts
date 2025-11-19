@@ -22,12 +22,15 @@ import {
 } from "../../shared/utils/jwt.util";
 import { sendOtpMail } from "../../shared/services/mail.service";
 import { AppError } from "../../shared/utils/appError.util";
+import { INotificationService } from "../interface/notification.service.interface";
 @injectable()
 export class AuthService implements IAuthService {
   @inject(TYPES.UserRepository)
   private readonly _userRepository!: IUserRepository;
   @inject(TYPES.TempUserRepository)
   private readonly _tempRepository!: ITempUserRepository;
+  @inject(TYPES.NotificationService)
+  private readonly _notificationService!: INotificationService;
   // ======================================
 
   async signup(userData: IUser): Promise<IUser> {
@@ -131,6 +134,27 @@ export class AuthService implements IAuthService {
     });
 
     setAuthCookies(res, accessToken, refreshToken);
+
+    await this._notificationService.createNotification(
+      createdUser._id.toString(),
+      "user",
+      "Welcome to ZenFit",
+      "You're all set! Start exploring programs and sessions tailored for you."
+    );
+
+    const admins = await this._userRepository.getAllUsers();
+    const adminUsers = admins.filter((user) => user.role === "admin");
+
+    await Promise.all(
+      adminUsers.map((admin) =>
+        this._notificationService.createNotification(
+          admin._id!.toString(),
+          "admin",
+          "New User Registration",
+          `${createdUser.username ?? createdUser.email} has just joined ZenFit.`
+        )
+      )
+    );
 
     res.status(HttpStatus.OK).json({
       message: HttpResponse.REGISTRATION_SUCCESS,
