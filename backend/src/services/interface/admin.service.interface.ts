@@ -1,10 +1,10 @@
 import { GetUsersParams, IUser } from "../../interfaces/user.interface";
-import { UserDto } from "../../dtos/user.dtos";
+import { UserDto, UserStatusDto } from "../../dtos/user.dtos";
 
 export interface IAdminService {
   getUsers(params: GetUsersParams): Promise<{ data: UserDto[]; total: number }>;
   updateUserStatus(
-    id: string,
+    userid: string,
     status: "active" | "blocked"
-  ): Promise<IUser | null>;
+  ): Promise<UserStatusDto>;
 }

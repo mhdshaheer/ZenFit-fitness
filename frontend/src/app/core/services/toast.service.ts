@@ -5,9 +5,7 @@ import Swal, { SweetAlertIcon } from 'sweetalert2';
   providedIn: 'root',
 })
 export class ToastService {
-  constructor() {}
-
-  private showToast(
+  private _showToast(
     message: string,
     icon: SweetAlertIcon = 'success',
     duration = 2000
@@ -28,18 +26,18 @@ export class ToastService {
   }
 
   success(message: string, duration?: number) {
-    this.showToast(message, 'success', duration);
+    this._showToast(message, 'success', duration);
   }
 
   error(message: string, duration?: number) {
-    this.showToast(message, 'error', duration);
+    this._showToast(message, 'error', duration);
   }
 
   warning(message: string, duration?: number) {
-    this.showToast(message, 'warning', duration);
+    this._showToast(message, 'warning', duration);
   }
 
   info(message: string, duration?: number) {
-    this.showToast(message, 'info', duration);
+    this._showToast(message, 'info', duration);
   }
 }

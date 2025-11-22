@@ -2,11 +2,13 @@ import { FilterQuery } from "mongoose";
 import { IProgram, ProgramModel } from "../../models/program.model";
 import { BaseRepository } from "../base.repository";
 import { IProgramRepository } from "../interface/program.repository.interface";
+import { IApprovalStatus } from "../../interfaces/program.interface";
+import { injectable } from "inversify";
 
+@injectable()
 export class ProgramRepositoy
   extends BaseRepository<IProgram>
-  implements IProgramRepository
-{
+  implements IProgramRepository {
   constructor() {
     super(ProgramModel);
   }
@@ -15,6 +17,9 @@ export class ProgramRepositoy
     program: Partial<IProgram>
   ): Promise<IProgram | null> {
     return await this.updateCondition(condition, program);
+  }
+  async getAllPrograms(): Promise<IProgram[]> {
+    return await this.find();
   }
   async getPrograms(id: string): Promise<IProgram[]> {
     return this.model.find({ trainerId: id }).populate("category");
@@ -33,5 +38,12 @@ export class ProgramRepositoy
     program: Partial<IProgram>
   ): Promise<IProgram | null> {
     return this.update(programId, program);
+  }
+
+  async updateApprovalStatus(
+    programId: string,
+    approvalStatus: IApprovalStatus
+  ): Promise<IProgram | null> {
+    return this.update(programId, { approvalStatus: approvalStatus });
   }
 }

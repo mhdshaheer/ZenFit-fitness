@@ -1,7 +1,7 @@
-import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { NotificationComponent } from '../notification/notification.component';
 
 export interface NavMenuItem {
   label: string;
@@ -18,7 +18,7 @@ export interface UserProfile {
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule, RouterModule, FormsModule],
+  imports: [RouterModule, FormsModule, NotificationComponent],
   templateUrl: './header.component.html',
   styleUrl: './header.component.css',
 })
@@ -29,13 +29,7 @@ export class HeaderComponent {
   @Input() showDateBanner = true;
 
   // Data inputs
-  @Input() userProfile: UserProfile | null = {
-    name: 'John Smith',
-    email: 'john.smith@example.com',
-    role: 'Fitness Enthusiast',
-    avatar:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80',
-  };
+  @Input() userProfile?: UserProfile;
 
   @Input() navigationItems: NavMenuItem[] = [
     { label: 'Dashboard', route: '/dashboard', icon: 'fas fa-tachometer-alt' },
@@ -44,12 +38,7 @@ export class HeaderComponent {
     { label: 'Nutrition', route: '/nutrition', icon: 'fas fa-apple-alt' },
   ];
 
-  @Input() userMenuItems: NavMenuItem[] = [
-    { label: 'My Profile', route: '/profile', icon: 'fas fa-user' },
-    { label: 'Settings', route: '/settings', icon: 'fas fa-cog' },
-    { label: 'Help & Support', route: '/help', icon: 'fas fa-question-circle' },
-    { label: 'Privacy', route: '/privacy', icon: 'fas fa-shield-alt' },
-  ];
+  @Input() userMenuItems: NavMenuItem[] = [];
 
   // Event outputs
   @Output() searchChange = new EventEmitter<string>();
@@ -59,22 +48,8 @@ export class HeaderComponent {
   @Output() mobileMenuToggle = new EventEmitter<boolean>();
 
   // Component state
-  searchQuery = '';
   isUserMenuOpen = false;
   isMobileMenuOpen = false;
-
-  onSearchChange() {
-    this.searchChange.emit(this.searchQuery);
-  }
-
-  onSearchSubmit() {
-    this.searchSubmit.emit(this.searchQuery);
-  }
-
-  clearSearch() {
-    this.searchQuery = '';
-    this.searchChange.emit('');
-  }
 
   toggleUserMenu() {
     this.isUserMenuOpen = !this.isUserMenuOpen;

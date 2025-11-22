@@ -3,14 +3,15 @@ import { User } from '../../shared/models/user.model';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
+import { AdminRoutes } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
-  private apiUrl = environment.apiUrl;
-  private http = inject(HttpClient);
+  private readonly _apiUrl = environment.apiUrl + AdminRoutes.BASE;
+  private readonly _http = inject(HttpClient);
 
   updateUserStatus(id: string, status: 'active' | 'blocked') {
-    return this.http.patch(`${this.apiUrl}/admin/users/${id}/status`, {
+    return this._http.patch(this._apiUrl + AdminRoutes.USER_STATUS(id), {
       status,
     });
   }
@@ -31,8 +32,8 @@ export class AdminService {
       httpParams = httpParams.set('search', params.search);
     }
 
-    return this.http.get<{ data: User[]; total: number }>(
-      `${this.apiUrl}/admin/users`,
+    return this._http.get<{ data: User[]; total: number }>(
+      this._apiUrl + AdminRoutes.USERS,
       {
         params: httpParams,
         withCredentials: true,

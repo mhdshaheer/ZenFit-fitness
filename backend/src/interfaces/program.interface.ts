@@ -1,0 +1,1 @@
+export type IApprovalStatus = 'Pending'|'Approved'|'Rejected'

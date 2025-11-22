@@ -1,8 +1,11 @@
+import mongoose from "mongoose";
 import { GetUsersParams, IUser } from "../../interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
 import { BaseRepository } from "../base.repository";
 import { IUserRepository } from "../interface/user.repository.interface";
+import { injectable } from "inversify";
 
+@injectable()
 export class UserRepository
   extends BaseRepository<IUser>
   implements IUserRepository
@@ -13,6 +16,9 @@ export class UserRepository
   async findByEmail(email: string): Promise<IUser | null> {
     return await this.findOne({ email });
   }
+  async getAllUsers(): Promise<IUser[]> {
+    return await this.model.find();
+  }
   async createUser(user: IUser): Promise<IUser> {
     return await this.create(user);
   }
@@ -20,6 +26,9 @@ export class UserRepository
     return await this.model.find();
   }
   async findById(id: string): Promise<IUser | null> {
+    if (!mongoose.isValidObjectId(id)) {
+      throw new Error(`Invalid ObjectId: ${id}`);
+    }
     return await this.model.findById(id);
   }
   async updateStatus(

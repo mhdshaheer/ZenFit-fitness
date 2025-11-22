@@ -16,18 +16,12 @@ import { IProgramService } from "./services/interface/program.service.interface"
 import { ProgramService } from "./services/implimentation/program.service";
 import { IProgramController } from "./controllers/interface/program.controller.interface";
 import { ProgramController } from "./controllers/implimentation/program.controller";
-import { ISessionService } from "./services/interface/session.service.interface";
-import { SessionService } from "./services/implimentation/session.service";
-import { ISessionController } from "./controllers/interface/session.controller.interface";
-import { SessionController } from "./controllers/implimentation/session.controller";
 import { IUserRepository } from "./repositories/interface/user.repository.interface";
 import { UserRepository } from "./repositories/implimentation/user.repository";
 import { ITempUserRepository } from "./repositories/interface/tempUser.repository.interface";
 import { TempUserRepository } from "./repositories/implimentation/tempUser.repository";
 import { IProgramRepository } from "./repositories/interface/program.repository.interface";
 import { ProgramRepositoy } from "./repositories/implimentation/program.repository";
-import { ISessionRepository } from "./repositories/interface/session.repository.interface";
-import { SessionRepository } from "./repositories/implimentation/session.repository";
 import { TYPES } from "./shared/types/inversify.types";
 import { ICategoryService } from "./services/interface/category.service.interface";
 import { CategoryService } from "./services/implimentation/category.service";
@@ -39,6 +33,43 @@ import { IAuthService } from "./services/interface/auth.service.interface";
 import { IAuthController } from "./controllers/interface/auth.controller.interface";
 import { IAdminService } from "./services/interface/admin.service.interface";
 import { IAdminController } from "./controllers/interface/admin.controller.interface";
+import { IPaymentService } from "./services/interface/payment.service.interface";
+import { PaymentService } from "./services/implimentation/payment.service";
+import { IPaymentController } from "./controllers/interface/payment.controller.interface";
+import { PaymentController } from "./controllers/implimentation/payment.controller";
+import { IPaymentRepository } from "./repositories/interface/payment.repostitory.interface";
+import { PaymentRepository } from "./repositories/implimentation/payment.repository";
+import { ISlotRepository } from "./repositories/interface/slot.repository.interface";
+import { SlotRepository } from "./repositories/implimentation/slot.repository";
+import { ISlotService } from "./services/interface/slot.service.interface";
+import { SlotService } from "./services/implimentation/slot.service";
+import { ISlotController } from "./controllers/interface/slot.controller.interface";
+import { SlotController } from "./controllers/implimentation/slot.controller";
+import { IBookingRepository } from "./repositories/interface/booking.repository.interface";
+import { BookingRepository } from "./repositories/implimentation/booking.repository";
+import { IBookingService } from "./services/interface/booking.service.interface";
+import { BookingService } from "./services/implimentation/booking.service";
+import { IBookingController } from "./controllers/interface/booking.controller.interface";
+import { BookingController } from "./controllers/implimentation/booking.controller";
+import { INotificationRepository } from "./repositories/interface/notification.repository.interface";
+import { NotificationRepository } from "./repositories/implimentation/notification.repository";
+import { INotificationService } from "./services/interface/notification.service.interface";
+import { NotificationService } from "./services/implimentation/notification.service";
+import { INotificationController } from "./controllers/interface/notification.controller.interface";
+import { NotificationController } from "./controllers/implimentation/notification.controller";
+import { IChatService } from "./services/interface/chat.service.interface";
+import { IChatController } from "./controllers/interface/chat.controller.interface";
+import { ChatService } from "./services/implimentation/chat.service";
+import { ChatController } from "./controllers/implimentation/chat.controller";
+import { IChatRepository } from "./repositories/interface/chat.repository.interface";
+import { ChatRepository } from "./repositories/implimentation/chat.repository";
+import { IFeedbackService } from "./services/interface/feedback.service.interface";
+import { FeedbackService } from "./services/implimentation/feedback.service";
+import { IFeedbackController } from "./controllers/interface/feedback.controller.interface";
+import { FeedbackController } from "./controllers/implimentation/feedback.controller";
+import { IFeedbackRepository } from "./repositories/interface/feedback.repository.interface";
+import { FeedbackRepository } from "./repositories/implimentation/feedback.repository";
+
 
 const container = new Container();
 
@@ -66,17 +97,36 @@ container
   .bind<IProgramController>(TYPES.ProgramController)
   .to(ProgramController);
 
-// Session
-container.bind<ISessionService>(TYPES.SessionService).to(SessionService);
-container
-  .bind<ISessionController>(TYPES.SessionController)
-  .to(SessionController);
 
 // Category
 container.bind<ICategoryService>(TYPES.CategoryService).to(CategoryService);
 container
   .bind<ICategoryController>(TYPES.CategoryController)
   .to(CategoryController);
+
+// Payment
+container.bind<IPaymentService>(TYPES.PaymentService).to(PaymentService);
+container
+  .bind<IPaymentController>(TYPES.PaymentController)
+  .to(PaymentController);
+
+// Slot
+container.bind<ISlotService>(TYPES.SlotService).to(SlotService);
+container.bind<ISlotController>(TYPES.SlotController).to(SlotController);
+
+// Booking
+container.bind<IBookingService>(TYPES.BookingService).to(BookingService);
+container
+  .bind<IBookingController>(TYPES.BookingController)
+  .to(BookingController);
+
+// Notification
+container
+  .bind<INotificationService>(TYPES.NotificationService)
+  .to(NotificationService);
+container
+  .bind<INotificationController>(TYPES.NotificationController)
+  .to(NotificationController);
 
 // Repositories
 container.bind<IUserRepository>(TYPES.UserRepository).to(UserRepository);
@@ -86,11 +136,32 @@ container
 container
   .bind<IProgramRepository>(TYPES.ProgramRespository)
   .to(ProgramRepositoy);
-container
-  .bind<ISessionRepository>(TYPES.SessionRepository)
-  .to(SessionRepository);
+
 container
   .bind<ICategoryRepository>(TYPES.CategoryRepository)
   .to(CategoryRepository);
+container
+  .bind<IPaymentRepository>(TYPES.PaymentRepository)
+  .to(PaymentRepository);
+container.bind<ISlotRepository>(TYPES.SlotRepository).to(SlotRepository);
+container
+  .bind<IBookingRepository>(TYPES.BookingRepository)
+  .to(BookingRepository);
+container
+  .bind<INotificationRepository>(TYPES.NotificationRepository)
+  .to(NotificationRepository);
+container.bind<IChatRepository>(TYPES.ChatRepository).to(ChatRepository);
+console.log('ChatRepository bound to container with type:', TYPES.ChatRepository);
+
+// Chat (after repositories are bound)
+container.bind<IChatService>(TYPES.ChatService).to(ChatService);
+console.log('ChatService bound to container with type:', TYPES.ChatService);
+container.bind<IChatController>(TYPES.ChatController).to(ChatController);
+console.log('ChatController bound to container with type:', TYPES.ChatController);
+
+// Feedback
+container.bind<IFeedbackRepository>(TYPES.FeedbackRepository).to(FeedbackRepository);
+container.bind<IFeedbackService>(TYPES.FeedbackService).to(FeedbackService);
+container.bind<IFeedbackController>(TYPES.FeedbackController).to(FeedbackController);
 
 export { container };

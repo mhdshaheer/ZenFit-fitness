@@ -94,7 +94,10 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(AuthActions.loginSuccess),
         tap(({ accessToken, role }) => {
-          localStorage.setItem('accessToken', accessToken);
+          // Token is already set as httpOnly cookie by backend
+          // Clean up any old localStorage tokens and store minimal info for client-side role checking
+          localStorage.removeItem('accessToken'); // Remove old token if exists
+          localStorage.setItem('userRole', role);
           Swal.fire({
             position: 'top-end',
             icon: 'success',
@@ -129,7 +132,6 @@ export class AuthEffects {
     { dispatch: false }
   );
 
-  
   // google signup
   googleSignup$ = createEffect(() =>
     this.actions$.pipe(

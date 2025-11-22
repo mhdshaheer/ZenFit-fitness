@@ -1,0 +1,57 @@
+import { inject, injectable } from "inversify";
+import { INotification } from "../../models/notification.model";
+import { getIO } from "../../shared/sockets/socket";
+import { INotificationService } from "../interface/notification.service.interface";
+import { TYPES } from "../../shared/types/inversify.types";
+import { INotificationRepository } from "../../repositories/interface/notification.repository.interface";
+
+@injectable()
+export class NotificationService implements INotificationService {
+  @inject(TYPES.NotificationRepository)
+  private readonly _notificationRepository!: INotificationRepository;
+
+  async createNotification(
+    receiverId: string,
+    receiverType: "user" | "trainer" | "admin",
+    title: string,
+    message: string
+  ): Promise<INotification> {
+    const notification = await this._notificationRepository.createNotification({
+      receiverId,
+      receiverType,
+      title,
+      message,
+    });
+
+    // Emit the notification in real-time
+    const io = getIO();
+    io.to(`${receiverType}-${receiverId}`).emit(
+      "newNotification",
+      notification
+    );
+
+    return notification;
+  }
+
+  async getNotifications(receiverId: string): Promise<INotification[]> {
+    return await this._notificationRepository.getNotificationsByReceiver(
+      receiverId
+    );
+  }
+
+  async markAsRead(notificationId: string): Promise<INotification | null> {
+    return await this._notificationRepository.markAsRead(notificationId);
+  }
+
+  async markAllAsRead(receiverId: string, notificationIds: string[]): Promise<void> {
+    // Filter notifications to only mark those belonging to the receiver
+    const userNotifications = await this._notificationRepository.getNotificationsByReceiver(receiverId);
+    const validIds = notificationIds.filter(id => 
+      userNotifications.some(notification => (notification._id as any).toString() === id)
+    );
+    
+    if (validIds.length > 0) {
+      await this._notificationRepository.markMultipleAsRead(validIds);
+    }
+  }
+}

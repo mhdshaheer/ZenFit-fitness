@@ -40,10 +40,10 @@ interface UploadFile {
 export class UserProfileComponent implements OnDestroy, OnInit {
   uploadedFile: UploadFile | null = null;
   profileImage = '';
-  private route = inject(ActivatedRoute);
-  private profileService = inject(ProfileService);
+  private readonly _route = inject(ActivatedRoute);
+  private readonly _profileService = inject(ProfileService);
 
-  private destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
   trainer: TrainerProfile | null = null;
 
   onImageError(event: any) {
@@ -112,9 +112,9 @@ export class UserProfileComponent implements OnDestroy, OnInit {
 
   verifyResume() {
     if (this.uploadedFile && this.trainer) {
-      this.profileService
+      this._profileService
         .verifyResume(this.trainer.id)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this._destroy$))
         .subscribe((res) => {
           this.trainer!.isVerified = res.isVerified;
           console.log('response from verify :', res);
@@ -135,7 +135,7 @@ export class UserProfileComponent implements OnDestroy, OnInit {
   }
 
   ngOnInit() {
-    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
+    this._route.paramMap.pipe(takeUntil(this._destroy$)).subscribe((params) => {
       const id = params.get('id');
       this.loadProfile(id!);
       console.log('id on ngONInit profile side :', id);
@@ -143,13 +143,13 @@ export class UserProfileComponent implements OnDestroy, OnInit {
   }
 
   loadProfile(id: string) {
-    this.profileService
+    this._profileService
       .getProfile(id)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
         console.log('profile details:', res);
         if (res.profileImage) {
-          this.profileService
+          this._profileService
             .getFile(res.profileImage, id)
             .subscribe((fileRes) => {
               this.profileImage = fileRes.url;
@@ -157,9 +157,9 @@ export class UserProfileComponent implements OnDestroy, OnInit {
             });
         }
         if (res.resume) {
-          this.profileService
+          this._profileService
             .getFile(res.resume, id)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntil(this._destroy$))
             .subscribe(async (fileRes) => {
               const fileDetails = JSON.parse(fileRes.url);
               const response = await fetch(fileDetails.url);
@@ -194,7 +194,7 @@ export class UserProfileComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

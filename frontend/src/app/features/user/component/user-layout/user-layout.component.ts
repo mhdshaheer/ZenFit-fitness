@@ -25,12 +25,12 @@ interface Menu {
 })
 export class UserLayoutComponent implements OnDestroy, OnInit {
   isMobileMenuOpen = false;
-  authService = inject(AuthService);
-  logger = inject(LoggerService);
-  router = inject(Router);
-  profileService = inject(ProfileService);
+  private readonly _authService = inject(AuthService);
+  private readonly _logger = inject(LoggerService);
+  private readonly _router = inject(Router);
+  private readonly _profileService = inject(ProfileService);
 
-  private destroy$ = new Subject<void>();
+  private readonly _destroy$ = new Subject<void>();
 
   // Sidebar
   userMenu: Menu[] = [
@@ -52,16 +52,16 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
   }
 
   logOutUser() {
-    this.authService
+    this._authService
       .logout()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
-          this.logger.info(res.message);
-          this.router.navigate(['/auth/login']);
+          this._logger.info(res.message);
+          this._router.navigate(['/auth/login']);
         },
         error: (err) => {
-          this.logger.error(err);
+          this._logger.error(err);
         },
       });
   }
@@ -83,14 +83,14 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
       role: '',
       avatar: '',
     };
-    this.profileService
+    this._profileService
       .getProfile()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
         if (res.profileImage) {
-          this.profileService
+          this._profileService
             .getFile(res.profileImage)
-            .pipe(takeUntil(this.destroy$))
+            .pipe(takeUntil(this._destroy$))
             .subscribe((fileRes) => {
               userData.avatar = fileRes.url;
             });
@@ -109,15 +109,17 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
       icon: 'fas fa-tachometer-alt',
     },
     { label: 'Workouts', route: '/user/workouts', icon: 'fas fa-dumbbell' },
-    { label: 'Progress', route: '/user/progress', icon: 'fas fa-chart-line' },
-    { label: 'Nutrition', route: '/user/nutrition', icon: 'fas fa-apple-alt' },
-    { label: 'Community', route: '/user/community', icon: 'fas fa-users' },
+    {
+      label: 'My Program',
+      route: '/user/my-programs',
+      icon: 'fas fa-dumbbell',
+    },
+    { label: 'Sessions', route: '/user/booked-slots', icon: 'fas fa-chart-line' },
+    { label: 'Transactions', route: '/user/transaction-history', icon: 'fas fa-receipt' },
   ];
 
   userMenuItems: NavMenuItem[] = [
     { label: 'My Profile', route: '/user/profile', icon: 'fas fa-user' },
-
-    { label: 'Help & Support', route: '/help', icon: 'fas fa-question-circle' },
   ];
 
   searchResults: any[] = [];
@@ -168,7 +170,7 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

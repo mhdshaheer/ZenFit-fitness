@@ -28,12 +28,13 @@ export interface Category {
   styleUrl: './program-view.component.css',
 })
 export class ProgramViewComponent implements OnInit, OnDestroy {
-  programService = inject(ProgramService);
-  toastService = inject(ToastService);
-  router = inject(Router);
-  categoryService = inject(CategoryService);
-  route = inject(ActivatedRoute);
-  logger = inject(LoggerService);
+  private readonly _programService = inject(ProgramService);
+  private readonly _toastService = inject(ToastService);
+  private readonly _categoryService = inject(CategoryService);
+  private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _logger = inject(LoggerService);
+
+  private readonly _destroy$ = new Subject<void>();
 
   programForm!: FormGroup;
   characterCount = 0;
@@ -45,15 +46,15 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   category: Category = { value: '', label: '' };
   categories: Category[] = [];
 
-  private destroy$ = new Subject<void>();
-
-  constructor(private fb: FormBuilder) {}
+  constructor(private readonly _fb: FormBuilder) {}
 
   ngOnInit() {
     // Route param subscription with cleanup
-    this.route.paramMap.pipe(takeUntil(this.destroy$)).subscribe((params) => {
-      this.programId = params.get('id') as string;
-    });
+    this._activatedRoute.paramMap
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((params) => {
+        this.programId = params.get('id') as string;
+      });
 
     this.initializeForm();
     this.getSubCategories();
@@ -61,9 +62,9 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   }
 
   getSubCategories() {
-    this.categoryService
+    this._categoryService
       .getSubcateories()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: ICategory[]) => {
           console.log('sub categories are ..:', res);
@@ -79,24 +80,24 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   }
 
   getProgram() {
-    this.programService
+    this._programService
       .getProgramByProgramId(this.programId)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: Program) => {
-          this.logger.info('Program :', res);
+          this._logger.info('Program :', res);
           const val = JSON.parse(res.category);
           this.category = { value: val._id, label: val.name };
           this.programForm.patchValue(res);
         },
         error: (err) => {
-          this.logger.error('Failed to fetch program :', err);
+          this._logger.error('Failed to fetch program :', err);
         },
       });
   }
 
   initializeForm() {
-    this.programForm = this.fb.group({
+    this.programForm = this._fb.group({
       programId: [, [Validators.required, Validators.minLength(3)]],
       title: [
         '',
@@ -117,7 +118,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
     // Watch description changes with cleanup
     this.programForm
       .get('description')
-      ?.valueChanges.pipe(takeUntil(this.destroy$))
+      ?.valueChanges.pipe(takeUntil(this._destroy$))
       .subscribe((value) => {
         this.characterCount = value ? value.length : 0;
       });
@@ -139,19 +140,19 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
         status: 'active',
       };
 
-      this.programService
+      this._programService
         .updateProgram(this.programId, programData)
-        .pipe(takeUntil(this.destroy$))
+        .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
-            this.toastService.success('Program data is updated');
-            this.logger.info('response:', res);
+            this._toastService.success('Program data is updated');
+            this._logger.info('response:', res);
             this.isSubmitting = false;
             this.isEditMode = false;
           },
           error: (err) => {
-            this.toastService.error('Updation failed');
-            this.logger.error('Updation failed:', err);
+            this._toastService.error('Updation failed');
+            this._logger.error('Updation failed:', err);
             this.isSubmitting = false;
           },
         });
@@ -217,7 +218,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

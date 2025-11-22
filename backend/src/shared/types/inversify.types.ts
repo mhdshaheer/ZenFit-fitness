@@ -27,10 +27,40 @@ export const TYPES = {
   CategoryService: Symbol.for("CategoryService"),
   CategoryController: Symbol.for("CategoryController"),
 
+  // Payment
+  PaymentService: Symbol.for("PaymentService"),
+  PaymentController: Symbol.for("PaymentController"),
+
+  // Slot
+  SlotService: Symbol.for("SlotService"),
+  SlotController: Symbol.for("SlotController"),
+
+  // Booking
+  BookingService: Symbol.for("BookingService"),
+  BookingController: Symbol.for("BookingController"),
+
+  // Notification
+  NotificationService: Symbol.for("NotificationService"),
+  NotificationController: Symbol.for("NotificationController"),
+
+  // Chat
+  ChatService: Symbol.for("ChatService"),
+  ChatController: Symbol.for("ChatController"),
+
+  // Feedback
+  FeedbackService: Symbol.for("FeedbackService"),
+  FeedbackController: Symbol.for("FeedbackController"),
+
   // Repositories
   UserRepository: Symbol.for("UserRepository"),
   TempUserRepository: Symbol.for("TempUserRepository"),
   SessionRepository: Symbol.for("SessionRepository"),
   ProgramRespository: Symbol.for("ProgramRepository"),
   CategoryRepository: Symbol.for("CategoryRepository"),
+  PaymentRepository: Symbol.for("PaymentRepository"),
+  SlotRepository: Symbol.for("SlotRepository"),
+  BookingRepository: Symbol.for("BookingRepository"),
+  NotificationRepository: Symbol.for("NotificationRepository"),
+  ChatRepository: Symbol.for("ChatRepository"),
+  FeedbackRepository: Symbol.for("FeedbackRepository"),
 };

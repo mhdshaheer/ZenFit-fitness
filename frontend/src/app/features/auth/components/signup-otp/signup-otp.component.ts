@@ -17,18 +17,18 @@ import { ToastService } from '../../../../core/services/toast.service';
   styleUrl: './signup-otp.component.css',
 })
 export class SignupOtpComponent implements OnDestroy {
-  private destroy$ = new Subject<void>();
-  private logger = inject(LoggerService);
-  private authService = inject(AuthService);
-  private router = inject(Router);
-  private otpService = inject(OtpAccessService);
-  private toastService = inject(ToastService);
+  private readonly _destroy$ = new Subject<void>();
+  private readonly _logger = inject(LoggerService);
+  private readonly _authService = inject(AuthService);
+  private readonly _router = inject(Router);
+  private readonly _otpService = inject(OtpAccessService);
+  private readonly _toastService = inject(ToastService);
 
   email = localStorage.getItem('signupEmail') || '';
 
   handleOtpSubmit(otp: string) {
     if (!this.email) {
-      this.logger.error('Email is missing.');
+      this._logger.error('Email is missing.');
       return;
     }
 
@@ -40,9 +40,9 @@ export class SignupOtpComponent implements OnDestroy {
       return;
     }
 
-    this.authService
+    this._authService
       .verifyOtp(this.email!, otp)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
           localStorage.setItem('accessToken', res.accessToken);
@@ -52,33 +52,33 @@ export class SignupOtpComponent implements OnDestroy {
             icon: 'success',
             draggable: true,
           }).then(() => {
-            this.otpService.clearAccess();
-            this.router.navigate([`/${res.role}/dashboard`]);
+            this._otpService.clearAccess();
+            this._router.navigate([`/${res.role}/dashboard`]);
           });
         },
         error: (err) => {
-          this.logger.error('Invalid OTP', err);
-          this.toastService.error('Invalid OTP');
+          this._logger.error('Invalid OTP', err);
+          this._toastService.error('Invalid OTP');
         },
       });
   }
   resendOtpRequest() {
     if (!this.email) return;
-    this.authService
+    this._authService
       .resentOtp(this.email)
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (_res) => {
-          this.toastService.success('OTP resent');
+          this._toastService.success('OTP resent');
         },
         error: (_err) => {
-          this.toastService.error('Failed to resend OTP');
+          this._toastService.error('Failed to resend OTP');
         },
       });
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

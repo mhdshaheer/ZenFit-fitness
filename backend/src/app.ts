@@ -1,3 +1,4 @@
+import { container } from "./inversify.config";
 import express from "express";
 import cors from "cors";
 import passport from "passport";
@@ -12,43 +13,68 @@ import adminRouter from "./routes/admin.routes";
 import router from "./routes/file.routes";
 import userRouter from "./routes/user.routes";
 import programRouter from "./routes/program.routes";
-import sessionRouter from "./routes/session.routes";
 import categoryRouter from "./routes/category.routes";
 import { errorMiddleware } from "./middlewares/errorHandle.middleware";
-
+import paymentRouter from "./routes/payment.routes";
+import { TYPES } from "./shared/types/inversify.types";
+import { IPaymentController } from "./controllers/interface/payment.controller.interface";
+import { env } from "./config/env.config";
+import { API_ROUTES } from "./const/apiRoutes.const";
+import { HttpResponse } from "./const/response_message.const";
+import slotRouter from "./routes/slot.routes";
+import bookingRouter from "./routes/booking.route";
+import notificationRouter from "./routes/notification.routes";
+import chatRouter from "./routes/chat.routes";
+import meetingRouter from "./routes/meeting.route";
+import feedbackRouter from "./routes/feedback.routes";
 const app = express();
 app.use(
   cors({
-    origin: "http://localhost:4200",
+    origin: env.frontend_url,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     credentials: true,
   })
 );
 
+app.use(cookieParser());
+app.use(passport.initialize());
+
+const paymentController = container.get<IPaymentController>(
+  TYPES.PaymentController
+);
+
+app.use(
+  `${API_ROUTES.PAYMENT}/webhook`,
+  express.raw({ type: "application/json" }),
+  (req, res) => paymentController.webhook(req, res)
+);
+app.use(express.json());
+
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 5,
-  message: "Too many login attempts, please try again later",
+  message: HttpResponse.TOO_MANY_LOGIN_ATTEMPTS,
   standardHeaders: true,
   legacyHeaders: false,
 });
 
-app.use(express.json());
-app.use(cookieParser());
-app.use(passport.initialize());
-
 // Routes
-app.use("/api/v1/auth/login", loginLimiter);
-app.use("/api/v1/auth", authRouter);
-app.use("/api/v1/admin", adminRouter);
-app.use("/api/v1/file", router);
-app.use("/api/v1/user", userRouter);
-app.use("/api/v1/program", programRouter);
-app.use("/api/v1/session", sessionRouter);
-app.use("/api/v1/category", categoryRouter);
-
+app.use(API_ROUTES.AUTH.LOGIN, loginLimiter);
+app.use(API_ROUTES.AUTH.BASE, authRouter);
+app.use(API_ROUTES.ADMIN, adminRouter);
+app.use(API_ROUTES.FILE, router);
+app.use(API_ROUTES.USER, userRouter);
+app.use(API_ROUTES.PROGRAM, programRouter);
+app.use(API_ROUTES.CATEGORY, categoryRouter);
+app.use(API_ROUTES.PAYMENT, paymentRouter);
+app.use(API_ROUTES.SLOT, slotRouter);
+app.use(API_ROUTES.BOOKING, bookingRouter);
+app.use(API_ROUTES.NOTIFICATION, notificationRouter);
+app.use(API_ROUTES.CHAT, chatRouter);
+app.use(API_ROUTES.MEETING, meetingRouter);
+app.use(API_ROUTES.FEEDBACK, feedbackRouter);
 
 // Global Error handling
-app.use(errorMiddleware)
+app.use(errorMiddleware);
 
 export default app;

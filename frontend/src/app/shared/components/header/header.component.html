@@ -1,15 +1,17 @@
 <nav
-  class="bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-lg relative z-50"
+  class="bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-lg fixed top-0 left-0 w-full z-5"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
-      <!-- Left side: Logo and Website Options -->
       <div class="flex items-center space-x-8">
-        <!-- Logo -->
         <div class="flex-shrink-0">
           <a [routerLink]="'/'" class="flex items-center space-x-2">
-            <div class="bg-white p-2 rounded-lg">
-              <i class="fas fa-dumbbell text-emerald-600 text-xl"></i>
+            <div class="bg-green p-2 rounded-full">
+              <img
+                src="zenfit.webp"
+                alt="Logo"
+                class="h-8 w-8 object-contain rounded-full"
+              />
             </div>
             <span class="text-white text-xl font-bold tracking-wide">{{
               logoText
@@ -19,50 +21,23 @@
 
         <!-- Website Navigation Options (Hidden on mobile) -->
         <div class="hidden lg:flex items-center space-x-6">
+          @for (item of navigationItems; track item) {
           <a
-            *ngFor="let item of navigationItems"
             [routerLink]="item.route"
             routerLinkActive="text-emerald-200 border-b-2 border-emerald-200"
             class="text-white hover:text-emerald-200 px-3 py-2 text-sm font-medium transition-colors duration-200"
           >
-            <i *ngIf="item.icon" [class]="item.icon" class="mr-2"></i>
+            @if (item.icon) {
+            <i [class]="item.icon" class="mr-2"></i>
+            }
             {{ item.label }}
           </a>
+          }
         </div>
       </div>
 
       <!-- Right side: Search, Links, and User -->
       <div class="flex items-center space-x-4">
-        <!-- Search Bar (Hidden on small screens) -->
-        <div class="hidden md:block relative">
-          <div class="relative">
-            <div
-              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-            >
-              <i class="fas fa-search text-emerald-300"></i>
-            </div>
-            <input
-              type="text"
-              [(ngModel)]="searchQuery"
-              (input)="onSearchChange()"
-              (keyup.enter)="onSearchSubmit()"
-              [placeholder]="searchPlaceholder"
-              class="bg-emerald-500 bg-opacity-30 text-white placeholder-emerald-200 border border-emerald-400 rounded-lg pl-10 pr-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
-            />
-            <div
-              *ngIf="searchQuery"
-              class="absolute inset-y-0 right-0 pr-3 flex items-center"
-            >
-              <button
-                (click)="clearSearch()"
-                class="text-emerald-200 hover:text-white transition-colors"
-              >
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-          </div>
-        </div>
-
         <!-- User Profile Dropdown -->
         <div class="relative">
           <button
@@ -71,19 +46,19 @@
             aria-label="User menu"
           >
             <div class="flex items-center space-x-2">
+              @if (userProfile?.avatar) {
               <img
-                *ngIf="userProfile?.avatar; else defaultAvatar"
                 [src]="userProfile?.avatar"
                 [alt]="userProfile?.name"
                 class="h-8 w-8 rounded-full object-cover border-2 border-white"
               />
-              <ng-template #defaultAvatar>
-                <div
-                  class="h-8 w-8 bg-white rounded-full flex items-center justify-center"
-                >
-                  <i class="fas fa-user text-emerald-600 text-sm"></i>
-                </div>
-              </ng-template>
+              } @else {
+              <div
+                class="h-8 w-8 bg-white rounded-full flex items-center justify-center"
+              >
+                <i class="fas fa-user text-emerald-600 text-sm"></i>
+              </div>
+              }
               <span class="hidden sm:block text-sm font-medium">
                 {{ userProfile?.name || "User" }}
               </span>
@@ -92,26 +67,26 @@
           </button>
 
           <!-- User Dropdown Menu -->
+          @if (isUserMenuOpen) {
           <div
-            *ngIf="isUserMenuOpen"
             class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
           >
             <!-- User Info Header -->
             <div class="px-4 py-3 border-b border-gray-200">
               <div class="flex items-center space-x-3">
+                @if (userProfile?.avatar) {
                 <img
-                  *ngIf="userProfile?.avatar; else defaultAvatarMenu"
                   [src]="userProfile?.avatar"
                   [alt]="userProfile?.name"
                   class="h-10 w-10 rounded-full object-cover"
                 />
-                <ng-template #defaultAvatarMenu>
-                  <div
-                    class="h-10 w-10 bg-emerald-100 rounded-full flex items-center justify-center"
-                  >
-                    <i class="fas fa-user text-emerald-600"></i>
-                  </div>
-                </ng-template>
+                } @else {
+                <div
+                  class="h-10 w-10 bg-emerald-100 rounded-full flex items-center justify-center"
+                >
+                  <i class="fas fa-user text-emerald-600"></i>
+                </div>
+                }
                 <div class="flex-1 min-w-0">
                   <p class="text-sm font-medium text-gray-900 truncate">
                     {{ userProfile?.name || "Guest User" }}
@@ -122,11 +97,10 @@
                 </div>
               </div>
             </div>
-
             <!-- Menu Items -->
             <div class="py-1">
+              @for (item of userMenuItems; track item) {
               <a
-                *ngFor="let item of userMenuItems"
                 [routerLink]="item.route"
                 (click)="onUserMenuClick(item)"
                 class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
@@ -134,28 +108,9 @@
                 <i [class]="item.icon" class="mr-3 text-gray-400 w-4"></i>
                 {{ item.label }}
               </a>
+              }
             </div>
-
-            <!-- Mobile-only links -->
-            <div class="lg:hidden border-t border-gray-200 py-1">
-              <a
-                [routerLink]="'/contact'"
-                (click)="closeUserMenu()"
-                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-              >
-                <i class="fas fa-envelope mr-3 text-gray-400 w-4"></i>
-                Contact Us
-              </a>
-              <a
-                [routerLink]="'/blog'"
-                (click)="closeUserMenu()"
-                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50"
-              >
-                <i class="fas fa-blog mr-3 text-gray-400 w-4"></i>
-                Blog
-              </a>
-            </div>
-
+            
             <!-- Logout -->
             <div class="border-t border-gray-200 py-1">
               <button
@@ -167,6 +122,7 @@
               </button>
             </div>
           </div>
+          }
         </div>
 
         <!-- Mobile Menu Button -->
@@ -193,59 +149,44 @@
             ></path>
           </svg>
         </button>
+        <div>
+          <zenfit-notification></zenfit-notification>
+        </div>
       </div>
     </div>
 
     <!-- Mobile Menu -->
-    <div *ngIf="isMobileMenuOpen" class="lg:hidden border-t border-emerald-500">
+    @if (isMobileMenuOpen) {
+    <div class="lg:hidden border-t border-emerald-500">
       <div class="px-2 pt-4 pb-3 space-y-1">
-        <!-- Mobile Search -->
-        <div class="md:hidden mb-4">
-          <div class="relative">
-            <div
-              class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"
-            >
-              <i class="fas fa-search text-emerald-300"></i>
-            </div>
-            <input
-              type="text"
-              [(ngModel)]="searchQuery"
-              (input)="onSearchChange()"
-              (keyup.enter)="onSearchSubmit()"
-              [placeholder]="searchPlaceholder"
-              class="bg-emerald-500 bg-opacity-30 text-white placeholder-emerald-200 border border-emerald-400 rounded-lg pl-10 pr-4 py-2 w-full focus:outline-none focus:ring-2 focus:ring-white focus:border-transparent"
-            />
-          </div>
-        </div>
-
         <!-- Mobile Navigation Items -->
+        @for (item of navigationItems; track item) {
         <a
-          *ngFor="let item of navigationItems"
           [routerLink]="item.route"
           (click)="closeMobileMenu()"
           routerLinkActive="bg-emerald-500 bg-opacity-50"
           class="text-white hover:text-emerald-200 hover:bg-emerald-500 hover:bg-opacity-30 block px-3 py-2 rounded-md text-base font-medium transition-colors"
         >
-          <i *ngIf="item.icon" [class]="item.icon" class="mr-2"></i>
+          @if (item.icon) {
+          <i [class]="item.icon" class="mr-2"></i>
+          }
           {{ item.label }}
         </a>
+        }
       </div>
     </div>
+    }
   </div>
 
   <!-- Click outside to close menus -->
-  <div
-    *ngIf="isUserMenuOpen"
-    class="fixed inset-0 z-40"
-    (click)="closeUserMenu()"
-  ></div>
+  @if (isUserMenuOpen) {
+  <div class="fixed inset-0 z-40" (click)="closeUserMenu()"></div>
+  }
 </nav>
 
 <!-- Current Date Display (Optional) -->
-<div
-  *ngIf="showDateBanner"
-  class="bg-emerald-50 border-b border-emerald-200 px-4 py-2"
->
+@if (showDateBanner) {
+<div class="bg-emerald-50 border-b border-emerald-200 px-4 py-2">
   <div class="max-w-7xl mx-auto flex items-center justify-center">
     <div class="flex items-center space-x-2 text-emerald-700">
       <i class="fas fa-calendar-alt"></i>
@@ -253,3 +194,4 @@
     </div>
   </div>
 </div>
+}

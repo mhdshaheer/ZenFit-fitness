@@ -1,30 +1,37 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { ICategory, IParams } from '../../interface/category.interface';
+import { CategoryRoutes } from '../constants/api-routes.const';
 export type { ICategory };
 
 @Injectable({ providedIn: 'root' })
 export class CategoryService {
-  private api = environment.apiUrl + '/category';
-
-  constructor(private http: HttpClient) {}
+  private readonly _api = environment.apiUrl + CategoryRoutes.BASE;
+  private readonly _http = inject(HttpClient);
 
   getCategories(): Observable<ICategory[]> {
-    return this.http.get<ICategory[]>(`${this.api}`);
-  }
-  getSubcateories(): Observable<ICategory[]> {
-    return this.http.get<ICategory[]>(`${this.api}/subcategories`);
-  }
-  getCategory(id: string): Observable<ICategory> {
-    return this.http.get<ICategory>(`${this.api}/${id}`);
+    return this._http.get<ICategory[]>(this._api);
   }
   createCategory(data: Partial<ICategory>): Observable<ICategory> {
-    return this.http.post<ICategory>(`${this.api}`, data);
+    return this._http.post<ICategory>(this._api, data);
   }
-  updateCategory(id: string, data: Partial<ICategory>) {
-    return this.http.put<ICategory>(`${this.api}/${id}`, data);
+  getSubcateories(): Observable<ICategory[]> {
+    return this._http.get<ICategory[]>(
+      this._api + CategoryRoutes.SUBCATEGORIES
+    );
+  }
+  getCategory(categoryId: string): Observable<ICategory> {
+    return this._http.get<ICategory>(
+      this._api + CategoryRoutes.BY_CategoryID(categoryId)
+    );
+  }
+  updateCategory(categoryId: string, data: Partial<ICategory>) {
+    return this._http.put<ICategory>(
+      this._api + CategoryRoutes.BY_CategoryID(categoryId),
+      data
+    );
   }
   getCategoryTable(
     params: IParams
@@ -38,18 +45,25 @@ export class CategoryService {
     if (params.search) {
       httpParams = httpParams.set('search', params.search);
     }
-    return this.http.get<{ total: number; data: ICategory[] }>(
-      `${this.api}/table`,
+    return this._http.get<{ total: number; data: ICategory[] }>(
+      this._api + CategoryRoutes.TABLE,
       {
         params: httpParams,
         withCredentials: true,
       }
     );
   }
-  checkDuplicateName(name: String): Observable<boolean> {
-    return this.http.get<boolean>(`${this.api}/check-name?name=${name}`);
+  checkDuplicateName(categoryName: string): Observable<boolean> {
+    return this._http.get<boolean>(
+      this._api + CategoryRoutes.CHECK_NAME + `?name=${categoryName}`
+    );
   }
-  updateStatus(id: String, isBlocked: boolean): Observable<ICategory> {
-    return this.http.put<ICategory>(`${this.api}/status/${id}`, { isBlocked });
+  updateStatus(categoryId: string, isBlocked: boolean): Observable<ICategory> {
+    return this._http.put<ICategory>(
+      this._api + CategoryRoutes.STATUS(categoryId),
+      {
+        isBlocked,
+      }
+    );
   }
 }

@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, EventEmitter, Input, Output } from '@angular/core';
 
 export interface Program {
@@ -17,7 +18,7 @@ export interface Program {
 
 @Component({
   selector: 'app-program-card',
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './program-card.component.html',
   styleUrl: './program-card.component.css',
 })
@@ -25,7 +26,12 @@ export class ProgramCardComponent {
   //Parant to child
   @Input() program!: Program;
   @Input() defaultImage = 'trainer/fitness_program.jpg';
+  @Input() button1Labal = 'View';
   @Input() button2Labal = 'Edit';
+  @Input() btn2Icon =
+    'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z';
+  @Input() btn2Class =
+    'px-4 py-2 border border-green-600 text-green-600 text-sm font-medium rounded-lg hover:bg-green-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2';
 
   //Child to parant
   @Output() viewProgram = new EventEmitter<string>();

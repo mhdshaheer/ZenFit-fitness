@@ -1,132 +1,147 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { FitnessProgram } from '../../../trainer/components/program-list/program-list.component';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
-import { CommonModule } from '@angular/common';
-import { ActivatedRoute } from '@angular/router';
-import { ProgramService } from '../../../../core/services/program.service';
-import { Program } from '../../../trainer/store/trainer.model';
-import { Subject, takeUntil } from 'rxjs';
 
+import { ActivatedRoute, Router } from '@angular/router';
+import { ProgramService } from '../../../../core/services/program.service';
+import { lastValueFrom, Subject, takeUntil } from 'rxjs';
+
+import { ISubCategory } from '../../../../interface/category.interface';
+import { FormsModule } from '@angular/forms';
+import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
+
+interface IProgramType {
+  label: string;
+  value: string;
+  selected: boolean;
+}
 @Component({
   selector: 'app-program-list',
-  imports: [ProgramCardComponent, CommonModule],
+  imports: [ProgramCardComponent, FormsModule, SearchBarComponent],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
 export class ProgramListComponent implements OnDestroy, OnInit {
-  programService = inject(ProgramService);
-  route = inject(ActivatedRoute);
-
-  private destroy$ = new Subject<void>();
-
-  ngOnInit() {
-    this.getSubCategory();
-  }
-  programs: FitnessProgram[] = [];
-
-  getSubCategory() {
-    const id = this.route.snapshot.paramMap.get('id');
-    if (!id) return; // safety check
-
-    this.programService
-      .getProgramsByParantId(id)
-      .pipe(takeUntil(this.destroy$))
-      .subscribe({
-        next: (res: { programs: Program[] }) => {
-          console.log('Programs response:', res.programs);
-          this.programs = res.programs.map((item) => {
-            const category = JSON.parse(item.category).name;
-            console.log('Category :', category);
-            return { ...item, category: category };
-          });
-        },
-        error: (err) => {
-          console.error('Error fetching programs:', err);
-          this.programs = [];
-        },
-      });
-  }
-
-  onViewProgram(programId: string): void {
-    console.log('Viewing program with ID:', programId);
-  }
-
-  onEditProgram(programId: string): void {
-    console.log('Editing program with ID:', programId);
-  }
-  // Properties for UI binding
   searchTerm = '';
   selectedFilter = 'All Programs';
   activeFiltersCount = 0;
   isFilterMenuOpen = false;
   isSortMenuOpen = false;
-  selectedSort = 'Created Date';
-  selectedDuration = '';
+  selectedSort = 'Latest';
   filteredResultsCount = 52;
-  dateRange = { from: '', to: '' };
+  programs: FitnessProgram[] = [];
+  subcategories: ISubCategory[] = [];
+  programTypes: IProgramType[] = [];
 
-  // Sample data for dropdowns
-  statusOptions = [
-    { label: 'Active', value: 'active', selected: false, count: 24 },
-    { label: 'Inactive', value: 'inactive', selected: false, count: 8 },
-    { label: 'Draft', value: 'draft', selected: false, count: 5 },
-    { label: 'Completed', value: 'completed', selected: false, count: 12 },
-    { label: 'Archived', value: 'archived', selected: false, count: 3 },
-  ];
+  private readonly _programService = inject(ProgramService);
+  private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _route = inject(Router);
 
-  programTypes = [
-    { label: 'Weight Training', value: 'weight', selected: false, count: 18 },
-    { label: 'Cardio', value: 'cardio', selected: false, count: 15 },
-    { label: 'HIIT', value: 'hiit', selected: false, count: 10 },
-    { label: 'Yoga', value: 'yoga', selected: false, count: 8 },
-    { label: 'Pilates', value: 'pilates', selected: false, count: 6 },
-    { label: 'CrossFit', value: 'crossfit', selected: false, count: 12 },
-    { label: 'Swimming', value: 'swimming', selected: false, count: 4 },
-  ];
+  private readonly _destroy$ = new Subject<void>();
 
-  durationOptions = [
-    { label: 'All Durations', value: '', selected: true, count: 52 },
-    { label: '1-4 weeks', value: '1-4', selected: false, count: 15 },
-    { label: '1-3 months', value: '1-3', selected: false, count: 22 },
-    { label: '3-6 months', value: '3-6', selected: false, count: 12 },
-    { label: '6+ months', value: '6+', selected: false, count: 3 },
-  ];
+  // UI
+  btn2Label = 'Purchase';
+  btn2Icon =
+    'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z';
+  btn2Class =
+    'px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2';
+  ngOnInit() {
+    this.getSubCategory();
+  }
 
+  async getSubCategory() {
+    const id = this._activatedRoute.snapshot.paramMap.get('id');
+    if (!id) return;
+
+    try {
+      const res = await lastValueFrom(
+        this._programService
+          .getProgramsByParantId(id)
+          .pipe(takeUntil(this._destroy$))
+      );
+
+      this.programs = res.programs.map((item) => {
+        const categories = JSON.parse(item.category);
+        const subCatName = categories.name;
+        this.subcategories.push(categories);
+        return { ...item, category: subCatName };
+      });
+
+      this.extractUniqueSubCategories(this.subcategories);
+    } catch (err) {
+      console.error('Error fetching programs:', err);
+      this.programs = [];
+    }
+  }
+
+  onViewProgram(programId: string): void {
+    console.log('Viewing program with ID:', programId);
+  }
+  onSubscribeProgram(programId: string): void {
+    this._route.navigate(['user/payment', programId]);
+  }
   sortOptions = [
-    { label: 'Created Date', value: 'createdDate' },
+    { label: 'Latest', value: 'createdDate' },
     { label: 'Name (A-Z)', value: 'name_asc' },
     { label: 'Name (Z-A)', value: 'name_desc' },
     { label: 'Duration', value: 'duration' },
-    { label: 'Status', value: 'status' },
-    { label: 'Last Modified', value: 'lastModified' },
   ];
 
-  activeFilterTags = ['abx', 'abc', 'aaa'];
-
-  // Computed property
-  get hasActiveFilters(): boolean {
-    return this.activeFiltersCount > 0;
+  extractUniqueSubCategories(subcategories: ISubCategory[]) {
+    let unique = new Set<string>();
+    for (let i = 0; i < subcategories.length; i++) {
+      let str = JSON.stringify(subcategories[i]);
+      if (!unique.has(str)) {
+        unique.add(str);
+      }
+    }
+    let newArr = [];
+    for (let item of unique) {
+      newArr.push(JSON.parse(item));
+    }
+    this.programTypes = newArr.map((item) => {
+      let obj: IProgramType = {
+        label: item.name,
+        value: item._id,
+        selected: false,
+      };
+      return obj;
+    });
   }
 
-  // Methods called by template (empty implementations)
-  onSearch(event: any) {}
-  clearSearch() {}
+  // Search
+  onSearch(text: string) {
+    this.searchTerm = text;
+    console.log(text);
+  }
+  clearSearch() {
+    this.searchTerm = '';
+    this.onSearch('');
+  }
+
+  // Filter
   toggleFilterMenu() {
     this.isFilterMenuOpen = !this.isFilterMenuOpen;
   }
-  onFilterChange(type: string, option: any) {}
-  onDateRangeChange() {}
+  onFilterChange(option: IProgramType) {
+    for (let item of this.programTypes) {
+      if (item.value == option.value) {
+        item.selected = !item.selected;
+      }
+    }
+    console.log('filtering :', this.programTypes);
+  }
+
   clearAllFilters() {}
-  resetFilters() {}
-  applyFilters() {}
-  removeFilter(filter: any) {}
+
+  // Sorting
   toggleSortMenu() {
     this.isSortMenuOpen = !this.isSortMenuOpen;
   }
   onSortChange(option: any) {}
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

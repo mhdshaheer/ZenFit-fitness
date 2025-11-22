@@ -1,4 +1,3 @@
-import { CommonModule } from '@angular/common';
 import { Component, inject, signal } from '@angular/core';
 import {
   FormBuilder,
@@ -20,29 +19,24 @@ import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    CommonModule,
-    RouterModule,
-    SharedFormComponent,
-  ],
+  imports: [ReactiveFormsModule, RouterModule, SharedFormComponent],
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
 export class LoginComponent {
-  private fb = inject(FormBuilder);
-  private store = inject(Store);
-  private logger = inject(LoggerService);
+  private readonly _fb = inject(FormBuilder);
+  private readonly _store = inject(Store);
+  private readonly _logger = inject(LoggerService);
   loginForm!: FormGroup;
   submitted = signal(false);
   showPassword = signal(false);
-  error = toSignal(this.store.select(selectAuthError), { initialValue: null });
-  isLoading = toSignal(this.store.select(selectAuthLoading), {
+  error = toSignal(this._store.select(selectAuthError), { initialValue: null });
+  isLoading = toSignal(this._store.select(selectAuthLoading), {
     initialValue: false,
   });
 
   constructor() {
-    this.loginForm = this.fb.group({
+    this.loginForm = this._fb.group({
       email: [
         '',
         [
@@ -64,12 +58,12 @@ export class LoginComponent {
     if (this.loginForm.invalid) return;
 
     const { email, password } = this.loginForm.value;
-    this.store.dispatch(login({ payload: { email, password } }));
+    this._store.dispatch(login({ payload: { email, password } }));
     console.log('Login submitted: ', this.loginForm.value);
   }
   loginWithGoogle() {
-    this.logger.info('clicked google login..');
+    this._logger.info('clicked google login..');
     window.location.href = `${environment.apiUrl}/auth/google`;
-    this.logger.info('after google login : page - signup-user');
+    this._logger.info('after google login : page - signup-user');
   }
 }

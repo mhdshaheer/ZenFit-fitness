@@ -7,13 +7,13 @@
       <div class="text-center mb-8">
         <div
           class="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-r from-emerald-500 to-emerald-600 rounded-2xl mb-4 floating"
-        >
+          >
           <svg
             class="w-8 h-8 text-white"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
-          >
+            >
             <path
               stroke-linecap="round"
               stroke-linejoin="round"
@@ -32,7 +32,7 @@
         (ngSubmit)="onSubmit()"
         class="space-y-6"
         novalidate
-      >
+        >
         <!-- Role Selection Cards -->
         <div>
           <div class="grid grid-cols-2 gap-4">
@@ -44,12 +44,12 @@
               [class.border-gray-200]="f['role'].value !== 'user'"
               [class.hover:border-emerald-300]="f['role'].value !== 'user'"
               (click)="selectRole('user')"
-            >
+              >
               <div
                 class="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
                 [class.bg-emerald-100]="f['role'].value === 'user'"
                 [class.bg-blue-100]="f['role'].value !== 'user'"
-              >
+                >
                 <svg
                   class="w-6 h-6"
                   [class.text-emerald-600]="f['role'].value === 'user'"
@@ -57,7 +57,7 @@
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                >
+                  >
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -80,18 +80,18 @@
               [class.border-gray-200]="f['role'].value !== 'trainer'"
               [class.hover:border-emerald-300]="f['role'].value !== 'trainer'"
               (click)="selectRole('trainer')"
-            >
+              >
               <div
                 class="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
                 [class.bg-emerald-100]="f['role'].value === 'trainer'"
                 [class.bg-emerald-100]="f['role'].value !== 'trainer'"
-              >
+                >
                 <svg
                   class="w-6 h-6 text-emerald-600"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
-                >
+                  >
                   <path
                     stroke-linecap="round"
                     stroke-linejoin="round"
@@ -104,12 +104,15 @@
               <p class="text-xs text-gray-500 mt-1">Share your expertise</p>
             </div>
           </div>
-          <div
-            class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
-            *ngIf="f['role'].touched && f['role'].invalid"
-          >
-            <span *ngIf="f['role'].errors?.['required']">Role is required</span>
-          </div>
+          @if (f['role'].touched && f['role'].invalid) {
+            <div
+              class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
+              >
+              @if (f['role'].errors?.['required']) {
+                <span>Role is required</span>
+              }
+            </div>
+          }
         </div>
         <hr class="w-2/ mx-auto border-gray-400" />
 
@@ -122,191 +125,227 @@
               [controlName]="'username'"
               [label]="'Username'"
               [placeholder]="'Enter your username'"
-            >
+              >
             </app-shared-form>
-            <div
-              class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
-              *ngIf="f['username'].touched && f['username'].invalid"
-            >
-              <span *ngIf="f['username'].errors?.['required']"
-                >Username is required</span
-              >
-              <span *ngIf="f['username'].errors?.['minlength']"
-                >Username must be at least 4 characters long</span
-              >
-              <span *ngIf="f['username'].errors?.['maxlength']"
-                >Username must not exceed 20 characters</span
-              >
-              <span *ngIf="f['username'].errors?.['pattern']"
-                >Username can only contain letters, numbers, and
-                underscores</span
-              >
-            </div>
-          </div>
-          <!-- Email -->
+            @if (f['username'].touched && f['username'].invalid) {
+              <div
+                class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
+                >
+                @if (f['username'].errors?.['required']) {
+                  <span
+                    >Username is required</span
+                    >
+                  }
+                  @if (f['username'].errors?.['minlength']) {
+                    <span
+                      >Username must be at least 4 characters long</span
+                      >
+                    }
+                    @if (f['username'].errors?.['maxlength']) {
+                      <span
+                        >Username must not exceed 20 characters</span
+                        >
+                      }
+                      @if (f['username'].errors?.['pattern']) {
+                        <span
+                          >Username can only contain letters, numbers, and
+                          underscores</span
+                          >
+                        }
+                      </div>
+                    }
+                  </div>
+                  <!-- Email -->
 
-          <div>
-            <app-shared-form
-              [formGroup]="signupForm"
-              [type]="'email'"
-              [controlName]="'email'"
-              [label]="'Email'"
-              [placeholder]="'Enter your email'"
-            >
-            </app-shared-form>
+                  <div>
+                    <app-shared-form
+                      [formGroup]="signupForm"
+                      [type]="'email'"
+                      [controlName]="'email'"
+                      [label]="'Email'"
+                      [placeholder]="'Enter your email'"
+                      >
+                    </app-shared-form>
 
-            <div
-              class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
-              *ngIf="f['email'].touched && f['email'].invalid"
-            >
-              <span *ngIf="f['email'].errors?.['required']"
-                >Email is required</span
-              >
-              <span *ngIf="f['email'].errors?.['email']"
-                >Please enter a valid email address</span
-              >
-              <span *ngIf="f['email'].errors?.['pattern']"
-                >Email must be in valid format</span
-              >
-            </div>
-          </div>
-          <div>
-            <!-- Password -->
-            <app-shared-form
-              [formGroup]="signupForm"
-              [type]="'password'"
-              [controlName]="'password'"
-              [label]="'Password'"
-              [placeholder]="'Create a password'"
-            >
-            </app-shared-form>
-            <div
-              class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
-              *ngIf="f['password'].touched && f['password'].invalid"
-            >
-              <span *ngIf="f['password'].errors?.['required']"
-                >Password is required</span
-              >
-              <ng-container
-                *ngIf="f['password'].errors?.['passwordStrength'] as strength"
-              >
-                <span *ngIf="!strength.hasUpperCase"
-                  >Must contain an uppercase letter<br
-                /></span>
-                <span *ngIf="!strength.hasLowerCase"
-                  >Must contain a lowercase letter<br
-                /></span>
-                <span *ngIf="!strength.hasNumber"
-                  >Must contain a number<br
-                /></span>
-                <span *ngIf="!strength.hasSpecialChar"
-                  >Must contain a special character<br
-                /></span>
-                <span *ngIf="!strength.isLongEnough"
-                  >Minimum length must be 8<br
-                /></span>
-              </ng-container>
-            </div>
-          </div>
+                    @if (f['email'].touched && f['email'].invalid) {
+                      <div
+                        class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
+                        >
+                        @if (f['email'].errors?.['required']) {
+                          <span
+                            >Email is required</span
+                            >
+                          }
+                          @if (f['email'].errors?.['email']) {
+                            <span
+                              >Please enter a valid email address</span
+                              >
+                            }
+                            @if (f['email'].errors?.['pattern']) {
+                              <span
+                                >Email must be in valid format</span
+                                >
+                              }
+                            </div>
+                          }
+                        </div>
+                        <div>
+                          <!-- Password -->
+                          <app-shared-form
+                            [formGroup]="signupForm"
+                            [type]="'password'"
+                            [controlName]="'password'"
+                            [label]="'Password'"
+                            [placeholder]="'Create a password'"
+                            >
+                          </app-shared-form>
+                          @if (f['password'].touched && f['password'].invalid) {
+                            <div
+                              class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
+                              >
+                              @if (f['password'].errors?.['required']) {
+                                <span
+                                  >Password is required</span
+                                  >
+                                }
+                                @if (f['password'].errors?.['passwordStrength']; as strength) {
+                                  @if (!strength.hasUpperCase) {
+                                    <span
+                                      >Must contain an uppercase letter<br
+                                    /></span>
+                                  }
+                                  @if (!strength.hasLowerCase) {
+                                    <span
+                                      >Must contain a lowercase letter<br
+                                    /></span>
+                                  }
+                                  @if (!strength.hasNumber) {
+                                    <span
+                                      >Must contain a number<br
+                                    /></span>
+                                  }
+                                  @if (!strength.hasSpecialChar) {
+                                    <span
+                                      >Must contain a special character<br
+                                    /></span>
+                                  }
+                                  @if (!strength.isLongEnough) {
+                                    <span
+                                      >Minimum length must be 8<br
+                                    /></span>
+                                  }
+                                }
+                              </div>
+                            }
+                          </div>
 
-          <!-- Confirm Password -->
-          <div>
-            <app-shared-form
-              [formGroup]="signupForm"
-              [type]="'password'"
-              [controlName]="'confirmPassword'"
-              [label]="'Confirm Password'"
-              [placeholder]="'Create a password'"
-            >
-            </app-shared-form>
+                          <!-- Confirm Password -->
+                          <div>
+                            <app-shared-form
+                              [formGroup]="signupForm"
+                              [type]="'password'"
+                              [controlName]="'confirmPassword'"
+                              [label]="'Confirm Password'"
+                              [placeholder]="'Create a password'"
+                              >
+                            </app-shared-form>
 
-            <div
-              class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
-              *ngIf="f['confirmPassword'].touched && (f['confirmPassword'].invalid || signupForm.errors?.['mismatch'])"
-            >
-              <span *ngIf="f['confirmPassword'].errors?.['required']"
-                >Confirm Password is required</span
-              >
-              <span *ngIf="signupForm.errors?.['mismatch']"
-                >Passwords do not match</span
-              >
-            </div>
-          </div>
-        </div>
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          [disabled]="isLoading()"
-          class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white py-3 px-4 rounded-lg hover:from-emerald-700 hover:to-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300 transform hover:scale-[1.02] font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
-        >
-          <span *ngIf="!isLoading()">Create Account</span>
-          <span *ngIf="isLoading()" class="flex items-center justify-center">
-            <svg
-              class="animate-spin h-5 w-5 text-white mr-2"
-              fill="none"
-              viewBox="0 0 24 24"
-            >
-              <circle
-                class="opacity-25"
-                cx="12"
-                cy="12"
-                r="10"
-                stroke="currentColor"
-                stroke-width="4"
-              ></circle>
-              <path
-                class="opacity-75"
-                fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-              ></path>
-            </svg>
-            Creating Account...
-          </span>
-        </button>
+                            @if (f['confirmPassword'].touched && (f['confirmPassword'].invalid || signupForm.errors?.['mismatch'])) {
+                              <div
+                                class="error-message text-red-500 text-xs mt-1 transition-all duration-300"
+                                >
+                                @if (f['confirmPassword'].errors?.['required']) {
+                                  <span
+                                    >Confirm Password is required</span
+                                    >
+                                  }
+                                  @if (signupForm.errors?.['mismatch']) {
+                                    <span
+                                      >Passwords do not match</span
+                                      >
+                                    }
+                                  </div>
+                                }
+                              </div>
+                            </div>
+                            <!-- Submit Button -->
+                            <button
+                              type="submit"
+                              [disabled]="isLoading()"
+                              class="w-full bg-gradient-to-r from-emerald-600 to-emerald-700 text-white py-3 px-4 rounded-lg hover:from-emerald-700 hover:to-emerald-800 focus:outline-none focus:ring-2 focus:ring-emerald-500 transition-all duration-300 transform hover:scale-[1.02] font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                              >
+                              @if (!isLoading()) {
+                                <span>Create Account</span>
+                              }
+                              @if (isLoading()) {
+                                <span class="flex items-center justify-center">
+                                  <svg
+                                    class="animate-spin h-5 w-5 text-white mr-2"
+                                    fill="none"
+                                    viewBox="0 0 24 24"
+                                    >
+                                    <circle
+                                      class="opacity-25"
+                                      cx="12"
+                                      cy="12"
+                                      r="10"
+                                      stroke="currentColor"
+                                      stroke-width="4"
+                                    ></circle>
+                                    <path
+                                      class="opacity-75"
+                                      fill="currentColor"
+                                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    ></path>
+                                  </svg>
+                                  Creating Account...
+                                </span>
+                              }
+                            </button>
 
-        <!-- Divider -->
-        <div class="flex items-center">
-          <div class="flex-1 border-t border-gray-300"></div>
-          <span class="px-4 text-gray-500 text-sm">or</span>
-          <div class="flex-1 border-t border-gray-300"></div>
-        </div>
+                            <!-- Divider -->
+                            <div class="flex items-center">
+                              <div class="flex-1 border-t border-gray-300"></div>
+                              <span class="px-4 text-gray-500 text-sm">or</span>
+                              <div class="flex-1 border-t border-gray-300"></div>
+                            </div>
 
-        <!-- Google Sign Up -->
-        <button
-          type="button"
-          (click)="loginWithGoogle()"
-          class="w-full bg-white border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300 flex items-center justify-center space-x-3"
-        >
-          <img
-            src="https://developers.google.com/identity/images/g-logo.png"
-            alt="Google Logo"
-            class="w-5 h-5"
-          />
-          <span>Continue with Google</span>
-        </button>
+                            <!-- Google Sign Up -->
+                            <button
+                              type="button"
+                              (click)="loginWithGoogle()"
+                              class="w-full bg-white border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300 flex items-center justify-center space-x-3"
+                              >
+                              <img
+                                src="https://developers.google.com/identity/images/g-logo.png"
+                                alt="Google Logo"
+                                class="w-5 h-5"
+                                />
+                                <span>Continue with Google</span>
+                              </button>
 
-        <!-- Login Link -->
-        <div class="text-center">
-          <p class="text-gray-600 text-sm">
-            Already have an account?
-            <a
-              href="/auth/login"
-              class="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
-            >
-              Sign in here
-            </a>
-          </p>
-        </div>
-      </form>
-    </div>
-  </div>
+                              <!-- Login Link -->
+                              <div class="text-center">
+                                <p class="text-gray-600 text-sm">
+                                  Already have an account?
+                                  <a
+                                    href="/auth/login"
+                                    class="text-emerald-600 hover:text-emerald-700 font-medium transition-colors"
+                                    >
+                                    Sign in here
+                                  </a>
+                                </p>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
 
-  <!-- Right Side - Info Section -->
-</div>
+                        <!-- Right Side - Info Section -->
+                      </div>
 
-<!-- Footer for mobile -->
-<div class="bg-gray-50 lg:hidden">
-  <div class="text-center py-4 text-gray-500 text-xs">
-    © 2025 ZenFit. All rights reserved.
-  </div>
-</div>
+                      <!-- Footer for mobile -->
+                      <div class="bg-gray-50 lg:hidden">
+                        <div class="text-center py-4 text-gray-500 text-xs">
+                          © 2025 ZenFit. All rights reserved.
+                        </div>
+                      </div>

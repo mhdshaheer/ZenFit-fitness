@@ -1,0 +1,144 @@
+<div class="transaction-history-container">
+  <!-- Header -->
+  <div class="header">
+    <h1 class="page-title">Transaction History</h1>
+    <p class="page-subtitle">View your program purchase history and payment details</p>
+  </div>
+
+  <div class="content-wrapper">
+    <div class="main-content">
+      <!-- Filters -->
+      <div class="filters-section">
+    <div class="search-box">
+      <i class="fas fa-search search-icon"></i>
+      <input 
+        type="text" 
+        placeholder="Search by program name..." 
+        class="search-input"
+        [value]="searchTerm"
+        (input)="onSearchChange($event)">
+    </div>
+    
+    <div class="status-filter">
+      <label for="status-select" class="filter-label">Status:</label>
+      <select 
+        id="status-select" 
+        class="status-select"
+        [value]="selectedStatus"
+        (change)="onStatusFilterChange($event)">
+        <option value="all">All Transactions</option>
+        <option value="success">Successful</option>
+        <option value="pending">Pending</option>
+        <option value="failed">Failed</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading-container">
+    <div class="loading-spinner">
+      <i class="fas fa-spinner fa-spin"></i>
+    </div>
+    <p class="loading-text">Loading transactions...</p>
+  </div>
+
+  <!-- Transactions Table -->
+  <div *ngIf="!isLoading" class="transactions-section">
+    <div *ngIf="transactions.length === 0" class="empty-state">
+      <i class="fas fa-receipt empty-icon"></i>
+      <h3 class="empty-title">No Transactions Found</h3>
+      <p class="empty-message">You haven't made any program purchases yet.</p>
+    </div>
+
+    <div *ngIf="transactions.length > 0" class="transactions-table-container">
+      <table class="transactions-table">
+        <thead>
+          <tr>
+            <th>Program</th>
+            <th>Trainer</th>
+            <th>Amount</th>
+            <th>Payment Method</th>
+            <th>Status</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let transaction of transactions" class="transaction-row">
+            <td class="program-cell">
+              <div class="program-info">
+                <h4 class="program-title">{{ transaction.title }}</h4>
+                <p class="program-details">
+                  <span class="difficulty">{{ transaction.difficultyLevel }}</span>
+                </p>
+              </div>
+            </td>
+            
+            <td class="trainer-cell">
+              <div class="trainer-info">
+                <span class="trainer-name">{{ getTrainerDisplayName(transaction) }}</span>
+              </div>
+            </td>
+            
+            <td class="amount-cell">
+              <span class="amount">{{ formatCurrency(transaction.amountPaid) }}</span>
+            </td>
+            
+            <td class="payment-method-cell">
+              <div class="payment-method">
+                <i class="fas fa-credit-card payment-icon"></i>
+                <span>{{ transaction.paymentMethod | titlecase }}</span>
+              </div>
+            </td>
+            
+            <td class="status-cell">
+              <span class="status-badge" [ngClass]="getStatusClass('success')">
+                <i class="fas fa-check-circle status-icon"></i>
+                Success
+              </span>
+            </td>
+            
+            <td class="date-cell">
+              <span class="date">{{ formatDate(transaction.purchasedAt) }}</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    </div>
+
+    <!-- Pagination -->
+    <div *ngIf="totalItems > 0" class="pagination-container">
+      <div class="pagination-info">
+        <span>Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ getDisplayedItemsEnd() }} of {{ totalItems }} transactions</span>
+      </div>
+      
+      <div class="pagination">
+        <button 
+          class="pagination-btn prev-btn"
+          [disabled]="currentPage === 1"
+          (click)="onPageChange(currentPage - 1)">
+          <i class="fas fa-chevron-left"></i>
+          Previous
+        </button>
+        
+        <div class="page-numbers">
+          <button 
+            *ngFor="let page of getPageNumbers()"
+            class="page-btn"
+            [class.active]="page === currentPage"
+            (click)="onPageChange(page)">
+            {{ page }}
+          </button>
+        </div>
+        
+        <button 
+          class="pagination-btn next-btn"
+          [disabled]="currentPage === totalPages"
+          (click)="onPageChange(currentPage + 1)">
+          Next
+          <i class="fas fa-chevron-right"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>

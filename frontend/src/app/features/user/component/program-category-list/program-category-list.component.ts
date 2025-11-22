@@ -23,10 +23,10 @@ interface CategoryCard {
 export class ProgramCategoryListComponent implements OnInit, OnDestroy {
   categories: ICategory[] = [];
   categoryCards: CategoryCard[] = [];
-  router = inject(Router);
+  private readonly _router = inject(Router);
+  private readonly _categoryService = inject(CategoryService);
 
-  private destroy$ = new Subject<void>();
-  constructor(private categoryService: CategoryService) {}
+  private readonly _destroy$ = new Subject<void>();
 
   categoryExtras: Record<string, { icon: string; color: string }> = {
     'Goal-Based': { icon: '📊', color: 'blue' },
@@ -38,9 +38,9 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
     this.getCategories();
   }
   getCategories() {
-    this.categoryService
+    this._categoryService
       .getCategories()
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: ICategory[]) => {
           console.log('categories are :', res);
@@ -73,11 +73,11 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
 
   onCardClick(card: CategoryCard): void {
     console.log('Category card clicked:', card);
-    this.router.navigate(['/user/programs', card.id]);
+    this._router.navigate(['/user/programs', card.id]);
   }
 
   ngOnDestroy(): void {
-    this.destroy$.next();
-    this.destroy$.complete();
+    this._destroy$.next();
+    this._destroy$.complete();
   }
 }

@@ -1,36 +1,34 @@
-<div *ngIf="isVisible" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-      <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto relative animate-fadeIn">
-        <!-- Close Button -->
-        <button 
-          (click)="onClose()" 
-          class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 z-10">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
-
-        <!-- Header -->
-        <div class="p-6 pb-4">
-          <h2 class="text-xl font-semibold text-gray-900 text-center">
-            {{ config.title }}
-          </h2>
-        </div>
-
-        <!-- Calendar Days -->
-        <div class="px-6 pb-4">
-          <div class="flex items-center justify-between mb-4">
-            <button 
-              (click)="previousWeek()" 
-              [disabled]="!canNavigatePrevious"
-              class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-              </svg>
-            </button>
-            
-            <div class="flex space-x-1 overflow-x-auto">
-              <div 
-                *ngFor="let day of calendarDays" 
+@if (isVisible) {
+  <div class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-md mx-auto relative animate-fadeIn">
+      <!-- Close Button -->
+      <button
+        (click)="onClose()"
+        class="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors duration-200 z-10">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      <!-- Header -->
+      <div class="p-6 pb-4">
+        <h2 class="text-xl font-semibold text-gray-900 text-center">
+          {{ config.title }}
+        </h2>
+      </div>
+      <!-- Calendar Days -->
+      <div class="px-6 pb-4">
+        <div class="flex items-center justify-between mb-4">
+          <button
+            (click)="previousWeek()"
+            [disabled]="!canNavigatePrevious"
+            class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+            </svg>
+          </button>
+          <div class="flex space-x-1 overflow-x-auto">
+            @for (day of calendarDays; track day) {
+              <div
                 (click)="selectDay(day)"
                 class="flex flex-col items-center min-w-[50px] p-3 rounded-xl cursor-pointer transition-all duration-200"
                 [class]="getDayClasses(day)">
@@ -38,76 +36,80 @@
                 <span class="text-lg font-semibold">{{ day.day }}</span>
                 <span class="text-xs">{{ day.month }}</span>
               </div>
-            </div>
-
-            <button 
-              (click)="nextWeek()" 
-              [disabled]="!canNavigateNext"
-              class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
-              <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
-              </svg>
-            </button>
+            }
+          </div>
+          <button
+            (click)="nextWeek()"
+            [disabled]="!canNavigateNext"
+            class="p-2 rounded-full hover:bg-gray-100 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <!-- Time Slot Selection -->
+      <div class="px-6 pb-6">
+        <h3 class="text-lg font-medium text-gray-900 mb-4 text-center">Select a time slot</h3>
+        <!-- Timezone and Duration Info -->
+        <div class="flex items-center justify-center space-x-4 mb-6 text-sm text-gray-600">
+          <div class="flex items-center">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span class="hidden sm:inline">{{ config.timezone }}</span>
+            <span class="sm:hidden">{{ config.timezoneShort }}</span>
+          </div>
+          <div class="flex items-center">
+            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+            <span>{{ config.duration }} {{ config.durationUnit }}</span>
           </div>
         </div>
-
-        <!-- Time Slot Selection -->
-        <div class="px-6 pb-6">
-          <h3 class="text-lg font-medium text-gray-900 mb-4 text-center">Select a time slot</h3>
-          
-          <!-- Timezone and Duration Info -->
-          <div class="flex items-center justify-center space-x-4 mb-6 text-sm text-gray-600">
-            <div class="flex items-center">
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span class="hidden sm:inline">{{ config.timezone }}</span>
-              <span class="sm:hidden">{{ config.timezoneShort }}</span>
-            </div>
-            <div class="flex items-center">
-              <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-              <span>{{ config.duration }} {{ config.durationUnit }}</span>
-            </div>
-          </div>
-
-          <!-- No slots message -->
-          <div *ngIf="!currentTimeSlots.length && selectedDay" 
-               class="text-center py-8 text-gray-500">
+        <!-- No slots message -->
+        @if (!currentTimeSlots.length && selectedDay) {
+          <div
+            class="text-center py-8 text-gray-500">
             <svg class="w-12 h-12 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
             </svg>
             <p>No available slots for this day</p>
           </div>
-
-          <!-- Time Slots Grid -->
-          <div *ngIf="currentTimeSlots.length" class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
-            <button
-              *ngFor="let slot of currentTimeSlots; trackBy: trackBySlot"
-              (click)="selectTimeSlot(slot)"
-              [disabled]="!slot.available"
-              class="py-3 px-4 rounded-lg border-2 transition-all duration-200 text-sm font-medium"
-              [class]="getTimeSlotClasses(slot)">
-              {{ slot.time }}
-            </button>
+        }
+        <!-- Time Slots Grid -->
+        @if (currentTimeSlots.length) {
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-6">
+            @for (slot of currentTimeSlots; track trackBySlot($index, slot)) {
+              <button
+                (click)="selectTimeSlot(slot)"
+                [disabled]="!slot.available"
+                class="py-3 px-4 rounded-lg border-2 transition-all duration-200 text-sm font-medium"
+                [class]="getTimeSlotClasses(slot)">
+                {{ slot.time }}
+              </button>
+            }
           </div>
-
-          <!-- Confirm Button -->
-          <button 
-            (click)="confirmBooking()"
-            [disabled]="!canConfirmBooking"
-            [class]="getConfirmButtonClasses()">
-            <span *ngIf="!selectedTimeSlot">Select a time slot</span>
-            <span *ngIf="selectedTimeSlot">{{ getConfirmButtonText() }}</span>
-          </button>
-        </div>
-
-        <!-- Footer -->
-        <div class="px-6 pb-6 text-center">
-          <p class="text-xs text-gray-500">
-            Powered by <span class="font-semibold" [style.color]="config.primaryColor">{{ config.brandName }}</span>
-          </p>
-        </div>
+        }
+        <!-- Confirm Button -->
+        <button
+          (click)="confirmBooking()"
+          [disabled]="!canConfirmBooking"
+          [class]="getConfirmButtonClasses()">
+          @if (!selectedTimeSlot) {
+            <span>Select a time slot</span>
+          }
+          @if (selectedTimeSlot) {
+            <span>{{ getConfirmButtonText() }}</span>
+          }
+        </button>
+      </div>
+      <!-- Footer -->
+      <div class="px-6 pb-6 text-center">
+        <p class="text-xs text-gray-500">
+          Powered by <span class="font-semibold" [style.color]="config.primaryColor">{{ config.brandName }}</span>
+        </p>
       </div>
     </div>
+  </div>
+}

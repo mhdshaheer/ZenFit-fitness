@@ -41,4 +41,28 @@ export const routes: Routes = [
         (m) => m.ADMIN_ROUTES
       ),
   },
+  {
+    path: 'not-found',
+    loadComponent: () => {
+      return import(
+        '../app/shared/components/not-found/not-found.component'
+      ).then((m) => m.NotFoundComponent);
+    },
+  },
+  {
+    path: 'error',
+    loadComponent: () => {
+      return import(
+        '../app/shared/components/server-error/server-error.component'
+      ).then((m) => m.ServerErrorComponent);
+    },
+  },
+  {
+    path: '**',
+    loadComponent: () => {
+      return import(
+        '../app/shared/components/not-found/not-found.component'
+      ).then((m) => m.NotFoundComponent);
+    },
+  },
 ];

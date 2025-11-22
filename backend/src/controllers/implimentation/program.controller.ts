@@ -2,30 +2,49 @@ import { Request, Response } from "express";
 import { IProgramController } from "../interface/program.controller.interface";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IProgramService } from "../../services/interface/program.service.interface";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
-import { ProgramDto } from "../../dtos/program.dtos";
-import { HttpResponse } from "../../const/response_message.const";
+import { ProgramDto, ProgramSlotCreateDto } from "../../dtos/program.dtos";
 import { AppError } from "../../shared/utils/appError.util";
+import { HttpResponse } from "../../const/response_message.const";
+import { INotificationService } from "../../services/interface/notification.service.interface";
+import { IProfileService } from "../../services/interface/profile.service.interface";
 
+@injectable()
 export class ProgramController implements IProgramController {
+  @inject(TYPES.NotificationService)
+  private readonly _notificationService!: INotificationService;
+
+  @inject(TYPES.ProfileService)
+  private readonly _profileService!: IProfileService;
   constructor(
-    @inject(TYPES.ProgramService) private programService: IProgramService
-  ) {}
+    @inject(TYPES.ProgramService)
+    private readonly _programService: IProgramService
+  ) { }
 
   async saveProgramDraft(req: Request, res: Response): Promise<void> {
     const data = req.body;
     const userId = (req as any)?.user?.id;
 
-    if (!data) throw new AppError("Program data is required", HttpStatus.BAD_REQUEST);
+    if (!data) {
+      throw new AppError(
+        HttpResponse.PROGRAM_DATA_REQUIRED,
+        HttpStatus.BAD_REQUEST
+      );
+    }
 
     data.trainerId = userId;
-    const draft = await this.programService.saveProgramDraft(data);
+    const draft = await this._programService.saveProgramDraft(data);
 
-    if (!draft) throw new AppError("Failed to save draft", HttpStatus.INTERNAL_SERVER_ERROR);
+    if (!draft) {
+      throw new AppError(
+        HttpResponse.PROGRAM_SAVED_FAILED,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
 
     res.status(HttpStatus.OK).json({
-      message: "Program draft is saved successfully",
+      message: HttpResponse.PROGRAM_SAVED_SUCCESSFULLY,
     });
   }
 
@@ -33,36 +52,82 @@ export class ProgramController implements IProgramController {
     const data = req.body;
     const userId = (req as any)?.user?.id;
 
-    if (!data) throw new AppError("Program data is required", HttpStatus.BAD_REQUEST);
+    if (!data) {
+      throw new AppError(
+        HttpResponse.PROGRAM_DATA_REQUIRED,
+        HttpStatus.BAD_REQUEST
+      );
+    }
 
     data.trainerId = userId;
-    const program = await this.programService.saveProgramDraft(data);
+    const program = await this._programService.saveProgram(data);
 
-    if (!program)
-      throw new AppError("Failed to save Training Program", HttpStatus.INTERNAL_SERVER_ERROR);
+    if (!program) {
+      throw new AppError(
+        HttpResponse.PROGRAM_SAVED_FAILED,
+        HttpStatus.INTERNAL_SERVER_ERROR
+      );
+    }
+    await this._notificationService.createNotification(
+      data.trainerId,
+      "trainer",
+      "Program Created Successfully",
+      `Your new program, "${program.title}", has been created.`
+    );
+    const admins = await this._profileService.getUsersByRole("admin");
+    admins.forEach(async (item) => {
+      await this._notificationService.createNotification(
+        item.id,
+        "admin",
+        "New Program Added",
+        `Trainer has just added a new program: "${program.title}".`
+      );
+    });
 
     res.status(HttpStatus.OK).json({
-      message: "Training Program is saved successfully",
+      message: HttpResponse.PROGRAM_SAVED_SUCCESSFULLY,
     });
   }
 
   async getPrograms(req: Request, res: Response): Promise<void> {
     const userId = (req as any)?.user?.id;
-    const programs = await this.programService.getPrograms(userId);
+    const programs = await this._programService.getPrograms(userId);
 
     res.status(HttpStatus.OK).json({ programs });
   }
 
   async getProgramsCategories(req: Request, res: Response): Promise<void> {
     const userId = (req as any)?.user?.id;
-    const programs = await this.programService.getProgramsCategories(userId);
+    const programs = await this._programService.getProgramsCategories(userId);
 
     res.status(HttpStatus.OK).json({ programs });
   }
+  async getAllPrograms(
+    _req: Request,
+    res: Response
+  ): Promise<Response<ProgramDto[]>> {
+    const programs = await this._programService.getAllPrograms();
+    return res.status(HttpStatus.OK).json(programs);
+  }
+
+  async getProgramsForSlotCreate(
+    req: Request,
+    res: Response
+  ): Promise<Response<ProgramSlotCreateDto[]>> {
+    const trainerId = (req as any).user.id;
+    const programs = await this._programService.getProgramsForSlotCreate(
+      trainerId
+    );
+    return res.status(HttpStatus.OK).json(programs);
+  }
 
   async getProgramsByParantId(req: Request, res: Response): Promise<void> {
-     const id = req.params.id;
-    const programs = await this.programService.getProgramsByParentId(id);
+    const parantCategoryId = req.params.id;
+    const userId = (req as any).user.id;
+    const programs = await this._programService.getProgramsByParentId(
+      parantCategoryId,
+      userId
+    );
 
     res.status(HttpStatus.OK).json({ programs });
   }
@@ -72,9 +137,11 @@ export class ProgramController implements IProgramController {
     res: Response
   ): Promise<Response<ProgramDto>> {
     const { id } = req.params;
-    const program = await this.programService.findProgram(id);
+    const program = await this._programService.findProgram(id);
 
-    if (!program) throw new AppError("Program not found", HttpStatus.NOT_FOUND);
+    if (!program) {
+      throw new AppError(HttpResponse.PROGRAM_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
 
     return res.status(HttpStatus.OK).json(program);
   }
@@ -87,14 +154,48 @@ export class ProgramController implements IProgramController {
     const trainerId = (req as any)?.user?.id;
     const programData = req.body;
 
-    const response = await this.programService.updateProgram(programId, {
+    const response = await this._programService.updateProgram(programId, {
       ...programData,
       trainerId,
     });
 
-    if (!response) throw new AppError("Program updation failed", HttpStatus.NOT_FOUND);
+    if (!response) {
+      throw new AppError(
+        HttpResponse.PROGRAM_UPDATE_FAILED,
+        HttpStatus.NOT_FOUND
+      );
+    }
 
-    return res.status(HttpStatus.OK).json({ message: "Program updated successfully" });
-  
+    return res
+      .status(HttpStatus.OK)
+      .json({ message: HttpResponse.PROGRAM_UPDATE_SUCCESS });
+  }
+
+  async updateApprovalStatus(
+    req: Request,
+    res: Response
+  ): Promise<Response<ProgramDto>> {
+    const { programId } = req.params;
+    const approvalStatus = req.body.approvalStatus;
+    const program = await this._programService.updateApprovalStatus(
+      programId,
+      approvalStatus
+    );
+    const users = await this._profileService.getUsersByRole("user");
+    users.forEach(async (item) => {
+      await this._notificationService.createNotification(
+        item.id,
+        "user",
+        `Discover a New Program: ${program.title}!`,
+        `Exciting news! New Program is lauched: "${program.title}". Check it out now!`
+      );
+    });
+    await this._notificationService.createNotification(
+      program.programId!,
+      "trainer",
+      "Program Approved",
+      `${program.title} has been approved.`
+    );
+    return res.status(HttpStatus.OK).json(program);
   }
 }

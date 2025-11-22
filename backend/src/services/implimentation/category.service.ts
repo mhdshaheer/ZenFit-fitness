@@ -1,4 +1,4 @@
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { ICategoryService } from "../interface/category.service.interface";
 import { ICategoryRepository } from "../../repositories/interface/category.repository.interface";
 import { TYPES } from "../../shared/types/inversify.types";
@@ -9,49 +9,65 @@ import { ICategory } from "../../models/category.model";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
 import { GetCategoryParams } from "../../interfaces/category.interface";
+import { HttpResponse } from "../../const/response_message.const";
 
+@injectable()
 export class CategoryService implements ICategoryService {
-  constructor(
-    @inject(TYPES.CategoryRepository)
-    private categoryRepository: ICategoryRepository
-  ) {}
+  @inject(TYPES.CategoryRepository)
+  private readonly _categoryRepository!: ICategoryRepository;
+
   async findAllCategory(): Promise<CategoryDto[]> {
     try {
-      const categories = await this.categoryRepository.findAllCategory({
+      const categories = await this._categoryRepository.findAllCategory({
         parantId: null,
       });
-      if (categories == null) {
-        throw new Error("No categories found.");
+      if (categories === null) {
+        throw new AppError(
+          HttpResponse.CATEGORY_NOTFOUND,
+          HttpStatus.NOT_FOUND
+        );
       }
       const categoryDto = categories?.map(mapToCategoryDto);
 
       return categoryDto;
     } catch (error) {
       logger.error("Error fetching categories:", error);
-      throw new Error("Failed to fetch categories");
+      throw new AppError(
+        HttpResponse.CATEGORY_FETCH_FAILED,
+        HttpStatus.CONFLICT
+      );
     }
   }
   async findALlSubCategory(): Promise<CategoryDto[]> {
     try {
-      const subCategories = await this.categoryRepository.findAllCategory({
+      const subCategories = await this._categoryRepository.findAllCategory({
         parantId: { $ne: null },
       });
-      if (subCategories == null) {
-        throw new Error("No sub categories found.");
+      if (subCategories === null) {
+        throw new AppError(
+          HttpResponse.CATEGORY_NOTFOUND,
+          HttpStatus.NOT_FOUND
+        );
       }
       const subCategoryDto = subCategories?.map(mapToCategoryDto);
 
       return subCategoryDto;
     } catch (error) {
       logger.error("Error fetching sub categories:", error);
-      throw new Error("Failed to fetch sub categories");
+      throw new AppError(
+        HttpResponse.CATEGORY_FETCH_FAILED,
+        HttpStatus.NOT_FOUND
+      );
     }
   }
 
   async createCategory(data: Partial<ICategory>): Promise<CategoryDto> {
-    const category = await this.categoryRepository.createCategory(data);
-    if (!category) {
-      throw new Error("error in category creation.");
+    const category = await this._categoryRepository.createCategory(data);
+    if (category === null || category === undefined) {
+      throw new AppError(
+        HttpResponse.CATEGOTY_CREATION_FAILED,
+        HttpStatus.CONFLICT
+      );
     }
     const mappedResult = mapToCategoryDto(category);
     return mappedResult;
@@ -61,42 +77,47 @@ export class CategoryService implements ICategoryService {
     categoryId: string,
     categoryData: Partial<ICategory>
   ): Promise<CategoryDto> {
-    const category = await this.categoryRepository.updateCategory(
+    const category = await this._categoryRepository.updateCategory(
       categoryId,
       categoryData
     );
     if (!category) {
-      throw new Error("Category updation failed");
+      throw new AppError(
+        HttpResponse.CATEGORY_UPDATION_FAILED,
+        HttpStatus.CONFLICT
+      );
     }
     const mappedCategory = mapToCategoryDto(category);
     return mappedCategory;
   }
 
   async getCategory(categoryId: string): Promise<CategoryDto> {
-    const category = await this.categoryRepository.getCategory(categoryId);
+    const category = await this._categoryRepository.getCategory(categoryId);
     if (!category) {
-      throw new Error("Failed to get category");
+      throw new AppError(
+        HttpResponse.CATEGORY_FETCH_FAILED,
+        HttpStatus.NOT_FOUND
+      );
     }
     const mappedCategory = mapToCategoryDto(category);
     return mappedCategory;
   }
   async checkDuplicateName(name: string): Promise<boolean> {
-    const category = await this.categoryRepository.findByCategoryName(name);
+    const category = await this._categoryRepository.findByCategoryName(
+      name.trim()
+    );
     return !!category;
   }
   async updateStatus(
     categoryId: string,
     isBlocked: boolean
   ): Promise<CategoryDto> {
-    const category = await this.categoryRepository.updateStatus(
+    const category = await this._categoryRepository.updateStatus(
       categoryId,
       isBlocked
     );
     if (!category) {
-      throw new AppError(
-        "Category not found for editing",
-        HttpStatus.NOT_FOUND
-      );
+      throw new AppError(HttpResponse.CATEGORY_NOTFOUND, HttpStatus.NOT_FOUND);
     }
     const categoryDto = mapToCategoryDto(category);
     return categoryDto;
@@ -105,7 +126,7 @@ export class CategoryService implements ICategoryService {
   async getTableCategories(
     params: GetCategoryParams
   ): Promise<{ data: CategoryDto[]; total: number }> {
-    const { total, data } = await this.categoryRepository.getAllForTable(
+    const { total, data } = await this._categoryRepository.getAllForTable(
       params
     );
     const categoryDto = data.map(mapToCategoryDto);

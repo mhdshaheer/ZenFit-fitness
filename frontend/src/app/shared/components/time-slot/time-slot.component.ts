@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+
 import {
   Component,
   EventEmitter,
@@ -45,7 +45,7 @@ export interface ComponentConfig {
 
 @Component({
   selector: 'app-time-slot',
-  imports: [CommonModule],
+  imports: [],
   templateUrl: './time-slot.component.html',
   styleUrl: './time-slot.component.css',
 })

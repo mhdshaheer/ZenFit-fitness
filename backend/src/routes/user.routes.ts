@@ -16,6 +16,10 @@ userRouter.get(
   profileController.getProfile.bind(profileController)
 );
 
+userRouter.get("/current", (req, res, next) => {
+  profileController.getCurrentUserId(req, res).catch(next);
+});
+
 userRouter.put(
   "/profile",
   profileController.updateProfile.bind(profileController)
@@ -33,4 +37,7 @@ userRouter.post(
 
 // userRouter.delete("/resume",authMiddleware,profileController.)
 
+userRouter.get("/:userId", (req, res, next) => {
+  profileController.getUserByUserId(req, res).catch(next);
+});
 export default userRouter;

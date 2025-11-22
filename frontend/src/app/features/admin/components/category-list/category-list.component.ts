@@ -39,10 +39,10 @@ export interface ActionEvent {
   styleUrl: './category-list.component.css',
 })
 export class CategoryListComponent implements OnInit {
-  private _categoryService = inject(CategoryService);
-  private _logger = inject(LoggerService);
-  private _router = inject(Router);
-  private dialog = inject(MatDialog);
+  private readonly _categoryService = inject(CategoryService);
+  private readonly _logger = inject(LoggerService);
+  private readonly _router = inject(Router);
+  private readonly _dialog = inject(MatDialog);
 
   categories: ICategory[] = []; // full list from API
 
@@ -112,7 +112,7 @@ export class CategoryListComponent implements OnInit {
       condition: (row) => row.isBlocked == false,
     },
     {
-      label: 'Ubblock',
+      label: 'Unblock',
       icon: 'unlock',
       color: 'green',
       action: 'unblock',
@@ -128,7 +128,7 @@ export class CategoryListComponent implements OnInit {
       let isBlocked = event.action == 'block' ? true : false;
 
       // =================
-      const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      const dialogRef = this._dialog.open(ConfirmDialogComponent, {
         width: '350px',
         data: {
           title:

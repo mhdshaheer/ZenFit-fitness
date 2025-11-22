@@ -3,11 +3,12 @@ import { CategoryModel, ICategory } from "../../models/category.model";
 import { BaseRepository } from "../base.repository";
 import { ICategoryRepository } from "../interface/category.repository.interface";
 import { GetCategoryParams } from "../../interfaces/category.interface";
+import { injectable } from "inversify";
 
+@injectable()
 export class CategoryRepository
   extends BaseRepository<ICategory>
-  implements ICategoryRepository
-{
+  implements ICategoryRepository {
   constructor() {
     super(CategoryModel);
   }

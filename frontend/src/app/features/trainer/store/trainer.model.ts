@@ -1,8 +1,8 @@
-import { ITimeSlot } from '../components/slot-create/slot-create.component';
 
 export interface Program {
   programId: string;
   _id: string;
+  id?: string;
   title: string;
   description: string;
   category: string;
@@ -11,9 +11,12 @@ export interface Program {
   duration: string;
   trainerId: string;
   status: 'active' | 'inactive' | 'draft';
+  createdAt?: string;
+  approvalStatus?: 'Pending' | 'Approved' | 'Rejected' | undefined;
 }
 export interface ProgramCategory {
   _id: string;
+  name: string;
   duration?: number;
   title?: string;
   category?: string;
@@ -33,17 +36,3 @@ export interface SlotFormData {
   timeSlots: TimeSlot[];
 }
 
-export interface IProgramSlot {
-  _id: string;
-  bookedUsers: any[];
-  capacity: number;
-  createdAt: string;
-  updatedAt: string;
-  duration: number;
-  programId: string;
-  slotStatus: 'draft' | 'confirmed' | 'cancelled';
-  status: 'Available' | 'Unavailable';
-  timeSlots: ITimeSlot[];
-  trainerId: string;
-  __v: number;
-}

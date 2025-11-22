@@ -1,32 +1,42 @@
 import { GetUsersParams, IUser } from "../../interfaces/user.interface";
-import { UserModel } from "../../models/user.model";
 import { inject, injectable } from "inversify";
-import { UserDto } from "../../dtos/user.dtos";
-import { mapToUserDto } from "../../mapper/user.mapper";
+import { UserDto, UserStatusDto } from "../../dtos/user.dtos";
+import { mapToUserDto, mapToUserStatusDto } from "../../mapper/user.mapper";
 import { IUserRepository } from "../../repositories/interface/user.repository.interface";
 import { TYPES } from "../../shared/types/inversify.types";
+import { IAdminService } from "../interface/admin.service.interface";
+import { AppError } from "../../shared/utils/appError.util";
+import { HttpResponse } from "../../const/response_message.const";
+import { HttpStatus } from "../../const/statuscode.const";
 
 @injectable()
-export class AdminService {
+export class AdminService implements IAdminService {
   @inject(TYPES.UserRepository)
-  private userRepository!: IUserRepository;
+  private readonly _userRepository!: IUserRepository;
 
   async updateUserStatus(
     id: string,
     status: "active" | "blocked"
-  ): Promise<IUser | null> {
-    const user = await this.userRepository.findById(id);
-    if (!user) throw new Error("User not found");
-    return await this.userRepository.updateStatus(id, status);
+  ): Promise<UserStatusDto> {
+    const user = await this._userRepository.findById(id);
+    if (!user) {
+      throw new AppError(HttpResponse.USER_NOT_FOUND,HttpStatus.NOT_FOUND);
+    }
+    const updatedUser = await this._userRepository.updateStatus(id, status);
+    if (!updatedUser) {
+      throw new AppError(HttpResponse.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    }
+    const mappedUser = mapToUserStatusDto(updatedUser, status);
+    return mappedUser;
   }
 
   async getUsers(
     params: GetUsersParams
   ): Promise<{ data: UserDto[]; total: number }> {
-    const filter: any = {
+    const filter = {
       role: { $ne: "admin" },
     };
-    const { total, data } = await this.userRepository.getAllForTable({
+    const { total, data } = await this._userRepository.getAllForTable({
       filter,
       ...params,
     });

@@ -21,6 +21,7 @@ import {
 import { adminReducer } from './features/admin/store/admin.reducer';
 import { AdminEffects } from './features/admin/store/admin.effects';
 import { AppInterceptor } from './core/interceptors/app.interceptor';
+import { provideToastr } from 'ngx-toastr';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -30,6 +31,13 @@ export const appConfig: ApplicationConfig = {
     provideStore({ auth: authReducer, admin: adminReducer }),
     provideEffects([AuthEffects, AdminEffects]),
     provideAnimations(),
+    provideToastr({
+      timeOut: 3000,
+      positionClass: 'toast-top-right',
+      preventDuplicates: true,
+      progressBar: true,
+      closeButton: true,
+    }),
     importProvidersFrom(SocialLoginModule),
     {
       provide: 'SocialAuthServiceConfig',
