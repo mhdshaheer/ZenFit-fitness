@@ -7,4 +7,5 @@ export interface INotificationController {
     next: NextFunction
   ): Promise<void>;
   markAsRead(req: Request, res: Response, next: NextFunction): Promise<void>;
+  markAllAsRead(req: Request, res: Response, next: NextFunction): Promise<void>;
 }

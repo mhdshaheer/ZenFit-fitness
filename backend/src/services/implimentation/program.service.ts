@@ -1,4 +1,4 @@
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import {
   ProgramDto,
   ProgramSlotCreateDto,
@@ -20,6 +20,7 @@ import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IPaymentRepository } from "../../repositories/interface/payment.repostitory.interface";
 
+@injectable()
 export class ProgramService implements IProgramService {
   @inject(TYPES.ProgramRespository)
   private readonly _programRepository!: IProgramRepository;

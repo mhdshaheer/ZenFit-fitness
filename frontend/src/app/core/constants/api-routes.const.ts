@@ -60,10 +60,7 @@ export const ProgramRoutes = {
   APPROVAL_STATUS: (programId: string) => `/approvalStatus/${programId}`,
 };
 
-export const SessionRoutes = {
-  BASE: '/session',
-  DRAFT: '/draft',
-};
+
 
 export const ProfileRouter = {
   USER_BASE: '/user',
@@ -87,4 +84,8 @@ export const BookingRoutes = {
 
 export const NotificationRoutes = {
   BASE: '/notifications',
+};
+
+export const MeetingRoutes = {
+  BASE: '/meeting',
 };

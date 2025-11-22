@@ -20,7 +20,7 @@ export class AdminService implements IAdminService {
   ): Promise<UserStatusDto> {
     const user = await this._userRepository.findById(id);
     if (!user) {
-      throw new Error("User not found");
+      throw new AppError(HttpResponse.USER_NOT_FOUND,HttpStatus.NOT_FOUND);
     }
     const updatedUser = await this._userRepository.updateStatus(id, status);
     if (!updatedUser) {

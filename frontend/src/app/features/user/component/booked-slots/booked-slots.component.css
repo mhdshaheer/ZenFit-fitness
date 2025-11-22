@@ -1,0 +1,149 @@
+/* Slot Card Animations */
+.slot-card {
+  animation: fadeInUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Stagger animation for cards */
+.slot-card:nth-child(1) { animation-delay: 0.1s; }
+.slot-card:nth-child(2) { animation-delay: 0.2s; }
+.slot-card:nth-child(3) { animation-delay: 0.3s; }
+.slot-card:nth-child(4) { animation-delay: 0.4s; }
+.slot-card:nth-child(5) { animation-delay: 0.5s; }
+.slot-card:nth-child(6) { animation-delay: 0.6s; }
+
+/* Upcoming card hover effect */
+.upcoming-card {
+  position: relative;
+  overflow: hidden;
+}
+
+.upcoming-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(16, 185, 129, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.upcoming-card:hover::before {
+  left: 100%;
+}
+
+/* Button ripple effect */
+button {
+  position: relative;
+  overflow: hidden;
+}
+
+button::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.3);
+  transform: translate(-50%, -50%);
+  transition: width 0.6s, height 0.6s;
+}
+
+button:hover::before {
+  width: 300px;
+  height: 300px;
+}
+
+/* Gradient text animation */
+@keyframes gradientShift {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+h1.bg-gradient-to-r {
+  background-size: 200% auto;
+  animation: gradientShift 3s ease infinite;
+}
+
+/* Tab transition */
+.tab-content {
+  animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* Past card muted effect */
+.past-card {
+  filter: grayscale(10%);
+}
+
+.past-card:hover {
+  filter: grayscale(0%);
+}
+
+/* Info card hover lift */
+.slot-card:hover .bg-gradient-to-br,
+.slot-card:hover .bg-neutral-50 {
+  transform: translateY(-2px);
+  transition: transform 0.3s ease;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .slot-card {
+    animation-delay: 0s !important;
+  }
+}
+
+/* Loading spinner */
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-spin {
+  animation: spin 1s linear infinite;
+}
+
+/* Empty state icon animation */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.relative.inline-block {
+  animation: float 3s ease-in-out infinite;
+}

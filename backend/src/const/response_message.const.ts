@@ -56,6 +56,9 @@ export enum HttpResponse {
   OTP_EXPIRED = "Expired OTP",
   OTP_VERIFIED_SUCCESS = "OTP verified successfully",
 
+  REGISTRATION_SUCCESS = "User registered successfully",
+  REGISTRAITION_REQUEST_NOT_FOUND = "Registration request not found",
+
   // Token
   NO_TOKEN = "Access Denied: No token provided",
   TOKEN_EXPIRED = "Invalid or expired token",

@@ -9,4 +9,5 @@ export interface INotificationService {
   ): Promise<INotification>;
   getNotifications(receiverId: string): Promise<INotification[]>;
   markAsRead(notificationId: string): Promise<INotification | null>;
+  markAllAsRead(receiverId: string, notificationIds: string[]): Promise<void>;
 }

@@ -114,14 +114,12 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
       route: '/user/my-programs',
       icon: 'fas fa-dumbbell',
     },
-    { label: 'Slot', route: '/user/slots', icon: 'fas fa-chart-line' },
-    { label: 'Community', route: '/user/community', icon: 'fas fa-users' },
+    { label: 'Sessions', route: '/user/booked-slots', icon: 'fas fa-chart-line' },
+    { label: 'Transactions', route: '/user/transaction-history', icon: 'fas fa-receipt' },
   ];
 
   userMenuItems: NavMenuItem[] = [
     { label: 'My Profile', route: '/user/profile', icon: 'fas fa-user' },
-
-    { label: 'Help & Support', route: '/help', icon: 'fas fa-question-circle' },
   ];
 
   searchResults: any[] = [];

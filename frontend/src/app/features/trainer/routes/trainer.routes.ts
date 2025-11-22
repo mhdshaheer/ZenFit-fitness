@@ -41,14 +41,7 @@ export const TRAINER_ROUTES: Routes = [
           ).then((m) => m.ProgramListComponent);
         },
       },
-      {
-        path: 'slot-create',
-        loadComponent: () => {
-          return import('../components/slot-create/slot-create.component').then(
-            (m) => m.SlotCreateComponent
-          );
-        },
-      },
+   
       {
         path: 'program/:id',
         loadComponent: () => {
@@ -57,14 +50,7 @@ export const TRAINER_ROUTES: Routes = [
           ).then((m) => m.ProgramViewComponent);
         },
       },
-      {
-        path: 'slot/:id',
-        loadComponent: () => {
-          return import('../components/slot-create/slot-create.component').then(
-            (m) => m.SlotCreateComponent
-          );
-        },
-      },
+
       {
         path: 'wallet',
         loadComponent: () => {
@@ -89,6 +75,21 @@ export const TRAINER_ROUTES: Routes = [
           ).then((m) => m.PurchasedProgramsComponent);
         },
       },
+      {
+        path:'chat',
+        loadComponent:()=>{
+          return import('../components/trainer-chat/trainer-chat.component').then(m=>m.TrainerChatComponent)
+        }
+      },
+      {
+        path: 'sessions',
+        loadComponent: () => {
+          return import('../components/trainer-sessions/trainer-sessions.component').then(
+            (m) => m.TrainerSessionsComponent
+          );
+        },
+      }
+
     ],
   },
 ];

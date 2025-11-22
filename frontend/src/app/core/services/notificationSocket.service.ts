@@ -1,6 +1,6 @@
 import { inject, Injectable, NgZone } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
-import { Observable, Subject } from 'rxjs';
+import { Observable, Subject, BehaviorSubject } from 'rxjs';
 import { INotification } from '../../interface/notification.interface';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
@@ -9,7 +9,7 @@ import { LoggerService } from './logger.service';
 export class NotificationSocketService {
   private _socket!: Socket;
   private _notificationSubject = new Subject<INotification>();
-  private _connectionStatus = new Subject<boolean>();
+  private _connectionStatus = new BehaviorSubject<boolean>(false);
   private _loggerService = inject(LoggerService);
 
   constructor(private _ngZone: NgZone) {

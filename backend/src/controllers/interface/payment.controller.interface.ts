@@ -22,6 +22,7 @@ export interface IPaymentController {
     req: Request,
     res: Response
   ): Promise<Response<PurchasedProgram[]>>;
+  getUserTransactionHistory(req: Request, res: Response): Promise<void>;
   getEntrolledUsers(
     req: Request,
     res: Response

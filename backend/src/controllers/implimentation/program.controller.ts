@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { IProgramController } from "../interface/program.controller.interface";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IProgramService } from "../../services/interface/program.service.interface";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ProgramDto, ProgramSlotCreateDto } from "../../dtos/program.dtos";
 import { AppError } from "../../shared/utils/appError.util";
@@ -10,6 +10,7 @@ import { HttpResponse } from "../../const/response_message.const";
 import { INotificationService } from "../../services/interface/notification.service.interface";
 import { IProfileService } from "../../services/interface/profile.service.interface";
 
+@injectable()
 export class ProgramController implements IProgramController {
   @inject(TYPES.NotificationService)
   private readonly _notificationService!: INotificationService;
@@ -19,7 +20,7 @@ export class ProgramController implements IProgramController {
   constructor(
     @inject(TYPES.ProgramService)
     private readonly _programService: IProgramService
-  ) {}
+  ) { }
 
   async saveProgramDraft(req: Request, res: Response): Promise<void> {
     const data = req.body;

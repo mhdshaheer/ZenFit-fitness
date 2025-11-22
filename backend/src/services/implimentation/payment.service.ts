@@ -8,7 +8,7 @@ import {
 import { IPaymentService } from "../interface/payment.service.interface";
 import Stripe from "stripe";
 import { IPaymentRepository } from "../../repositories/interface/payment.repostitory.interface";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IProgramRepository } from "../../repositories/interface/program.repository.interface";
 import { AppError } from "../../shared/utils/appError.util";
@@ -33,6 +33,7 @@ import {
 } from "../../interfaces/payment.interface";
 import logger from "../../shared/services/logger.service";
 
+@injectable()
 export class PaymentService implements IPaymentService {
   @inject(TYPES.PaymentRepository)
   private readonly _paymentRepository!: IPaymentRepository;
@@ -192,6 +193,33 @@ export class PaymentService implements IPaymentService {
   async getPurchasedProgram(userId: string): Promise<PurchasedProgram[]> {
     const programs = await this._paymentRepository.findPurchasedProgram(userId);
     return programs;
+  }
+
+  async getUserTransactionHistory(
+    userId: string,
+    page: number,
+    limit: number,
+    search?: string,
+    status?: string
+  ): Promise<{ data: PurchasedProgram[]; total: number; page: number; limit: number; totalPages: number }> {
+    const offset = (page - 1) * limit;
+    const programs = await this._paymentRepository.findPurchasedProgramWithPagination(
+      userId,
+      limit,
+      offset,
+      search,
+      status
+    );
+    const total = await this._paymentRepository.countPurchasedPrograms(userId, search, status);
+    const totalPages = Math.ceil(total / limit);
+
+    return {
+      data: programs,
+      total,
+      page,
+      limit,
+      totalPages
+    };
   }
 
   async getEntrolledUsers(programId: string): Promise<number> {

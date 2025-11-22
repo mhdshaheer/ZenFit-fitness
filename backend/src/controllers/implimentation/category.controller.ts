@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { ICategoryController } from "../interface/category.controller.interface";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { ICategoryService } from "../../services/interface/category.service.interface";
 import { HttpStatus } from "../../const/statuscode.const";
@@ -8,11 +8,12 @@ import { CategoryDto } from "../../dtos/category.dtos";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpResponse } from "../../const/response_message.const";
 
+@injectable()
 export class CategoryController implements ICategoryController {
   constructor(
     @inject(TYPES.CategoryService)
     private readonly _categoryService: ICategoryService
-  ) {}
+  ) { }
   async findAllCategory(
     _req: Request,
     res: Response,

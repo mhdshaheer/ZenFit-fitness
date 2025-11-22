@@ -69,4 +69,40 @@ export class ProgramService {
       { approvalStatus }
     );
   }
+
+  getTrainerPrograms(filters: {
+    page?: number;
+    limit?: number;
+    search?: string;
+    category?: string;
+    difficultyLevel?: string;
+    status?: string;
+  }): Observable<{
+    programs: Program[];
+    pagination: {
+      total: number;
+      page: number;
+      limit: number;
+      totalPages: number;
+    };
+  }> {
+    const params = new URLSearchParams();
+    
+    if (filters.page) params.append('page', filters.page.toString());
+    if (filters.limit) params.append('limit', filters.limit.toString());
+    if (filters.search) params.append('search', filters.search);
+    if (filters.category) params.append('category', filters.category);
+    if (filters.difficultyLevel) params.append('difficultyLevel', filters.difficultyLevel);
+    if (filters.status) params.append('status', filters.status);
+
+    return this._http.get<{
+      programs: Program[];
+      pagination: {
+        total: number;
+        page: number;
+        limit: number;
+        totalPages: number;
+      };
+    }>(`${this._apiUrl}${ProgramRoutes.TRAINER}?${params.toString()}`);
+  }
 }

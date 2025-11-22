@@ -14,4 +14,12 @@ bookingRouter.post("/", (req, res, next) => {
   bookingController.createBooking(req, res).catch(next);
 });
 
+bookingRouter.get("/my-bookings", (req, res, next) => {
+  bookingController.getMyBookings(req, res).catch(next);
+});
+
+bookingRouter.get("/trainer-bookings", (req, res, next) => {
+  bookingController.getTrainerBookings(req, res).catch(next);
+});
+
 export default bookingRouter;

@@ -9,7 +9,6 @@ interface Course {
   title: string;
   description: string;
   difficultyLevel: string;
-  duration: string;
   purchasedAt: Date;
 }
 @Component({
@@ -36,7 +35,6 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
             title: item.title,
             description: item.description,
             difficultyLevel: item.difficultyLevel,
-            duration: item.duration,
             purchasedAt: item.purchasedAt,
           };
         });
@@ -63,6 +61,17 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
     console.log('Continue course:', course);
     this._router.navigate(['/user/slots', course.id]);
   }
+
+  viewSlots(course: Course): void {
+    console.log('View slots:', course);
+    this._router.navigate(['/user/slots', course.id]);
+  }
+
+  viewProgramDetails(course: Course): void {
+    console.log('View program details:', course);
+    this._router.navigate(['/user/program-details', course.id]);
+  }
+
   ngOnDestroy() {
     this._destroy$.next();
     this._destroy$.complete();

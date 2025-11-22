@@ -11,10 +11,11 @@ export interface PurchasedProgram {
   programId: string;
   title: string;
   category: string | null;
-  duration: string;
   difficultyLevel: string;
   description: string;
   trainerId: string;
+  trainerName?: string;
+  trainerEmail?: string;
   amountPaid: number;
   paymentMethod: string;
   purchasedAt: Date;

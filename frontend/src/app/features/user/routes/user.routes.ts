@@ -85,6 +85,36 @@ export const USER_ROUTES: Routes = [
           ).then((m) => m.PurchasedProgramsComponent);
         },
       },
+      {
+        path: 'booked-slots',
+        loadComponent: () => {
+          return import(
+            '../component/booked-slots/booked-slots.component'
+          ).then((m) => m.BookedSlotsComponent);
+        },
+      },
+      {
+        path: 'program-details/:programId',
+        loadComponent: () => {
+          return import(
+            '../component/program-details/program-details.component'
+          ).then((m) => m.ProgramDetailsComponent);
+        },
+      },
+      {
+        path: 'chat/:programId',
+        loadComponent: () =>
+          import('../component/user-chat/user-chat.component').then(
+            (m) => m.UserChatComponent
+          ),
+      },
+      {
+        path: 'transaction-history',
+        loadComponent: () =>
+          import('../component/transaction-history/transaction-history.component').then(
+            (m) => m.TransactionHistoryComponent
+          ),
+      },
     ],
   },
 ];

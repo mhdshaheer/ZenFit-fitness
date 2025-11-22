@@ -4,11 +4,12 @@ import {
 } from "../../models/notification.model";
 import { BaseRepository } from "../base.repository";
 import { INotificationRepository } from "../interface/notification.repository.interface";
+import { injectable } from "inversify";
 
+@injectable()
 export class NotificationRepository
   extends BaseRepository<INotification>
-  implements INotificationRepository
-{
+  implements INotificationRepository {
   constructor() {
     super(NotificationModel);
   }

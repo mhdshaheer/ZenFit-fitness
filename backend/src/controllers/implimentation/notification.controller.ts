@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from "express";
 import { INotificationController } from "../interface/notification.controller.interface";
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { INotificationService } from "../../services/interface/notification.service.interface";
 
-// @controller('/notifications')
+@injectable()
 export class NotificationController implements INotificationController {
   @inject(TYPES.NotificationService)
   private readonly _notificationService!: INotificationService;
@@ -41,6 +41,27 @@ export class NotificationController implements INotificationController {
       }
 
       res.status(200).json(notification);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async markAllAsRead(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> {
+    try {
+      const receiverId = (req as any).user.id;
+      const { ids } = req.body;
+
+      if (!ids || !Array.isArray(ids)) {
+        res.status(400).json({ message: "Invalid notification IDs provided" });
+        return;
+      }
+
+      await this._notificationService.markAllAsRead(receiverId, ids);
+      res.status(200).json({ message: "All notifications marked as read" });
     } catch (error) {
       next(error);
     }

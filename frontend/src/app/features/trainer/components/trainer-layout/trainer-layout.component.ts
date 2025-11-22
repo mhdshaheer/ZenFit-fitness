@@ -130,6 +130,8 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
       icon: 'fas fa-users',
     },
     { label: 'Slots', route: '/trainer/slots', icon: 'fas fa-chart-line' },
+    { label: 'Sessions', route: '/trainer/sessions', icon: 'fas fa-chart-line' },
+    { label: 'Chat', route: '/trainer/chat', icon: 'fas fa-chart-line' },
   ];
 
   userMenuItems: NavMenuItem[] = [

@@ -3,7 +3,9 @@ import { GetUsersParams, IUser } from "../../interfaces/user.interface";
 import { UserModel } from "../../models/user.model";
 import { BaseRepository } from "../base.repository";
 import { IUserRepository } from "../interface/user.repository.interface";
+import { injectable } from "inversify";
 
+@injectable()
 export class UserRepository
   extends BaseRepository<IUser>
   implements IUserRepository

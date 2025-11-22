@@ -5,6 +5,11 @@ import { IUser } from "../../interfaces/user.interface";
 import { comparePassword, hashedPassword } from "../../shared/utils/hash.util";
 import logger from "../../shared/services/logger.service";
 import { generateOtp } from "../../shared/utils/otp.util";
+import {
+  setAuthCookies,
+  clearAuthCookies,
+  setAccessTokenCookie,
+} from "../../shared/utils/cookie.util";
 import { IAuthService } from "../interface/auth.service.interface";
 import { Request, Response } from "express";
 import { ITempUserRepository } from "../../repositories/interface/tempUser.repository.interface";
@@ -17,12 +22,15 @@ import {
 } from "../../shared/utils/jwt.util";
 import { sendOtpMail } from "../../shared/services/mail.service";
 import { AppError } from "../../shared/utils/appError.util";
+import { INotificationService } from "../interface/notification.service.interface";
 @injectable()
 export class AuthService implements IAuthService {
   @inject(TYPES.UserRepository)
   private readonly _userRepository!: IUserRepository;
   @inject(TYPES.TempUserRepository)
   private readonly _tempRepository!: ITempUserRepository;
+  @inject(TYPES.NotificationService)
+  private readonly _notificationService!: INotificationService;
   // ======================================
 
   async signup(userData: IUser): Promise<IUser> {
@@ -47,7 +55,7 @@ export class AuthService implements IAuthService {
     const { username, email, password, role } = req.body;
 
     const otp = generateOtp();
-    console.log("Otp is [console] : ", otp);
+    console.log("Otp is : ", otp);
     logger.info("otp is :", otp);
     const hashPassword = await hashedPassword(password);
 
@@ -125,23 +133,31 @@ export class AuthService implements IAuthService {
       role,
     });
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 15 * 60 * 1000,
-      path: "/",
-    });
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: "/",
-    });
+    setAuthCookies(res, accessToken, refreshToken);
+
+    await this._notificationService.createNotification(
+      createdUser._id.toString(),
+      "user",
+      "Welcome to ZenFit",
+      "You're all set! Start exploring programs and sessions tailored for you."
+    );
+
+    const admins = await this._userRepository.getAllUsers();
+    const adminUsers = admins.filter((user) => user.role === "admin");
+
+    await Promise.all(
+      adminUsers.map((admin) =>
+        this._notificationService.createNotification(
+          admin._id!.toString(),
+          "admin",
+          "New User Registration",
+          `${createdUser.username ?? createdUser.email} has just joined ZenFit.`
+        )
+      )
+    );
 
     res.status(HttpStatus.OK).json({
-      message: "OTP verified and user registered",
+      message: HttpResponse.REGISTRATION_SUCCESS,
       accessToken,
       email,
       role,
@@ -155,7 +171,7 @@ export class AuthService implements IAuthService {
     if (!temp) {
       res
         .status(HttpStatus.NOT_FOUND)
-        .json({ error: "No signup request found for this email" });
+        .json({ error: HttpResponse.REGISTRAITION_REQUEST_NOT_FOUND });
       return;
     }
     const newOtp = generateOtp();
@@ -164,7 +180,7 @@ export class AuthService implements IAuthService {
     await this._tempRepository.updateOtp(email, newOtp);
     try {
       await sendOtpMail(email, newOtp);
-      console.log("resent otp [console.log:] : ", newOtp);
+      console.log("resent otp : ", newOtp);
       logger.info("Resend otp is :", newOtp);
       res
         .status(HttpStatus.OK)
@@ -237,7 +253,6 @@ export class AuthService implements IAuthService {
     if (!temp || temp.otp !== otp) {
       throw new AppError(HttpResponse.OTP_EXPIRED, HttpStatus.UNAUTHORIZED);
     }
-    console.log("on verify forgot otp service");
     return { message: HttpResponse.OTP_VERIFIED_SUCCESS };
   }
 
@@ -267,7 +282,6 @@ export class AuthService implements IAuthService {
     );
 
     if (!updatedUser) {
-      console.log("error in updated user on forgot password");
       res
         .status(HttpStatus.BAD_REQUEST)
         .json({ message: HttpResponse.RESET_PASSWORD_FAILED });
@@ -297,18 +311,7 @@ export class AuthService implements IAuthService {
   // ================================================
 
   async logout(res: Response): Promise<void> {
-    res.clearCookie("refreshToken", {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      path: "/",
-    });
-    res.clearCookie("accessToken", {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      path: "/",
-    });
+    clearAuthCookies(res);
     return;
   }
 
@@ -340,13 +343,7 @@ export class AuthService implements IAuthService {
         role: decoded.role ?? null,
       };
       const accessToken = generateAccessToken(payload);
-      res.cookie("accessToken", accessToken, {
-        httpOnly: true,
-        sameSite: "lax",
-        secure: false,
-        maxAge: 15 * 60 * 1000,
-        path: "/",
-      });
+      setAccessTokenCookie(res, accessToken);
       res.json({ message: HttpResponse.ACCESS_TOKEN_REFRESHED });
       return;
     } catch (error) {

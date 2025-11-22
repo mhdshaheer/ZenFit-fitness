@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SlotCreateComponent } from './slot-create.component';
+import { UserChatComponent } from './user-chat.component';
 
-describe('SlotCreateComponent', () => {
-  let component: SlotCreateComponent;
-  let fixture: ComponentFixture<SlotCreateComponent>;
+describe('UserChatComponent', () => {
+  let component: UserChatComponent;
+  let fixture: ComponentFixture<UserChatComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SlotCreateComponent]
+      imports: [UserChatComponent]
     })
     .compileComponents();
 
-    fixture = TestBed.createComponent(SlotCreateComponent);
+    fixture = TestBed.createComponent(UserChatComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

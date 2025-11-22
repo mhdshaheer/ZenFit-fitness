@@ -29,6 +29,9 @@ paymentRouter.get("/", authMiddleware, (req, res, next) => {
 paymentRouter.get("/purchased/", authMiddleware, (req, res, next) => {
   controller.getPurchasedProgram(req, res).catch(next);
 });
+paymentRouter.get("/user/transaction-history", authMiddleware, (req, res, next) => {
+  controller.getUserTransactionHistory(req, res).catch(next);
+});
 paymentRouter.get("/revenue-chart", (req, res, next) => {
   controller.getRevenueChart(req, res).catch(next);
 });

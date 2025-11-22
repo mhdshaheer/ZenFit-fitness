@@ -1,10 +1,11 @@
-import { inject } from "inversify";
+import { inject, injectable } from "inversify";
 import { INotification } from "../../models/notification.model";
 import { getIO } from "../../shared/sockets/socket";
 import { INotificationService } from "../interface/notification.service.interface";
 import { TYPES } from "../../shared/types/inversify.types";
 import { INotificationRepository } from "../../repositories/interface/notification.repository.interface";
 
+@injectable()
 export class NotificationService implements INotificationService {
   @inject(TYPES.NotificationRepository)
   private readonly _notificationRepository!: INotificationRepository;
@@ -40,5 +41,17 @@ export class NotificationService implements INotificationService {
 
   async markAsRead(notificationId: string): Promise<INotification | null> {
     return await this._notificationRepository.markAsRead(notificationId);
+  }
+
+  async markAllAsRead(receiverId: string, notificationIds: string[]): Promise<void> {
+    // Filter notifications to only mark those belonging to the receiver
+    const userNotifications = await this._notificationRepository.getNotificationsByReceiver(receiverId);
+    const validIds = notificationIds.filter(id => 
+      userNotifications.some(notification => (notification._id as any).toString() === id)
+    );
+    
+    if (validIds.length > 0) {
+      await this._notificationRepository.markMultipleAsRead(validIds);
+    }
   }
 }

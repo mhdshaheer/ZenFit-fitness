@@ -1,0 +1,976 @@
+/* Color Theme Variables - Maximum Contrast for Visibility */
+:root {
+  --dark-purple: #424758;
+  --white: #FFFFFF;
+  --light-gray: #F2F2F2;
+  --success-color: #10B981;
+  --warning-color: #F59E0B;
+  --error-color: #EF4444;
+  --border-color: #424758;
+  --text-primary: #000000;
+  --text-secondary: #424758;
+  --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.15), 0 4px 6px -2px rgba(0, 0, 0, 0.1);
+  --gradient-primary: linear-gradient(135deg, var(--dark-purple) 0%, rgba(66, 71, 88, 0.9) 100%);
+}
+
+/* Force visibility for all text elements */
+* {
+  color: inherit !important;
+}
+
+/* Ensure all text is visible */
+.transaction-history-container * {
+  color: var(--text-primary);
+}
+
+.transaction-history-container .header * {
+  color: var(--white) !important;
+}
+
+.transaction-history-container .pagination-container * {
+  color: var(--white) !important;
+}
+
+.transaction-history-container .status-badge {
+  color: var(--white) !important;
+}
+
+.transaction-history-container .difficulty {
+  color: var(--white) !important;
+}
+
+.transaction-history-container .payment-method {
+  color: var(--white) !important;
+}
+
+.transaction-history-container {
+  padding: 0;
+  background: #F8F9FA;
+  min-height: 100vh;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Styles - Dark Purple Background */
+.header {
+  background: var(--dark-purple);
+  padding: 1.5rem 1.5rem;
+  margin: 0;
+  border-radius: 0 0 12px 12px;
+  box-shadow: var(--shadow);
+  margin-bottom: 1.5rem;
+}
+
+.page-title {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: var(--white);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.025em;
+}
+
+.page-subtitle {
+  font-size: 0.875rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin: 0;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+/* Filters Section - White Background */
+.filters-section {
+  display: flex;
+  gap: 1rem;
+  margin: 0 1.5rem 1.5rem 1.5rem;
+  padding: 1.25rem;
+  background: var(--white);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  align-items: center;
+  flex-wrap: wrap;
+  border: 2px solid var(--border-color);
+}
+
+.search-box {
+  position: relative;
+  flex: 1;
+  min-width: 240px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 0.875rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-primary);
+  font-size: 1rem;
+  z-index: 2;
+  font-weight: 900;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.75rem 1rem 0.75rem 2.25rem;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 0.875rem;
+  background-color: var(--white);
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--dark-purple);
+  box-shadow: 0 0 0 3px rgba(66, 71, 88, 0.2);
+}
+
+.search-input::placeholder {
+  color: var(--text-primary);
+  font-weight: 500;
+  opacity: 0.7;
+}
+
+.status-filter {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 160px;
+}
+
+.filter-label {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  white-space: nowrap;
+}
+
+.status-select {
+  padding: 0.75rem 1rem;
+  border: 2px solid var(--border-color);
+  border-radius: 6px;
+  background-color: var(--white);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  min-width: 120px;
+}
+
+.status-select:focus {
+  outline: none;
+  border-color: var(--dark-purple);
+  box-shadow: 0 0 0 2px rgba(66, 71, 88, 0.1);
+}
+
+.status-select:hover {
+  border-color: var(--dark-purple);
+}
+
+/* Loading State - White Background */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: var(--white);
+  border-radius: 16px;
+  margin: 0 2rem;
+  box-shadow: var(--shadow);
+  border: 3px solid var(--dark-purple);
+}
+
+.loading-spinner {
+  width: 4rem;
+  height: 4rem;
+  border: 4px solid var(--light-gray);
+  border-top: 4px solid var(--dark-purple);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+  margin-bottom: 1.5rem;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-text {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+/* Empty State - White Background */
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+  margin: 0 2rem;
+  background-color: var(--white);
+  border-radius: 16px;
+  box-shadow: var(--shadow);
+  border: 3px solid var(--dark-purple);
+}
+
+.empty-icon {
+  width: 5rem;
+  height: 5rem;
+  margin: 0 auto 1.5rem;
+  background-color: var(--dark-purple);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--white);
+  font-size: 2rem;
+  border: 3px solid var(--dark-purple);
+}
+
+.empty-title {
+  color: var(--text-primary);
+  font-size: 1.75rem;
+  font-weight: 800;
+  margin: 0 0 1rem 0;
+  line-height: 1.4;
+}
+
+.empty-message {
+  color: var(--text-primary);
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0;
+  line-height: 1.6;
+}
+
+/* Transactions Table - White Background */
+.transactions-section {
+  margin: 0 1.5rem 1.5rem 1.5rem;
+  background-color: var(--white);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  border: 2px solid var(--border-color);
+}
+
+.transactions-table-container {
+  overflow-x: auto;
+}
+
+.transactions-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.transactions-table th {
+  background: var(--dark-purple);
+  color: var(--white);
+  padding: 0.875rem 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: none;
+}
+
+.transaction-row {
+  border-bottom: 2px solid var(--border-color);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.transaction-row:hover {
+  background-color: var(--light-gray);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow);
+}
+
+.transaction-row:last-child {
+  border-bottom: none;
+}
+
+.transaction-row td {
+  padding: 0.875rem 1rem;
+  vertical-align: middle;
+  border: none;
+}
+
+/* Program Cell */
+.program-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.program-title {
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.3;
+}
+
+.program-details {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.difficulty {
+  padding: 0.25rem 0.75rem;
+  background-color: var(--dark-purple);
+  color: var(--white);
+  border: 1px solid var(--dark-purple);
+  border-radius: 4px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+}
+
+.separator {
+  display: none;
+}
+
+/* Trainer Cell */
+.trainer-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.trainer-name {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+}
+
+/* Amount Cell */
+.amount {
+  font-weight: 800;
+  font-size: 1rem;
+  color: var(--dark-purple);
+}
+
+/* Payment Method Cell */
+.payment-method {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  background-color: var(--dark-purple);
+  color: var(--white);
+  border: 1px solid var(--dark-purple);
+  border-radius: 4px;
+  font-weight: 600;
+  font-size: 0.75rem;
+}
+
+.payment-icon {
+  color: var(--white);
+  font-size: 0.875rem;
+}
+
+/* Status Cell */
+.status-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.025em;
+  border: 2px solid;
+}
+
+.status-success {
+  background-color: var(--success-color);
+  color: var(--white);
+  border-color: var(--success-color);
+}
+
+.status-pending {
+  background-color: var(--warning-color);
+  color: var(--white);
+  border-color: var(--warning-color);
+}
+
+.status-failed {
+  background-color: var(--error-color);
+  color: var(--white);
+  border-color: var(--error-color);
+}
+
+.status-default {
+  background-color: var(--dark-purple);
+  color: var(--white);
+  border-color: var(--dark-purple);
+}
+
+.status-icon {
+  font-size: 0.75rem;
+}
+
+/* Date Cell */
+.date {
+  color: var(--text-primary);
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Removed Actions Cell - No longer needed */
+
+/* Content wrapper to push pagination to bottom */
+.content-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+  min-height: 60vh;
+}
+
+/* Pagination - Dark Purple Theme */
+.pagination-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.5rem 2rem;
+  background: var(--dark-purple);
+  border: 2px solid var(--dark-purple);
+  border-radius: 8px;
+  margin: auto 1.5rem 1.5rem 1.5rem;
+  box-shadow: var(--shadow-lg);
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-top: auto;
+}
+
+.pagination-info {
+  color: var(--white);
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.pagination-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.875rem 1.25rem;
+  border: 2px solid var(--white);
+  background-color: var(--white);
+  color: var(--dark-purple);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background-color: var(--dark-purple);
+  color: var(--white);
+  border-color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(66, 71, 88, 0.3);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.6);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.page-numbers {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.page-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3rem;
+  height: 3rem;
+  border: 2px solid var(--white);
+  background-color: var(--white);
+  color: var(--dark-purple);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1.125rem;
+  font-weight: 800;
+}
+
+.page-btn:hover {
+  background-color: var(--dark-purple);
+  color: var(--white);
+  border-color: var(--white);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(66, 71, 88, 0.3);
+}
+
+.page-btn.active {
+  background-color: var(--light-gray);
+  color: var(--dark-purple);
+  border-color: var(--light-gray);
+  box-shadow: 0 4px 8px rgba(66, 71, 88, 0.2);
+  transform: translateY(-1px);
+  font-weight: 900;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .filters-section {
+    margin: 0 1rem 1.5rem 1rem;
+  }
+  
+  .transactions-section {
+    margin: 0 1rem 1.5rem 1rem;
+  }
+  
+  .loading-container, .empty-state {
+    margin: 0 1rem;
+  }
+}
+
+@media (max-width: 1024px) {
+  .transactions-table-container {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  .transactions-table {
+    min-width: 700px;
+  }
+  
+  .header {
+    padding: 1.25rem 1rem;
+  }
+  
+  .page-title {
+    font-size: 1.5rem;
+  }
+  
+  .page-subtitle {
+    font-size: 0.8rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .header {
+    padding: 1rem;
+    border-radius: 0 0 8px 8px;
+  }
+  
+  .page-title {
+    font-size: 1.375rem;
+  }
+  
+  .page-subtitle {
+    font-size: 0.75rem;
+  }
+  
+  .filters-section {
+    flex-direction: column;
+    align-items: stretch;
+    margin: 0 0.75rem 1rem 0.75rem;
+    padding: 1rem;
+    gap: 0.75rem;
+  }
+  
+  .search-box {
+    min-width: auto;
+  }
+  
+  .search-input {
+    padding: 0.625rem 0.875rem 0.625rem 2rem;
+    font-size: 0.8rem;
+  }
+  
+  .search-icon {
+    left: 0.75rem;
+    font-size: 0.8rem;
+  }
+  
+  .status-filter {
+    min-width: auto;
+    justify-content: space-between;
+  }
+  
+  .status-select {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8rem;
+    min-width: 100px;
+  }
+  
+  .filter-label {
+    font-size: 0.8rem;
+  }
+  
+  .transactions-section {
+    margin: 0 0.75rem 1rem 0.75rem;
+  }
+  
+  .transactions-table {
+    min-width: 600px;
+    font-size: 0.8rem;
+  }
+  
+  .transactions-table th {
+    padding: 0.75rem 0.5rem;
+    font-size: 0.7rem;
+  }
+  
+  .transaction-row td {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .program-title {
+    font-size: 0.8rem;
+  }
+  
+  .program-details {
+    font-size: 0.7rem;
+  }
+  
+  .difficulty {
+    font-size: 0.65rem;
+    padding: 0.1rem 0.375rem;
+  }
+  
+  .trainer-name {
+    font-size: 0.8rem;
+  }
+  
+  .amount {
+    font-size: 0.8rem;
+  }
+  
+  .payment-method {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.375rem;
+  }
+  
+  .payment-icon {
+    font-size: 0.8rem;
+  }
+  
+  .status-badge {
+    font-size: 0.7rem;
+    padding: 0.2rem 0.375rem;
+  }
+  
+  .status-icon {
+    font-size: 0.7rem;
+  }
+  
+  .date {
+    font-size: 0.7rem;
+  }
+  
+  .pagination-container {
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1.25rem 1rem;
+  }
+  
+  .pagination-info {
+    font-size: 0.875rem;
+    text-align: center;
+    color: var(--white);
+    font-weight: 600;
+  }
+  
+  .pagination {
+    justify-content: center;
+    gap: 0.75rem;
+  }
+  
+  .pagination-btn {
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    gap: 0.5rem;
+  }
+  
+  .page-numbers {
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.375rem;
+  }
+  
+  .page-btn {
+    width: 2.5rem;
+    height: 2.5rem;
+    font-size: 1rem;
+    font-weight: 800;
+  }
+}
+
+@media (max-width: 640px) {
+  .transaction-history-container {
+    font-size: 0.875rem;
+  }
+  
+  .header {
+    padding: 0.875rem 0.75rem;
+  }
+  
+  .page-title {
+    font-size: 1.25rem;
+  }
+  
+  .page-subtitle {
+    font-size: 0.7rem;
+  }
+  
+  .filters-section {
+    margin: 0 0.5rem 0.875rem 0.5rem;
+    padding: 0.875rem;
+  }
+  
+  .search-input {
+    padding: 0.5rem 0.75rem 0.5rem 1.75rem;
+    font-size: 0.75rem;
+  }
+  
+  .search-icon {
+    left: 0.625rem;
+    font-size: 0.75rem;
+  }
+  
+  .status-select {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    min-width: 90px;
+  }
+  
+  .filter-label {
+    font-size: 0.75rem;
+  }
+  
+  .transactions-section {
+    margin: 0 0.5rem 0.875rem 0.5rem;
+  }
+  
+  .transactions-table {
+    min-width: 500px;
+    font-size: 0.75rem;
+  }
+  
+  .transactions-table th {
+    padding: 0.625rem 0.375rem;
+    font-size: 0.65rem;
+  }
+  
+  .transaction-row td {
+    padding: 0.625rem 0.375rem;
+  }
+  
+  .program-info {
+    gap: 0.2rem;
+  }
+  
+  .program-title {
+    font-size: 0.75rem;
+    line-height: 1.2;
+  }
+  
+  .program-details {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+    font-size: 0.65rem;
+  }
+  
+  .difficulty {
+    font-size: 0.6rem;
+    padding: 0.1rem 0.3rem;
+  }
+  
+  .trainer-name {
+    font-size: 0.75rem;
+  }
+  
+  .amount {
+    font-size: 0.75rem;
+  }
+  
+  .payment-method {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.3rem;
+    gap: 0.375rem;
+  }
+  
+  .payment-icon {
+    font-size: 0.75rem;
+  }
+  
+  .status-badge {
+    font-size: 0.65rem;
+    padding: 0.15rem 0.3rem;
+    gap: 0.2rem;
+  }
+  
+  .status-icon {
+    font-size: 0.65rem;
+  }
+  
+  .date {
+    font-size: 0.65rem;
+  }
+  
+  .pagination-container {
+    padding: 1rem 0.75rem;
+    gap: 0.75rem;
+  }
+  
+  .pagination-info {
+    font-size: 0.8rem;
+    color: var(--white);
+    font-weight: 600;
+  }
+  
+  .pagination-btn {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    gap: 0.375rem;
+  }
+  
+  .page-btn {
+    width: 2.25rem;
+    height: 2.25rem;
+    font-size: 0.875rem;
+    font-weight: 800;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 0.75rem 0.5rem;
+  }
+  
+  .page-title {
+    font-size: 1.125rem;
+  }
+  
+  .page-subtitle {
+    font-size: 0.65rem;
+  }
+  
+  .filters-section {
+    margin: 0 0.25rem 0.75rem 0.25rem;
+    padding: 0.75rem;
+  }
+  
+  .transactions-section {
+    margin: 0 0.25rem 0.75rem 0.25rem;
+  }
+  
+  .loading-container, .empty-state {
+    margin: 0 0.25rem;
+    padding: 2rem 1rem;
+  }
+  
+  .empty-title {
+    font-size: 1.25rem;
+  }
+  
+  .empty-message {
+    font-size: 0.875rem;
+  }
+  
+  .loading-text {
+    font-size: 0.875rem;
+  }
+  
+  .transactions-table {
+    min-width: 450px;
+  }
+  
+  .pagination-container {
+    padding: 0.875rem 0.5rem;
+  }
+  
+  .pagination {
+    gap: 0.5rem;
+  }
+  
+  .pagination-btn {
+    padding: 0.5rem 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+  }
+  
+  .page-btn {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.8rem;
+    font-weight: 800;
+  }
+  
+  .page-numbers {
+    gap: 0.15rem;
+  }
+}
+
+/* Ultra small screens */
+@media (max-width: 360px) {
+  .header {
+    padding: 0.625rem 0.375rem;
+  }
+  
+  .page-title {
+    font-size: 1rem;
+  }
+  
+  .filters-section {
+    margin: 0 0.125rem 0.625rem 0.125rem;
+    padding: 0.625rem;
+  }
+  
+  .transactions-section {
+    margin: 0 0.125rem 0.625rem 0.125rem;
+  }
+  
+  .transactions-table {
+    min-width: 400px;
+  }
+  
+  .pagination-btn span {
+    display: none;
+  }
+  
+  .pagination-btn {
+    padding: 0.25rem;
+    min-width: 2rem;
+  }
+}

@@ -15,7 +15,7 @@ import {
   take,
 } from 'rxjs';
 import { LoggerService } from './logger.service';
-import { AuthRoutes } from '../constants/api-routes.const';
+import { AuthRoutes, ProfileRouter } from '../constants/api-routes.const';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -81,6 +81,10 @@ export class AuthService {
   }
 
   logout() {
+    // Clear client-side storage
+    localStorage.removeItem('userRole');
+    localStorage.removeItem('signupEmail');
+    
     return this._http
       .post<{ message: string }>(
         this._api + AuthRoutes.LOGOUT,
@@ -141,20 +145,22 @@ export class AuthService {
     }
   }
   getAccessToken(): string | null {
-    return localStorage.getItem('accessToken');
+    // Token is stored as httpOnly cookie, not accessible from client
+    // Return null to indicate we should rely on cookie-based auth
+    return null;
   }
   getUserRole(): string | null {
-    const token = this.getAccessToken();
-    if (!token) return null;
-    try {
-      const payload = JSON.parse(atob(token.split('.')[1]));
-      return typeof payload.role === 'string' ? payload.role : null;
-    } catch (error) {
-      this._logger.error('Failed to decode token', error);
-      return null;
-    }
+    // Get role from localStorage (set during login)
+    return localStorage.getItem('userRole');
   }
   getUserId(): Observable<{ userId: string }> {
     return this._http.get<{ userId: string }>(this._api);
+  }
+
+  getUserProfile(): Observable<{ username: string; email: string; role: string }> {
+    return this._http.get<{ username: string; email: string; role: string }>(
+      environment.apiUrl + ProfileRouter.USER_BASE + ProfileRouter.PROFILE,
+      { withCredentials: true }
+    );
   }
 }
