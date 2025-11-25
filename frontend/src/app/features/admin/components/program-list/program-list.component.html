@@ -1,19 +1,68 @@
-<app-table
-  [title]="'Program Management'"
-  [subtitle]="'Manage all trainer programs'"
-  [entityName]="'Program'"
-  [data]="programs"
-  [columns]="programsColumn"
-  [actions]="programAction"
-  [customCell]="customCell"
-  [actions]="programAction"
-  (actionClicked)="onViewProgram($event)"
->
-  <ng-template #customCell let-row let-column="column">
-    @if (column.key === 'approvalStatus') {
-    <span [ngClass]="row.approvalStatus | approvalStatusColor">
-      {{ row.approvalStatus }}
-    </span>
-    }
-  </ng-template>
-</app-table>
+<div class="min-h-screen bg-gray-50 py-6">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="mb-6">
+      <h1 class="text-2xl font-bold text-gray-900">Program Management</h1>
+      <p class="text-sm text-gray-600">Manage all trainer programs across approval statuses.</p>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+      <div class="p-6 border-b border-gray-100">
+        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+          <div>
+            <h3 class="text-lg font-semibold text-gray-900">Approval Status</h3>
+            <p class="text-sm text-gray-500">
+              Switch between pending, approved, and rejected programs.
+            </p>
+          </div>
+          <span class="inline-flex items-center text-sm font-medium px-3 py-1 rounded-full bg-primary/10 text-primary">
+            {{ activeApprovalTab }} Programs · {{ programCounts[activeApprovalTab] }}
+          </span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          @for (tab of approvalTabs; track tab.value) {
+          <button type="button" (click)="setApprovalTab(tab.value)" [ngClass]="getTabButtonClasses(tab.value)">
+            <div class="flex items-center justify-between mb-1">
+              <span class="text-base">{{ tab.label }}</span>
+              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/20 text-white text-xs"
+                [class.opacity-0]="activeApprovalTab !== tab.value">
+                ✓
+              </span>
+            </div>
+            <div class="flex items-center justify-between text-xs text-gray-500">
+              <span [ngClass]="getTabHelperClasses(tab.value)">{{ tab.helper }}</span>
+              <span class="font-semibold text-gray-900">
+                {{ programCounts[tab.value] }}
+              </span>
+            </div>
+          </button>
+          }
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
+      @if (isLoading) {
+      <div class="p-8 flex items-center justify-center text-gray-500">
+        Loading programs...
+      </div>
+      } @else if (programs.length === 0) {
+      <div class="p-8 text-center text-gray-500">
+        No {{ activeApprovalTab.toLowerCase() }} programs found.
+      </div>
+      } @else {
+      <app-table [title]="'Program Listings'" [subtitle]="activeApprovalTab + ' programs'" [entityName]="'Program'"
+        [data]="programs" [columns]="programsColumn" [actions]="programAction" [customCell]="customCell"
+        (actionClicked)="onViewProgram($event)">
+        <ng-template #customCell let-row let-column="column">
+          @if (column.key === 'approvalStatus') {
+          <span [ngClass]="row.approvalStatus | approvalStatusColor">
+            {{ row.approvalStatus }}
+          </span>
+          }
+        </ng-template>
+      </app-table>
+      }
+    </div>
+  </div>
+</div>
