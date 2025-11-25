@@ -14,6 +14,7 @@ export interface Program {
   enrolledCount?: number;
   rating?: number;
   status?: string;
+  approvalStatus?: 'Pending' | 'Approved' | 'Rejected' | string;
 }
 
 @Component({
@@ -50,6 +51,18 @@ export class ProgramCardComponent {
     }
   }
 
+  getApprovalBadge(status?: string): string {
+    switch ((status || 'Pending').toLowerCase()) {
+      case 'approved':
+        return 'bg-emerald-100 text-emerald-800';
+      case 'rejected':
+        return 'bg-red-100 text-red-800';
+      case 'pending':
+      default:
+        return 'bg-amber-100 text-amber-800';
+    }
+  }
+
   getCategoryColor(category: string): string {
     switch (category.toLowerCase()) {
       case 'fitness':
@@ -61,14 +74,6 @@ export class ProgramCardComponent {
       default:
         return 'bg-gray-100 text-gray-800';
     }
-  }
-
-  generateStars(rating = 3): number[] {
-    if (rating < 0) {
-      return [];
-    }
-    const safeRating = Math.min(Math.round(rating), 5); // cap at 5
-    return Array(safeRating).fill(0);
   }
 
   onViewProgram(id: string) {

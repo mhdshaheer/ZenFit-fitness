@@ -364,7 +364,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
   }
 
   onProgramSlot(programId: string): void {
-    this._router.navigate(['/trainer/purchased-users', programId]);
+    this._router.navigate(['/trainer/programs', programId, 'users']);
   }
 
   onRealTimeSearch(): void {
