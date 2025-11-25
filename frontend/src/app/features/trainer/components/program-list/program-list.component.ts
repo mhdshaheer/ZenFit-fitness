@@ -7,6 +7,7 @@ import { firstValueFrom, forkJoin, Subject } from 'rxjs';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { FormsModule } from '@angular/forms';
+import { NgClass } from '@angular/common';
 
 export interface FitnessProgram {
   id?: string;
@@ -24,6 +25,20 @@ export interface FitnessProgram {
   status?: string;
 }
 
+type ApprovalTabValue = 'Pending' | 'Approved' | 'Rejected';
+
+type ApprovalTabStyle = {
+  activeBg: string;
+  activeBorder: string;
+  activeText: string;
+  inactiveBorder: string;
+  inactiveText: string;
+  helperActive: string;
+  helperInactive: string;
+  badgeBg: string;
+  badgeText: string;
+};
+
 export interface ProgramFilters {
   page: number;
   limit: number;
@@ -31,6 +46,7 @@ export interface ProgramFilters {
   category: string;
   difficultyLevel: string;
   status: string;
+  approvalStatus: '' | ApprovalTabValue;
 }
 
 export interface PaginationResult {
@@ -42,7 +58,7 @@ export interface PaginationResult {
 
 @Component({
   selector: 'app-program-list',
-  imports: [ProgramCardComponent, FormsModule],
+  imports: [ProgramCardComponent, FormsModule, NgClass],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
@@ -66,7 +82,8 @@ export class ProgramListComponent implements OnInit, OnDestroy {
     search: '',
     category: '',
     difficultyLevel: '',
-    status: ''
+    status: '',
+    approvalStatus: 'Pending'
   };
 
   pagination: PaginationResult = {
@@ -78,6 +95,50 @@ export class ProgramListComponent implements OnInit, OnDestroy {
 
   readonly Math = Math;
 
+  approvalTabs: { label: string; value: ApprovalTabValue; helper: string }[] = [
+    { label: 'Pending', value: 'Pending', helper: 'Awaiting review' },
+    { label: 'Approved', value: 'Approved', helper: 'Live programs' },
+    { label: 'Rejected', value: 'Rejected', helper: 'Needs changes' }
+  ];
+
+  tabColorStyles: Record<ApprovalTabValue, ApprovalTabStyle> = {
+    Pending: {
+      activeBg: 'bg-yellow-500',
+      activeBorder: 'border-yellow-500',
+      activeText: 'text-white',
+      inactiveBorder: 'border-gray-200',
+      inactiveText: 'text-gray-700',
+      helperActive: 'text-yellow-100',
+      helperInactive: 'text-gray-500',
+      badgeBg: 'bg-yellow-50',
+      badgeText: 'text-yellow-700'
+    },
+    Approved: {
+      activeBg: 'bg-green-600',
+      activeBorder: 'border-green-600',
+      activeText: 'text-white',
+      inactiveBorder: 'border-gray-200',
+      inactiveText: 'text-gray-700',
+      helperActive: 'text-green-100',
+      helperInactive: 'text-gray-500',
+      badgeBg: 'bg-green-50',
+      badgeText: 'text-green-700'
+    },
+    Rejected: {
+      activeBg: 'bg-red-600',
+      activeBorder: 'border-red-600',
+      activeText: 'text-white',
+      inactiveBorder: 'border-gray-200',
+      inactiveText: 'text-gray-700',
+      helperActive: 'text-red-100',
+      helperInactive: 'text-gray-500',
+      badgeBg: 'bg-red-50',
+      badgeText: 'text-red-700'
+    }
+  };
+
+  activeApprovalTab: ApprovalTabValue = this.filters.approvalStatus || 'Pending';
+
   ngOnInit() {
     this.loadCategories();
     this.getPrograms();
@@ -85,7 +146,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
 
   extractCategoriesFromPrograms(programs: any[]): void {
     const categoryMap = new Map();
-    
+
     programs.forEach((program: any) => {
       if (typeof program.category === 'string') {
         try {
@@ -112,9 +173,9 @@ export class ProgramListComponent implements OnInit, OnDestroy {
         }
       }
     });
-    
+
     this.categories = Array.from(categoryMap.values());
-    
+
   }
 
   async loadCategories(): Promise<void> {
@@ -124,17 +185,17 @@ export class ProgramListComponent implements OnInit, OnDestroy {
 
   async enrichProgramsWithEnrollmentCount(programs: any[]): Promise<FitnessProgram[]> {
     if (programs.length === 0) return [];
-    
+
     try {
       const programObservables = programs.map((item: any) => {
         return this._paymentService.getEntrolledUsers(item.id!);
       });
       const counts = await firstValueFrom(forkJoin(programObservables));
-      
+
       return programs.map((item: any, index: number) => {
         let categoryName: string;
         let categoryId: string;
-        
+
         try {
           if (typeof item.category === 'string') {
             try {
@@ -156,7 +217,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
           categoryName = 'Unknown Category';
           categoryId = '';
         }
-        
+
         return {
           ...item,
           category: categoryName,
@@ -168,7 +229,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
       return programs.map((item: any) => {
         let categoryName: string;
         let categoryId: string;
-        
+
         try {
           if (typeof item.category === 'string') {
             try {
@@ -190,7 +251,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
           categoryName = 'Unknown Category';
           categoryId = '';
         }
-        
+
         return {
           ...item,
           category: categoryName,
@@ -218,16 +279,16 @@ export class ProgramListComponent implements OnInit, OnDestroy {
         // Fallback to client-side filtering if backend doesn't support it yet
         res = await firstValueFrom(this._programService.getPrograms());
       }
-      
+
       let filteredPrograms = res.programs;
-      
+
       // Extract categories from programs to ensure dropdown matches
       this.extractCategoriesFromPrograms(filteredPrograms);
 
       // Apply client-side filtering (temporary until backend supports it)
       if (this.filters.search) {
         const searchTerm = this.filters.search.toLowerCase();
-        filteredPrograms = filteredPrograms.filter((program: any) => 
+        filteredPrograms = filteredPrograms.filter((program: any) =>
           program.title.toLowerCase().includes(searchTerm) ||
           program.description.toLowerCase().includes(searchTerm)
         );
@@ -236,7 +297,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
       if (this.filters.category) {
         filteredPrograms = filteredPrograms.filter((program: any) => {
           let categoryId = '';
-          
+
           if (typeof program.category === 'string') {
             try {
               const parsed = JSON.parse(program.category);
@@ -247,20 +308,26 @@ export class ProgramListComponent implements OnInit, OnDestroy {
           } else if (program.category && typeof program.category === 'object') {
             categoryId = program.category._id || program.category.id || '';
           }
-          
+
           return categoryId === this.filters.category;
         });
       }
 
       if (this.filters.difficultyLevel) {
-        filteredPrograms = filteredPrograms.filter((program: any) => 
+        filteredPrograms = filteredPrograms.filter((program: any) =>
           program.difficultyLevel === this.filters.difficultyLevel
         );
       }
 
       if (this.filters.status) {
-        filteredPrograms = filteredPrograms.filter((program: any) => 
+        filteredPrograms = filteredPrograms.filter((program: any) =>
           program.status === this.filters.status
+        );
+      }
+
+      if (this.filters.approvalStatus) {
+        filteredPrograms = filteredPrograms.filter((program: any) =>
+          program.approvalStatus === this.filters.approvalStatus
         );
       }
 
@@ -316,6 +383,41 @@ export class ProgramListComponent implements OnInit, OnDestroy {
   onPageChange(page: number): void {
     this.filters.page = page;
     this.getPrograms();
+  }
+
+  setApprovalTab(tabValue: ApprovalTabValue): void {
+    if (this.activeApprovalTab === tabValue) {
+      return;
+    }
+
+    this.activeApprovalTab = tabValue;
+    this.filters.approvalStatus = tabValue;
+    this.filters.page = 1;
+    this.getPrograms();
+  }
+
+  getTabButtonClasses(tabValue: ApprovalTabValue): string {
+    const baseClasses = 'w-full text-left border rounded-lg px-4 py-3 text-sm font-medium transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
+    const styles = this.tabColorStyles[tabValue];
+    const isActive = this.activeApprovalTab === tabValue;
+
+    return isActive
+      ? `${baseClasses} ${styles.activeBg} ${styles.activeBorder} ${styles.activeText}`
+      : `${baseClasses} bg-white ${styles.inactiveBorder} ${styles.inactiveText} hover:bg-gray-50`;
+  }
+
+  getTabHelperClasses(tabValue: ApprovalTabValue): string {
+    const styles = this.tabColorStyles[tabValue];
+    const isActive = this.activeApprovalTab === tabValue;
+
+    return isActive
+      ? `text-sm ${styles.helperActive}`
+      : 'text-sm text-gray-500';
+  }
+
+  getActiveBadgeClasses(): string {
+    const styles = this.tabColorStyles[this.activeApprovalTab];
+    return `inline-flex items-center text-sm font-medium px-3 py-1 rounded-full ${styles.badgeBg} ${styles.badgeText}`;
   }
 
   getPaginationArray(): number[] {
