@@ -57,7 +57,6 @@ export class BookingService {
 
   getTrainerSessions(): Observable<TrainerSession[]> {
     const url = `${this._apiUrl}/trainer-bookings`;
-    console.log('🔗 Calling API:', url);
     return this._http.get<TrainerSession[]>(url);
   }
 }

@@ -2,7 +2,11 @@ import { CommonModule } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ProfileService } from '../../../../core/services/profile.service';
-import { Subject, takeUntil } from 'rxjs';
+import { Subject, takeUntil, take } from 'rxjs';
+import { AdminService } from '../../../../core/services/admin.service';
+import { ToastService } from '../../../../core/services/toast.service';
+import { MatDialog } from '@angular/material/dialog';
+import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 
 interface TrainerProfile {
   id: string;
@@ -15,6 +19,7 @@ interface TrainerProfile {
   role?: string;
   dob: string;
   isVerified?: boolean;
+  status?: 'active' | 'blocked';
   resume?: {
     fileName: string;
     fileSize: number;
@@ -42,6 +47,9 @@ export class UserProfileComponent implements OnDestroy, OnInit {
   profileImage = '';
   private readonly _route = inject(ActivatedRoute);
   private readonly _profileService = inject(ProfileService);
+  private readonly _adminService = inject(AdminService);
+  private readonly _toastService = inject(ToastService);
+  private readonly _dialog = inject(MatDialog);
 
   private readonly _destroy$ = new Subject<void>();
   trainer: TrainerProfile | null = null;
@@ -117,21 +125,55 @@ export class UserProfileComponent implements OnDestroy, OnInit {
         .pipe(takeUntil(this._destroy$))
         .subscribe((res) => {
           this.trainer!.isVerified = res.isVerified;
-          console.log('response from verify :', res);
         });
     }
   }
 
-  editProfile() {
-    console.log('Edit profile for trainer:', this.trainer?.id);
-    // Navigate to edit profile page or open modal
+
+  toggleUserStatus() {
+    if (!this.trainer) {
+      return;
+    }
+
+    const newStatus = this.trainer.status === 'blocked' ? 'active' : 'blocked';
+    const actionLabel = newStatus === 'blocked' ? 'Block User' : 'Unblock User';
+
+    this._dialog
+      .open(ConfirmDialogComponent, {
+        width: '350px',
+        data: {
+          title: actionLabel,
+          message: `Are you sure you want to ${newStatus === 'blocked' ? 'block' : 'unblock'} this user?`,
+        },
+      })
+      .afterClosed()
+      .pipe(take(1), takeUntil(this._destroy$))
+      .subscribe((confirmed: boolean) => {
+        if (!confirmed) {
+          return;
+        }
+
+        this._adminService
+          .updateUserStatus(this.trainer!.id, newStatus)
+          .pipe(takeUntil(this._destroy$))
+          .subscribe({
+            next: () => {
+              this.trainer!.status = newStatus;
+              const successMessage =
+                newStatus === 'blocked'
+                  ? 'User blocked successfully'
+                  : 'User unblocked successfully';
+              this._toastService.success(successMessage);
+            },
+            error: () => {
+              this._toastService.error('Failed to update user status');
+            },
+          });
+      });
   }
 
-  deactivateProfile() {
-    if (confirm('Are you sure you want to deactivate this trainer profile?')) {
-      console.log('Deactivate profile for trainer:', this.trainer?.id);
-      // Make API call to deactivate profile
-    }
+  get isUserBlocked(): boolean {
+    return this.trainer?.status === 'blocked';
   }
 
   ngOnInit() {
@@ -188,6 +230,7 @@ export class UserProfileComponent implements OnDestroy, OnInit {
           role: res.role,
           phone: res.phone,
           isVerified: res.resumeVerified,
+          status: res.status,
         };
         console.log('pdf :', this.uploadedFile);
       });

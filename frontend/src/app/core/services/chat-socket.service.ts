@@ -1,11 +1,13 @@
-import { Injectable, NgZone } from '@angular/core';
+import { inject, Injectable, NgZone } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { Observable, Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { LoggerService } from './logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class ChatSocketService {
   private _socket!: Socket;
+  private _logger = inject(LoggerService);
   private _newMessage$ = new Subject<any>();
   private _typing$ = new Subject<{ threadId: string; senderType: 'user' | 'trainer' }>();
   private _read$ = new Subject<{ threadId: string; readerId: string; readerType: 'user' | 'trainer' }>();
@@ -17,20 +19,20 @@ export class ChatSocketService {
     
     // Connection events
     this._socket.on('connect', () => {
-      console.log('Socket connected:', this._socket.id);
+      this._logger.info('Socket connected:', this._socket.id);
     });
     
     this._socket.on('disconnect', (reason) => {
-      console.log('Socket disconnected:', reason);
+      this._logger.info('Socket disconnected:', reason);
     });
     
     this._socket.on('connect_error', (error) => {
-      console.error('Socket connection error:', error);
+      this._logger.error('Socket connection error:', error);
     });
     
     // Chat events
     this._socket.on('chat:newMessage', (data) => {
-      console.log('Received new message:', data);
+      this._logger.info('Received new message:', data);
       this._zone.run(() => this._newMessage$.next(data));
     });
     
@@ -46,7 +48,7 @@ export class ChatSocketService {
   }
 
   joinThread(threadId: string, userId: string, role: 'user' | 'trainer') {
-    console.log('🔗 Joining thread:', { threadId, userId, role });
+    this._logger.info('Joining thread:', { threadId, userId, role });
     this._socket.emit('chat:joinThread', { threadId, userId, role });
   }
 

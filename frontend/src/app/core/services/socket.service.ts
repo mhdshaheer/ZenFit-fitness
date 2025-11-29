@@ -1,11 +1,13 @@
-import { Injectable, NgZone } from '@angular/core';
+import { inject, Injectable, NgZone } from '@angular/core';
 import { io, Socket } from 'socket.io-client';
 import { Observable, Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
+import { LoggerService } from './logger.service';
 
 @Injectable({ providedIn: 'root' })
 export class SocketService {
   private _socket!: Socket;
+  private _logger = inject(LoggerService);
   private _meetingEvents: Map<string, Subject<any>> = new Map();
 
   constructor(private zone: NgZone) {
@@ -17,15 +19,15 @@ export class SocketService {
     
     // Connection events
     this._socket.on('connect', () => {
-      console.log('Socket connected:', this._socket.id);
+      this._logger.info('Socket connected:', this._socket.id);
     });
     
     this._socket.on('disconnect', (reason) => {
-      console.log('Socket disconnected:', reason);
+      this._logger.info('Socket disconnected:', reason);
     });
     
     this._socket.on('connect_error', (error) => {
-      console.error('Socket connection error:', error);
+      this._logger.error('Socket connection error:', error);
     });
   }
 
@@ -33,7 +35,7 @@ export class SocketService {
    * Emit a socket event
    */
   emit(event: string, data: any): void {
-    console.log('Emitting event:', event, data);
+    this._logger.info('Emitting event:', event, data);
     this._socket.emit(event, data);
   }
 
@@ -46,7 +48,7 @@ export class SocketService {
       this._meetingEvents.set(event, subject);
       
       this._socket.on(event, (data) => {
-        console.log('📨 Received event:', event, data);
+        this._logger.info('Received event:', event, data);
         this.zone.run(() => subject.next(data));
       });
     }
