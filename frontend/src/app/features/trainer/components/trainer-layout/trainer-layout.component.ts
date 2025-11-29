@@ -52,7 +52,7 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
   }
 
   onMenuItemClicked(item: MenuItem) {
-    console.log('Menu item clicked:', item);
+    this._logger.info('Menu item clicked:', item);
     // Handle menu item click logic here
   }
 
@@ -147,16 +147,16 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
   activityLog: any[] = [];
 
   handleSearchChange(query: string) {
-    console.log('Search query changed:', query);
+    this._logger.info('Search query changed:', query);
   }
 
   handleSearchSubmit(query: string) {
-    console.log('Search submitted:', query);
+    this._logger.info('Search submitted:', query);
     this.addToActivityLog('fas fa-search', `Search submitted: "${query}"`);
   }
 
   handleUserMenuClick(item: NavMenuItem) {
-    console.log('User menu clicked:', item);
+    this._logger.info('User menu clicked:', item);
     this.addToActivityLog(
       item.icon || 'fas fa-mouse-pointer',
       `Clicked: ${item.label}`
@@ -170,7 +170,6 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
   }
 
   handleMobileMenuToggle(isOpen: boolean) {
-    console.log('Mobile menu toggled:', isOpen);
     this.addToActivityLog(
       'fas fa-bars',
       `Mobile menu ${isOpen ? 'opened' : 'closed'}`

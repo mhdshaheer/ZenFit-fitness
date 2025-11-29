@@ -8,6 +8,7 @@ import { ToastService } from '../../../../core/services/toast.service';
 import { Router } from '@angular/router';
 import { ProgramService } from '../../../../core/services/program.service';
 import { Program } from '../../../trainer/store/trainer.model';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 interface SlotWithProgram extends BookedSlot {
   programName?: string;
@@ -29,6 +30,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
   private readonly _router = inject(Router);
   private readonly _programService = inject(ProgramService);
   private readonly _destroy$ = new Subject<void>();
+  private _logger = inject(LoggerService)
 
   upcomingSlots: SlotWithProgram[] = [];
   pastSlots: SlotWithProgram[] = [];
@@ -117,14 +119,14 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
                 this.isLoading = false;
               },
               error: (error) => {
-                console.error('Error loading program details:', error);
+                this._logger.error('Error loading program details:', error);
                 // Fallback: show slots without program details
                 this.loadSlotsWithoutProgramDetails(slots);
               }
             });
         },
         error: (error) => {
-          console.error('Error loading booked slots:', error);
+          this._logger.error('Error loading booked slots:', error);
           this.isLoading = false;
         }
       });
@@ -179,7 +181,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     try {
       this.isJoiningMeeting = true;
       this.joiningSlotId = slot.slotId;
-      console.log('🎥 Joining meeting for slot:', slot);
+      this._logger.info('Joining meeting for slot:', slot);
 
       // Validate access first
       const validation = await this._meetingService.validateMeetingAccess(slot.slotId, slot._id).toPromise();
@@ -199,11 +201,11 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
           this.currentMeetingTitle = `${slot.programName || 'Training Session'} - ${this.formatDate(slot.date)}`;
           this.showMeetingRoom = true;
           this._toastService.success('Successfully joined the meeting!');
-          console.log('✅ Joined meeting:', validation.meetingId);
+          this._logger.info('Joined meeting:', validation.meetingId);
         }
       }
     } catch (error: any) {
-      console.error('❌ Error joining meeting:', error);
+      this._logger.error('Error joining meeting:', error);
       const message = error?.error?.message || 'Failed to join meeting. Please try again or contact the trainer.';
       this._toastService.error(message);
     } finally {

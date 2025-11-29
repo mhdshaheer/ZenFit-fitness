@@ -5,6 +5,7 @@ import { Subject, takeUntil, forkJoin } from 'rxjs';
 import { BookingService, BookedSlot } from '../../../../core/services/booking.service';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { PurchasedProgram } from '../../../../interface/payment.interface';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'zenfit-program-details',
@@ -18,6 +19,7 @@ export class ProgramDetailsComponent implements OnInit, OnDestroy {
   private readonly _bookingService = inject(BookingService);
   private readonly _paymentService = inject(PaymentService);
   private readonly _destroy$ = new Subject<void>();
+  private _logger = inject(LoggerService)
 
   programId: string = '';
   program: PurchasedProgram | null = null;
@@ -44,7 +46,7 @@ export class ProgramDetailsComponent implements OnInit, OnDestroy {
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('Error loading program details:', error);
+          this._logger.error('Error loading program details:', error);
           this.isLoading = false;
         }
       });

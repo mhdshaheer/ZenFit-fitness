@@ -7,6 +7,7 @@ import { ChatSocketService } from "../../../../core/services/chat-socket.service
 import { Subject, takeUntil } from "rxjs";
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { LoggerService } from "../../../../core/services/logger.service";
 
 @Component({
   selector: 'zenfit-user-chat',
@@ -21,6 +22,7 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private socket = inject(ChatSocketService);
   private toastr = inject(ToastrService);
   private destroy$ = new Subject<void>();
+  private _logger = inject(LoggerService)
 
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
   private shouldScrollToBottom = false;
@@ -37,30 +39,24 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     const programId = this.route.snapshot.paramMap.get('programId')!;
     this.chat.initThread(programId).pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.thread = res.data;
-      // Extract user ID string from populated object or use as-is if string
       const userId = typeof this.thread.userId === 'object' ? this.thread.userId._id : this.thread.userId;
-      // Join user room for notifications
       this.socket.join(userId, 'user');
-      // Join thread room for messages
       this.socket.joinThread(this.thread._id, userId, 'user');
       this.loadMessages(this.thread._id);
     });
 
-    // Listen for new messages
     this.socket.onNewMessage().pipe(takeUntil(this.destroy$)).subscribe(m => {
       if (m.threadId === this.thread?._id) {
         this.messages.push(m);
         this.shouldScrollToBottom = true;
-        // Auto-mark as read when message arrives
         if (m.senderType !== 'user' && this.thread) {
           this.chat.markRead(this.thread._id).subscribe();
         }
       }
     });
 
-    // Listen for delivered notifications
     this.socket.onDelivered().pipe(takeUntil(this.destroy$)).subscribe(data => {
-      console.log('Message delivered to thread:', data.threadId);
+      this._logger.info('Message delivered to thread:', data.threadId);
     });
 
     // Listen for message deletions
@@ -83,7 +79,7 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.shouldScrollToBottom = true;
     this.chat.sendMessage(this.thread._id, content).subscribe(res => {
       // Message will be added via socket event
-      console.log('Message sent:', res.data);
+      this._logger.info('Message sent:', res.data);
     });
   }
 
@@ -100,7 +96,7 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.messagesContainer.nativeElement.scrollTop = this.messagesContainer.nativeElement.scrollHeight;
       }
     } catch (err) {
-      console.error('Scroll to bottom failed:', err);
+      this._logger.error('Scroll to bottom failed:', err);
     }
   }
 
@@ -125,7 +121,7 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
         this.messageToDelete = null;
       },
       error: (err) => {
-        console.error('Error deleting message:', err);
+        this._logger.error('Error deleting message:', err);
         this.toastr.error('Failed to delete message. Please try again.', 'Error');
         this.showDeleteConfirm = false;
         this.messageToDelete = null;

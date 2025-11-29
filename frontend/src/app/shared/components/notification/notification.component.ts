@@ -16,6 +16,7 @@ import { environment } from '../../../../environments/environment';
 import { NotificationService } from '../../../core/services/notificaiton.service';
 import { ProfileService } from '../../../core/services/profile.service';
 import { ToastService } from '../../../core/services/toast.service';
+import { LoggerService } from '../../../core/services/logger.service';
 
 type NotificationTab = 'unread' | 'read';
 
@@ -42,6 +43,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
   private readonly _profileService = inject(ProfileService);
   private readonly _cdr = inject(ChangeDetectorRef);
   private readonly _toastService = inject(ToastService);
+  private _logger = inject(LoggerService)
 
   ngOnInit(): void {
     this.initializeNotifications();
@@ -84,7 +86,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
           this._toastService.info(notification.message);
           this.showBrowserNotification(notification);
         },
-        error: (error) => console.error('Notification stream error:', error),
+        error: (error) => this._logger.error('Notification stream error:', error),
       });
 
     // 3️⃣ Load existing notifications
@@ -103,7 +105,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
           this._cdr.markForCheck();
         },
         error: (error) => {
-          console.error('Failed to load notifications:', error);
+          this._logger.error('Failed to load notifications:', error);
           this.isLoading = false;
           this._cdr.markForCheck();
         },
@@ -137,7 +139,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         error: (error) => {
-          console.error('Failed to mark as read:', error);
+          this._logger.error('Failed to mark as read:', error);
           notification.isRead = false;
           this._cdr.markForCheck();
         },
@@ -159,7 +161,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         error: (error) => {
-          console.error('Failed to mark all as read:', error);
+          this._logger.error('Failed to mark all as read:', error);
           this.loadNotifications();
         },
       });

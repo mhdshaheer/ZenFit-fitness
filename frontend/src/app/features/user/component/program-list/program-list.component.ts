@@ -9,6 +9,7 @@ import { lastValueFrom, Subject, takeUntil } from 'rxjs';
 import { ISubCategory } from '../../../../interface/category.interface';
 import { FormsModule } from '@angular/forms';
 import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 interface IProgramType {
   label: string;
@@ -36,6 +37,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   private readonly _programService = inject(ProgramService);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _route = inject(Router);
+  private _logger = inject(LoggerService)
 
   private readonly _destroy$ = new Subject<void>();
 
@@ -69,13 +71,13 @@ export class ProgramListComponent implements OnDestroy, OnInit {
 
       this.extractUniqueSubCategories(this.subcategories);
     } catch (err) {
-      console.error('Error fetching programs:', err);
+      this._logger.error('Error fetching programs:', err);
       this.programs = [];
     }
   }
 
   onViewProgram(programId: string): void {
-    console.log('Viewing program with ID:', programId);
+    this._logger.info('Viewing program with ID:', programId);
   }
   onSubscribeProgram(programId: string): void {
     this._route.navigate(['user/payment', programId]);
@@ -112,7 +114,6 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   // Search
   onSearch(text: string) {
     this.searchTerm = text;
-    console.log(text);
   }
   clearSearch() {
     this.searchTerm = '';
@@ -129,7 +130,6 @@ export class ProgramListComponent implements OnDestroy, OnInit {
         item.selected = !item.selected;
       }
     }
-    console.log('filtering :', this.programTypes);
   }
 
   clearAllFilters() {}

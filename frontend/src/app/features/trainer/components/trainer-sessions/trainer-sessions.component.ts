@@ -7,6 +7,7 @@ import { MeetingService } from '../../../../core/services/meeting.service';
 import { MeetingRoomComponent } from '../../../../shared/components/meeting-room/meeting-room.component';
 import { ToastService } from '../../../../core/services/toast.service';
 import { FeedbackService } from '../../../../core/services/feedback.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'zenfit-trainer-sessions',
@@ -21,6 +22,7 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
   private readonly _toastService = inject(ToastService);
   private readonly _feedbackService = inject(FeedbackService);
   private readonly _destroy$ = new Subject<void>();
+  private _logger = inject(LoggerService)
 
   sessions: TrainerSession[] = [];
   upcomingSessions: TrainerSession[] = [];
@@ -62,13 +64,12 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (sessions) => {
-          console.log('Fetched sessions:', sessions);
           this.processSessions(sessions);
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('Error loading sessions:', error);
-          console.error('Error details:', {
+          this._logger.error('Error loading sessions:', error);
+          this._logger.error('Error details:', {
             status: error.status,
             statusText: error.statusText,
             url: error.url,
@@ -119,7 +120,7 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
     
     try {
       this.isStartingMeeting = true;
-      console.log('🎥 Starting meeting for session:', session);
+      this._logger.info('Starting meeting for session:', session);
 
       // Create meeting
       const response = await this._meetingService.createMeeting(session.slotId).toPromise();
@@ -130,10 +131,10 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
         this.currentMeetingTitle = `${session.programName} - ${this.formatDate(session.date)}`;
         this.showMeetingRoom = true;
         this._toastService.success('Meeting started successfully!');
-        console.log('✅ Meeting created:', response.meetingId);
+        this._logger.info('Meeting created:', response.meetingId);
       }
     } catch (error) {
-      console.error('❌ Error starting meeting:', error);
+      this._logger.error('❌ Error starting meeting:', error);
       this._toastService.error('Failed to start meeting. Please try again.');
     } finally {
       this.isStartingMeeting = false;
@@ -190,7 +191,7 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
         this.existingFeedback = feedback.feedback;
       }
     } catch (error) {
-      console.error('Error loading existing feedback:', error);
+      this._logger.error('Error loading existing feedback:', error);
     }
 
     this.showFeedbackModal = true;
@@ -224,7 +225,7 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
       this._toastService.success(`Feedback ${action} successfully!`);
       this.closeFeedbackModal();
     } catch (error) {
-      console.error('Error submitting feedback:', error);
+      this._logger.error('Error submitting feedback:', error);
       this._toastService.error('Failed to submit feedback. Please try again.');
     } finally {
       this.isSubmittingFeedback = false;

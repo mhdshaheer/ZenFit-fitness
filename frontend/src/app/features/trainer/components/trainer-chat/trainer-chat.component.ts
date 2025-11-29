@@ -6,6 +6,7 @@ import { ChatMessage, ChatService, ChatThread } from "../../../../core/services/
 import { ChatSocketService } from "../../../../core/services/chat-socket.service";
 import { ToastrService } from 'ngx-toastr';
 import { ConfirmationDialogComponent } from '../../../../shared/components/confirmation-dialog/confirmation-dialog.component';
+import { LoggerService } from "../../../../core/services/logger.service";
 
 
 @Component({
@@ -20,6 +21,7 @@ export class TrainerChatComponent implements OnInit, OnDestroy, AfterViewChecked
   private socket = inject(ChatSocketService);
   private toastr = inject(ToastrService);
   private destroy$ = new Subject<void>();
+  private _logger = inject(LoggerService)
 
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
   private shouldScrollToBottom = false;
@@ -74,11 +76,8 @@ export class TrainerChatComponent implements OnInit, OnDestroy, AfterViewChecked
 
     // Listen for delivered notifications
     this.socket.onDelivered().pipe(takeUntil(this.destroy$)).subscribe(data => {
-      console.log('Message delivered to thread:', data.threadId);
-      // Update thread list to show new message indicator
       const thread = this.threads.find(t => t._id === data.threadId);
       if (thread && (!this.active || this.active._id !== data.threadId)) {
-        // Refresh threads to get updated unread count
         this.chat.getTrainerThreads().subscribe((res: any) => {
           this.threads = res.data || [];
         });
@@ -113,7 +112,7 @@ export class TrainerChatComponent implements OnInit, OnDestroy, AfterViewChecked
     this.shouldScrollToBottom = true;
     this.chat.sendMessage(this.active._id, content).subscribe(res => {
       // Message will be added via socket event
-      console.log('Message sent:', res.data);
+      this._logger.info('Message sent:', res.data);
     });
   }
 

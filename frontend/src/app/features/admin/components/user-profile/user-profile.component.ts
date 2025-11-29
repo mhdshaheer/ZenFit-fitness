@@ -180,7 +180,6 @@ export class UserProfileComponent implements OnDestroy, OnInit {
     this._route.paramMap.pipe(takeUntil(this._destroy$)).subscribe((params) => {
       const id = params.get('id');
       this.loadProfile(id!);
-      console.log('id on ngONInit profile side :', id);
     });
   }
 
@@ -189,13 +188,11 @@ export class UserProfileComponent implements OnDestroy, OnInit {
       .getProfile(id)
       .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
-        console.log('profile details:', res);
         if (res.profileImage) {
           this._profileService
             .getFile(res.profileImage, id)
             .subscribe((fileRes) => {
               this.profileImage = fileRes.url;
-              console.log('profileimage :', fileRes.url);
             });
         }
         if (res.resume) {
@@ -232,7 +229,6 @@ export class UserProfileComponent implements OnDestroy, OnInit {
           isVerified: res.resumeVerified,
           status: res.status,
         };
-        console.log('pdf :', this.uploadedFile);
       });
   }
 

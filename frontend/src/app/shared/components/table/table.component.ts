@@ -4,7 +4,6 @@ import {
   EventEmitter,
   Input,
   Output,
-  OnInit,
   TemplateRef,
 } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -22,7 +21,7 @@ import { ApprovalStatusColorPipe } from '../../pipes/approval-status-color.pipe'
   templateUrl: './table.component.html',
   styleUrl: './table.component.css',
 })
-export class TableComponent implements OnInit {
+export class TableComponent {
   @Input() title = 'Data Table';
   @Input() subtitle = 'Manage your data';
   @Input() entityName = 'Item';
@@ -64,7 +63,6 @@ export class TableComponent implements OnInit {
   }, 300);
 
   onSort(columnKey: string) {
-    console.log('Sort : ', columnKey, this.sortDirection);
     if (this.sortColumn === columnKey) {
       this.sortDirection = this.sortDirection === 'asc' ? 'desc' : 'asc';
     } else {
@@ -85,9 +83,6 @@ export class TableComponent implements OnInit {
     this.addNewClicked.emit();
   }
 
-  ngOnInit() {
-    console.log(this.pageSize, this.currentPage, this.totalItems);
-  }
   getAvailableActions(row: any): TableAction[] {
     return this.actions.filter(
       (action) => !action.condition || action.condition(row)

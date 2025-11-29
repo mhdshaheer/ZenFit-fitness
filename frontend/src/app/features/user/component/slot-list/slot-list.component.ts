@@ -196,7 +196,6 @@ export class SlotListComponent implements OnDestroy {
     const booked = Number(slot.booked) || 0;
     const capacity = Number(slot.capacity) || 0;
     const bookedUsers = slot.bookedUsers || [];
-    console.log('Booked users :', bookedUsers, currentUserId);
 
     return {
       slotId: slot._id,
@@ -258,7 +257,6 @@ export class SlotListComponent implements OnDestroy {
 
   confirmBooking(): void {
     const occurrence = this.selectedOccurrence();
-    console.log('confirmbooking : ', occurrence);
     if (!occurrence) return;
 
     this._bookingService
