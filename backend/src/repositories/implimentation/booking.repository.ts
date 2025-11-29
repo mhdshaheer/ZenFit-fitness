@@ -119,7 +119,6 @@ export class BookingRepository
   }
 
   async getTrainerBookings(trainerId: string): Promise<any[]> {
-    console.log('🔍 Fetching bookings for trainerId:', trainerId);
 
     const pipeline: any[] = [
       {
@@ -201,8 +200,6 @@ export class BookingRepository
     ];
 
     const sessions = await this.model.aggregate(pipeline);
-    console.log('📊 Found grouped sessions:', sessions.length);
-    console.log('📊 Sample session:', sessions[0]);
     return sessions;
   }
 

@@ -151,13 +151,11 @@ container
   .bind<INotificationRepository>(TYPES.NotificationRepository)
   .to(NotificationRepository);
 container.bind<IChatRepository>(TYPES.ChatRepository).to(ChatRepository);
-console.log('ChatRepository bound to container with type:', TYPES.ChatRepository);
+
 
 // Chat (after repositories are bound)
 container.bind<IChatService>(TYPES.ChatService).to(ChatService);
-console.log('ChatService bound to container with type:', TYPES.ChatService);
 container.bind<IChatController>(TYPES.ChatController).to(ChatController);
-console.log('ChatController bound to container with type:', TYPES.ChatController);
 
 // Feedback
 container.bind<IFeedbackRepository>(TYPES.FeedbackRepository).to(FeedbackRepository);

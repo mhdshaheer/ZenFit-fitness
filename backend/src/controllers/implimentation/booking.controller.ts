@@ -75,15 +75,12 @@ export class BookingController implements IBookingController {
 
   async getTrainerBookings(req: Request, res: Response): Promise<Response<any>> {
     const trainerId = (req as any).user?.id;
-    console.log('🔐 Authenticated trainer ID:', trainerId);
-    console.log('🔐 User object:', (req as any).user);
 
     if (!trainerId) {
       throw new AppError("Trainer not authenticated", HttpStatus.UNAUTHORIZED);
     }
 
     const bookings = await this._bookingService.getTrainerBookings(trainerId);
-    console.log('✅ Returning bookings count:', bookings.length);
 
     return res.status(HttpStatus.OK).json(bookings);
   }

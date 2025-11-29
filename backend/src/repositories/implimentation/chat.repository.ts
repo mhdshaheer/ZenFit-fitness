@@ -8,9 +8,6 @@ import { IChatRepository } from "../interface/chat.repository.interface";
 export class ChatRepository extends BaseRepository<IChatThread> implements IChatRepository {
     constructor() {
         super(ChatThreadModel);
-        console.log('ChatRepository constructor called');
-        console.log('ChatRepository initialized with model:', this.model);
-        console.log(" ChatRepository loaded:", ChatThreadModel?.modelName);
     }
     async getOrCreateThread(userId: string, trainerId: string, programId: string): Promise<IChatThread> {
         const existing = await ChatThreadModel.findOne({ userId, trainerId, programId })
@@ -35,8 +32,6 @@ export class ChatRepository extends BaseRepository<IChatThread> implements IChat
     }
 
     async listThreadsForTrainer(trainerId: string): Promise<IChatThread[]> {
-        console.log("Chat thread...")
-        console.log("chat tread model :", ChatThreadModel)
         return this.model.find({ trainerId })
             .populate('userId', 'fullName username profileImage')
             .populate('trainerId', 'fullName username profileImage')

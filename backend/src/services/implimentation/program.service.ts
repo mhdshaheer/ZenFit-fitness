@@ -102,7 +102,6 @@ export class ProgramService implements IProgramService {
     id: string,
     program: Partial<IProgram>
   ): Promise<ProgramDto> {
-    console.log("service :", id, program);
     try {
       const updated = await this._programRepository.updateProgramById(
         id,

@@ -33,7 +33,6 @@ export class MeetingService implements IMeetingService {
     }
 
     if (!bookings.length) {
-      console.log(`ℹ️ No booked users to notify for slot ${slotId}`);
       return;
     }
 
@@ -58,16 +57,13 @@ export class MeetingService implements IMeetingService {
       })
     );
 
-    console.log(`🔔 Sent "${title}" notifications to ${uniqueReceiverIds.length} users for slot ${slotId}`);
   }
 
   async createMeeting(slotId: string, hostId: string): Promise<{ meetingId: string }> {
-    console.log('📝 Creating meeting for slot:', slotId, 'host:', hostId);
 
     // Check if active meeting already exists
     const existingMeeting = await this._meetingRepository.findActiveBySlotId(slotId);
     if (existingMeeting) {
-      console.log('✅ Meeting already exists:', existingMeeting.meetingId);
       return { meetingId: existingMeeting.meetingId };
     }
 
@@ -82,7 +78,6 @@ export class MeetingService implements IMeetingService {
       startTime: new Date(),
     } as any);
 
-    console.log('✅ Meeting created:', meeting.meetingId);
 
     try {
       await this.notifySlotUsers(
@@ -107,14 +102,12 @@ export class MeetingService implements IMeetingService {
     userId: string,
     bookingId?: string
   ): Promise<MeetingValidation> {
-    console.log('🔍 Validating meeting access for user:', userId, 'slot:', slotId);
 
     // For now, allow access if meeting exists (booking validation can be added later)
     // Check if meeting exists and is active
     const meeting = await this._meetingRepository.findActiveBySlotId(slotId);
 
     if (!meeting) {
-      console.log('❌ No active meeting found');
       return {
         isValid: true,
         canJoin: false,
@@ -122,7 +115,6 @@ export class MeetingService implements IMeetingService {
       };
     }
 
-    console.log('✅ Access validated, meeting ID:', meeting.meetingId);
     return {
       isValid: true,
       canJoin: true,
@@ -132,7 +124,6 @@ export class MeetingService implements IMeetingService {
   }
 
   async joinMeeting(meetingId: string, userId: string, slotId: string): Promise<IMeeting> {
-    console.log('👤 User joining meeting:', meetingId);
 
     // Find meeting
     const meeting = await this._meetingRepository.findByMeetingId(meetingId);
@@ -153,7 +144,6 @@ export class MeetingService implements IMeetingService {
     // Check if user already in meeting
     const isAlreadyIn = await this._meetingRepository.isUserInMeeting(meetingId, userId);
     if (isAlreadyIn) {
-      console.log('ℹ️ User already in meeting');
       return meeting;
     }
 
@@ -164,12 +154,10 @@ export class MeetingService implements IMeetingService {
       throw new AppError("Failed to join meeting", HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    console.log('✅ User joined meeting');
     return updatedMeeting;
   }
 
   async endMeeting(meetingId: string, hostId: string): Promise<void> {
-    console.log('🛑 Ending meeting:', meetingId);
 
     const meeting = await this._meetingRepository.findByMeetingId(meetingId);
 
@@ -183,13 +171,11 @@ export class MeetingService implements IMeetingService {
     }
 
     if (meeting.status === 'ended') {
-      console.log('ℹ️ Meeting already ended');
       return;
     }
 
     const slotId = meeting.slotId.toString();
     await this._meetingRepository.endMeeting(meetingId);
-    console.log('✅ Meeting ended');
 
     try {
       await this.notifySlotUsers(
@@ -207,7 +193,6 @@ export class MeetingService implements IMeetingService {
   }
 
   async leaveMeeting(meetingId: string, userId: string): Promise<void> {
-    console.log('👋 User leaving meeting:', meetingId);
 
     const meeting = await this._meetingRepository.findByMeetingId(meetingId);
 
@@ -216,6 +201,5 @@ export class MeetingService implements IMeetingService {
     }
 
     await this._meetingRepository.removeParticipant(meetingId, userId);
-    console.log('✅ User left meeting');
   }
 }
