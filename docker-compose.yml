@@ -28,7 +28,11 @@ services:
     depends_on:
       - backend
     ports:
-      - "8080:80"
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt:ro
+      - /var/lib/letsencrypt:/var/lib/letsencrypt:ro
 
 volumes:
   mongo_data:
