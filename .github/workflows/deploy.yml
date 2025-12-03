@@ -9,7 +9,7 @@ on:
 env:
   BACKEND_IMAGE_NAME: zenfit-backend
   FRONTEND_IMAGE_NAME: zenfit-frontend
-  SSH_WORKDIR: /home/ec2-user/zenfit
+  SSH_WORKDIR: /home/ubuntu/zenfit
 
 jobs:
   build-and-push:
