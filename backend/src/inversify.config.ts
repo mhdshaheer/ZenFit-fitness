@@ -39,12 +39,14 @@ import { IPaymentController } from "./controllers/interface/payment.controller.i
 import { PaymentController } from "./controllers/implimentation/payment.controller";
 import { IPaymentRepository } from "./repositories/interface/payment.repostitory.interface";
 import { PaymentRepository } from "./repositories/implimentation/payment.repository";
-import { ISlotRepository } from "./repositories/interface/slot.repository.interface";
-import { SlotRepository } from "./repositories/implimentation/slot.repository";
-import { ISlotService } from "./services/interface/slot.service.interface";
-import { SlotService } from "./services/implimentation/slot.service";
-import { ISlotController } from "./controllers/interface/slot.controller.interface";
-import { SlotController } from "./controllers/implimentation/slot.controller";
+import { ISlotTemplateRepository } from "./repositories/interface/slotTemplate.repository.interface";
+import { SlotTemplateRepository } from "./repositories/implimentation/slotTemplate.repository";
+import { ISlotInstanceRepository } from "./repositories/interface/slotInstance.repository.interface";
+import { SlotInstanceRepository } from "./repositories/implimentation/slotInstance.repository";
+import { ISlotTemplateService } from "./services/interface/slotTemplate.service.interface";
+import { SlotTemplateService } from "./services/implimentation/slotTemplate.service";
+import { ISlotInstanceService } from "./services/interface/slotInstance.service.interface";
+import { SlotInstanceService } from "./services/implimentation/slotInstance.service";
 import { IBookingRepository } from "./repositories/interface/booking.repository.interface";
 import { BookingRepository } from "./repositories/implimentation/booking.repository";
 import { IBookingService } from "./services/interface/booking.service.interface";
@@ -69,7 +71,10 @@ import { IFeedbackController } from "./controllers/interface/feedback.controller
 import { FeedbackController } from "./controllers/implimentation/feedback.controller";
 import { IFeedbackRepository } from "./repositories/interface/feedback.repository.interface";
 import { FeedbackRepository } from "./repositories/implimentation/feedback.repository";
-
+import { ISlotTemplateController } from "./controllers/interface/slotTemplate.controller.interface";
+import { SlotTemplateController } from "./controllers/implimentation/slotTemplate.controller";
+import { ISlotInstanceController } from "./controllers/interface/slotInstance.controller.interface";
+import { SlotInstanceController } from "./controllers/implimentation/slotInstance.controller";
 
 const container = new Container();
 
@@ -111,8 +116,18 @@ container
   .to(PaymentController);
 
 // Slot
-container.bind<ISlotService>(TYPES.SlotService).to(SlotService);
-container.bind<ISlotController>(TYPES.SlotController).to(SlotController);
+container
+  .bind<ISlotTemplateController>(TYPES.SlotTemplateController)
+  .to(SlotTemplateController);
+container
+  .bind<ISlotInstanceController>(TYPES.SlotInstanceController)
+  .to(SlotInstanceController);
+container
+  .bind<ISlotTemplateService>(TYPES.SlotTemplateService)
+  .to(SlotTemplateService);
+container
+  .bind<ISlotInstanceService>(TYPES.SlotInstanceService)
+  .to(SlotInstanceService);
 
 // Booking
 container.bind<IBookingService>(TYPES.BookingService).to(BookingService);
@@ -143,7 +158,12 @@ container
 container
   .bind<IPaymentRepository>(TYPES.PaymentRepository)
   .to(PaymentRepository);
-container.bind<ISlotRepository>(TYPES.SlotRepository).to(SlotRepository);
+container
+  .bind<ISlotTemplateRepository>(TYPES.SlotTemplateRepository)
+  .to(SlotTemplateRepository);
+container
+  .bind<ISlotInstanceRepository>(TYPES.SlotInstanceRepository)
+  .to(SlotInstanceRepository);
 container
   .bind<IBookingRepository>(TYPES.BookingRepository)
   .to(BookingRepository);
@@ -151,13 +171,11 @@ container
   .bind<INotificationRepository>(TYPES.NotificationRepository)
   .to(NotificationRepository);
 container.bind<IChatRepository>(TYPES.ChatRepository).to(ChatRepository);
-console.log('ChatRepository bound to container with type:', TYPES.ChatRepository);
+
 
 // Chat (after repositories are bound)
 container.bind<IChatService>(TYPES.ChatService).to(ChatService);
-console.log('ChatService bound to container with type:', TYPES.ChatService);
 container.bind<IChatController>(TYPES.ChatController).to(ChatController);
-console.log('ChatController bound to container with type:', TYPES.ChatController);
 
 // Feedback
 container.bind<IFeedbackRepository>(TYPES.FeedbackRepository).to(FeedbackRepository);

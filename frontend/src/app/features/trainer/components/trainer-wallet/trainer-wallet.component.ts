@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { WalletComponent } from '../../../../shared/components/wallet/wallet.component';
 import { PaymentHistory } from '../../../../interface/payment.interface';
 import { PaymentService } from '../../../../core/services/payment.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'zenfit-trainer-wallet',
@@ -12,6 +13,7 @@ import { PaymentService } from '../../../../core/services/payment.service';
 export class TrainerWalletComponent {
   totalAmont = 0;
   private readonly _paymentService = inject(PaymentService);
+  private _logger = inject(LoggerService)
   paymentHistoryData: PaymentHistory[] = [];
 
   getHistoryPayments() {
@@ -26,6 +28,6 @@ export class TrainerWalletComponent {
   }
 
   withdrawMoney() {
-    console.log('Withdraw clicked!');
+    this._logger.info('Withdraw clicked!');
   }
 }

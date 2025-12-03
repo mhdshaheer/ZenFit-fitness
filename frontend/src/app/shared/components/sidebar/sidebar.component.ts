@@ -6,8 +6,10 @@ import {
   Output,
   OnInit,
   HostListener,
+  inject,
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { LoggerService } from '../../../core/services/logger.service';
 
 export interface MenuItem {
   label: string;
@@ -36,6 +38,8 @@ export class SidebarComponent implements OnInit {
 
   isDesktopOpen = true;
   isLargeScreen = window.innerWidth >= 1024;
+
+  private _logger = inject(LoggerService)
 
   ngOnInit(): void {
     this.loadSidebarState();
@@ -94,7 +98,7 @@ export class SidebarComponent implements OnInit {
         this.isDesktopOpen = window.innerWidth >= 1024;
       }
     } catch (error) {
-      console.warn('Failed to load sidebar state:', error);
+      this._logger.warn('Failed to load sidebar state:', error);
       this.isDesktopOpen = true;
     }
   }

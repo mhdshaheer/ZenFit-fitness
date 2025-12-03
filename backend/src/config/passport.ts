@@ -22,10 +22,8 @@ passport.use(
     ) => {
       try {
         const user = await authService.handleGoogleLogin(profile);
-        logger.info("on success passport file...");
         done(null, user);
       } catch (err) {
-        logger.info("on failure passport file...");
         return done(err, null);
       }
     }

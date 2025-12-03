@@ -38,11 +38,11 @@ export class AdminLayoutComponent implements OnDestroy {
     { label: 'Wallet', route: '/admin/wallet', icon: 'fas fa-wallet' },
   ];
   handleMenuClick(item: Menu) {
-    console.log('Clicked menu item:', item);
+    this._logger.info('Clicked menu item:', item);
   }
 
   handleMobileToggle(isOpen: boolean) {
-    console.log('Sidebar mobile state:', isOpen);
+    this._logger.info('Sidebar mobile state:', isOpen);
   }
 
   logOutUser() {

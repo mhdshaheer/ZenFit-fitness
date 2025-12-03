@@ -6,6 +6,7 @@ import {
 } from '../../../../core/services/category.service';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { LoggerService } from '../../../../core/services/logger.service';
 interface CategoryCard {
   id: string;
   title: string;
@@ -25,6 +26,7 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
   categoryCards: CategoryCard[] = [];
   private readonly _router = inject(Router);
   private readonly _categoryService = inject(CategoryService);
+  private _logger = inject(LoggerService)
 
   private readonly _destroy$ = new Subject<void>();
 
@@ -43,7 +45,6 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: ICategory[]) => {
-          console.log('categories are :', res);
           this.categories = res;
           this.categoryCards = res.map((item) => {
             return {
@@ -56,7 +57,7 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
           });
         },
         error: (error) => {
-          console.log('error in category fetching', error);
+          this._logger.error('error in category fetching', error);
         },
       });
   }
@@ -72,7 +73,6 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
   }
 
   onCardClick(card: CategoryCard): void {
-    console.log('Category card clicked:', card);
     this._router.navigate(['/user/programs', card.id]);
   }
 

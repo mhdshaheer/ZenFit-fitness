@@ -1,11 +1,12 @@
 
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
+import { LoggerService } from '../../../core/services/logger.service';
 
 @Component({
   selector: 'app-forgot-password',
@@ -18,6 +19,7 @@ export class ForgotPasswordComponent {
   forgotPasswordForm: FormGroup;
   isSubmitted = false;
   isLoading = false;
+  private _logger = inject(LoggerService)
 
   constructor(private fb: FormBuilder) {
     this.forgotPasswordForm = this.fb.group({
@@ -39,19 +41,19 @@ export class ForgotPasswordComponent {
         })
         .catch((error) => {
           this.isLoading = false;
-          console.error('Password reset failed:', error);
+          this._logger.error('Password reset failed:', error);
         });
     }
   }
 
   onBackToLogin(): void {
-    console.log('Navigate to login page');
+    this._logger.info('Navigate to login page');
   }
 
   private async resetPassword(email: string): Promise<void> {
     return new Promise((resolve) => {
       setTimeout(() => {
-        console.log(`Password reset requested for: ${email}`);
+        this._logger.info(`Password reset requested for: ${email}`);
         resolve();
       }, 2000);
     });

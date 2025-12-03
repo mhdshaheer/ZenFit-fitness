@@ -92,9 +92,6 @@ export class PaymentController implements IPaymentController {
       const validStatuses = ['all', 'success', 'pending', 'failed'];
       const validatedStatus = validStatuses.includes(status) ? status : 'all';
 
-      // Log pagination request for monitoring
-      console.log(`Transaction history request - User: ${userId}, Page: ${page}, Limit: ${limit}, Search: "${search.trim()}", Status: ${validatedStatus}`);
-
       const startTime = Date.now();
       const result = await this._paymentService.getUserTransactionHistory(
         userId,
@@ -104,9 +101,6 @@ export class PaymentController implements IPaymentController {
         validatedStatus
       );
       const endTime = Date.now();
-
-      // Log performance metrics
-      console.log(`Transaction history query completed in ${endTime - startTime}ms - Total: ${result.total}, Pages: ${result.totalPages}`);
 
       res.status(HttpStatus.OK).json({
         success: true,

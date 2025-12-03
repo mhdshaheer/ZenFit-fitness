@@ -6,6 +6,7 @@ import { SocketService } from '../../../core/services/socket.service';
 import { ToastService } from '../../../core/services/toast.service';
 import { ProfileService } from '../../../core/services/profile.service';
 import { ConfirmationDialogComponent } from '../confirmation-dialog/confirmation-dialog.component';
+import { LoggerService } from '../../../core/services/logger.service';
 
 @Component({
   selector: 'zenfit-meeting-room',
@@ -20,6 +21,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
   private readonly _toastService = inject(ToastService);
   private readonly _profileService = inject(ProfileService);
   private readonly _destroy$ = new Subject<void>();
+  private _logger = inject(LoggerService);
 
   @Input() meetingId!: string;
   @Input() slotId!: string;
@@ -62,7 +64,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
           userId: this.currentUserId
         });
       } catch (error) {
-        console.error('❌ Error emitting leave event on destroy:', error);
+        this._logger.error('❌ Error emitting leave event on destroy:', error);
       }
     }
 
@@ -80,22 +82,14 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (profile) => {
           this.currentUserName = profile?.fullName || 'Guest';
-          // Initialize meeting after getting user name
           this.initializeMeeting();
         },
         error: (error) => {
-          console.error('❌ Error loading user profile:', error);
+          this._logger.error('Error loading user profile:', error);
           this.currentUserName = 'Guest';
-          // Initialize meeting even if profile loading fails
           this.initializeMeeting();
         }
       });
-  }
-
-  private fetchParticipantName(userId: string): void {
-    // Extract the actual user ID from the generated userId (remove prefix and timestamp)
-    // For now, we'll use the name sent via socket, but this could be enhanced
-    // to fetch from database if we had the actual user ID
   }
 
   private subscribeToMeetingState(): void {
@@ -152,7 +146,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
             offer
           });
         } catch (error) {
-          console.error('❌ Error creating offer for new participant:', error);
+          this._logger.error('Error creating offer for new participant:', error);
         }
       }
     });
@@ -208,7 +202,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
           answer
         });
       } catch (error) {
-        console.error('❌ Error handling offer:', error);
+        this._logger.error('Error handling offer:', error);
       }
     });
 
@@ -219,7 +213,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
       try {
         await this._meetingService.handleAnswer(data.fromUserId, data.answer);
       } catch (error) {
-        console.error('❌ Error handling answer:', error);
+        this._logger.error('Error handling answer:', error);
       }
     });
 
@@ -230,7 +224,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
       try {
         await this._meetingService.handleIceCandidate(data.fromUserId, data.candidate);
       } catch (error) {
-        console.error('❌ Error handling ICE candidate:', error);
+        this._logger.error('Error handling ICE candidate:', error);
       }
     });
   }
@@ -268,7 +262,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
       this._meetingService.updateMeetingState('active');
       this.isInitializing = false;
     } catch (error: unknown) {
-      console.error('❌ Failed to initialize meeting:', error);
+      this._logger.error('Failed to initialize meeting:', error);
       this.errorMessage = 'Failed to access camera/microphone. Please check permissions.';
       this._meetingService.updateMeetingState('ended');
       this.isInitializing = false;
@@ -316,7 +310,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
       this._meetingService.cleanup();
       this.closeMeeting();
     } catch (error) {
-      console.error('Error ending meeting:', error);
+      this._logger.error('Error ending meeting:', error);
       // Even if API call fails, still close the meeting
       this.closeMeeting();
     }
@@ -352,7 +346,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
       this.participantNames.clear();
       this.remoteStreams.clear();
     } catch (error) {
-      console.error('❌ Error leaving meeting:', error);
+      this._logger.error('Error leaving meeting:', error);
     } finally {
       // Always close the meeting component
       this.closeMeeting();
@@ -369,10 +363,9 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
       this.participantNames.clear();
       this.remoteStreams.clear();
     } catch (error) {
-      console.error('❌ Error during cleanup:', error);
+      this._logger.error('Error during cleanup:', error);
     }
 
-    // Emit the close event to parent component (this will navigate back)
     this.meetingClose.emit();
   }
 
@@ -381,7 +374,6 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
     if (name && name !== 'Guest') {
       return name;
     }
-    // Fallback to role-based names if no real name available
     if (userId.startsWith('host-')) {
       return 'Trainer';
     } else if (userId.startsWith('user-')) {

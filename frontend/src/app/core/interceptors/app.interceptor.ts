@@ -22,7 +22,6 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
     '/auth/verify-otp',
     '/auth/verify-forgot-otp',
     '/auth/reset-password'
-    // Note: /program endpoints require authentication on backend
   ];
 
   // Check if the request is to a public endpoint

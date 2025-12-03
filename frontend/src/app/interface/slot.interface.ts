@@ -1,44 +1,81 @@
-export interface ISlotOutput {
-  id: string;
-  program: IProgramCreateSlot;
-  days: string[];
-  capacity: number;
-  startTime: string;
-  endTime: string;
-  status: ISlotStatus;
-}
-export interface ISlotInput {
-  programId: string;
-  days: string[];
-  capacity: number;
-  startTime: string;
-  endTime: string;
-}
 export interface IProgramCreateSlot {
   id: string;
   title: string;
   duration: string;
   difficultyLevel: 'Beginner' | 'Intermediate' | 'Advanced';
 }
-export type ISlotStatus = 'active' | 'inactive';
+
+export type RecurrenceType = 'DAILY' | 'WEEKLY' | 'CUSTOM';
+
+export interface SlotRecurrence {
+  type: RecurrenceType;
+  daysOfWeek?: string[];
+  intervalDays?: number;
+  specificDates?: string[];
+}
+
+export interface ISlotTemplateResponse {
+  _id: string;
+  trainerId: string;
+  programId: string;
+  recurrence: SlotRecurrence;
+  startTime: string;
+  endTime: string;
+  capacity: number;
+  timezone: string;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ICreateSlotTemplatePayload {
+  programId: string;
+  recurrence: SlotRecurrence;
+  startTime: string;
+  endTime: string;
+  capacity: number;
+  timezone: string;
+  isActive?: boolean;
+}
+
+export type IUpdateSlotTemplatePayload = Partial<ICreateSlotTemplatePayload>;
 
 export interface TimeOption {
   display: string;
   value: string;
   minutes: number;
 }
+
 export interface IDay {
   name: string;
   value: string;
   selected: boolean;
 }
 
-export interface ISlotUserOutput {
+export interface ISlotInstanceDto {
   _id: string;
-  day: string;
+  date: string;
   startTime: string;
   endTime: string;
-  capacity?: number;
-  booked?: number;
-  bookedUsers?: string[];
+  capacity: number;
+  availableCapacity: number;
+  timezone: string;
+  programId: string;
+  trainerId: string;
+  status: 'OPEN' | 'CLOSED' | 'CANCELLED';
+}
+
+export type ISlotInstancePublic = ISlotInstanceDto;
+
+export interface ISlotInstancePaginationMeta {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+  hasNextPage: boolean;
+}
+
+export interface ISlotInstancePaginatedResponse {
+  data: ISlotInstancePublic[];
+  pagination: ISlotInstancePaginationMeta;
 }

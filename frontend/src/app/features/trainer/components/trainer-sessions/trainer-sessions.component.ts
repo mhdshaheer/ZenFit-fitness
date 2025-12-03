@@ -7,6 +7,7 @@ import { MeetingService } from '../../../../core/services/meeting.service';
 import { MeetingRoomComponent } from '../../../../shared/components/meeting-room/meeting-room.component';
 import { ToastService } from '../../../../core/services/toast.service';
 import { FeedbackService } from '../../../../core/services/feedback.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'zenfit-trainer-sessions',
@@ -21,17 +22,19 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
   private readonly _toastService = inject(ToastService);
   private readonly _feedbackService = inject(FeedbackService);
   private readonly _destroy$ = new Subject<void>();
+  private _logger = inject(LoggerService)
 
   sessions: TrainerSession[] = [];
   upcomingSessions: TrainerSession[] = [];
   pastSessions: TrainerSession[] = [];
+  cancelledSessions: TrainerSession[] = [];
   isLoading = true;
-  activeTab: 'upcoming' | 'past' = 'upcoming';
-  
+  activeTab: 'upcoming' | 'past' | 'cancelled' = 'upcoming';
+
   // Modal state
   showStudentsModal = false;
   selectedSession: TrainerSession | null = null;
-  
+
   // Meeting state
   showMeetingRoom = false;
   currentMeetingId: string | null = null;
@@ -57,18 +60,17 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
 
   loadSessions(): void {
     this.isLoading = true;
-    
+
     this._bookingService.getTrainerSessions()
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (sessions) => {
-          console.log('Fetched sessions:', sessions);
           this.processSessions(sessions);
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('Error loading sessions:', error);
-          console.error('Error details:', {
+          this._logger.error('Error loading sessions:', error);
+          this._logger.error('Error details:', {
             status: error.status,
             statusText: error.statusText,
             url: error.url,
@@ -82,25 +84,41 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
   processSessions(sessions: TrainerSession[]): void {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
-    
-    this.upcomingSessions = sessions
-      .filter(s => {
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
-        return sessionDate >= now;
-      })
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    
-    this.pastSessions = sessions
-      .filter(s => {
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
-        return sessionDate < now;
-      })
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    const upcoming: TrainerSession[] = [];
+    const past: TrainerSession[] = [];
+    const cancelled: TrainerSession[] = [];
+
+    sessions.forEach((session) => {
+      const sessionDate = new Date(session.date);
+      sessionDate.setHours(0, 0, 0, 0);
+      const rawStatus = (session as any).status;
+      const status = (rawStatus?.toUpperCase?.() as 'OPEN' | 'CLOSED' | 'CANCELLED' | undefined) ?? undefined;
+
+      if (status === 'CANCELLED') {
+        cancelled.push(session);
+        return;
+      }
+
+      if (sessionDate >= now) {
+        upcoming.push(session);
+      } else {
+        past.push(session);
+      }
+    });
+
+    this.upcomingSessions = upcoming.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    this.pastSessions = past.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    this.cancelledSessions = cancelled.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
   }
 
-  setActiveTab(tab: 'upcoming' | 'past'): void {
+  setActiveTab(tab: 'upcoming' | 'past' | 'cancelled'): void {
     this.activeTab = tab;
   }
 
@@ -116,24 +134,24 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
 
   async startMeeting(session: TrainerSession): Promise<void> {
     if (this.isStartingMeeting) return;
-    
+
     try {
       this.isStartingMeeting = true;
-      console.log('🎥 Starting meeting for session:', session);
+      this._logger.info('Starting meeting for session:', session);
 
       // Create meeting
       const response = await this._meetingService.createMeeting(session.slotId).toPromise();
-      
+
       if (response?.meetingId) {
         this.currentMeetingId = response.meetingId;
         this.currentMeetingSlotId = session.slotId;
         this.currentMeetingTitle = `${session.programName} - ${this.formatDate(session.date)}`;
         this.showMeetingRoom = true;
         this._toastService.success('Meeting started successfully!');
-        console.log('✅ Meeting created:', response.meetingId);
+        this._logger.info('Meeting created:', response.meetingId);
       }
     } catch (error) {
-      console.error('❌ Error starting meeting:', error);
+      this._logger.error('❌ Error starting meeting:', error);
       this._toastService.error('Failed to start meeting. Please try again.');
     } finally {
       this.isStartingMeeting = false;
@@ -155,6 +173,21 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
       month: 'long',
       day: 'numeric'
     });
+  }
+
+  formatTime(time: string): string {
+    if (!time) return '';
+    const [hourStr, minuteStr] = time.split(':');
+    const hours = Number(hourStr);
+    const minutes = Number(minuteStr ?? '0');
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+      return time;
+    }
+
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const normalizedHour = hours % 12 === 0 ? 12 : hours % 12;
+    const paddedMinutes = minutes.toString().padStart(2, '0');
+    return `${normalizedHour}:${paddedMinutes} ${period}`;
   }
 
   getDifficultyColor(level: string): string {
@@ -184,13 +217,13 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
           session.date
         )
       );
-      
+
       if (feedback) {
         this.feedbackText = feedback.feedback;
         this.existingFeedback = feedback.feedback;
       }
     } catch (error) {
-      console.error('Error loading existing feedback:', error);
+      this._logger.error('Error loading existing feedback:', error);
     }
 
     this.showFeedbackModal = true;
@@ -224,7 +257,7 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
       this._toastService.success(`Feedback ${action} successfully!`);
       this.closeFeedbackModal();
     } catch (error) {
-      console.error('Error submitting feedback:', error);
+      this._logger.error('Error submitting feedback:', error);
       this._toastService.error('Failed to submit feedback. Please try again.');
     } finally {
       this.isSubmittingFeedback = false;

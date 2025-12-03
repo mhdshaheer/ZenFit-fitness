@@ -4,6 +4,7 @@ import { PurchasedProgram } from '../../../../interface/payment.interface';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
+import { LoggerService } from '../../../../core/services/logger.service';
 interface Course {
   id: string;
   title: string;
@@ -58,17 +59,14 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   }
 
   continueCourse(course: Course): void {
-    console.log('Continue course:', course);
     this._router.navigate(['/user/slots', course.id]);
   }
 
   viewSlots(course: Course): void {
-    console.log('View slots:', course);
     this._router.navigate(['/user/slots', course.id]);
   }
 
   viewProgramDetails(course: Course): void {
-    console.log('View program details:', course);
     this._router.navigate(['/user/program-details', course.id]);
   }
 

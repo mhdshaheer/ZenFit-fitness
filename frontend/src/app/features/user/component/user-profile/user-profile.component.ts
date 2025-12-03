@@ -15,6 +15,7 @@ import { passwordStrengthValidator } from '../../../../shared/validators/passwor
 import { ToastService } from '../../../../core/services/toast.service';
 import { Subject, takeUntil } from 'rxjs';
 import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 interface ProfileUser {
   fullName: string;
@@ -36,6 +37,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   private readonly _profileService = inject(ProfileService);
   private readonly _toastService = inject(ToastService);
   private readonly _destroy$ = new Subject<void>();
+  private _logger = inject(LoggerService)
 
   profileImageUrl: string | null = null;
   defaultImage = 'landing_page/user.png';
@@ -64,7 +66,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
           } else if (event.type === HttpEventType.Response) {
             this.profileImageUrl = event.body?.url ?? null;
             this.isUploading = false;
-            console.log('Profile image uploaded, key:', event.body?.key);
             this._toastService.success('Profile image is updated successfully');
             // this.progress = 0; // reset after upload
           }
@@ -95,7 +96,6 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       .getProfile()
       .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
-        console.log('Response of profile: ', res);
         this.profileData = res;
 
         if (res.profileImage) {
@@ -143,25 +143,23 @@ export class UserProfileComponent implements OnInit, OnDestroy {
 
   saveProfile() {
     if (this.profileForm.valid) {
-      console.log('profile data:', this.profileForm.value);
       this._profileService
         .updateProfile(this.profileForm.value)
         .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
-            console.log('response from the backend :', res);
             this._toastService.success('Profile data is updated Successfully');
             this.profileData = res;
             this.isEditMode = false;
           },
           error: (err) => {
-            console.error('Error updating profile:', err);
+            this._logger.error('Error updating profile:', err);
             this._toastService.error(
               'Failed to update profile. Please try again later.'
             );
           },
           complete: () => {
-            console.log('Profile update request completed.');
+            this._logger.info('Profile update request completed.');
           },
         });
     } else {
@@ -186,19 +184,17 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         currentPassword: this.passwordForm.get('currentPassword')?.value,
         newPassword: this.passwordForm.get('newPassword')?.value,
       };
-      console.log('submitted data :', passwords);
       this._profileService
         .changePassword(passwords)
         .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
-            console.log(res);
             this._toastService.success('Password changed successfully');
             this.resetPasswordForm();
             this.activeTab = 'personal';
           },
           error: (err) => {
-            console.log(err);
+            this._logger.error(err);
             this._toastService.error('Failed to change password');
           },
         });

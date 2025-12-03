@@ -1,1 +1,30 @@
 .vscode/
+node_modules/
+dist/
+*.log
+
+# Environment files
+.env
+.env.local
+.env.development
+.env.production
+.env.staging
+.env.deploy
+.env.deploy.*
+.env.*
+!.env.example
+!.env.deploy.example
+backend/.env
+backend/.env.*
+!backend/env.example
+frontend/.env
+frontend/.env.*
+!frontend/env.example
+
+# Docker artifacts
+*.local
+docker-compose.override.yml
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -97,7 +97,6 @@ export class PaymentService implements IPaymentService {
         orderDbId: order.id,
       },
     });
-    console.log("Session is:", session);
 
     return { url: session.url! };
   }
@@ -167,7 +166,6 @@ export class PaymentService implements IPaymentService {
           logger.info(`Unhandled event type: ${eventType}`);
       }
 
-      console.log("Event data:", event.data.object);
     } catch (err: unknown) {
       if (err instanceof Error) {
         logger.error("Error processing webhook:", err.message);

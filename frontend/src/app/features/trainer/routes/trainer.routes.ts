@@ -41,7 +41,15 @@ export const TRAINER_ROUTES: Routes = [
           ).then((m) => m.ProgramListComponent);
         },
       },
-   
+      {
+        path: 'programs/:id/users',
+        loadComponent: () => {
+          return import(
+            '../components/program-users/program-users.component'
+          ).then((m) => m.ProgramUsersComponent);
+        },
+      },
+
       {
         path: 'program/:id',
         loadComponent: () => {
@@ -76,9 +84,9 @@ export const TRAINER_ROUTES: Routes = [
         },
       },
       {
-        path:'chat',
-        loadComponent:()=>{
-          return import('../components/trainer-chat/trainer-chat.component').then(m=>m.TrainerChatComponent)
+        path: 'chat',
+        loadComponent: () => {
+          return import('../components/trainer-chat/trainer-chat.component').then(m => m.TrainerChatComponent)
         }
       },
       {

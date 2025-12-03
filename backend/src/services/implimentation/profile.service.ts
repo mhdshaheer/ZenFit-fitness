@@ -16,7 +16,6 @@ export class ProfileService implements IProfileService {
   private readonly _userRepository!: IUserRepository;
 
   async getProfile(userId: string): Promise<UserDto> {
-    console.log("Reached on getProfile service");
     const user = await this._userRepository.findById(userId);
     if (user) {
       const profileDto = mapToUserDto(user);
@@ -32,7 +31,6 @@ export class ProfileService implements IProfileService {
     );
     if (updateProfile) {
       const profileDto = mapToUserDto(updateProfile);
-      console.log("update profile on service: ", profileDto);
       return profileDto;
     } else {
       throw new Error("User not found");

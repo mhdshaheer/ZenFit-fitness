@@ -59,7 +59,7 @@ export class LoginComponent {
 
     const { email, password } = this.loginForm.value;
     this._store.dispatch(login({ payload: { email, password } }));
-    console.log('Login submitted: ', this.loginForm.value);
+    this._logger.info('Login submitted: ', this.loginForm.value);
   }
   loginWithGoogle() {
     this._logger.info('clicked google login..');

@@ -21,7 +21,6 @@ export class AuthEffects {
       mergeMap(({ payload }) =>
         this.authService.signup(payload).pipe(
           map((res) => {
-            console.log('Response : ', res);
             return AuthActions.signupSuccess({
               email: payload.email,
             });
@@ -70,14 +69,12 @@ export class AuthEffects {
       mergeMap(({ payload }) =>
         this.authService.login(payload).pipe(
           map((res) => {
-            console.log('Login response : ', res);
             return AuthActions.loginSuccess({
               accessToken: res.accessToken,
               role: res.role,
             });
           }),
           catchError((err) => {
-            console.log('on error login');
             return of(
               AuthActions.loginFailure({
                 error: err.error.message || 'Login Failed',

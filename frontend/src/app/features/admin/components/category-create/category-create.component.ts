@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 import { CATEGORY_FORM_CONSTANTS } from '../../../../shared/constants/categoryForm.constants';
 import { CategoryNameValidator } from '../../../../shared/validators/categoryName.validator';
 import { Subject, takeUntil } from 'rxjs';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'zenfit-category-create',
@@ -33,6 +34,7 @@ export class CategoryCreateComponent implements OnInit, OnDestroy {
   private readonly _categoryService = inject(CategoryService);
   private readonly _toastService = inject(ToastService);
   private readonly _router = inject(Router);
+  private _logger = inject(LoggerService)
 
   private readonly _destroy$ = new Subject<void>();
 
@@ -66,7 +68,6 @@ export class CategoryCreateComponent implements OnInit, OnDestroy {
   // ✅ Create form submission
   onCreateCategory() {
     if (this.createForm.valid) {
-      console.log('form data :', this.createForm.value);
       this.isSubmitting = true;
       const formValue = this.createForm.value;
 
@@ -75,7 +76,6 @@ export class CategoryCreateComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res: ICategory) => {
-            console.log('Category created:', res);
             this._toastService.success('Category is created');
             this.resetCreateForm();
             this._router.navigate(['/admin/category']);
@@ -109,12 +109,10 @@ export class CategoryCreateComponent implements OnInit, OnDestroy {
   getCategory() {
     this._categoryService.getCategories().subscribe({
       next: (res: ICategory[]) => {
-        console.log('Categories are : ', res);
         this.categories = res;
-        console.log(this.categories);
       },
       error: (err) => {
-        console.log('Failed to fetch categories ', err);
+        this._logger.error('Failed to fetch categories ', err);
       },
     });
   }
