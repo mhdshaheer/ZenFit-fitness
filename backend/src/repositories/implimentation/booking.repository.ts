@@ -1,8 +1,10 @@
 import { Types } from "mongoose";
 import { BookingModel, IBooking } from "../../models/booking.model";
 import { BaseRepository } from "../base.repository";
-import { IBookingRepository } from "../interface/booking.repository.interface";
-import { ISlot } from "../../models/slot.model";
+import {
+  CreateBookingParams,
+  IBookingRepository,
+} from "../interface/booking.repository.interface";
 import { injectable } from "inversify";
 
 @injectable()
@@ -12,63 +14,47 @@ export class BookingRepository
   constructor() {
     super(BookingModel);
   }
-  async createBooking(
-    userId: string,
-    day: string,
-    date: Date,
-    slot: ISlot
-  ): Promise<IBooking> {
-    const bookedCount = await this.model.countDocuments({
-      slotId: slot._id,
-      day,
-      status: "booked",
-    });
-    if (bookedCount >= slot?.capacity) {
-      throw new Error("Slot is already full for this day");
-    }
-    const existing = await this.model.findOne({
-      slotId: slot._id,
-      userId: new Types.ObjectId(userId),
-      day,
-      status: "booked",
-    });
 
-    if (existing) {
-      throw new Error("User already booked this slot");
-    }
+  async createBooking(params: CreateBookingParams): Promise<IBooking> {
+    const { slotId, templateId, userId, day, date, snapshot } = params;
 
-    // Create new booking
     const booking = await this.model.create({
-      slotId: slot._id,
+      slotId: new Types.ObjectId(slotId),
+      templateId: new Types.ObjectId(templateId),
       userId: new Types.ObjectId(userId),
       day,
       date,
       status: "booked",
+      snapshot: {
+        ...snapshot,
+        slotDate: snapshot.slotDate,
+        programId: snapshot.programId,
+        trainerId: snapshot.trainerId,
+        templateId: snapshot.templateId,
+      },
     });
+
     return booking;
   }
 
   async getMyBookings(userId: string, programId?: string): Promise<IBooking[]> {
-    const query: any = {
+    const matchStage: any = {
       userId: new Types.ObjectId(userId),
     };
 
-    // Build aggregation pipeline
+    if (programId) {
+      matchStage["snapshot.programId"] = new Types.ObjectId(programId);
+    }
+
     const pipeline: any[] = [
-      { $match: query },
-      {
-        $lookup: {
-          from: "slots",
-          localField: "slotId",
-          foreignField: "_id",
-          as: "slotDetails",
-        },
-      },
-      { $unwind: "$slotDetails" },
+      { $match: matchStage },
       {
         $lookup: {
           from: "feedbacks",
-          let: { slotId: "$slotId", sessionDate: "$date" },
+          let: {
+            slotId: { $toString: "$slotId" },
+            sessionDate: "$snapshot.slotDate",
+          },
           pipeline: [
             {
               $match: {
@@ -78,13 +64,13 @@ export class BookingRepository
                     {
                       $eq: [
                         { $dateToString: { format: "%Y-%m-%d", date: "$sessionDate" } },
-                        { $dateToString: { format: "%Y-%m-%d", date: "$$sessionDate" } }
-                      ]
-                    }
-                  ]
-                }
-              }
-            }
+                        { $dateToString: { format: "%Y-%m-%d", date: "$$sessionDate" } },
+                      ],
+                    },
+                  ],
+                },
+              },
+            },
           ],
           as: "feedbackDetails",
         },
@@ -95,55 +81,38 @@ export class BookingRepository
             $cond: {
               if: { $gt: [{ $size: "$feedbackDetails" }, 0] },
               then: { $arrayElemAt: ["$feedbackDetails.feedback", 0] },
-              else: null
-            }
-          }
-        }
-      }
+              else: null,
+            },
+          },
+        },
+      },
+      {
+        $project: {
+          _id: 1,
+          slotId: 1,
+          userId: 1,
+          templateId: 1,
+          day: 1,
+          date: "$snapshot.slotDate",
+          status: 1,
+          createdAt: 1,
+          snapshot: 1,
+          feedback: 1,
+        },
+      },
+      { $sort: { "snapshot.slotDate": -1, "snapshot.startMinutes": 1 } },
     ];
 
-    // Filter by programId if provided
-    if (programId) {
-      pipeline.push({
-        $match: {
-          "slotDetails.programId": new Types.ObjectId(programId),
-        },
-      });
-    }
-
-    // Sort by date descending (newest first)
-    pipeline.push({ $sort: { date: -1 } });
-
-    const bookings = await this.model.aggregate(pipeline);
-    return bookings;
+    return this.model.aggregate(pipeline);
   }
 
   async getTrainerBookings(trainerId: string): Promise<any[]> {
-
     const pipeline: any[] = [
       {
-        $lookup: {
-          from: "slots",
-          localField: "slotId",
-          foreignField: "_id",
-          as: "slotDetails",
-        },
-      },
-      { $unwind: "$slotDetails" },
-      {
         $match: {
-          "slotDetails.trainerId": new Types.ObjectId(trainerId),
+          "snapshot.trainerId": new Types.ObjectId(trainerId),
         },
       },
-      {
-        $lookup: {
-          from: "programs",
-          localField: "slotDetails.programId",
-          foreignField: "_id",
-          as: "programDetails",
-        },
-      },
-      { $unwind: "$programDetails" },
       {
         $lookup: {
           from: "users",
@@ -154,22 +123,36 @@ export class BookingRepository
       },
       { $unwind: "$userDetails" },
       {
+        $lookup: {
+          from: "slotinstances",
+          localField: "slotId",
+          foreignField: "_id",
+          as: "slotInstance",
+        },
+      },
+      {
+        $unwind: {
+          path: "$slotInstance",
+          preserveNullAndEmptyArrays: true,
+        },
+      },
+      {
         $group: {
           _id: {
             slotId: "$slotId",
-            day: "$day",
-            date: "$date",
+            slotDate: "$snapshot.slotDate",
           },
           slotId: { $first: "$slotId" },
           day: { $first: "$day" },
-          date: { $first: "$date" },
-          startTime: { $first: "$slotDetails.startTime" },
-          endTime: { $first: "$slotDetails.endTime" },
-          capacity: { $first: "$slotDetails.capacity" },
-          programName: { $first: "$programDetails.title" },
-          duration: { $first: "$programDetails.duration" },
-          difficultyLevel: { $first: "$programDetails.difficultyLevel" },
+          date: { $first: "$snapshot.slotDate" },
+          startTime: { $first: "$snapshot.startTime" },
+          endTime: { $first: "$snapshot.endTime" },
+          capacity: { $first: "$snapshot.capacity" },
+          programName: { $first: "$snapshot.programTitle" },
+          duration: { $first: "$snapshot.programDuration" },
+          difficultyLevel: { $first: "$snapshot.programDifficulty" },
           bookedCount: { $sum: 1 },
+          slotStatus: { $first: "$slotInstance.status" },
           students: {
             $push: {
               name: "$userDetails.fullName",
@@ -193,14 +176,14 @@ export class BookingRepository
           duration: 1,
           difficultyLevel: 1,
           bookedCount: 1,
+          status: "$slotStatus",
           students: 1,
         },
       },
-      { $sort: { date: -1 } },
+      { $sort: { date: -1, startTime: 1 } },
     ];
 
-    const sessions = await this.model.aggregate(pipeline);
-    return sessions;
+    return this.model.aggregate(pipeline);
   }
 
   async getBookingsBySlotId(slotId: string): Promise<IBooking[]> {
@@ -220,7 +203,7 @@ export class BookingRepository
     const bookings = await this.model.find({
       slotId: new Types.ObjectId(slotId),
       status: "booked",
-      date: { $gte: start, $lte: end },
+      "snapshot.slotDate": { $gte: start, $lte: end },
     }).populate('userId', 'fullName email');
 
     return bookings;
@@ -244,5 +227,44 @@ export class BookingRepository
     );
 
     return bookings;
+  }
+
+  async findActiveBookingByUserAndSlot(
+    userId: string,
+    slotId: string
+  ): Promise<IBooking | null> {
+    return this.model.findOne({
+      userId: new Types.ObjectId(userId),
+      slotId: new Types.ObjectId(slotId),
+      status: "booked"
+    });
+  }
+
+  async findActiveBookingsForUserOnDate(
+    userId: string,
+    slotDate: Date
+  ): Promise<IBooking[]> {
+    const start = new Date(slotDate);
+    start.setHours(0, 0, 0, 0);
+    const end = new Date(slotDate);
+    end.setHours(23, 59, 59, 999);
+
+    return this.model.find({
+      userId: new Types.ObjectId(userId),
+      status: "booked",
+      "snapshot.slotDate": { $gte: start, $lte: end },
+    });
+  }
+
+  async findById(bookingId: string): Promise<IBooking | null> {
+    return this.model.findById(new Types.ObjectId(bookingId));
+  }
+
+  async cancelBookingById(bookingId: string): Promise<IBooking | null> {
+    return this.model.findOneAndUpdate(
+      { _id: new Types.ObjectId(bookingId) },
+      { $set: { status: "cancelled" } },
+      { new: true }
+    );
   }
 }

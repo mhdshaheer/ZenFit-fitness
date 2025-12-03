@@ -74,8 +74,13 @@ export const ProfileRouter = {
   IMAGE: '/profile/image',
 };
 
-export const SlotRoutes = {
-  Base: '/slot',
+export const SlotTemplateRoutes = {
+  Base: '/slot-templates',
+};
+
+export const SlotInstanceRoutes = {
+  Base: '/slot-instances',
+  PublicProgram: '/slot-instances/public/program',
 };
 
 export const BookingRoutes = {

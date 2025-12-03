@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
-import { Observable, shareReplay } from 'rxjs';
+import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ILoggedUser, IUserResponse } from '../../interface/user.interface';
 import { ProfileRouter } from '../constants/api-routes.const';
@@ -34,8 +34,7 @@ export class ProfileService {
   }
   getFile(key: string, id = '') {
     return this._http.get<{ url: string }>(
-      `${this._apiUrl}${ProfileRouter.FILE_BASE}${
-        ProfileRouter.IMAGE
+      `${this._apiUrl}${ProfileRouter.FILE_BASE}${ProfileRouter.IMAGE
       }?key=${encodeURIComponent(key)}&id=${id}`
     );
   }

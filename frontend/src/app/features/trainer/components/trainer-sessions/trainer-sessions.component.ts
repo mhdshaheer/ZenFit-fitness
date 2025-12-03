@@ -27,13 +27,14 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
   sessions: TrainerSession[] = [];
   upcomingSessions: TrainerSession[] = [];
   pastSessions: TrainerSession[] = [];
+  cancelledSessions: TrainerSession[] = [];
   isLoading = true;
-  activeTab: 'upcoming' | 'past' = 'upcoming';
-  
+  activeTab: 'upcoming' | 'past' | 'cancelled' = 'upcoming';
+
   // Modal state
   showStudentsModal = false;
   selectedSession: TrainerSession | null = null;
-  
+
   // Meeting state
   showMeetingRoom = false;
   currentMeetingId: string | null = null;
@@ -59,7 +60,7 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
 
   loadSessions(): void {
     this.isLoading = true;
-    
+
     this._bookingService.getTrainerSessions()
       .pipe(takeUntil(this._destroy$))
       .subscribe({
@@ -83,25 +84,41 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
   processSessions(sessions: TrainerSession[]): void {
     const now = new Date();
     now.setHours(0, 0, 0, 0);
-    
-    this.upcomingSessions = sessions
-      .filter(s => {
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
-        return sessionDate >= now;
-      })
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
-    
-    this.pastSessions = sessions
-      .filter(s => {
-        const sessionDate = new Date(s.date);
-        sessionDate.setHours(0, 0, 0, 0);
-        return sessionDate < now;
-      })
-      .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+
+    const upcoming: TrainerSession[] = [];
+    const past: TrainerSession[] = [];
+    const cancelled: TrainerSession[] = [];
+
+    sessions.forEach((session) => {
+      const sessionDate = new Date(session.date);
+      sessionDate.setHours(0, 0, 0, 0);
+      const rawStatus = (session as any).status;
+      const status = (rawStatus?.toUpperCase?.() as 'OPEN' | 'CLOSED' | 'CANCELLED' | undefined) ?? undefined;
+
+      if (status === 'CANCELLED') {
+        cancelled.push(session);
+        return;
+      }
+
+      if (sessionDate >= now) {
+        upcoming.push(session);
+      } else {
+        past.push(session);
+      }
+    });
+
+    this.upcomingSessions = upcoming.sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()
+    );
+    this.pastSessions = past.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
+    this.cancelledSessions = cancelled.sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+    );
   }
 
-  setActiveTab(tab: 'upcoming' | 'past'): void {
+  setActiveTab(tab: 'upcoming' | 'past' | 'cancelled'): void {
     this.activeTab = tab;
   }
 
@@ -117,14 +134,14 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
 
   async startMeeting(session: TrainerSession): Promise<void> {
     if (this.isStartingMeeting) return;
-    
+
     try {
       this.isStartingMeeting = true;
       this._logger.info('Starting meeting for session:', session);
 
       // Create meeting
       const response = await this._meetingService.createMeeting(session.slotId).toPromise();
-      
+
       if (response?.meetingId) {
         this.currentMeetingId = response.meetingId;
         this.currentMeetingSlotId = session.slotId;
@@ -158,6 +175,21 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
     });
   }
 
+  formatTime(time: string): string {
+    if (!time) return '';
+    const [hourStr, minuteStr] = time.split(':');
+    const hours = Number(hourStr);
+    const minutes = Number(minuteStr ?? '0');
+    if (Number.isNaN(hours) || Number.isNaN(minutes)) {
+      return time;
+    }
+
+    const period = hours >= 12 ? 'PM' : 'AM';
+    const normalizedHour = hours % 12 === 0 ? 12 : hours % 12;
+    const paddedMinutes = minutes.toString().padStart(2, '0');
+    return `${normalizedHour}:${paddedMinutes} ${period}`;
+  }
+
   getDifficultyColor(level: string): string {
     switch (level?.toLowerCase()) {
       case 'beginner':
@@ -185,7 +217,7 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
           session.date
         )
       );
-      
+
       if (feedback) {
         this.feedbackText = feedback.feedback;
         this.existingFeedback = feedback.feedback;

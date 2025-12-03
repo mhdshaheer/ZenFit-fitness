@@ -1,548 +1,449 @@
-<div class="min-h-screen bg-neutral-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-    <!-- Header -->
-    <div class="mb-6">
-      <h1 class="text-2xl font-semibold text-neutral-900 mb-1">
-        Trainer Slot Management
-      </h1>
-      <p class="text-sm text-neutral-600">
-        Create and manage your training availability
-      </p>
+@if (instanceTab() === 'cancelled') {
+@if (cancelledInstances().length === 0) {
+<div class="py-12 text-center text-neutral-500">
+  <p>No sessions have been cancelled recently.</p>
+</div>
+}
+
+<div class="grid md:grid-cols-2 gap-4" *ngIf="cancelledInstances().length">
+  @for (instance of cancelledInstances(); track trackByInstance($index, instance)) {
+  <div class="border border-rose-100 rounded-xl p-4 flex flex-col gap-3 bg-rose-50 shadow-sm">
+    <div class="flex items-start justify-between gap-3">
+      <div>
+        <p class="text-sm font-semibold text-neutral-900">
+          {{ getProgramDetails(instance.programId)?.title || 'Program removed' }}
+        </p>
+        <p class="text-xs text-neutral-500">
+          {{ instance.date | date: 'EEE, MMM d, y' }}
+        </p>
+      </div>
+      <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full bg-rose-200 text-rose-700">
+        Cancelled
+      </span>
     </div>
 
-    <!-- Create New Slot Card -->
-    <div class="bg-white border border-neutral-200 rounded-lg p-5 sm:p-6 mb-6">
-      <h2 class="text-base font-semibold text-neutral-900 mb-4">
-        Create New Slot
-      </h2>
+    <div class="text-sm text-neutral-700 space-y-2">
+      <div class="text-xs uppercase tracking-wide text-neutral-500">Time</div>
+      <div class="font-semibold text-neutral-900">
+        {{ formatTimeDisplay(instance.startTime) }} → {{ formatTimeDisplay(instance.endTime) }}
+      </div>
+      <div class="flex items-center justify-between text-sm">
+        <span class="text-neutral-500">Booked capacity</span>
+        <span class="font-semibold text-neutral-900">
+          {{ instance.capacity - instance.availableCapacity }}/{{ instance.capacity }}
+        </span>
+      </div>
+    </div>
 
-      <form [formGroup]="slotForm" (ngSubmit)="addSlot()" class="space-y-4">
-        <!-- Program Selection -->
+    <div class="pt-2 border-t border-dashed border-rose-200 text-xs text-rose-600">
+      Cancelled by trainer
+    </div>
+  </div>
+  }
+</div>
+}
+
+<div class="min-h-screen bg-neutral-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
+    <header class="mb-4">
+      <h1 class="text-2xl font-semibold text-neutral-900">Slot Templates</h1>
+      <p class="text-neutral-600 text-sm">Create recurring availability and monitor generated slot instances.</p>
+    </header>
+
+    <section class="bg-white border border-neutral-200 rounded-xl p-5 sm:p-6">
+      <div class="flex items-center justify-between gap-4 mb-4 flex-wrap">
         <div>
-          <label class="block text-xs font-medium text-neutral-700 mb-1.5">
-            Program Type <span class="text-red-600">*</span>
-          </label>
-          <select
-            formControlName="program"
-            class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 transition-colors"
-          >
-            <option value="">Select a program</option>
-            @for (program of programs; track program) {
-            <option [value]="program.id">
-              {{ program.difficultyLevel }} — {{ program.title }} -
-              {{ program.duration }}
-            </option>
-            }
-          </select>
-          @if (slotForm.get('program')?.invalid &&
-          slotForm.get('program')?.touched) {
-          <p class="mt-1 text-xs text-red-600">Program is required</p>
+          <h2 class="text-lg font-semibold">Create / Update Template</h2>
+          <p class="text-sm text-neutral-500">Define recurrence, timezone, and capacity. Instances will be generated
+            automatically.</p>
+        </div>
+        @if (editingTemplate()) {
+        <button type="button" (click)="cancelEdit()"
+          class="px-4 py-2 text-sm border border-neutral-300 rounded-md hover:border-neutral-900 hover:bg-neutral-50">
+          Cancel edit
+        </button>
+        }
+      </div>
+
+      <form [formGroup]="templateForm" (ngSubmit)="submitTemplate()" class="space-y-5">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="md:col-span-1">
+            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Program <span
+                class="text-red-600">*</span></label>
+            <select formControlName="programId"
+              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
+              <option value="">Select program</option>
+              @for (program of programs; track program) {
+              <option [value]="program.id">
+                {{ program.title }} · {{ program.duration }} · {{ program.difficultyLevel }}
+              </option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Timezone <span
+                class="text-red-600">*</span></label>
+            <select formControlName="timezone"
+              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
+              @for (tz of timezoneOptions; track tz) {
+              <option [value]="tz">{{ tz }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Capacity <span
+                class="text-red-600">*</span></label>
+            <input type="number" formControlName="capacity" min="1" max="100"
+              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900" />
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Start time <span
+                class="text-red-600">*</span></label>
+            <select formControlName="startTime"
+              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
+              <option value="">Select start</option>
+              @for (option of timeOptions; track option) {
+              <option [value]="option.value">{{ option.display }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-medium text-neutral-600 mb-1.5">End time <span
+                class="text-red-600">*</span></label>
+            <select formControlName="endTime" [class.border-red-500]="templateForm.hasError('endBeforeStart')"
+              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
+              <option value="">Select end</option>
+              @for (option of filteredEndOptions; track option) {
+              <option [value]="option.value">{{ option.display }}</option>
+              }
+            </select>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Recurrence <span
+                class="text-red-600">*</span></label>
+            <div class="flex gap-3">
+              @for (rec of recurrenceOptions; track rec) {
+              <label class="flex items-center gap-2 text-sm text-neutral-700">
+                <input type="radio" class="text-neutral-900" [value]="rec" formControlName="recurrenceType" />
+                {{ rec === 'WEEKLY' ? 'Weekly (select days)' : 'Daily (interval)' }}
+              </label>
+              }
+            </div>
+          </div>
+
+          @if (templateForm.value.recurrenceType === 'DAILY') {
+          <div>
+            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Interval (days)</label>
+            <input type="number" formControlName="intervalDays" min="1" max="30"
+              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900" />
+          </div>
           }
         </div>
 
-        <!-- Day Selection -->
+        @if (templateForm.value.recurrenceType === 'WEEKLY') {
         <div>
-          <label class="block text-xs font-medium text-neutral-700 mb-2">
-            Select Days <span class="text-red-600">*</span>
-          </label>
+          <label class="block text-xs font-medium text-neutral-600 mb-1.5">Days of week</label>
           <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
             @for (day of weekDays; track day) {
-            <button
-              type="button"
-              (click)="onDayToggle(day)"
-              [class]="
-                day.selected
-                  ? 'bg-neutral-900 text-white border-neutral-900'
-                  : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-900'
-              "
-              class="px-3 py-2 text-xs font-medium border rounded-md transition-all duration-200"
-            >
-              {{ day.value }}
+            <button type="button" class="px-3 py-2 text-xs font-medium rounded-md border transition"
+              [class.bg-neutral-900]="day.selected" [class.text-white]="day.selected"
+              [class.border-neutral-900]="day.selected" [class.bg-white]="!day.selected"
+              [class.text-neutral-700]="!day.selected" [class.border-neutral-300]="!day.selected"
+              (click)="toggleDay(day)">
+              {{ day.name }}
             </button>
             }
           </div>
         </div>
+        }
 
-        <!-- Time Selection -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label class="block text-xs font-medium text-neutral-700 mb-1.5">
-              Start Time <span class="text-red-600">*</span>
-            </label>
-            <select
-              formControlName="startTime"
-              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 transition-colors"
-            >
-              <option value="">Select start time</option>
-              @for (time of timeOptions; track time) {
-              <option [value]="time.value">{{ time.display }}</option>
-              }
-            </select>
-            @if (slotForm.get('startTime')?.invalid &&
-            slotForm.get('startTime')?.touched) {
-            <p class="mt-1 text-xs text-red-600">Start time is required</p>
-            }
+        <div class="flex items-center justify-between flex-wrap gap-3">
+          <div class="text-xs text-neutral-500">
+            Template is currently <span class="font-medium text-neutral-900">{{ templateForm.value.isActive ? 'Active' :
+              'Inactive' }}</span>
           </div>
-
-          <div>
-            <label class="block text-xs font-medium text-neutral-700 mb-1.5">
-              End Time <span class="text-red-600">*</span>
-            </label>
-            <select
-              formControlName="endTime"
-              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 transition-colors"
-              [class.border-red-600]="slotForm.hasError('endTimeBeforeStart')"
-            >
-              <option value="">Select end time</option>
-              @for (time of filteredEndTimeOptions; track time) {
-              <option [value]="time.value">{{ time.display }}</option>
-              }
-            </select>
-            @if (slotForm.get('endTime')?.invalid &&
-            slotForm.get('endTime')?.touched) {
-            <p class="mt-1 text-xs text-red-600">End time is required</p>
-            } @if (slotForm.hasError('endTimeBeforeStart') &&
-            slotForm.get('endTime')?.touched) {
-            <p class="mt-1 text-xs text-red-600">
-              End time must be after start time
-            </p>
-            }
-          </div>
+          <button type="submit" [disabled]="templateForm.invalid"
+            class="px-5 py-2 bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-black disabled:bg-neutral-400 disabled:cursor-not-allowed">
+            {{ editingTemplate() ? 'Save template' : 'Create template' }}
+          </button>
         </div>
-
-        <!-- Capacity -->
-        <div class="sm:w-1/2 sm:pr-2">
-          <label class="block text-xs font-medium text-neutral-700 mb-1.5">
-            Capacity <span class="text-red-600">*</span>
-          </label>
-          <input
-            type="number"
-            formControlName="capacity"
-            min="1"
-            max="20"
-            class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900 transition-colors"
-          />
-          @if (slotForm.get('capacity')?.touched &&
-          slotForm.get('capacity')?.invalid) {
-          <div class="text-red-600 text-xs mt-1">
-            @if (slotForm.get('capacity')?.errors?.['required']) {
-            <div>Capacity is required.</div>
-            } @if (slotForm.get('capacity')?.errors?.['min']) {
-            <div>Minimum capacity is 1.</div>
-            } @if (slotForm.get('capacity')?.errors?.['max']) {
-            <div>Maximum capacity is 20.</div>
-            }
-          </div>
-          }
-        </div>
-
-        <!-- Helper Text -->
-        <div class="bg-neutral-100 border border-neutral-200 rounded-md p-3">
-          <p class="text-xs text-neutral-700">
-            <span class="font-medium">Note:</span> The system prevents
-            overlapping slots automatically.
-          </p>
-        </div>
-
-        <!-- Submit Button -->
-        <button
-          type="submit"
-          [disabled]="isFormInvalid"
-          class="w-full sm:w-auto px-6 py-2 text-sm bg-neutral-900 text-white font-medium rounded-md hover:bg-black disabled:bg-neutral-400 disabled:cursor-not-allowed transition-colors duration-200"
-        >
-          Add Slot
-        </button>
       </form>
-    </div>
+    </section>
 
-    <!-- Slots List -->
-    <div class="bg-white border border-neutral-200 rounded-lg p-5 sm:p-6">
+    <section class="bg-white border border-neutral-200 rounded-xl p-5 sm:p-6">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="text-base font-semibold text-neutral-900">Existing Slots</h2>
-        <span
-          class="px-2.5 py-1 bg-neutral-100 text-neutral-700 text-xs font-medium rounded-full"
-        >
-          {{ slots().length }} Total
-        </span>
+        <div>
+          <h2 class="text-lg font-semibold">Templates</h2>
+          <p class="text-sm text-neutral-500">{{ templates().length }} total</p>
+        </div>
       </div>
 
-      <!-- Desktop Table View -->
-      <div class="hidden lg:block overflow-x-auto">
-        <table class="w-full">
-          <thead>
-            <tr class="border-b border-neutral-200">
-              <th
-                class="text-left py-3 px-3 text-xs font-medium text-neutral-700"
-              >
-                Program
-              </th>
-              <th
-                class="text-left py-3 px-3 text-xs font-medium text-neutral-700"
-              >
-                Days
-              </th>
-              <th
-                class="text-left py-3 px-3 text-xs font-medium text-neutral-700"
-              >
-                Time Range
-              </th>
-              <th
-                class="text-left py-3 px-3 text-xs font-medium text-neutral-700"
-              >
-                Level
-              </th>
-              <th
-                class="text-left py-3 px-3 text-xs font-medium text-neutral-700"
-              >
-                Status
-              </th>
-              <th
-                class="text-right py-3 px-3 text-xs font-medium text-neutral-700"
-              >
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
-            @for (slot of slots(); track slot) {
-            <tr
-              class="border-b border-neutral-100 hover:bg-neutral-50 transition-colors"
-            >
-              <td class="py-3 px-3">
-                <span class="text-sm font-medium text-neutral-900">{{
-                  slot.program.title
-                }}</span>
-                <span class="block text-xs text-neutral-600 mt-0.5">{{
-                  slot.program.duration
-                }}</span>
-              </td>
-              <td class="py-3 px-3">
-                <div class="flex flex-wrap gap-1">
-                  @for (day of slot.days; track day) {
-                  <span
-                    class="inline-block px-2 py-0.5 bg-neutral-100 text-neutral-700 text-xs rounded"
-                  >
-                    {{ day }}
-                  </span>
-                  }
-                </div>
-              </td>
-              <td class="py-3 px-3">
-                <div class="flex items-center gap-1.5 text-xs text-neutral-700">
-                  <span class="font-medium">{{ slot.startTime }}</span>
-                  <span class="text-neutral-400">→</span>
-                  <span class="font-medium">{{ slot.endTime }}</span>
-                </div>
-              </td>
-              <td class="py-3 px-3">
-                <span
-                  class="px-2 py-1 bg-neutral-100 text-neutral-700 text-xs font-medium rounded"
-                >
-                  {{ slot.program.difficultyLevel }}
-                </span>
-              </td>
-              <td class="py-3 px-3">
-                <span
-                  [class]="
-                    slot.status === 'active'
-                      ? 'bg-neutral-900 text-white'
-                      : 'bg-neutral-200 text-neutral-600'
-                  "
-                  class="px-2 py-1 text-xs font-medium rounded"
-                >
-                  {{ slot.status }}
-                </span>
-              </td>
-              <td class="py-3 px-3">
-                <div class="flex justify-end gap-2">
-                  <button
-                    (click)="openEditModal(slot)"
-                    class="px-3 py-1.5 border border-neutral-300 text-neutral-700 rounded-md hover:border-neutral-900 hover:bg-neutral-50 transition-colors text-xs font-medium"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    (click)="statusChange(slot.id, slot.status)"
-                    [class]="
-                      slot.status === 'active'
-                        ? 'px-3 py-1.5 bg-neutral-900 text-white rounded-md hover:bg-black transition-colors text-xs font-medium'
-                        : 'px-3 py-1.5 border border-neutral-300 text-neutral-700 rounded-md hover:border-neutral-900 hover:bg-neutral-50 transition-colors text-xs font-medium'
-                    "
-                  >
-                    {{ slot.status === "active" ? "Active" : "Blocked" }}
-                  </button>
-                </div>
-              </td>
-            </tr>
-            }
-          </tbody>
-        </table>
+      @if (templates().length === 0) {
+      <div class="py-12 text-center text-neutral-500">
+        <p>No templates yet. Create one above to generate availability.</p>
       </div>
+      }
 
-      <!-- Mobile/Tablet Card View -->
-      <div class="lg:hidden space-y-3">
-        @for (slot of slots(); track slot) {
-        <div
-          class="bg-neutral-50 border border-neutral-200 rounded-lg p-4 hover:border-neutral-900 transition-colors"
-        >
-          <div class="flex justify-between items-start mb-3">
+      <div class="grid gap-4 md:grid-cols-2" *ngIf="templates().length">
+        @for (template of templates(); track trackByTemplate($index, template)) {
+        <div class="border border-neutral-200 rounded-lg p-4 flex flex-col gap-3">
+          <div class="flex items-start justify-between">
             <div>
-              <h3 class="text-sm font-semibold text-neutral-900">
-                {{ slot.program.title }}
-              </h3>
-              <p class="text-xs text-neutral-600 mt-0.5">
-                {{ slot.program.duration }}
+              <p class="text-sm font-semibold text-neutral-900">
+                {{ getProgramDetails(template.programId)?.title || 'Program removed' }}
+              </p>
+              <p class="text-xs text-neutral-500">
+                {{ formatRecurrence(template) }} · {{ template.timezone }}
               </p>
             </div>
-            <span
-              [class]="
-                slot.status === 'active'
-                  ? 'bg-neutral-900 text-white'
-                  : 'bg-neutral-200 text-neutral-600'
-              "
-              class="px-2 py-1 text-xs font-medium rounded"
-            >
-              {{ slot.status }}
+            <span class="px-2 py-0.5 text-xs rounded-full" [class.bg-green-100]="template.isActive"
+              [class.text-green-700]="template.isActive" [class.bg-neutral-200]="!template.isActive"
+              [class.text-neutral-600]="!template.isActive">
+              {{ template.isActive ? 'Active' : 'Paused' }}
             </span>
           </div>
 
-          <div class="space-y-2 mb-3">
-            <div class="flex items-start text-xs">
-              <span class="font-medium text-neutral-700 mr-2 min-w-[50px]"
-                >Days:</span
-              >
-              <div class="flex flex-wrap gap-1">
-                @for (day of slot.days; track day) {
-                <span
-                  class="inline-block px-2 py-0.5 bg-neutral-100 text-neutral-700 text-xs rounded"
-                >
-                  {{ day }}
-                </span>
-                }
-              </div>
+          <div class="text-sm text-neutral-600">
+            <div>Time: {{ formatTimeDisplay(template.startTime) }} → {{ formatTimeDisplay(template.endTime) }}</div>
+            <div>Capacity: {{ template.capacity }} seats</div>
+          </div>
+
+          <div class="flex gap-2">
+            <button
+              class="flex-1 px-3 py-2 text-xs font-medium border border-neutral-300 rounded-md hover:border-neutral-900"
+              type="button" (click)="startEdit(template)">
+              Edit
+            </button>
+            <button
+              class="flex-1 px-3 py-2 text-xs font-medium border border-neutral-300 rounded-md hover:border-neutral-900"
+              type="button" (click)="regenerateInstances(template._id)">
+              Generate 2 weeks
+            </button>
+            <button
+              class="px-3 py-2 text-xs font-medium border border-red-200 text-red-600 rounded-md hover:border-red-500"
+              type="button" (click)="deleteTemplate(template)">
+              Delete
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+
+    <section class="bg-white border border-neutral-200 rounded-xl p-5 sm:p-6">
+      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+        <div>
+          <h2 class="text-lg font-semibold">Slot instances</h2>
+          <p class="text-sm text-neutral-500">
+            {{ instanceTab() === 'upcoming' ? 'Next 14 days from active templates.' : instanceTab() === 'past' ? 'Last
+            30 days of finished slots.' : 'Cancelled instances'}}
+          </p>
+        </div>
+        <div class="inline-flex rounded-lg border border-neutral-200 overflow-hidden">
+          <button type="button" class="px-4 py-2 text-sm font-medium border-r border-neutral-200"
+            [class.bg-neutral-900]="instanceTab() === 'upcoming'" [class.text-white]="instanceTab() === 'upcoming'"
+            [class.text-neutral-600]="instanceTab() !== 'upcoming'" (click)="setInstanceTab('upcoming')">
+            Upcoming ({{ upcomingActiveInstances().length }})
+          </button>
+          <button type="button" class="px-4 py-2 text-sm font-medium border-r border-neutral-200"
+            [class.bg-neutral-900]="instanceTab() === 'past'" [class.text-white]="instanceTab() === 'past'"
+            [class.text-neutral-600]="instanceTab() !== 'past'" (click)="setInstanceTab('past')">
+            Past ({{ pastActiveInstances().length }})
+          </button>
+          <button type="button" class="px-4 py-2 text-sm font-medium"
+            [class.bg-neutral-900]="instanceTab() === 'cancelled'" [class.text-white]="instanceTab() === 'cancelled'"
+            [class.text-neutral-600]="instanceTab() !== 'cancelled'" (click)="setInstanceTab('cancelled')">
+            Cancelled ({{ cancelledInstances().length }})
+          </button>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap gap-3 mb-5">
+        <div class="flex-1 min-w-[220px]">
+          <label class="sr-only" for="instance-search">Search program</label>
+          <input id="instance-search" type="text" placeholder="Search program"
+            class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900"
+            [value]="instanceSearch()" (input)="setInstanceSearch(($any($event.target)?.value) ?? '')" />
+        </div>
+        <div>
+          <label class="sr-only" for="instance-status">Status</label>
+          <select id="instance-status"
+            class="px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900"
+            [value]="statusFilter()" (change)="setStatusFilter(($any($event.target)?.value) ?? 'ALL')">
+            <option value="ALL">All statuses</option>
+            <option value="OPEN">Open</option>
+            <option value="CLOSED">Closed</option>
+            <option value="CANCELLED">Cancelled</option>
+          </select>
+        </div>
+        <div>
+          <label class="sr-only" for="instance-from">From date</label>
+          <input id="instance-from" type="date"
+            class="px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900"
+            [value]="dateFromFilter() ?? ''" (change)="setDateFilter('from', $any($event.target)?.value ?? null)" />
+        </div>
+        <div>
+          <label class="sr-only" for="instance-to">To date</label>
+          <input id="instance-to" type="date"
+            class="px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900"
+            [value]="dateToFilter() ?? ''" (change)="setDateFilter('to', $any($event.target)?.value ?? null)" />
+        </div>
+        <div>
+          <button type="button" class="px-3 py-2 text-sm border border-neutral-300 rounded-md hover:border-neutral-900"
+            (click)="clearInstanceFilters()">
+            Reset
+          </button>
+        </div>
+      </div>
+
+      @if (isInstancesLoading()) {
+      <div class="py-12 text-center text-neutral-500">
+        <p>Loading slot instances...</p>
+      </div>
+      } @else {
+      @if (instanceTab() === 'upcoming') {
+      @if (upcomingActiveInstances().length === 0) {
+      <div class="py-12 text-center text-neutral-500">
+        <p>No upcoming instances match the current filters.</p>
+      </div>
+      }
+
+      <div class="grid md:grid-cols-2 gap-4" *ngIf="upcomingActiveInstances().length">
+        @for (instance of upcomingActiveInstances(); track trackByInstance($index, instance)) {
+        <div
+          class="border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 bg-white shadow-sm hover:border-neutral-300 transition">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-sm font-semibold text-neutral-900">
+                {{ getProgramDetails(instance.programId)?.title || 'Program removed' }}
+              </p>
+              <p class="text-xs text-neutral-500">
+                {{ instance.date | date: 'EEE, MMM d, y' }}
+              </p>
             </div>
-            <div class="flex items-center text-xs">
-              <span class="font-medium text-neutral-700 mr-2 min-w-[50px]"
-                >Time:</span
-              >
-              <span class="text-neutral-600"
-                >{{ slot.startTime }} → {{ slot.endTime }}</span
-              >
+            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full whitespace-nowrap"
+              [ngClass]="{
+                'bg-emerald-100 text-emerald-700': instance.status === 'OPEN',
+                'bg-amber-100 text-amber-700': instance.status === 'CLOSED',
+                'bg-rose-100 text-rose-700': instance.status === 'CANCELLED'
+              }">
+              {{ instance.status | titlecase }}
+            </span>
+          </div>
+
+          <div class="text-sm text-neutral-700 space-y-2">
+            <div class="text-xs uppercase tracking-wide text-neutral-500">Time</div>
+            <div class="font-semibold text-neutral-900">
+              {{ formatTimeDisplay(instance.startTime) }} → {{ formatTimeDisplay(instance.endTime) }}
             </div>
-            <div class="flex items-center text-xs">
-              <span class="font-medium text-neutral-700 mr-2 min-w-[50px]"
-                >Level:</span
-              >
-              <span class="px-2 py-0.5 bg-neutral-100 text-neutral-700 rounded">
-                {{ slot.program.difficultyLevel }}
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-neutral-500">Capacity</span>
+              <span class="font-semibold text-neutral-900">
+                {{ instance.availableCapacity }}/{{ instance.capacity }} available
               </span>
             </div>
           </div>
 
-          <div class="flex gap-2 pt-2 border-t border-neutral-200">
-            <button
-              (click)="openEditModal(slot)"
-              class="flex-1 px-3 py-2 border border-neutral-300 text-neutral-700 rounded-md hover:border-neutral-900 hover:bg-neutral-100 transition-colors text-xs font-medium"
-            >
-              Edit
-            </button>
-            <button
-              (click)="statusChange(slot.id, slot.status)"
-              [class]="
-                slot.status === 'active'
-                  ? 'flex-1 px-3 py-2 bg-neutral-900 text-white rounded-md hover:bg-black transition-colors text-xs font-medium'
-                  : 'flex-1 px-3 py-2 border border-neutral-300 text-neutral-700 rounded-md hover:border-neutral-900 hover:bg-neutral-100 transition-colors text-xs font-medium'
-              "
-            >
-              {{ slot.status === "active" ? "Active" : "Blocked" }}
+          <div class="pt-2 flex items-center justify-end border-t border-dashed border-neutral-200">
+            <button type="button" class="px-3 py-1.5 text-xs font-semibold rounded-md border transition-colors"
+              [ngClass]="instance.status === 'CANCELLED'
+                ? 'border-neutral-200 text-neutral-400 bg-neutral-100 cursor-not-allowed'
+                : 'border-rose-200 text-rose-600 bg-rose-50 hover:bg-rose-100 hover:border-rose-400'"
+              (click)="cancelSlotInstance(instance)" [disabled]="instance.status === 'CANCELLED'">
+              {{ instance.status === 'CANCELLED' ? 'Cancelled' : 'Cancel slot' }}
             </button>
           </div>
         </div>
         }
       </div>
 
-      <!-- Empty State -->
-      @if (slots().length === 0) {
-      <div class="text-center py-12">
-        <div
-          class="w-12 h-12 mx-auto mb-3 rounded-full bg-neutral-100 flex items-center justify-center"
-        >
-          <svg
-            class="w-6 h-6 text-neutral-400"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-            ></path>
-          </svg>
-        </div>
-        <p class="text-sm text-neutral-600">
-          No slots created yet. Add your first slot above.
-        </p>
+      <div class="flex items-center justify-end gap-3 mt-4" *ngIf="upcomingPagination()">
+        <button type="button" class="px-3 py-1.5 text-xs font-medium border rounded-md"
+          (click)="changePage('upcoming', 'prev')"
+          [disabled]="isInstancesLoading() || (upcomingPagination()?.page ?? 1) === 1">
+          Previous
+        </button>
+        <span class="text-xs text-neutral-600">
+          Page {{ upcomingPagination()?.page }} / {{ upcomingPagination()?.totalPages }}
+        </span>
+        <button type="button" class="px-3 py-1.5 text-xs font-medium border rounded-md"
+          (click)="changePage('upcoming', 'next')"
+          [disabled]="isInstancesLoading() || !(upcomingPagination()?.hasNextPage)">
+          Next
+        </button>
       </div>
       }
-    </div>
 
-    <!-- Edit Modal -->
-    @if (showEditModal()) {
-    <div
-      class="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center p-4 z-50"
-      (click)="closeEditModal()"
-    >
-      <div
-        class="bg-white rounded-lg shadow-xl max-w-md w-full p-6 max-h-[90vh] overflow-y-auto"
-        (click)="$event.stopPropagation()"
-      >
-        <!-- Modal Header -->
-        <div class="flex items-center justify-between mb-5">
-          <h2 class="text-base font-semibold text-neutral-900">Edit Slot</h2>
-          <button
-            (click)="closeEditModal()"
-            class="text-neutral-400 hover:text-neutral-600 transition-colors"
-          >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+      @if (instanceTab() === 'past') {
+      @if (pastActiveInstances().length === 0) {
+      <div class="py-12 text-center text-neutral-500">
+        <p>No past sessions match the current filters.</p>
+      </div>
+      }
+
+      <div class="grid md:grid-cols-2 gap-4" *ngIf="pastActiveInstances().length">
+        @for (instance of pastActiveInstances(); track trackByInstance($index, instance)) {
+        <div
+          class="border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 bg-neutral-50 shadow-sm hover:border-neutral-300 transition">
+          <div class="flex items-start justify-between gap-3">
+            <div>
+              <p class="text-sm font-semibold text-neutral-900">
+                {{ getProgramDetails(instance.programId)?.title || 'Program removed' }}
+              </p>
+              <p class="text-xs text-neutral-500">
+                {{ instance.date | date: 'EEE, MMM d, y' }}
+              </p>
+            </div>
+            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full whitespace-nowrap"
+              [ngClass]="{
+                'bg-emerald-100 text-emerald-700': instance.status === 'OPEN',
+                'bg-amber-100 text-amber-700': instance.status === 'CLOSED',
+                'bg-rose-100 text-rose-700': instance.status === 'CANCELLED'
+              }">
+              {{ instance.status | titlecase }}
+            </span>
+          </div>
+
+          <div class="text-sm text-neutral-700 space-y-2">
+            <div class="text-xs uppercase tracking-wide text-neutral-500">Time</div>
+            <div class="font-semibold text-neutral-900">
+              {{ formatTimeDisplay(instance.startTime) }} → {{ formatTimeDisplay(instance.endTime) }}
+            </div>
+            <div class="flex items-center justify-between text-sm">
+              <span class="text-neutral-500">Filled</span>
+              <span class="font-semibold text-neutral-900">
+                {{ instance.capacity - instance.availableCapacity }}/{{ instance.capacity }}
+              </span>
+            </div>
+          </div>
         </div>
-
-        @if (editingSlot()) {
-        <form [formGroup]="editForm" (ngSubmit)="saveEdit()" class="space-y-4">
-          <!-- Program (Read-only) -->
-          <div>
-            <label class="block text-xs font-medium text-neutral-700 mb-1.5">
-              Program
-              <span class="text-xs text-neutral-500">(Cannot be changed)</span>
-            </label>
-            <div
-              class="w-full px-3 py-2 bg-neutral-100 border border-neutral-200 rounded-md text-sm text-neutral-800 font-medium"
-            >
-              {{ editingSlot()!.program.title }}
-            </div>
-            <p class="mt-1 text-xs text-neutral-500">
-              To change the program, delete this slot and create a new one
-            </p>
-          </div>
-
-          <!-- Days Selection -->
-          <div>
-            <label class="block text-xs font-medium text-neutral-700 mb-2">
-              Select Days <span class="text-red-600">*</span>
-            </label>
-            <div class="grid grid-cols-2 gap-2">
-              @for (day of editDays; track day) {
-              <button
-                type="button"
-                (click)="onEditDayToggle(day)"
-                [class]="
-                  day.selected
-                    ? 'bg-neutral-900 text-white border-neutral-900'
-                    : 'bg-white text-neutral-700 border-neutral-300 hover:border-neutral-900'
-                "
-                class="px-3 py-2 text-xs font-medium border rounded-md transition-all duration-200"
-              >
-                {{ day.name }}
-              </button>
-              }
-            </div>
-          </div>
-
-          <!-- Time Selection -->
-          <div class="grid grid-cols-2 gap-3">
-            <div>
-              <label class="block text-xs font-medium text-neutral-700 mb-1.5">
-                Start Time <span class="text-red-600">*</span>
-              </label>
-              <select
-                formControlName="startTime"
-                class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900"
-              >
-                @for (time of timeOptions; track time) {
-                <option [value]="time.value">{{ time.display }}</option>
-                }
-              </select>
-            </div>
-            <div>
-              <label class="block text-xs font-medium text-neutral-700 mb-1.5">
-                End Time <span class="text-red-600">*</span>
-              </label>
-              <select
-                formControlName="endTime"
-                [class.border-red-600]="editForm.hasError('endTimeBeforeStart')"
-                class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900"
-              >
-                @for (time of filteredEditEndTimeOptions; track time) {
-                <option [value]="time.value">{{ time.display }}</option>
-                }
-              </select>
-            </div>
-          </div>
-          @if (editForm.hasError('endTimeBeforeStart')) {
-          <p class="text-xs text-red-600">End time must be after start time</p>
-          }
-
-          <!-- Capacity -->
-          <div>
-            <label class="block text-xs font-medium text-neutral-700 mb-1.5">
-              Capacity <span class="text-red-600">*</span>
-            </label>
-            <input
-              type="number"
-              formControlName="capacity"
-              min="1"
-              max="20"
-              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:outline-none focus:ring-1 focus:ring-neutral-900 focus:border-neutral-900"
-            />
-            @if (editForm.get('capacity')?.touched &&
-            editForm.get('capacity')?.invalid) {
-            <div class="text-red-600 text-xs mt-1">
-              @if (editForm.get('capacity')?.errors?.['required']) {
-              <div>Capacity is required.</div>
-              } @if (editForm.get('capacity')?.errors?.['min']) {
-              <div>Minimum capacity is 1.</div>
-              } @if (editForm.get('capacity')?.errors?.['max']) {
-              <div>Maximum capacity is 20.</div>
-              }
-            </div>
-            }
-          </div>
-
-          <!-- Action Buttons -->
-          <div class="flex gap-2 pt-3">
-            <button
-              type="button"
-              (click)="closeEditModal()"
-              class="flex-1 px-4 py-2 border border-neutral-300 text-neutral-700 text-sm font-medium rounded-md hover:bg-neutral-50 transition-colors"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              [disabled]="isEditFormInvalid"
-              class="flex-1 px-4 py-2 bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-black transition-colors disabled:bg-neutral-400 disabled:cursor-not-allowed"
-            >
-              Save Changes
-            </button>
-          </div>
-        </form>
         }
       </div>
-    </div>
-    }
+
+      <div class="flex items-center justify-end gap-3 mt-4" *ngIf="pastPagination()">
+        <button type="button" class="px-3 py-1.5 text-xs font-medium border rounded-md"
+          (click)="changePage('past', 'prev')" [disabled]="isInstancesLoading() || (pastPagination()?.page ?? 1) === 1">
+          Previous
+        </button>
+        <span class="text-xs text-neutral-600">
+          Page {{ pastPagination()?.page }} / {{ pastPagination()?.totalPages }}
+        </span>
+        <button type="button" class="px-3 py-1.5 text-xs font-medium border rounded-md"
+          (click)="changePage('past', 'next')" [disabled]="isInstancesLoading() || !(pastPagination()?.hasNextPage)">
+          Next
+        </button>
+      </div>
+      }
+      }
+    </section>
   </div>
 </div>

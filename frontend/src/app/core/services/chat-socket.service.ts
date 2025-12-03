@@ -16,26 +16,21 @@ export class ChatSocketService {
 
   constructor(private _zone: NgZone) {
     this._socket = io(environment.socketUrl, { reconnection: true, withCredentials: true, transports: ['websocket', 'polling'] });
-    
     // Connection events
     this._socket.on('connect', () => {
       this._logger.info('Socket connected:', this._socket.id);
     });
-    
     this._socket.on('disconnect', (reason) => {
       this._logger.info('Socket disconnected:', reason);
     });
-    
     this._socket.on('connect_error', (error) => {
       this._logger.error('Socket connection error:', error);
     });
-    
     // Chat events
     this._socket.on('chat:newMessage', (data) => {
       this._logger.info('Received new message:', data);
       this._zone.run(() => this._newMessage$.next(data));
     });
-    
     this._socket.on('chat:typing', (data) => this._zone.run(() => this._typing$.next(data)));
     this._socket.on('chat:read', (data) => this._zone.run(() => this._read$.next(data)));
     this._socket.on('chat:delivered', (data) => this._zone.run(() => this._delivered$.next(data)));
