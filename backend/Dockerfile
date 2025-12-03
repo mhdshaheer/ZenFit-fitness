@@ -17,6 +17,7 @@ RUN npm ci --omit=dev
 FROM node:18-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
+ENV PORT=5001
 
 # Copy production node_modules + build output
 COPY --from=prod-deps /app/node_modules ./node_modules
