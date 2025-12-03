@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { ProgramService } from '../../../../core/services/program.service';
 import { AuthService } from '../../../../core/services/auth.service';
 import { CommonModule } from '@angular/common';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 interface Program {
   _id?: string;
@@ -28,6 +29,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   private readonly _programService = inject(ProgramService);
   private readonly _authService = inject(AuthService);
   private _intervalId: any;
+  private _logger = inject(LoggerService)
 
   programs: Program[] = [];
   isLoading = false;
@@ -80,7 +82,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         this.currentUserName = userProfile.username || userProfile.email || 'User';
       },
       error: (error) => {
-        console.error('Error fetching user profile:', error);
+        this._logger.error('Error fetching user profile:', error);
         // Fallback to token-based extraction if API fails
         const token = this._authService.getAccessToken();
         if (token) {
@@ -88,7 +90,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
             const payload = JSON.parse(atob(token.split('.')[1]));
             this.currentUserName = payload.username || payload.name || payload.email || 'User';
           } catch (tokenError) {
-            console.error('Error decoding token:', tokenError);
+            this._logger.error('Error decoding token:', tokenError);
             this.currentUserName = 'User';
           }
         } else {
@@ -110,7 +112,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         this.isLoading = false;
       },
       error: (error: any) => {
-        console.log('Programs not available or user not authenticated');
+        this._logger.info('Programs not available or user not authenticated');
         this.isLoading = false;
         // For landing page, show empty programs if API fails (user might not be logged in)
         this.programs = [];
@@ -157,7 +159,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
         this._router.navigate(['/']);
       },
       error: (error) => {
-        console.error('Logout error:', error);
+        this._logger.error('Logout error:', error);
         // Even if logout fails on server, clear local state
         localStorage.removeItem('accessToken');
         this.isLoggedIn = false;

@@ -20,22 +20,15 @@ export class ChatController implements IChatController {
   }
 
   async getThreads(req: Request, res: Response): Promise<void> {
-    console.log((req as any).user);
     const userId = (req as any).user.id;
     const threads = await this.chat.listMyThreads(userId);
     res.status(HttpStatus.OK).json({ success: true, data: threads });
   }
 
   async getTrainerThreads(req: Request, res: Response): Promise<void> {
-    // console.log((req as any).user);
-    // const trainerId = (req as any).user.id;
-    // const threads = await this.chat.listTrainerThreads(trainerId);
-    // res.status(HttpStatus.OK).json({ success: true, data: threads });
 
     try {
-        console.log("Reached on trainer threads controller")
         const trainerId = (req as any).user.id;
-        console.log("Trainer id is ", trainerId)
     const threads = await this.chat.listTrainerThreads(trainerId);
     res.status(200).json({ success: true, data: threads });
   } catch (error:any) {
@@ -79,19 +72,14 @@ export class ChatController implements IChatController {
     // Emit real-time event to all clients in the thread
     try {
       const io = getIO();
-      console.log('📤 Emitting chat:newMessage to thread:', `thread-${threadId}`);
-      console.log('📨 Message data:', JSON.stringify(message, null, 2));
       io.to(`thread-${threadId}`).emit("chat:newMessage", message);
       
       // Notify participants about new message
       const participants = await this.chat.getThreadParticipants(threadId);
-      console.log('👥 Thread participants:', participants);
       if (participants.userId) {
-        console.log('📤 Emitting delivered to user:', `user-${participants.userId}`);
         io.to(`user-${participants.userId}`).emit("chat:delivered", { threadId });
       }
       if (participants.trainerId) {
-        console.log('📤 Emitting delivered to trainer:', `trainer-${participants.trainerId}`);
         io.to(`trainer-${participants.trainerId}`).emit("chat:delivered", { threadId });
       }
     } catch (error) {

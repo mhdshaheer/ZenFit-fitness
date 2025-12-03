@@ -347,7 +347,7 @@ export class AuthService implements IAuthService {
       res.json({ message: HttpResponse.ACCESS_TOKEN_REFRESHED });
       return;
     } catch (error) {
-      console.log("Error :", error);
+      logger.error("Error :", error);
       res
         .status(HttpStatus.FORBIDDEN)
         .json({ message: HttpResponse.REFRESH_TOKEN_INVALID });

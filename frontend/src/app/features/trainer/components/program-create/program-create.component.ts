@@ -14,6 +14,7 @@ import {
 } from '../../../../core/services/category.service';
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 export interface Category {
   value: string;
@@ -32,6 +33,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
   private readonly _router = inject(Router);
   private readonly _categoryService = inject(CategoryService);
   private readonly _destroy$ = new Subject<void>();
+  private _logger = inject(LoggerService)
 
   programForm!: FormGroup;
   characterCount = 0;
@@ -58,14 +60,13 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: ICategory[]) => {
-          console.log('sub categories are ..:', res);
           this.categories = res.map((item) => ({
             value: item._id,
             label: item.name,
           }));
         },
         error: (err) => {
-          console.log('Failed to fetch subcategories ', err);
+          this._logger.error('Failed to fetch subcategories ', err);
         },
       });
   }
@@ -127,21 +128,20 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
         .pipe(takeUntil(this._destroy$))
         .subscribe({
           next: (res) => {
-            console.log('Training Program saved successfully:', res);
             this._toastService.success('Training Program saved successfully');
             this.isSubmitting = false;
             this.resetForm();
             this._router.navigate(['/trainer/programs']);
           },
           error: (err) => {
-            console.error('Error saving Training Program:', err);
+            this._logger.error('Error saving Training Program:', err);
             this._toastService.error('Failed to save Training Program');
             this.isSubmitting = false;
           },
         });
     } else {
       this.markFormGroupTouched();
-      console.log('Form is invalid');
+      this._logger.error('Form is invalid');
     }
   }
 
@@ -159,14 +159,13 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
-          console.log('Draft saved successfully:', res);
           this._toastService.success('Draft saved successfully');
           this.isSubmitting = false;
           this.resetForm();
           this._router.navigate(['/trainer/programs']);
         },
         error: (err) => {
-          console.error('Error saving draft:', err);
+          this._logger.error('Error saving draft:', err);
           this._toastService.error('Failed to save draft');
           this.isSubmitting = false;
         },
@@ -186,7 +185,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
       control?.markAsTouched();
 
       if (control?.invalid) {
-        console.log(`${key} is invalid:`, control.errors);
+        this._logger.info(`${key} is invalid:`, control.errors);
       }
     });
   }

@@ -1,16 +1,29 @@
-import { IBooking } from "../../models/booking.model";
-import { ISlot } from "../../models/slot.model";
+import { IBooking, IBookingSnapshot } from "../../models/booking.model";
+
+export interface CreateBookingParams {
+  slotId: string;
+  templateId: string;
+  userId: string;
+  day: string;
+  date: Date;
+  snapshot: IBookingSnapshot;
+}
 
 export interface IBookingRepository {
-  createBooking(
-    userId: string,
-    day: string,
-    date: Date,
-    slot: ISlot
-  ): Promise<IBooking>;
+  createBooking(params: CreateBookingParams): Promise<IBooking>;
   getMyBookings(userId: string, programId?: string): Promise<IBooking[]>;
   getTrainerBookings(trainerId: string): Promise<any[]>;
   getBookingsBySlotId(slotId: string): Promise<IBooking[]>;
   getBookingsForSlotOnDate(slotId: string, date: Date): Promise<IBooking[]>;
   cancelBookingsBySlotId(slotId: string): Promise<IBooking[]>;
+  findById(bookingId: string): Promise<IBooking | null>;
+  cancelBookingById(bookingId: string): Promise<IBooking | null>;
+  findActiveBookingByUserAndSlot(
+    userId: string,
+    slotId: string
+  ): Promise<IBooking | null>;
+  findActiveBookingsForUserOnDate(
+    userId: string,
+    slotDate: Date
+  ): Promise<IBooking[]>;
 }

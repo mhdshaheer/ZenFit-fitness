@@ -36,6 +36,7 @@ export interface TrainerSession {
   duration: number;
   difficultyLevel: string;
   bookedCount: number;
+  status?: 'OPEN' | 'CLOSED' | 'CANCELLED';
   students: Student[];
 }
 
@@ -44,8 +45,8 @@ export class BookingService {
   private readonly _http = inject(HttpClient);
   private readonly _apiUrl = environment.apiUrl + BookingRoutes.BASE;
 
-  createBooking(slotId: string, day: string, date: Date) {
-    return this._http.post(this._apiUrl, { slotId, day, date });
+  createBooking(slotInstanceId: string) {
+    return this._http.post(this._apiUrl, { slotInstanceId });
   }
 
   getMyBookings(programId?: string): Observable<BookedSlot[]> {
@@ -57,7 +58,6 @@ export class BookingService {
 
   getTrainerSessions(): Observable<TrainerSession[]> {
     const url = `${this._apiUrl}/trainer-bookings`;
-    console.log('🔗 Calling API:', url);
     return this._http.get<TrainerSession[]>(url);
   }
 }

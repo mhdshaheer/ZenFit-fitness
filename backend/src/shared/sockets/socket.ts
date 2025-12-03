@@ -4,6 +4,7 @@ import { env } from "../../config/env.config";
 import { container } from "../../inversify.config";
 import { TYPES } from "../types/inversify.types";
 import { IChatService } from "../../services/interface/chat.service.interface";
+import logger from "../services/logger.service";
 
 let io: Server;
 
@@ -18,25 +19,24 @@ export const initializeSocket = (server: HttpServer): Server => {
   });
 
   io.on("connection", (socket) => {
-    console.log("Client connected:", socket.id);
+    logger.info("Client connected:", socket.id);
 
     socket.on("join", ({ id, type }: { id: string; type: string }) => {
       const room = `${type}-${id}`;
       socket.join(room);
-      console.log(`Socket ${socket.id} joined room: ${room}`);
+      logger.info(`Socket ${socket.id} joined room: ${room}`);
     });
 
     socket.on("chat:joinThread", async (data: { threadId: string; userId: string; role: "user" | "trainer" }) => {
       try {
-        console.log('🔗 Socket joining thread:', data);
         const chatService = container.get<IChatService>(TYPES.ChatService);
         const ok = await chatService.canAccessThread(data.threadId, data.userId, data.role);
         if (!ok) {
-          console.log('❌ Access denied to thread:', data.threadId);
+          logger.error('Access denied to thread:', data.threadId);
           return;
         }
         socket.join(`thread-${data.threadId}`);
-        console.log('✅ Socket joined thread room:', `thread-${data.threadId}`, 'Socket ID:', socket.id);
+        logger.info('Socket joined thread room:', `thread-${data.threadId}`, 'Socket ID:', socket.id);
       } catch (e) {
         console.error("joinThread error", e);
       }
@@ -89,7 +89,6 @@ export const initializeSocket = (server: HttpServer): Server => {
       try {
         const meetingRoom = `meeting-${data.meetingId}`;
         socket.join(meetingRoom);
-        console.log(`👤 User joined meeting room: ${meetingRoom}, Socket: ${socket.id}`);
 
         // Notify other participants
         socket.to(meetingRoom).emit("meeting:participant-joined", {
@@ -103,7 +102,6 @@ export const initializeSocket = (server: HttpServer): Server => {
         io.in(meetingRoom).allSockets().then((sockets) => {
           const participantCount = sockets.size;
           socket.emit("meeting:participant-count", { count: participantCount });
-          console.log(`📊 Meeting ${data.meetingId} now has ${participantCount} participants`);
         });
       } catch (e) {
         console.error("meeting:join error", e);
@@ -114,7 +112,6 @@ export const initializeSocket = (server: HttpServer): Server => {
       try {
         const meetingRoom = `meeting-${data.meetingId}`;
         socket.leave(meetingRoom);
-        console.log(`👋 User left meeting room: ${meetingRoom}, User ID: ${data.userId || socket.id}`);
 
         // Notify other participants
         socket.to(meetingRoom).emit("meeting:participant-left", {
@@ -126,7 +123,6 @@ export const initializeSocket = (server: HttpServer): Server => {
         io.in(meetingRoom).allSockets().then((sockets) => {
           const participantCount = sockets.size;
           io.to(meetingRoom).emit("meeting:participant-count", { count: participantCount });
-          console.log(`📊 Meeting ${data.meetingId} now has ${participantCount} participants after leave`);
         });
       } catch (e) {
         console.error("meeting:leave error", e);
@@ -136,7 +132,6 @@ export const initializeSocket = (server: HttpServer): Server => {
     socket.on("meeting:end", (data: { meetingId: string }) => {
       try {
         const meetingRoom = `meeting-${data.meetingId}`;
-        console.log(`🛑 Meeting ended: ${data.meetingId}`);
 
         // Notify all participants
         io.to(meetingRoom).emit("meeting:ended", { meetingId: data.meetingId });
@@ -149,7 +144,6 @@ export const initializeSocket = (server: HttpServer): Server => {
     socket.on("webrtc:offer", (data: { meetingId: string; targetUserId: string; fromUserId: string; offer: any }) => {
       try {
         const meetingRoom = `meeting-${data.meetingId}`;
-        console.log(`📤 Forwarding WebRTC offer from ${data.fromUserId} to ${data.targetUserId}`);
 
         // Forward offer to target user
         socket.to(meetingRoom).emit("webrtc:offer", {
@@ -164,8 +158,6 @@ export const initializeSocket = (server: HttpServer): Server => {
     socket.on("webrtc:answer", (data: { meetingId: string; targetUserId: string; fromUserId: string; answer: any }) => {
       try {
         const meetingRoom = `meeting-${data.meetingId}`;
-        console.log(`📤 Forwarding WebRTC answer from ${data.fromUserId} to ${data.targetUserId}`);
-
         // Forward answer to target user
         socket.to(meetingRoom).emit("webrtc:answer", {
           fromUserId: data.fromUserId,
@@ -179,8 +171,6 @@ export const initializeSocket = (server: HttpServer): Server => {
     socket.on("webrtc:ice-candidate", (data: { meetingId: string; targetUserId: string; fromUserId: string; candidate: any }) => {
       try {
         const meetingRoom = `meeting-${data.meetingId}`;
-        console.log(`🧊 Forwarding ICE candidate from ${data.fromUserId} to ${data.targetUserId}`);
-
         // Forward ICE candidate to target user
         socket.to(meetingRoom).emit("webrtc:ice-candidate", {
           fromUserId: data.fromUserId,
@@ -192,17 +182,10 @@ export const initializeSocket = (server: HttpServer): Server => {
     });
 
     socket.on("disconnect", (reason) => {
-      console.log(`Client disconnected: ${socket.id}, reason: ${reason}`);
-
-      // Clean up any meeting rooms this socket was in
-      // Note: Socket.IO automatically removes the socket from all rooms on disconnect
-      // but we should notify other participants in meeting rooms
       const rooms = Array.from(socket.rooms);
       rooms.forEach(room => {
         if (room.startsWith('meeting-')) {
           const meetingId = room.replace('meeting-', '');
-          console.log(`🧹 Cleaning up meeting room: ${room} for disconnected socket: ${socket.id}`);
-
           // Notify other participants that someone left
           socket.to(room).emit("meeting:participant-left", {
             userId: socket.id, // Use socket.id as fallback
@@ -215,7 +198,6 @@ export const initializeSocket = (server: HttpServer): Server => {
             io.in(room).allSockets().then((sockets) => {
               const participantCount = sockets.size;
               io.to(room).emit("meeting:participant-count", { count: participantCount });
-              console.log(`📊 Meeting ${meetingId} now has ${participantCount} participants after disconnect cleanup`);
             });
           }, 100); // Small delay to ensure socket is fully removed
         }

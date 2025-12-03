@@ -64,7 +64,6 @@ export class UserManageComponent implements OnInit {
   ngOnInit(): void {
     this.users$ = this._store.select(selectAllUsers);
     this._store.select(selectTotalUsers).subscribe((total) => {
-      console.log('total users: ', total);
       this.totalUsers = total;
     });
     this.loading$ = this._store.select(selectUserLoading);
@@ -146,7 +145,6 @@ export class UserManageComponent implements OnInit {
   onUserAction(event: ActionEvent) {
     const { action, row } = event;
     if (action == 'view') {
-      console.log('clicked view option ', row.id);
       this._router.navigate(['/admin/profile', row.id]);
       return;
     }

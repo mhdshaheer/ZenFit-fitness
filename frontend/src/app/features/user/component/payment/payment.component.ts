@@ -40,6 +40,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _paymentService = inject(PaymentService);
   private readonly _destroy$ = new Subject<void>();
+  private _logger = inject(LoggerService)
 
   program = {} as IProgram;
 
@@ -54,7 +55,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
 
   selectPayment(methodId: string): void {
     this.selectedPayment = methodId;
-    console.log(this.selectedPayment);
+    this._logger.info(this.selectedPayment);
   }
 
   getDifficultyColor(difficulty: string): string {
@@ -83,7 +84,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
       .createCheckout(course)
       .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
-        console.log('to :', res.url);
+        this._logger.info('to :', res.url);
         window.location.href = res.url; // redirect to Stripe Checkout
       });
   }
@@ -96,7 +97,6 @@ export class PaymentComponent implements OnInit, OnDestroy {
         next: (res) => {
           this._loggerService.info('Program is :', res);
           const category = JSON.parse(res.category);
-          console.log('category is :', category);
           this.program = {
             name: res.title,
             category: category.name,

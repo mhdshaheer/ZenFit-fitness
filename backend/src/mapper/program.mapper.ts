@@ -19,9 +19,6 @@ export const mapToProgramDto = (programs: IProgram): ProgramDto => {
     createdAt: programs.createdAt?.toString(),
     approvalStatus: programs.approvalStatus,
     trainerId: programs.trainerId.toString(),
-    //   image?: programs;
-    //   enrolledCount?: programs.entrolledCount,
-    //   rating?: number;
   };
 };
 
@@ -31,7 +28,6 @@ export const mapToProgramSlotDto = (programs: IProgram): ProgramSlotDto => {
     title: programs.title,
     category: JSON.stringify(programs.category),
     duration: programs.duration,
-    // entrolledCount:programs.entrolledCount
   };
 };
 

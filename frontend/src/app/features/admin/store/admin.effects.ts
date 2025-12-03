@@ -17,7 +17,6 @@ export class AdminEffects {
           .getUsers({ page, pageSize, search, sortBy, sortOrder })
           .pipe(
             map((response) => {
-              console.log('data response from backend: ', response);
               return AdminActions.loadUsersSuccess({
                 users: response.data,
                 total: response.total,

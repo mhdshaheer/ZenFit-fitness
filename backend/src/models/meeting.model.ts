@@ -26,7 +26,7 @@ const MeetingSchema = new Schema<IMeeting>(
     },
     slotId: {
       type: Schema.Types.ObjectId,
-      ref: "Slot",
+      ref: "SlotInstance",
       required: true,
       index: true,
     },

@@ -9,371 +9,487 @@
 
   <!-- Tabs -->
   <div class="tabs-container">
-    <button 
-      class="tab-button" 
-      [class.active]="activeTab === 'upcoming'"
-      (click)="setActiveTab('upcoming')">
+    <button class="tab-button" [class.active]="activeTab === 'upcoming'" (click)="setActiveTab('upcoming')">
       <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
       </svg>
       Upcoming Sessions
       <span class="tab-badge">{{ upcomingSessions.length }}</span>
     </button>
-    <button 
-      class="tab-button" 
-      [class.active]="activeTab === 'past'"
-      (click)="setActiveTab('past')">
+    <button class="tab-button" [class.active]="activeTab === 'past'" (click)="setActiveTab('past')">
       <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
       </svg>
       Past Sessions
       <span class="tab-badge">{{ pastSessions.length }}</span>
+    </button>
+    <button class="tab-button" [class.active]="activeTab === 'cancelled'" (click)="setActiveTab('cancelled')">
+      <svg class="tab-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      Cancelled
+      <span class="tab-badge">{{ cancelledSessions.length }}</span>
     </button>
   </div>
 
   <!-- Loading State -->
   @if (isLoading) {
-    <div class="loading-container">
-      <div class="spinner"></div>
-      <p class="loading-text">Loading sessions...</p>
+  <div class="loading-container">
+    <div class="spinner"></div>
+    <p class="loading-text">Loading sessions...</p>
+  </div>
+  }
+
+  <!-- Cancelled Sessions Tab -->
+  @if (!isLoading && activeTab === 'cancelled') {
+  <div class="sessions-grid">
+    @if (cancelledSessions.length === 0) {
+    <div class="empty-state">
+      <svg class="empty-icon text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+      <h3 class="empty-title">No Cancelled Sessions</h3>
+      <p class="empty-description">Cancellation alerts will appear here.</p>
     </div>
+    } @else {
+    @for (session of cancelledSessions; track session.slotId + '_' + session.date) {
+    <div class="session-card cancelled">
+      <div class="card-header">
+        <div class="program-info">
+          <h3 class="program-name">{{ session.programName }}</h3>
+          <div class="program-meta">
+            <span class="meta-item">
+              <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              {{ session.duration }} weeks
+            </span>
+            <span class="difficulty-badge" [ngClass]="getDifficultyColor(session.difficultyLevel)">
+              {{ session.difficultyLevel }}
+            </span>
+          </div>
+        </div>
+        <span class="capacity-badge cancelled-badge">
+          Cancelled
+        </span>
+      </div>
+
+      <div class="card-body">
+        <div class="info-section">
+          <div class="students-count-section">
+            <div class="count-info">
+              <svg class="count-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                </path>
+              </svg>
+              <span class="count-text">{{ session.bookedCount }} Booked</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="schedule-grid">
+          <div class="schedule-item">
+            <div class="schedule-label">
+              <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              Date
+            </div>
+            <p class="schedule-value">{{ formatDate(session.date) }}</p>
+          </div>
+          <div class="schedule-item">
+            <div class="schedule-label">
+              <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Time
+            </div>
+            <p class="schedule-value">{{ formatTime(session.startTime) }} - {{ formatTime(session.endTime) }}</p>
+          </div>
+          <div class="schedule-item">
+            <div class="schedule-label">
+              <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              Day
+            </div>
+            <p class="schedule-value">{{ session.day }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    }
+    }
+  </div>
   }
 
   <!-- Upcoming Sessions Tab -->
   @if (!isLoading && activeTab === 'upcoming') {
-    <div class="sessions-grid">
-      @if (upcomingSessions.length === 0) {
-        <div class="empty-state">
-          <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-          </svg>
-          <h3 class="empty-title">No Upcoming Sessions</h3>
-          <p class="empty-description">You don't have any upcoming training sessions scheduled.</p>
-        </div>
-      } @else {
-        @for (session of upcomingSessions; track session.slotId + '_' + session.date) {
-          <div class="session-card">
-            <!-- Card Header -->
-            <div class="card-header">
-              <div class="program-info">
-                <h3 class="program-name">{{ session.programName }}</h3>
-                <div class="program-meta">
-                  <span class="meta-item">
-                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    {{ session.duration }} weeks
-                  </span>
-                  <span class="difficulty-badge" [ngClass]="getDifficultyColor(session.difficultyLevel)">
-                    {{ session.difficultyLevel }}
-                  </span>
-                </div>
-              </div>
-              <span class="capacity-badge">
-                {{ session.bookedCount }}/{{ session.capacity }} Booked
-              </span>
-            </div>
-
-            <!-- Card Body -->
-            <div class="card-body">
-              <!-- Students Count -->
-              <div class="info-section">
-                <div class="students-count-section">
-                  <div class="count-info">
-                    <svg class="count-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                    <span class="count-text">{{ session.bookedCount }} Student{{ session.bookedCount !== 1 ? 's' : '' }} Booked</span>
-                  </div>
-                  <button class="view-users-btn" (click)="viewBookedUsers(session)">
-                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                    View Booked Users
-                  </button>
-                </div>
-              </div>
-
-              <!-- Schedule Info -->
-              <div class="schedule-grid">
-                <div class="schedule-item">
-                  <div class="schedule-label">
-                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    Date
-                  </div>
-                  <p class="schedule-value">{{ formatDate(session.date) }}</p>
-                </div>
-
-                <div class="schedule-item">
-                  <div class="schedule-label">
-                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Time
-                  </div>
-                  <p class="schedule-value">{{ session.startTime }} - {{ session.endTime }}</p>
-                </div>
-
-                <div class="schedule-item">
-                  <div class="schedule-label">
-                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    Day
-                  </div>
-                  <p class="schedule-value">{{ session.day }}</p>
-                </div>
-              </div>
-            </div>
-
-            <!-- Card Footer -->
-            <div class="card-footer">
-              <button class="start-button" (click)="startMeeting(session)" [disabled]="isStartingMeeting">
-                @if (isStartingMeeting) {
-                  <div class="button-spinner"></div>
-                  <span>Starting...</span>
-                } @else {
-                  <svg class="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
-                  </svg>
-                  <span>Start Meeting</span>
-                }
-              </button>
-            </div>
-          </div>
-        }
-      }
+  <div class="sessions-grid">
+    @if (upcomingSessions.length === 0) {
+    <div class="empty-state">
+      <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+      </svg>
+      <h3 class="empty-title">No Upcoming Sessions</h3>
+      <p class="empty-description">You don't have any upcoming training sessions scheduled.</p>
     </div>
+    } @else {
+    @for (session of upcomingSessions; track session.slotId + '_' + session.date) {
+    <div class="session-card">
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="program-info">
+          <h3 class="program-name">{{ session.programName }}</h3>
+          <div class="program-meta">
+            <span class="meta-item">
+              <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              {{ session.duration }} weeks
+            </span>
+            <span class="difficulty-badge" [ngClass]="getDifficultyColor(session.difficultyLevel)">
+              {{ session.difficultyLevel }}
+            </span>
+          </div>
+        </div>
+        <span class="capacity-badge">
+          {{ session.bookedCount }}/{{ session.capacity }} Booked
+        </span>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <!-- Students Count -->
+        <div class="info-section">
+          <div class="students-count-section">
+            <div class="count-info">
+              <svg class="count-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                </path>
+              </svg>
+              <span class="count-text">{{ session.bookedCount }} Student{{ session.bookedCount !== 1 ? 's' : '' }}
+                Booked</span>
+            </div>
+            <button class="view-users-btn" (click)="viewBookedUsers(session)">
+              <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                </path>
+              </svg>
+              View Booked Users
+            </button>
+          </div>
+        </div>
+
+        <!-- Schedule Info -->
+        <div class="schedule-grid">
+          <div class="schedule-item">
+            <div class="schedule-label">
+              <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              Date
+            </div>
+            <p class="schedule-value">{{ formatDate(session.date) }}</p>
+          </div>
+
+          <div class="schedule-item">
+            <div class="schedule-label">
+              <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Time
+            </div>
+            <p class="schedule-value">{{ session.startTime }} - {{ session.endTime }}</p>
+          </div>
+
+          <div class="schedule-item">
+            <div class="schedule-label">
+              <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              Day
+            </div>
+            <p class="schedule-value">{{ session.day }}</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Card Footer -->
+      <div class="card-footer">
+        <button class="start-button" (click)="startMeeting(session)" [disabled]="isStartingMeeting">
+          @if (isStartingMeeting) {
+          <div class="button-spinner"></div>
+          <span>Starting...</span>
+          } @else {
+          <svg class="button-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z">
+            </path>
+          </svg>
+          <span>Start Meeting</span>
+          }
+        </button>
+      </div>
+    </div>
+    }
+    }
+  </div>
   }
 
   <!-- Past Sessions Tab -->
   @if (!isLoading && activeTab === 'past') {
-    <div class="sessions-grid">
-      @if (pastSessions.length === 0) {
-        <div class="empty-state">
-          <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-          </svg>
-          <h3 class="empty-title">No Past Sessions</h3>
-          <p class="empty-description">You don't have any completed training sessions yet.</p>
-        </div>
-      } @else {
-        @for (session of pastSessions; track session.slotId + '_' + session.date) {
-          <div class="session-card past">
-            <!-- Card Header -->
-            <div class="card-header">
-              <div class="program-info">
-                <h3 class="program-name">{{ session.programName }}</h3>
-                <div class="program-meta">
-                  <span class="meta-item">
-                    <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    {{ session.duration }} weeks
-                  </span>
-                  <span class="difficulty-badge" [ngClass]="getDifficultyColor(session.difficultyLevel)">
-                    {{ session.difficultyLevel }}
-                  </span>
-                </div>
-              </div>
-              <span class="capacity-badge past-badge">
-                {{ session.bookedCount }}/{{ session.capacity }} Attended
-              </span>
-            </div>
-
-            <!-- Card Body -->
-            <div class="card-body">
-              <!-- Students Count -->
-              <div class="info-section">
-                <div class="students-count-section">
-                  <div class="count-info">
-                    <svg class="count-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
-                    </svg>
-                    <span class="count-text">{{ session.bookedCount }} Student{{ session.bookedCount !== 1 ? 's' : '' }} Attended</span>
-                  </div>
-                  <button class="view-users-btn" (click)="viewBookedUsers(session)">
-                    <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                    </svg>
-                    View Booked Users
-                  </button>
-                </div>
-              </div>
-
-              <!-- Schedule Info -->
-              <div class="schedule-grid">
-                <div class="schedule-item">
-                  <div class="schedule-label">
-                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    Date
-                  </div>
-                  <p class="schedule-value">{{ formatDate(session.date) }}</p>
-                </div>
-
-                <div class="schedule-item">
-                  <div class="schedule-label">
-                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                    Time
-                  </div>
-                  <p class="schedule-value">{{ session.startTime }} - {{ session.endTime }}</p>
-                </div>
-
-                <div class="schedule-item">
-                  <div class="schedule-label">
-                    <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                    </svg>
-                    Day
-                  </div>
-                  <p class="schedule-value">{{ session.day }}</p>
-                </div>
-              </div>
-
-              <!-- Feedback Section -->
-              <div class="mt-4 pt-4 border-t border-neutral-200">
-                <button class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm" (click)="openFeedbackModal(session)">
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-                  </svg>
-                  Add/Edit Feedback
-                </button>
-              </div>
-            </div>
-          </div>
-        }
-      }
+  <div class="sessions-grid">
+    @if (pastSessions.length === 0) {
+    <div class="empty-state">
+      <svg class="empty-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+          d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+      </svg>
+      <h3 class="empty-title">No Past Sessions</h3>
+      <p class="empty-description">You don't have any completed training sessions yet.</p>
     </div>
+    } @else {
+    @for (session of pastSessions; track session.slotId + '_' + session.date) {
+    <div class="session-card past">
+      <!-- Card Header -->
+      <div class="card-header">
+        <div class="program-info">
+          <h3 class="program-name">{{ session.programName }}</h3>
+          <div class="program-meta">
+            <span class="meta-item">
+              <svg class="meta-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              {{ session.duration }} weeks
+            </span>
+            <span class="difficulty-badge" [ngClass]="getDifficultyColor(session.difficultyLevel)">
+              {{ session.difficultyLevel }}
+            </span>
+          </div>
+        </div>
+        <span class="capacity-badge past-badge">
+          {{ session.bookedCount }}/{{ session.capacity }} Attended
+        </span>
+      </div>
+
+      <!-- Card Body -->
+      <div class="card-body">
+        <!-- Students Count -->
+        <div class="info-section">
+          <div class="students-count-section">
+            <div class="count-info">
+              <svg class="count-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z">
+                </path>
+              </svg>
+              <span class="count-text">{{ session.bookedCount }} Student{{ session.bookedCount !== 1 ? 's' : '' }}
+                Attended</span>
+            </div>
+            <button class="view-users-btn" (click)="viewBookedUsers(session)">
+              <svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
+                </path>
+              </svg>
+              View Booked Users
+            </button>
+          </div>
+        </div>
+
+        <!-- Schedule Info -->
+        <div class="schedule-grid">
+          <div class="schedule-item">
+            <div class="schedule-label">
+              <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              Date
+            </div>
+            <p class="schedule-value">{{ formatDate(session.date) }}</p>
+          </div>
+
+          <div class="schedule-item">
+            <div class="schedule-label">
+              <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              Time
+            </div>
+            <p class="schedule-value">{{ session.startTime }} - {{ session.endTime }}</p>
+          </div>
+
+          <div class="schedule-item">
+            <div class="schedule-label">
+              <svg class="schedule-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              Day
+            </div>
+            <p class="schedule-value">{{ session.day }}</p>
+          </div>
+        </div>
+
+        <!-- Feedback Section -->
+        <div class="mt-4 pt-4 border-t border-neutral-200">
+          <button
+            class="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-medium py-2.5 px-4 rounded-lg transition-all duration-300 flex items-center justify-center gap-2 shadow-md hover:shadow-lg text-sm"
+            (click)="openFeedbackModal(session)">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+              </path>
+            </svg>
+            Add/Edit Feedback
+          </button>
+        </div>
+      </div>
+    </div>
+    }
+    }
+  </div>
   }
 </div>
 
 <!-- Students Modal -->
 @if (showStudentsModal && selectedSession) {
-  <div class="modal-overlay" (click)="closeStudentsModal()">
-    <div class="modal-content" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <div class="modal-title-section">
-          <h2 class="modal-title">Booked Students</h2>
-          <p class="modal-subtitle">{{ selectedSession.programName }} - {{ formatDate(selectedSession.date) }}</p>
-        </div>
-        <button class="modal-close" (click)="closeStudentsModal()">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
+<div class="modal-overlay" (click)="closeStudentsModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title-section">
+        <h2 class="modal-title">Booked Students</h2>
+        <p class="modal-subtitle">{{ selectedSession.programName }} - {{ formatDate(selectedSession.date) }}</p>
       </div>
-      
-      <div class="modal-body">
-        <div class="modal-stats">
-          <div class="stat-item">
-            <span class="stat-label">Total Capacity:</span>
-            <span class="stat-value">{{ selectedSession.capacity }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Booked:</span>
-            <span class="stat-value booked">{{ selectedSession.bookedCount }}</span>
-          </div>
-          <div class="stat-item">
-            <span class="stat-label">Available:</span>
-            <span class="stat-value available">{{ selectedSession.capacity - selectedSession.bookedCount }}</span>
-          </div>
-        </div>
+      <button class="modal-close" (click)="closeStudentsModal()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
 
-        <div class="students-list-modal">
-          @for (student of selectedSession.students; track student.bookingId) {
-            <div class="student-item-modal">
-              <div class="student-avatar-modal">{{ student.name.charAt(0).toUpperCase() }}</div>
-              <div class="student-details-modal">
-                <p class="student-name-modal">{{ student.name }}</p>
-                <p class="student-email-modal">{{ student.email }}</p>
-              </div>
-              <span class="student-status-badge" [ngClass]="student.status">
-                {{ student.status }}
-              </span>
-            </div>
-          }
+    <div class="modal-body">
+      <div class="modal-stats">
+        <div class="stat-item">
+          <span class="stat-label">Total Capacity:</span>
+          <span class="stat-value">{{ selectedSession.capacity }}</span>
         </div>
+        <div class="stat-item">
+          <span class="stat-label">Booked:</span>
+          <span class="stat-value booked">{{ selectedSession.bookedCount }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Available:</span>
+          <span class="stat-value available">{{ selectedSession.capacity - selectedSession.bookedCount }}</span>
+        </div>
+      </div>
+
+      <div class="students-list-modal">
+        @for (student of selectedSession.students; track student.bookingId) {
+        <div class="student-item-modal">
+          <div class="student-avatar-modal">{{ student.name.charAt(0).toUpperCase() }}</div>
+          <div class="student-details-modal">
+            <p class="student-name-modal">{{ student.name }}</p>
+            <p class="student-email-modal">{{ student.email }}</p>
+          </div>
+          <span class="student-status-badge" [ngClass]="student.status">
+            {{ student.status }}
+          </span>
+        </div>
+        }
       </div>
     </div>
   </div>
+</div>
 }
 
 <!-- Feedback Modal -->
 @if (showFeedbackModal && selectedFeedbackSession) {
-  <div class="modal-overlay" (click)="closeFeedbackModal()">
-    <div class="modal-content" style="max-width: 600px; width: 90vw;" (click)="$event.stopPropagation()">
-      <div class="modal-header">
-        <div class="modal-title-section">
-          <h2 class="modal-title">Session Feedback</h2>
-          <p class="modal-subtitle">{{ selectedFeedbackSession.programName }} - {{ formatDate(selectedFeedbackSession.date) }}</p>
-        </div>
-        <button class="modal-close" (click)="closeFeedbackModal()">
-          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
-          </svg>
-        </button>
+<div class="modal-overlay" (click)="closeFeedbackModal()">
+  <div class="modal-content" style="max-width: 600px; width: 90vw;" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="modal-title-section">
+        <h2 class="modal-title">Session Feedback</h2>
+        <p class="modal-subtitle">{{ selectedFeedbackSession.programName }} - {{
+          formatDate(selectedFeedbackSession.date) }}</p>
       </div>
-      
-      <div class="modal-body">
-        <div class="mb-6">
-          <label for="feedbackText" class="flex items-center gap-2 text-sm font-semibold text-neutral-700 mb-3">
-            <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
-            </svg>
-            Provide feedback for this session
-          </label>
-          <textarea
-            id="feedbackText"
-            [(ngModel)]="feedbackText"
-            class="w-full p-3 border-2 border-neutral-200 rounded-lg text-sm leading-relaxed resize-vertical min-h-[120px] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
-            placeholder="Share your thoughts about the session, student performance, areas for improvement, or any other relevant feedback..."
-            rows="6"
-            maxlength="1000">
-          </textarea>
-          <div class="text-right text-xs text-neutral-500 mt-2">
-            {{ feedbackText.length }}/1000 characters
-          </div>
-        </div>
+      <button class="modal-close" (click)="closeFeedbackModal()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
 
-        <div class="flex gap-3 justify-end">
-          <button class="px-6 py-2.5 bg-neutral-100 text-neutral-700 border border-neutral-300 rounded-lg text-sm font-medium hover:bg-neutral-200 transition-colors" (click)="closeFeedbackModal()">
-            Cancel
-          </button>
-          <button 
-            class="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg text-sm font-medium hover:from-green-700 hover:to-green-800 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
-            (click)="submitFeedback()"
-            [disabled]="isSubmittingFeedback || !feedbackText.trim()">
-            @if (isSubmittingFeedback) {
-              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-              {{ existingFeedback ? 'Updating...' : 'Submitting...' }}
-            } @else {
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-              </svg>
-              {{ existingFeedback ? 'Update Feedback' : 'Submit Feedback' }}
-            }
-          </button>
+    <div class="modal-body">
+      <div class="mb-6">
+        <label for="feedbackText" class="flex items-center gap-2 text-sm font-semibold text-neutral-700 mb-3">
+          <svg class="w-4 h-4 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
+            </path>
+          </svg>
+          Provide feedback for this session
+        </label>
+        <textarea id="feedbackText" [(ngModel)]="feedbackText"
+          class="w-full p-3 border-2 border-neutral-200 rounded-lg text-sm leading-relaxed resize-vertical min-h-[120px] focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all"
+          placeholder="Share your thoughts about the session, student performance, areas for improvement, or any other relevant feedback..."
+          rows="6" maxlength="1000">
+          </textarea>
+        <div class="text-right text-xs text-neutral-500 mt-2">
+          {{ feedbackText.length }}/1000 characters
         </div>
+      </div>
+
+      <div class="flex gap-3 justify-end">
+        <button
+          class="px-6 py-2.5 bg-neutral-100 text-neutral-700 border border-neutral-300 rounded-lg text-sm font-medium hover:bg-neutral-200 transition-colors"
+          (click)="closeFeedbackModal()">
+          Cancel
+        </button>
+        <button
+          class="flex items-center gap-2 px-6 py-2.5 bg-gradient-to-r from-green-600 to-green-700 text-white rounded-lg text-sm font-medium hover:from-green-700 hover:to-green-800 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
+          (click)="submitFeedback()" [disabled]="isSubmittingFeedback || !feedbackText.trim()">
+          @if (isSubmittingFeedback) {
+          <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+          {{ existingFeedback ? 'Updating...' : 'Submitting...' }}
+          } @else {
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+          {{ existingFeedback ? 'Update Feedback' : 'Submit Feedback' }}
+          }
+        </button>
       </div>
     </div>
   </div>
+</div>
 }
 
 <!-- Meeting Room -->
 @if (showMeetingRoom && currentMeetingId && currentMeetingSlotId) {
-  <zenfit-meeting-room
-    [meetingId]="currentMeetingId"
-    [slotId]="currentMeetingSlotId"
-    [isHost]="true"
-    [sessionTitle]="currentMeetingTitle"
-    (meetingClose)="closeMeetingRoom()">
-  </zenfit-meeting-room>
+<zenfit-meeting-room [meetingId]="currentMeetingId" [slotId]="currentMeetingSlotId" [isHost]="true"
+  [sessionTitle]="currentMeetingTitle" (meetingClose)="closeMeetingRoom()">
+</zenfit-meeting-room>
 }

@@ -67,14 +67,13 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res: ICategory[]) => {
-          console.log('sub categories are ..:', res);
           this.categories = res.map((item) => ({
             value: item._id,
             label: item.name,
           }));
         },
         error: (err) => {
-          console.log('Failed to fetch subcategories ', err);
+          this._logger.error('Failed to fetch subcategories ', err);
         },
       });
   }
@@ -132,7 +131,6 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   onSubmit() {
     if (this.programForm.valid) {
       this.isSubmitting = true;
-      console.log('current TrainerId:', this.currentTrainerId);
 
       const programData: Program = {
         ...this.programForm.value,
@@ -158,7 +156,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
         });
     } else {
       this.markFormGroupTouched();
-      console.log('Form is invalid');
+      this._logger.error('Form is invalid');
     }
   }
 
@@ -174,7 +172,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
       control?.markAsTouched();
 
       if (control?.invalid) {
-        console.log(`${key} is invalid:`, control.errors);
+        this._logger.info(`${key} is invalid:`, control.errors);
       }
     });
   }

@@ -7,7 +7,7 @@ import { inject, injectable } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IBookingService } from "../../services/interface/booking.service.interface";
 import { INotificationService } from "../../services/interface/notification.service.interface";
-import { ISlotService } from "../../services/interface/slot.service.interface";
+import { ISlotInstanceRepository } from "../../repositories/interface/slotInstance.repository.interface";
 
 @injectable()
 export class BookingController implements IBookingController {
@@ -15,36 +15,34 @@ export class BookingController implements IBookingController {
   private readonly _bookingService!: IBookingService;
   @inject(TYPES.NotificationService)
   private readonly _notificationService!: INotificationService;
-  @inject(TYPES.SlotService)
-  private readonly _slotService!: ISlotService;
+  @inject(TYPES.SlotInstanceRepository)
+  private readonly _slotInstanceRepository!: ISlotInstanceRepository;
   async createBooking(
     req: Request,
     res: Response
   ): Promise<Response<IBooking>> {
-    const { slotId, day, date } = req.body;
+    const { slotInstanceId } = req.body;
     const userId = (req as any).user?.id;
 
-    if (!slotId || !userId || !day || !date) {
+    if (!slotInstanceId || !userId) {
       throw new AppError("Missing required fields", HttpStatus.BAD_REQUEST);
     }
 
     const booking = await this._bookingService.createBooking(
-      slotId,
-      userId,
-      day,
-      new Date(date)
+      slotInstanceId,
+      userId
     );
 
-    const currentSlot = await this._slotService.getSlotBySlotId(slotId);
-    if (!currentSlot) {
-      throw new AppError("Slot not found", HttpStatus.NOT_FOUND);
+    const slotInstance = await this._slotInstanceRepository.findById(slotInstanceId);
+    if (!slotInstance) {
+      throw new AppError("Slot instance not found", HttpStatus.NOT_FOUND);
     }
 
     await this._notificationService.createNotification(
-      currentSlot.trainerId.toString(),
+      slotInstance.trainerId.toString(),
       "trainer",
       "New Slot Booking",
-      `User booked a slot for "${currentSlot.programId.title}" on ${currentSlot.startTime}.`
+      `A user booked a session on ${slotInstance.date.toDateString()} at ${slotInstance.startTime}.`
     );
 
     // await this._notificationService.createNotification(
@@ -75,15 +73,12 @@ export class BookingController implements IBookingController {
 
   async getTrainerBookings(req: Request, res: Response): Promise<Response<any>> {
     const trainerId = (req as any).user?.id;
-    console.log('🔐 Authenticated trainer ID:', trainerId);
-    console.log('🔐 User object:', (req as any).user);
 
     if (!trainerId) {
       throw new AppError("Trainer not authenticated", HttpStatus.UNAUTHORIZED);
     }
 
     const bookings = await this._bookingService.getTrainerBookings(trainerId);
-    console.log('✅ Returning bookings count:', bookings.length);
 
     return res.status(HttpStatus.OK).json(bookings);
   }

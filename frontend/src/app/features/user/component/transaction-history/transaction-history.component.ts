@@ -4,6 +4,7 @@ import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { PurchasedProgram } from '../../../../interface/payment.interface';
 import { ToastService } from '../../../../core/services/toast.service';
+import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
   selector: 'zenfit-transaction-history',
@@ -17,6 +18,7 @@ export class TransactionHistoryComponent implements OnInit, OnDestroy {
   private readonly _toastService = inject(ToastService);
   private readonly _destroy$ = new Subject<void>();
   private readonly _searchSubject$ = new Subject<string>();
+  private _logger = inject(LoggerService)
 
   transactions: PurchasedProgram[] = [];
   isLoading = true;
@@ -66,7 +68,7 @@ export class TransactionHistoryComponent implements OnInit, OnDestroy {
           this.isLoading = false;
         },
         error: (error) => {
-          console.error('Error loading transactions:', error);
+          this._logger.error('Error loading transactions:', error);
           this._toastService.error('Failed to load transaction history');
           this.isLoading = false;
         }

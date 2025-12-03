@@ -77,6 +77,7 @@ export class ProgramService {
     category?: string;
     difficultyLevel?: string;
     status?: string;
+    approvalStatus?: string;
   }): Observable<{
     programs: Program[];
     pagination: {
@@ -87,13 +88,14 @@ export class ProgramService {
     };
   }> {
     const params = new URLSearchParams();
-    
+
     if (filters.page) params.append('page', filters.page.toString());
     if (filters.limit) params.append('limit', filters.limit.toString());
     if (filters.search) params.append('search', filters.search);
     if (filters.category) params.append('category', filters.category);
     if (filters.difficultyLevel) params.append('difficultyLevel', filters.difficultyLevel);
     if (filters.status) params.append('status', filters.status);
+    if (filters.approvalStatus) params.append('approvalStatus', filters.approvalStatus);
 
     return this._http.get<{
       programs: Program[];
