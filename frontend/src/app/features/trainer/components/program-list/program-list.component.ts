@@ -367,6 +367,10 @@ export class ProgramListComponent implements OnInit, OnDestroy {
     this._router.navigate(['/trainer/programs', programId, 'users']);
   }
 
+  onCreateProgram(): void {
+    this._router.navigate(['/trainer/program-create']);
+  }
+
   onRealTimeSearch(): void {
     // Clear existing timeout
     if (this.searchTimeout) {

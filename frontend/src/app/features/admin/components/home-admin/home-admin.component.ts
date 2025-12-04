@@ -1,6 +1,13 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
+import { FormsModule } from '@angular/forms';
 import { NgApexchartsModule, ApexOptions } from 'ng-apexcharts';
+import { AdminService } from '../../../../core/services/admin.service';
+import {
+  AdminDashboardSnapshot,
+  AdminRangeFilter,
+  AdminReportScope,
+} from '../../../../interface/admin-dashboard.interface';
 
 type TrendDirection = 'up' | 'down';
 type AnalyticsTab =
@@ -53,15 +60,16 @@ interface TabFilterOption {
 @Component({
   selector: 'app-home-admin',
   standalone: true,
-  imports: [CommonModule, NgApexchartsModule],
+  imports: [CommonModule, FormsModule, NgApexchartsModule],
   templateUrl: './home-admin.component.html',
   styleUrl: './home-admin.component.css',
 })
-export class HomeAdminComponent {
+export class HomeAdminComponent implements OnInit {
+  private readonly _adminService = inject(AdminService);
+
   readonly tabs: AnalyticsTabMeta[] = [
-    { key: 'sales', label: 'Sales analytics', helper: 'Revenue trends & programs' },
+    { key: 'sales', label: 'Sales & revenue', helper: 'Commerce + earnings signal' },
     { key: 'bookings', label: 'Booking analytics', helper: 'Utilization watch' },
-    { key: 'revenue', label: 'Revenue analytics', helper: 'Admin vs trainer split' },
     { key: 'portfolio', label: 'Programs & categories', helper: 'Approvals + discipline mix' },
     { key: 'people', label: 'Trainer & user analytics', helper: 'Leaders & cohorts' },
   ];
@@ -104,7 +112,23 @@ export class HomeAdminComponent {
     people: 'trainer',
   };
 
-  readonly kpiCards: KpiCard[] = [
+  readonly reportFilters: TabFilterOption[] = [
+    { key: 'global', label: 'Global overview' },
+    { key: 'marketplace', label: 'Marketplace only' },
+    { key: 'direct', label: 'Direct trainers' },
+  ];
+
+  readonly reportDateRanges: TabFilterOption[] = [
+    { key: '7d', label: 'Last 7 days' },
+    { key: '30d', label: 'Last 30 days' },
+    { key: '90d', label: 'Last 90 days' },
+    { key: 'ytd', label: 'Year to date' },
+  ];
+
+  selectedReportFilter = this.reportFilters[0].key;
+  activeDateRange = this.reportDateRanges[1].key;
+
+  kpiCards: KpiCard[] = [
     {
       title: 'Total Sales',
       value: '₹8.9L',
@@ -148,7 +172,7 @@ export class HomeAdminComponent {
     },
   ];
 
-  readonly trainerLeaderboard: LeaderboardEntry[] = [
+  trainerLeaderboard: LeaderboardEntry[] = [
     { name: 'Amit Rao', value: '₹1.4L', helper: 'HIIT Pro • 4.9★', percent: 82 },
     { name: 'Zara Mehta', value: '₹1.2L', helper: 'Pilates Core • 4.8★', percent: 74 },
     { name: 'Neel Patel', value: '₹98K', helper: 'Strength Lab • 4.7★', percent: 64 },
@@ -156,14 +180,14 @@ export class HomeAdminComponent {
     { name: 'Kabir Khan', value: '₹79K', helper: 'Metcon Burn • 4.6★', percent: 52 },
   ];
 
-  readonly userActivityLeaders: ActivityUser[] = [
+  userActivityLeaders: ActivityUser[] = [
     { name: 'Sneha Kulkarni', sessions: 34, streak: 12 },
     { name: 'Rahul Verma', sessions: 28, streak: 9 },
     { name: 'Priya Shah', sessions: 25, streak: 8 },
     { name: 'Arjun Sethi', sessions: 22, streak: 7 },
   ];
 
-  readonly purchasingLeaders: PurchasingUser[] = [
+  purchasingLeaders: PurchasingUser[] = [
     { name: 'Rohit Sharma', spend: '₹54K', programs: 12 },
     { name: 'Dia Sen', spend: '₹48K', programs: 10 },
     { name: 'Mohan Rao', spend: '₹42K', programs: 9 },
@@ -187,8 +211,16 @@ export class HomeAdminComponent {
   topTrainerProgramsChart: Partial<ApexOptions> = {};
   activityScatterChart: Partial<ApexOptions> = {};
 
+  snapshot?: AdminDashboardSnapshot;
+  loading = true;
+  error?: string;
+
   constructor() {
     this.initializeCharts();
+  }
+
+  ngOnInit(): void {
+    this.loadSnapshot();
   }
 
   getTrendLabel(change: number, trend: TrendDirection): string {
@@ -214,6 +246,22 @@ export class HomeAdminComponent {
 
   setTabFilter(tab: AnalyticsTab, filterKey: string) {
     this.activeTabFilters[tab] = filterKey;
+  }
+
+  setReportFilter(filterKey: string) {
+    if (this.selectedReportFilter === filterKey) {
+      return;
+    }
+    this.selectedReportFilter = filterKey;
+    this.loadSnapshot();
+  }
+
+  setDateRange(rangeKey: string) {
+    if (this.activeDateRange === rangeKey) {
+      return;
+    }
+    this.activeDateRange = rangeKey;
+    this.loadSnapshot();
   }
 
   private initializeCharts(): void {
@@ -498,5 +546,202 @@ export class HomeAdminComponent {
   private buildHeatmapRow(values: number[]) {
     const slots = ['6 AM', '9 AM', '12 PM', '3 PM', '6 PM'];
     return values.map((value, index) => ({ x: slots[index], y: value }));
+  }
+
+  private loadSnapshot(): void {
+    this.loading = true;
+    this.error = undefined;
+    this._adminService.getDashboardSnapshot(this.getSnapshotFilters()).subscribe({
+      next: ({ data }) => {
+        this.applySnapshot(data);
+        this.loading = false;
+      },
+      error: () => {
+        this.error = 'Unable to load dashboard data';
+        this.loading = false;
+      },
+    });
+  }
+
+  private getSnapshotFilters(): { scope: AdminReportScope; range: AdminRangeFilter } {
+    return {
+      scope: this.selectedReportFilter as AdminReportScope,
+      range: this.activeDateRange as AdminRangeFilter,
+    };
+  }
+
+  private applySnapshot(snapshot: AdminDashboardSnapshot): void {
+    this.snapshot = snapshot;
+    this.kpiCards = snapshot.kpis.map((card) => ({
+      title: card.title,
+      value: this.formatMetric(card.icon, card.value),
+      change: card.change,
+      helper: card.helper,
+      trend: card.trend,
+      icon: card.icon,
+      accent: card.accent,
+    }));
+
+    this.trainerLeaderboard = snapshot.people.trainerLeaderboard.map((entry) => ({
+      name: entry.name,
+      value: `₹${this.formatNumber(entry.value)}`,
+      helper: entry.helper,
+      percent: entry.percent,
+    }));
+
+    this.userActivityLeaders = snapshot.people.activityLeaders.map((user) => ({
+      name: user.name,
+      sessions: user.sessions,
+      streak: user.streak,
+    }));
+
+    this.purchasingLeaders = snapshot.people.purchasingLeaders.map((user) => ({
+      name: user.name,
+      spend: `₹${this.formatNumber(user.spend)}`,
+      programs: user.programs,
+    }));
+
+    this.buildSalesCharts(snapshot);
+    this.buildBookingCharts(snapshot);
+    this.buildRevenueCharts(snapshot);
+    this.buildProgramCharts(snapshot);
+    this.buildPeopleCharts(snapshot);
+  }
+
+  private buildSalesCharts(snapshot: AdminDashboardSnapshot): void {
+    const sales = snapshot.sales;
+    this.monthlySalesTrendChart = {
+      ...this.monthlySalesTrendChart,
+      series: [{ name: 'Monthly Sales', data: sales.monthlyTrend.values }],
+      xaxis: { ...this.monthlySalesTrendChart.xaxis, categories: sales.monthlyTrend.categories },
+    };
+
+    this.totalSalesAreaChart = {
+      ...this.totalSalesAreaChart,
+      series: [
+        { name: sales.totalsVsProjection.primaryLabel, data: sales.totalsVsProjection.primary },
+        { name: sales.totalsVsProjection.secondaryLabel, data: sales.totalsVsProjection.secondary },
+      ],
+      xaxis: { ...this.totalSalesAreaChart.xaxis, categories: sales.totalsVsProjection.categories },
+    };
+
+    this.programSalesBarChart = {
+      ...this.programSalesBarChart,
+      series: [{ name: 'Sales', data: sales.programSales.values }],
+      xaxis: { ...this.programSalesBarChart.xaxis, categories: sales.programSales.labels },
+    };
+
+    this.categorySalesDonutChart = {
+      ...this.categorySalesDonutChart,
+      series: sales.categoryMix.values,
+      labels: sales.categoryMix.labels,
+    };
+  }
+
+  private buildBookingCharts(snapshot: AdminDashboardSnapshot): void {
+    const bookingSnapshot = snapshot.bookings;
+    this.bookingsHeatmapChart = {
+      ...this.bookingsHeatmapChart,
+      series: bookingSnapshot.heatmap.map((day) => ({
+        name: day.day,
+        data: day.slots.map((slot) => ({ x: slot.label, y: slot.value })),
+      })),
+    };
+
+    this.bookingVolumeChart = {
+      ...this.bookingVolumeChart,
+      series: [
+        { name: bookingSnapshot.volume.primaryLabel, data: bookingSnapshot.volume.primary },
+        { name: bookingSnapshot.volume.secondaryLabel, data: bookingSnapshot.volume.secondary },
+      ],
+      xaxis: { ...this.bookingVolumeChart.xaxis, categories: bookingSnapshot.volume.categories },
+    };
+
+    this.bookingFunnelChart = {
+      ...this.bookingFunnelChart,
+      series: [{ name: 'Users', data: bookingSnapshot.funnel.values }],
+      xaxis: { ...this.bookingFunnelChart.xaxis, categories: bookingSnapshot.funnel.labels },
+    };
+  }
+
+  private buildRevenueCharts(snapshot: AdminDashboardSnapshot): void {
+    const revenue = snapshot.revenue;
+    this.revenueSplitChart = {
+      ...this.revenueSplitChart,
+      series: revenue.splitByQuarter.series,
+      xaxis: { ...this.revenueSplitChart.xaxis, categories: revenue.splitByQuarter.categories },
+    };
+
+    this.trainerRevenueChart = {
+      ...this.trainerRevenueChart,
+      series: revenue.perTrainer.series,
+      xaxis: { ...this.trainerRevenueChart.xaxis, categories: revenue.perTrainer.categories },
+    };
+
+    this.revenueContributionChart = {
+      ...this.revenueContributionChart,
+      series: revenue.byCategory.values,
+      labels: revenue.byCategory.labels,
+    };
+  }
+
+  private buildProgramCharts(snapshot: AdminDashboardSnapshot): void {
+    const programs = snapshot.programs;
+    this.programStatusChart = {
+      ...this.programStatusChart,
+      series: programs.status.values,
+      labels: programs.status.labels,
+    };
+
+    this.programsPerTrainerChart = {
+      ...this.programsPerTrainerChart,
+      series: [{ name: 'Programs', data: programs.perTrainer.values }],
+      xaxis: { ...this.programsPerTrainerChart.xaxis, categories: programs.perTrainer.labels },
+    };
+
+    this.programPopularityChart = {
+      ...this.programPopularityChart,
+      series: [{ name: 'Enrollments', data: programs.popularity.values }],
+      xaxis: { ...this.programPopularityChart.xaxis, categories: programs.popularity.labels },
+    };
+
+    this.fitnessCategoryChart = {
+      ...this.fitnessCategoryChart,
+      series: programs.categoryContribution.values,
+      labels: programs.categoryContribution.labels,
+    };
+  }
+
+  private buildPeopleCharts(snapshot: AdminDashboardSnapshot): void {
+    this.topTrainerProgramsChart = {
+      ...this.topTrainerProgramsChart,
+      series: [{ name: 'Revenue', data: snapshot.revenue.perTrainer.series[0]?.data ?? [] }],
+      xaxis: { ...this.topTrainerProgramsChart.xaxis, categories: snapshot.revenue.perTrainer.categories },
+    };
+
+    this.activityScatterChart = {
+      ...this.activityScatterChart,
+      series: [
+        {
+          name: 'Users',
+          data: snapshot.people.activityVsSpend.map((point) => [point.sessions, point.spend]),
+        },
+      ],
+    };
+  }
+
+  private formatNumber(value: number): string {
+    return new Intl.NumberFormat('en-IN').format(value);
+  }
+
+  private formatMetric(icon: KpiCard['icon'], value: number): string {
+    if (icon === 'sales' || icon === 'revenue') {
+      return `₹${this.formatNumber(value)}`;
+    }
+    return this.formatNumber(value);
+  }
+
+  retryLoad(): void {
+    this.loadSnapshot();
   }
 }

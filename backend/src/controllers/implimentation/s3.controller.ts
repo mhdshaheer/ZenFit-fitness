@@ -14,7 +14,7 @@ export class FileController implements IFileController {
     @inject(TYPES.FileService) private readonly _fileService: IFileService,
     @inject(TYPES.ProfileService)
     private readonly _profileService: IProfileService
-  ) {}
+  ) { }
 
   async upload(req: Request, res: Response): Promise<void> {
     const { type } = req.body;

@@ -1,6 +1,7 @@
 export const AdminRoutes = {
   BASE: '/admin',
   USERS: '/users',
+  DASHBOARD: '/dashboard',
 
   USER_STATUS: (id: string) => `/users/${id}/status`,
 };

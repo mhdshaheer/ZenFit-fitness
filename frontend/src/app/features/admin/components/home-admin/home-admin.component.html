@@ -2,26 +2,26 @@
   <header class="dashboard-header">
     <div>
       <p class="dashboard-eyebrow">ZenFit Command Center</p>
-      <h1>Analytics Dashboard</h1>
-      <p class="dashboard-subtitle">Stay ahead of revenue, bookings, trainers, and user health.</p>
-    </div>
-    <div class="header-actions">
-      <button class="ghost-action">Export report</button>
-      <button class="primary-action">Schedule briefing</button>
+      <h1>Dashboard</h1>
     </div>
   </header>
 
   <main class="dashboard-main">
-    <nav class="tab-bar" role="tablist">
-      @for (tab of tabs; track tab.key) {
-      <button type="button" role="tab" class="tab-chip" [class.tab-chip--active]="activeTab === tab.key"
-        (click)="setActiveTab(tab.key)">
-        <span>{{ tab.label }}</span>
-        <small>{{ tab.helper }}</small>
-      </button>
-      }
-    </nav>
-
+    @if (loading) {
+    <section class="dashboard-state" aria-live="polite">
+      <div class="dashboard-state__spinner" aria-hidden="true"></div>
+      <p class="dashboard-state__title">Loading insights</p>
+      <p class="dashboard-state__body">Crunching program, booking, and revenue signals…</p>
+    </section>
+    }
+    @else if (error) {
+    <section class="dashboard-state" role="alert">
+      <p class="dashboard-state__title">We couldn't load the dashboard</p>
+      <p class="dashboard-state__body">{{ error }}. Please try again in a moment.</p>
+      <button type="button" class="state-button" (click)="retryLoad()">Retry</button>
+    </section>
+    }
+    @else {
     <section class="kpi-grid">
       @for (card of kpiCards; track trackByTitle($index, card)) {
       <article class="kpi-card" [ngClass]="{ 'kpi-card--accent': card.accent === 'dark' }">
@@ -45,6 +45,34 @@
       </article>
       }
     </section>
+
+    <div class="report-controls">
+      <div class="control-group" role="group" aria-label="Report filter">
+        @for (filter of reportFilters; track filter.key) {
+        <button type="button" class="filter-chip" [class.filter-chip--active]="selectedReportFilter === filter.key"
+          (click)="setReportFilter(filter.key)">
+          {{ filter.label }}
+        </button>
+        }
+      </div>
+      <label class="date-range" aria-label="Date range">
+        <span>Range</span>
+        <select [ngModel]="activeDateRange" (ngModelChange)="setDateRange($event)">
+          @for (range of reportDateRanges; track range.key) {
+          <option [value]="range.key">{{ range.label }}</option>
+          }
+        </select>
+      </label>
+    </div>
+
+    <nav class="tab-bar" role="tablist">
+      @for (tab of tabs; track tab.key) {
+      <button type="button" role="tab" class="tab-chip" [class.tab-chip--active]="activeTab === tab.key"
+        (click)="setActiveTab(tab.key)">
+        <span>{{ tab.label }}</span>
+      </button>
+      }
+    </nav>
 
     @if (activeTab === 'sales') {
     <section class="module" role="tabpanel">
@@ -101,6 +129,51 @@
         </article>
       </div>
     </section>
+    <section class="module" role="region" aria-label="Revenue analytics">
+      <div class="module__head">
+        <div>
+          <p class="module__eyebrow">Revenue analytics</p>
+          <h2>Admin & Trainer earnings</h2>
+        </div>
+        <span class="module__helper">Quarterly split</span>
+      </div>
+      <div class="module__filters" role="group" aria-label="Revenue filters">
+        @for (filter of tabFilters['revenue']; track filter.key) {
+        <button type="button" class="filter-chip"
+          [class.filter-chip--active]="activeTabFilters['revenue'] === filter.key"
+          (click)="setTabFilter('revenue', filter.key)">
+          {{ filter.label }}
+        </button>
+        }
+      </div>
+      <div class="module-grid module-grid--revenue">
+        <article class="panel">
+          <div class="panel__title">Admin vs Trainer Split</div>
+          <apx-chart class="chart" [series]="revenueSplitChart.series!" [chart]="revenueSplitChart.chart!"
+            [plotOptions]="revenueSplitChart.plotOptions!" [colors]="revenueSplitChart.colors!"
+            [dataLabels]="revenueSplitChart.dataLabels!" [xaxis]="revenueSplitChart.xaxis!"
+            [legend]="revenueSplitChart.legend!" [grid]="revenueSplitChart.grid!"
+            [tooltip]="revenueSplitChart.tooltip!">
+          </apx-chart>
+        </article>
+        <article class="panel">
+          <div class="panel__title">Revenue per Trainer</div>
+          <apx-chart class="chart" [series]="trainerRevenueChart.series!" [chart]="trainerRevenueChart.chart!"
+            [plotOptions]="trainerRevenueChart.plotOptions!" [colors]="trainerRevenueChart.colors!"
+            [dataLabels]="trainerRevenueChart.dataLabels!" [xaxis]="trainerRevenueChart.xaxis!"
+            [legend]="trainerRevenueChart.legend!" [grid]="trainerRevenueChart.grid!">
+          </apx-chart>
+        </article>
+        <article class="panel">
+          <div class="panel__title">Revenue by Category</div>
+          <apx-chart class="chart" [series]="revenueContributionChart.series!" [chart]="revenueContributionChart.chart!"
+            [labels]="revenueContributionChart.labels!" [plotOptions]="revenueContributionChart.plotOptions!"
+            [colors]="revenueContributionChart.colors!" [legend]="revenueContributionChart.legend!"
+            [dataLabels]="revenueContributionChart.dataLabels!">
+          </apx-chart>
+        </article>
+      </div>
+    </section>
     }
 
     @if (activeTab === 'bookings') {
@@ -143,54 +216,6 @@
             [plotOptions]="bookingFunnelChart.plotOptions!" [colors]="bookingFunnelChart.colors!"
             [dataLabels]="bookingFunnelChart.dataLabels!" [xaxis]="bookingFunnelChart.xaxis!"
             [grid]="bookingFunnelChart.grid!">
-          </apx-chart>
-        </article>
-      </div>
-    </section>
-    }
-
-    @if (activeTab === 'revenue') {
-    <section class="module" role="tabpanel">
-      <div class="module__head">
-        <div>
-          <p class="module__eyebrow">Revenue analytics</p>
-          <h2>Admin & Trainer earnings</h2>
-        </div>
-        <span class="module__helper">Quarterly split</span>
-      </div>
-      <div class="module__filters" role="group" aria-label="Revenue filters">
-        @for (filter of tabFilters['revenue']; track filter.key) {
-        <button type="button" class="filter-chip"
-          [class.filter-chip--active]="activeTabFilters['revenue'] === filter.key"
-          (click)="setTabFilter('revenue', filter.key)">
-          {{ filter.label }}
-        </button>
-        }
-      </div>
-      <div class="module-grid module-grid--revenue">
-        <article class="panel">
-          <div class="panel__title">Admin vs Trainer Split</div>
-          <apx-chart class="chart" [series]="revenueSplitChart.series!" [chart]="revenueSplitChart.chart!"
-            [plotOptions]="revenueSplitChart.plotOptions!" [colors]="revenueSplitChart.colors!"
-            [dataLabels]="revenueSplitChart.dataLabels!" [xaxis]="revenueSplitChart.xaxis!"
-            [legend]="revenueSplitChart.legend!" [grid]="revenueSplitChart.grid!"
-            [tooltip]="revenueSplitChart.tooltip!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Revenue per Trainer</div>
-          <apx-chart class="chart" [series]="trainerRevenueChart.series!" [chart]="trainerRevenueChart.chart!"
-            [plotOptions]="trainerRevenueChart.plotOptions!" [colors]="trainerRevenueChart.colors!"
-            [dataLabels]="trainerRevenueChart.dataLabels!" [xaxis]="trainerRevenueChart.xaxis!"
-            [legend]="trainerRevenueChart.legend!" [grid]="trainerRevenueChart.grid!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Revenue by Category</div>
-          <apx-chart class="chart" [series]="revenueContributionChart.series!" [chart]="revenueContributionChart.chart!"
-            [labels]="revenueContributionChart.labels!" [plotOptions]="revenueContributionChart.plotOptions!"
-            [colors]="revenueContributionChart.colors!" [legend]="revenueContributionChart.legend!"
-            [dataLabels]="revenueContributionChart.dataLabels!">
           </apx-chart>
         </article>
       </div>
@@ -354,6 +379,6 @@
       </div>
     </section>
     }
-
+    }
   </main>
 </div>

@@ -113,6 +113,10 @@ export class BookingRepository
       .lean();
   }
 
+  async getAllBookings(): Promise<IBooking[]> {
+    return this.model.find().populate('userId', 'fullName email').lean();
+  }
+
   async getTrainerBookings(trainerId: string): Promise<any[]> {
     const pipeline: any[] = [
       {

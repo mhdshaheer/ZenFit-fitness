@@ -24,6 +24,8 @@ export interface IBooking extends Document {
   day: string;
   status: "booked" | "cancelled" | "completed";
   snapshot: IBookingSnapshot;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const BookingSchema = new Schema<IBooking>(

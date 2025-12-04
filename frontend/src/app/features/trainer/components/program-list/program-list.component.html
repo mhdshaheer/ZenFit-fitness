@@ -2,7 +2,7 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <!-- Header Section -->
     <div class="mb-8">
-      <div class="flex items-center justify-between mb-6">
+      <div class="flex items-center justify-between mb-6 gap-4">
         <div>
           <h1 class="text-2xl font-bold text-gray-900 mb-2">
             My Training Programs
@@ -11,6 +11,13 @@
             Manage and monitor your fitness programs
           </p>
         </div>
+        <button type="button" (click)="onCreateProgram()"
+          class="inline-flex items-center px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-green-600 to-emerald-500 shadow-md shadow-green-200 hover:from-green-700 hover:to-emerald-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-500">
+          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+          </svg>
+          Create Program
+        </button>
       </div>
 
       <!-- Approval Tabs -->
@@ -44,125 +51,125 @@
         </div>
       </div>
 
-      
 
-    <!-- Search and Filter Section -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-      <h3 class="text-lg font-semibold text-gray-900 mb-4">Search & Filter Programs</h3>
-      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <!-- Search Input -->
-        <div>
-          <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search</label>
-          <input id="search" type="text" [(ngModel)]="filters.search" (input)="onRealTimeSearch()"
-            placeholder="Search by title or description"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-        </div>
 
-        <!-- Category Filter -->
-        <div>
-          <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-          <select id="category" [(ngModel)]="filters.category" (change)="onRealTimeSearch()"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            <option value="">All Categories</option>
-            @if (categories.length === 0) {
-            <option disabled>Loading categories...</option>
-            }
-            @for (category of categories; track category) {
-            <option [value]="category._id">{{ category.name || 'Unnamed Category' }}</option>
-            }
-          </select>
-        </div>
+      <!-- Search and Filter Section -->
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
+        <h3 class="text-lg font-semibold text-gray-900 mb-4">Search & Filter Programs</h3>
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <!-- Search Input -->
+          <div>
+            <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search</label>
+            <input id="search" type="text" [(ngModel)]="filters.search" (input)="onRealTimeSearch()"
+              placeholder="Search by title or description"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
+          </div>
 
-        <!-- Difficulty Filter -->
-        <div>
-          <label for="difficulty" class="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
-          <select id="difficulty" [(ngModel)]="filters.difficultyLevel" (change)="onRealTimeSearch()"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            <option value="">All Levels</option>
-            <option value="Beginner">Beginner</option>
-            <option value="Intermediate">Intermediate</option>
-            <option value="Advanced">Advanced</option>
-          </select>
-        </div>
+          <!-- Category Filter -->
+          <div>
+            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
+            <select id="category" [(ngModel)]="filters.category" (change)="onRealTimeSearch()"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="">All Categories</option>
+              @if (categories.length === 0) {
+              <option disabled>Loading categories...</option>
+              }
+              @for (category of categories; track category) {
+              <option [value]="category._id">{{ category.name || 'Unnamed Category' }}</option>
+              }
+            </select>
+          </div>
 
-        <!-- Status Filter -->
-        <div>
-          <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-          <select id="status" [(ngModel)]="filters.status" (change)="onRealTimeSearch()"
-            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-            <option value="">All Status</option>
-            <option value="active">Active</option>
-            <option value="draft">Draft</option>
-            <option value="pending">Pending Approval</option>
-          </select>
+          <!-- Difficulty Filter -->
+          <div>
+            <label for="difficulty" class="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
+            <select id="difficulty" [(ngModel)]="filters.difficultyLevel" (change)="onRealTimeSearch()"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="">All Levels</option>
+              <option value="Beginner">Beginner</option>
+              <option value="Intermediate">Intermediate</option>
+              <option value="Advanced">Advanced</option>
+            </select>
+          </div>
+
+          <!-- Status Filter -->
+          <div>
+            <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
+            <select id="status" [(ngModel)]="filters.status" (change)="onRealTimeSearch()"
+              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              <option value="">All Status</option>
+              <option value="active">Active</option>
+              <option value="draft">Draft</option>
+              <option value="pending">Pending Approval</option>
+            </select>
+          </div>
         </div>
       </div>
-    </div>
 
-    <!-- Loading State -->
-    @if (loading) {
-    <div class="flex justify-center items-center py-12">
-      <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-    </div>
-    }
+      <!-- Loading State -->
+      @if (loading) {
+      <div class="flex justify-center items-center py-12">
+        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+      }
 
-    <!-- Programs Grid -->
-    @if (!loading) {
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      @for(program of fitnessPrograms; track program){
-      <app-program-card [program]="program" [button2Labal]="'Users'" (editProgram)="onProgramSlot($event)"
-        (viewProgram)="onViewProgram($event)"></app-program-card>
+      <!-- Programs Grid -->
+      @if (!loading) {
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        @for(program of fitnessPrograms; track program){
+        <app-program-card [program]="program" [button2Labal]="'Users'" (editProgram)="onProgramSlot($event)"
+          (viewProgram)="onViewProgram($event)"></app-program-card>
+        }
+      </div>
+
+      <!-- Empty State -->
+      @if (fitnessPrograms.length === 0) {
+      <div class="text-center py-12">
+        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
+          </path>
+        </svg>
+        <h3 class="mt-2 text-sm font-medium text-gray-900">No programs found</h3>
+        <p class="mt-1 text-sm text-gray-500">
+          You don't have any {{ activeApprovalTab.toLowerCase() }} programs yet. Try switching the tab or adjusting your
+          search filters.
+        </p>
+      </div>
+      }
+
+      <!-- Pagination -->
+      @if (pagination.totalPages > 1) {
+      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-8">
+        <div class="flex items-center justify-between">
+          <div class="text-sm text-gray-700">
+            Showing {{ (pagination.page - 1) * pagination.limit + 1 }} to
+            {{ Math.min(pagination.page * pagination.limit, pagination.total) }} of
+            {{ pagination.total }} programs
+          </div>
+          <div class="flex space-x-2">
+            <button (click)="onPageChange(pagination.page - 1)" [disabled]="pagination.page === 1"
+              class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              Previous
+            </button>
+
+            @for (page of getPaginationArray(); track page) {
+            <button (click)="page !== -1 && onPageChange(page)" [class.bg-blue-600]="page === pagination.page"
+              [class.text-white]="page === pagination.page" [class.text-gray-500]="page !== pagination.page"
+              [disabled]="page === -1"
+              class="px-3 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 disabled:cursor-default">
+              {{ page === -1 ? '...' : page }}
+            </button>
+            }
+
+            <button (click)="onPageChange(pagination.page + 1)" [disabled]="pagination.page === pagination.totalPages"
+              class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
+              Next
+            </button>
+          </div>
+        </div>
+      </div>
+      }
       }
     </div>
-
-    <!-- Empty State -->
-    @if (fitnessPrograms.length === 0) {
-    <div class="text-center py-12">
-      <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-        </path>
-      </svg>
-      <h3 class="mt-2 text-sm font-medium text-gray-900">No programs found</h3>
-      <p class="mt-1 text-sm text-gray-500">
-        You don't have any {{ activeApprovalTab.toLowerCase() }} programs yet. Try switching the tab or adjusting your
-        search filters.
-      </p>
-    </div>
-    }
-
-    <!-- Pagination -->
-    @if (pagination.totalPages > 1) {
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-8">
-      <div class="flex items-center justify-between">
-        <div class="text-sm text-gray-700">
-          Showing {{ (pagination.page - 1) * pagination.limit + 1 }} to
-          {{ Math.min(pagination.page * pagination.limit, pagination.total) }} of
-          {{ pagination.total }} programs
-        </div>
-        <div class="flex space-x-2">
-          <button (click)="onPageChange(pagination.page - 1)" [disabled]="pagination.page === 1"
-            class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-            Previous
-          </button>
-
-          @for (page of getPaginationArray(); track page) {
-          <button (click)="page !== -1 && onPageChange(page)" [class.bg-blue-600]="page === pagination.page"
-            [class.text-white]="page === pagination.page" [class.text-gray-500]="page !== pagination.page"
-            [disabled]="page === -1"
-            class="px-3 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 disabled:cursor-default">
-            {{ page === -1 ? '...' : page }}
-          </button>
-          }
-
-          <button (click)="onPageChange(pagination.page + 1)" [disabled]="pagination.page === pagination.totalPages"
-            class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-            Next
-          </button>
-        </div>
-      </div>
-    </div>
-    }
-    }
   </div>
-</div>
