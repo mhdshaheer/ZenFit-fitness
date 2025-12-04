@@ -7,7 +7,7 @@
 }
 
 .info-section {
-  background: linear-gradient(135deg, #065f46, #047857);
+  background: linear-gradient(135deg, #2f3241, #1f2230);
 }
 
 @keyframes float {
@@ -20,7 +20,7 @@
 }
 
 .gradient-text {
-  background: linear-gradient(135deg, #059669, #047857);
+  background: linear-gradient(135deg, #2f3241, #494d63);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

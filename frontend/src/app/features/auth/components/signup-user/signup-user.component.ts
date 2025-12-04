@@ -1,3 +1,4 @@
+import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { toSignal } from '@angular/core/rxjs-interop';
 import {
@@ -20,7 +21,7 @@ import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
 @Component({
   selector: 'app-signup-user',
   standalone: true,
-  imports: [ReactiveFormsModule, SharedFormComponent],
+  imports: [CommonModule, ReactiveFormsModule, SharedFormComponent],
   templateUrl: './signup-user.component.html',
   styleUrl: './signup-user.component.css',
 })
