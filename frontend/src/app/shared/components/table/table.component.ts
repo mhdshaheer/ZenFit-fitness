@@ -13,11 +13,10 @@ import {
   TableAction,
   TableColumn,
 } from '../../../interface/shared.interface';
-import { ApprovalStatusColorPipe } from '../../pipes/approval-status-color.pipe';
 
 @Component({
   selector: 'app-table',
-  imports: [CommonModule, FormsModule, ApprovalStatusColorPipe],
+  imports: [CommonModule, FormsModule],
   templateUrl: './table.component.html',
   styleUrl: './table.component.css',
 })
@@ -122,46 +121,59 @@ export class TableComponent {
   getCellClass(type?: string): string {
     switch (type) {
       case 'email':
-        return 'text-blue-600';
+        return 'cell--email';
       case 'status':
-        return 'text-center';
+        return 'cell--status';
+      case 'date':
+        return 'cell--date';
       default:
-        return 'text-gray-900';
+        return 'cell--text';
     }
   }
 
   getStatusClass(status: string): string {
     switch (status?.toLowerCase()) {
       case 'active':
-        return 'bg-green-100 text-green-800';
+      case 'available':
+        return 'status-pill--success';
       case 'inactive':
       case 'blocked':
-        return 'bg-red-100 text-red-800';
+        return 'status-pill--danger';
       case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'available':
-        return 'bg-green-100 text-green-800';
+        return 'status-pill--warning';
       case 'busy':
-        return 'bg-orange-100 text-orange-800';
+        return 'status-pill--info';
       default:
-        return 'bg-gray-100 text-gray-800';
+        return 'status-pill--muted';
+    }
+  }
+
+  getApprovalClass(status: string): string {
+    switch (status?.toLowerCase()) {
+      case 'approved':
+        return 'approval-chip--approved';
+      case 'rejected':
+        return 'approval-chip--rejected';
+      case 'pending':
+      default:
+        return 'approval-chip--pending';
     }
   }
 
   getActionClass(color: string): string {
     switch (color) {
       case 'blue':
-        return 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500';
+        return 'action-row__btn--blue';
       case 'green':
-        return 'bg-green-600 hover:bg-green-700 focus:ring-green-500';
+        return 'action-row__btn--green';
       case 'red':
-        return 'bg-red-600 hover:bg-red-700 focus:ring-red-500';
+        return 'action-row__btn--red';
       case 'yellow':
-        return 'bg-yellow-600 hover:bg-yellow-700 focus:ring-yellow-500';
+        return 'action-row__btn--yellow';
       case 'purple':
-        return 'bg-purple-600 hover:bg-purple-700 focus:ring-purple-500';
+        return 'action-row__btn--purple';
       default:
-        return 'bg-gray-600 hover:bg-gray-700 focus:ring-gray-500';
+        return 'action-row__btn--gray';
     }
   }
 

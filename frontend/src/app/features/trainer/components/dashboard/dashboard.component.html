@@ -1,82 +1,167 @@
-<div class="min-h-screen bg-gray-50">
-  <!-- Header -->
-  <header class="bg-white shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-      >
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
-          <p class="text-sm text-gray-500 mt-1">
-            Welcome back! Here's your overview
-          </p>
-        </div>
-      </div>
+<div class="trainer-dashboard">
+  <header class="trainer-header">
+    <div>
+      <p class="eyebrow">Trainer Console</p>
+      <h1>Performance Overview</h1>
+      <p class="subtitle">Daily signal across revenue, sessions, and client impact.</p>
     </div>
+    <button class="primary-action">Share weekly snapshot</button>
   </header>
 
-  <!-- Main Content -->
-  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-    <!-- Stats Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-      <!-- Total Revenue Card -->
-      <div
-        class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
-      >
-        <div class="flex items-center justify-between mb-4">
-          <div class="p-3 rounded-lg bg-green-100">
-            <svg
-              class="w-6 h-6 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
-              <polyline points="17 6 23 6 23 12"></polyline>
-            </svg>
-          </div>
+  <main class="trainer-main">
+    <section class="kpi-grid">
+      @for (card of kpiCards; track card.label) {
+      <article class="kpi-card" [class.kpi-card--warning]="card.trend === 'down'">
+        <div class="kpi-icon">{{ card.icon }}</div>
+        <p class="kpi-label">{{ card.label }}</p>
+        <p class="kpi-value">{{ card.value }}</p>
+        <div class="kpi-meta" [class.kpi-meta--down]="card.trend === 'down'">
+          <span>{{ card.trend === 'down' ? '-' : '+' }}{{ card.change }}%</span>
+          <small>{{ card.helper }}</small>
         </div>
-        <h3 class="text-gray-600 text-sm font-medium mb-1">Total Revenue</h3>
-        <p class="text-2xl font-bold text-gray-900">₹5473</p>
-      </div>
+      </article>
+      }
+    </section>
 
-      <!-- Total Users Card -->
-      <div
-        class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
-      >
-        <div class="flex items-center justify-between mb-4">
-          <div class="p-3 rounded-lg bg-blue-100">
-            <svg
-              class="w-6 h-6 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
-              ></path>
-              <circle cx="9" cy="7" r="4"></circle>
-              <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-              <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
+    <section class="module">
+      <div class="module__head">
+        <div>
+          <p class="module__eyebrow">Revenue trend</p>
+          <h2>Trainer earnings</h2>
+        </div>
+        <div class="module__filters" role="group" aria-label="Revenue filters">
+          @for (filter of revenueFilters; track filter.key) {
+          <button type="button" class="filter-chip" [class.filter-chip--active]="activeRevenueFilter === filter.key"
+            (click)="setRevenueFilter(filter.key)">
+            {{ filter.label }}
+          </button>
+          }
+        </div>
+      </div>
+      <apx-chart class="chart" [series]="revenueTrendChart.series!" [chart]="revenueTrendChart.chart!"
+        [stroke]="revenueTrendChart.stroke!" [colors]="revenueTrendChart.colors!" [fill]="revenueTrendChart.fill!"
+        [dataLabels]="revenueTrendChart.dataLabels!" [xaxis]="revenueTrendChart.xaxis!"
+        [yaxis]="revenueTrendChart.yaxis!" [tooltip]="revenueTrendChart.tooltip!">
+      </apx-chart>
+    </section>
+
+    <div class="module-grid">
+      <section class="module">
+        <div class="module__head">
+          <div>
+            <p class="module__eyebrow">Session health</p>
+            <h2>Scheduled vs completed</h2>
+          </div>
+          <div class="module__filters" role="group" aria-label="Session filters">
+            @for (filter of sessionFilters; track filter.key) {
+            <button type="button" class="filter-chip" [class.filter-chip--active]="activeSessionFilter === filter.key"
+              (click)="setSessionFilter(filter.key)">
+              {{ filter.label }}
+            </button>
+            }
           </div>
         </div>
-        <h3 class="text-gray-600 text-sm font-medium mb-1">Total Users</h3>
-        <p class="text-2xl font-bold text-gray-900">4</p>
-      </div>
+        <apx-chart class="chart" [series]="sessionVolumeChart.series!" [chart]="sessionVolumeChart.chart!"
+          [plotOptions]="sessionVolumeChart.plotOptions!" [colors]="sessionVolumeChart.colors!"
+          [xaxis]="sessionVolumeChart.xaxis!" [legend]="sessionVolumeChart.legend!"
+          [tooltip]="sessionVolumeChart.tooltip!">
+        </apx-chart>
+      </section>
+
+      <section class="module">
+        <div class="module__head">
+          <div>
+            <p class="module__eyebrow">Program mix</p>
+            <h2>Top performing formats</h2>
+          </div>
+          <span class="module__helper">Based on enrollment share</span>
+        </div>
+        <apx-chart class="chart" [series]="programPerformanceChart.series!" [chart]="programPerformanceChart.chart!"
+          [labels]="programPerformanceChart.labels!" [plotOptions]="programPerformanceChart.plotOptions!"
+          [colors]="programPerformanceChart.colors!" [legend]="programPerformanceChart.legend!">
+        </apx-chart>
+      </section>
     </div>
 
-    <zenfit-chart
-      [data]="currentRevenueData"
-      [filter]="revenueFilter"
-      (filterChange)="handleRevenueFilterChange($event)"
-    ></zenfit-chart>
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
-      <zenfit-progress-bar [categories]="topCategories"></zenfit-progress-bar>
-      <zenfit-list [courses]="topCourses"></zenfit-list>
+    <div class="module-grid">
+      <section class="module">
+        <div class="module__head">
+          <div>
+            <p class="module__eyebrow">Booking pulse</p>
+            <h2>Requests vs confirmations</h2>
+          </div>
+          <div class="module__filters" role="group" aria-label="Booking filters">
+            @for (filter of bookingFilters; track filter.key) {
+            <button type="button" class="filter-chip" [class.filter-chip--active]="activeBookingFilter === filter.key"
+              (click)="setBookingFilter(filter.key)">
+              {{ filter.label }}
+            </button>
+            }
+          </div>
+        </div>
+        <apx-chart class="chart" [series]="bookingDemandChart.series!" [chart]="bookingDemandChart.chart!"
+          [stroke]="bookingDemandChart.stroke!" [colors]="bookingDemandChart.colors!" [fill]="bookingDemandChart.fill!"
+          [dataLabels]="bookingDemandChart.dataLabels!" [xaxis]="bookingDemandChart.xaxis!"
+          [legend]="bookingDemandChart.legend!" [tooltip]="bookingDemandChart.tooltip!">
+        </apx-chart>
+      </section>
+
+      <section class="module">
+        <div class="module__head">
+          <div>
+            <p class="module__eyebrow">Conversion quality</p>
+            <h2>Booking outcomes</h2>
+          </div>
+          <span class="module__helper">Share of request status</span>
+        </div>
+        <apx-chart class="chart" [series]="bookingConversionChart.series!" [chart]="bookingConversionChart.chart!"
+          [labels]="bookingConversionChart.labels!" [plotOptions]="bookingConversionChart.plotOptions!"
+          [colors]="bookingConversionChart.colors!" [dataLabels]="bookingConversionChart.dataLabels!"
+          [legend]="bookingConversionChart.legend!" [tooltip]="bookingConversionChart.tooltip!">
+        </apx-chart>
+      </section>
+    </div>
+
+    <div class="module-grid">
+      <section class="module">
+        <div class="module__head">
+          <div>
+            <p class="module__eyebrow">Client mission control</p>
+            <h2>Goal completion trend</h2>
+          </div>
+          <span class="module__helper">Active cohorts</span>
+        </div>
+        <apx-chart class="chart" [series]="clientGoalChart.series!" [chart]="clientGoalChart.chart!"
+          [stroke]="clientGoalChart.stroke!" [colors]="clientGoalChart.colors!"
+          [dataLabels]="clientGoalChart.dataLabels!" [xaxis]="clientGoalChart.xaxis!" [yaxis]="clientGoalChart.yaxis!">
+        </apx-chart>
+      </section>
+
+      <section class="module">
+        <div class="module__head">
+          <div>
+            <p class="module__eyebrow">Client leaderboard</p>
+            <h2>Consistency heroes</h2>
+          </div>
+          <span class="module__helper">Top sessions & completion</span>
+        </div>
+        <ul class="leaderboard">
+          @for (client of clientLeaderboard; track client.name) {
+          <li class="leaderboard__item">
+            <div>
+              <p class="leaderboard__name">{{ client.name }}</p>
+              <p class="leaderboard__helper">{{ client.focus }}</p>
+            </div>
+            <div class="leaderboard__meta">
+              <span>{{ client.sessions }} sessions</span>
+              <div class="leaderboard__bar">
+                <span [style.width.%]="client.completion"></span>
+              </div>
+            </div>
+          </li>
+          }
+        </ul>
+      </section>
     </div>
   </main>
 </div>

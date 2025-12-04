@@ -1,15 +1,19 @@
-import { Request, Response } from "express";
+import { Response } from "express";
 import { IMeetingController } from "../interface/meeting.controller.interface";
 import { IMeetingService } from "../../services/interface/meeting.service.interface";
 import { HttpStatus } from "../../const/statuscode.const";
 import { AppError } from "../../shared/utils/appError.util";
+import { AuthenticatedRequest } from "../../types/authenticated-request.type";
 
 export class MeetingController implements IMeetingController {
-  constructor(private _meetingService: IMeetingService) {}
+  constructor(private _meetingService: IMeetingService) { }
 
-  async createMeeting(req: Request, res: Response): Promise<Response<any>> {
+  async createMeeting(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<Response<any>> {
     const { slotId } = req.body;
-    const hostId = (req as any).user?.id;
+    const hostId = req.user?.id;
 
     if (!hostId) {
       throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
@@ -23,9 +27,12 @@ export class MeetingController implements IMeetingController {
     return res.status(HttpStatus.CREATED).json(result);
   }
 
-  async validateMeetingAccess(req: Request, res: Response): Promise<Response<any>> {
+  async validateMeetingAccess(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<Response<any>> {
     const { slotId, bookingId } = req.body;
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
 
     if (!userId) {
       throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
@@ -39,9 +46,12 @@ export class MeetingController implements IMeetingController {
     return res.status(HttpStatus.OK).json(validation);
   }
 
-  async joinMeeting(req: Request, res: Response): Promise<Response<any>> {
+  async joinMeeting(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<Response<any>> {
     const { meetingId, slotId } = req.body;
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
 
     if (!userId) {
       throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
@@ -55,9 +65,12 @@ export class MeetingController implements IMeetingController {
     return res.status(HttpStatus.OK).json(meeting);
   }
 
-  async endMeeting(req: Request, res: Response): Promise<Response<any>> {
+  async endMeeting(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<Response<any>> {
     const { meetingId } = req.params;
-    const hostId = (req as any).user?.id;
+    const hostId = req.user?.id;
 
     if (!hostId) {
       throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
@@ -67,9 +80,12 @@ export class MeetingController implements IMeetingController {
     return res.status(HttpStatus.OK).json({ message: "Meeting ended successfully" });
   }
 
-  async leaveMeeting(req: Request, res: Response): Promise<Response<any>> {
+  async leaveMeeting(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<Response<any>> {
     const { meetingId } = req.params;
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
 
     if (!userId) {
       throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);

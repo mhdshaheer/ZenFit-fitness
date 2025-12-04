@@ -120,11 +120,6 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
     },
     { label: 'Programs', route: '/trainer/programs', icon: 'fas fa-dumbbell' },
     {
-      label: 'Create Program',
-      route: '/trainer/program-create',
-      icon: 'fas fa-apple-alt',
-    },
-    {
       label: 'Purchased Programs',
       route: '/trainer/purchased-programs',
       icon: 'fas fa-users',

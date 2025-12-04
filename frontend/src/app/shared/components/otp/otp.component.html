@@ -1,24 +1,12 @@
 <!-- OTP Verification Template -->
-<div
-  class="min-h-screen flex items-center justify-center bg-gradient-to-br p-5"
-  [ngClass]="bgColor"
-  >
+<div class="min-h-screen flex items-center justify-center bg-gradient-to-br p-5" [ngClass]="bgColor">
   <div class="bg-white rounded-2xl p-10 shadow-2xl max-w-md w-full text-center">
     <!-- Header -->
     <div class="mb-8">
       <!-- Icon -->
-      <div
-        [ngClass]="bgColor"
-        class="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white"
-        >
-        <svg
-          width="48"
-          height="48"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          >
+      <div [ngClass]="bgColor"
+        class="w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full flex items-center justify-center mx-auto mb-6 text-white">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <path d="M14 9V5a3 3 0 0 0-6 0v4" />
           <rect x="2" y="9" width="20" height="12" rx="2" ry="2" />
           <circle cx="12" cy="15" r="1" />
@@ -38,32 +26,20 @@
       <!-- OTP Input Fields -->
       <div class="flex gap-3 justify-center mb-6">
         @for (digit of otpDigits; track digit; let i = $index) {
-          <input
-            type="text"
-            maxlength="1"
-            class="w-12 h-12 border-2 border-gray-200 rounded-lg text-center text-xl font-semibold text-gray-700 bg-gray-50 transition-all duration-200 focus:outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
-            autocomplete="off"
-            (input)="onInput($event, i)"
-            (keydown)="onKeyDown($event, i)"
-            #otpInput
-            />
+        <input type="text" maxlength="1"
+          class="w-12 h-12 border-2 border-gray-200 rounded-lg text-center text-xl font-semibold text-gray-700 bg-gray-50 transition-all duration-200 focus:outline-none focus:border-green-500 focus:bg-white focus:ring-4 focus:ring-green-100"
+          autocomplete="off" (input)="onInput($event, i)" (keydown)="onKeyDown($event, i)" #otpInput />
         }
       </div>
 
       <!-- Error Message (Hidden by default) -->
-      <div
-        class="hidden text-red-600 text-sm mb-4 p-2 bg-red-50 border border-red-200 rounded-lg"
-        >
+      <div class="hidden text-red-600 text-sm mb-4 p-2 bg-red-50 border border-red-200 rounded-lg">
         Invalid verification code. Please try again.
       </div>
 
       <!-- Verify Button -->
-      <button
-        [ngClass]="bgColor"
-        (click)="onSubmit()"
-        type="button"
-        class="w-full py-3.5 px-6 bg-gradient-to-r from-green-600 to-green-900 text-white rounded-lg font-semibold text-lg transition-all duration-200"
-        >
+      <button [ngClass]="bgColor" (click)="onSubmit()" type="button"
+        class="w-full py-3.5 px-6 bg-gradient-to-r from-green-600 to-green-900 text-white rounded-lg font-semibold text-lg transition-all duration-200">
         Verify Code
       </button>
 
@@ -73,26 +49,18 @@
         <p class="mb-2">
           Didn't receive the code?
           @if (timer > 0) {
-            <span
-              class="text-green-600 font-semibold"
-              [ngClass]="buttonColor"
-              >Resend in {{ timer }}s</span
-              >
-            }
-          </p>
-
-          <!-- Resend Button -->
-          @if (timer == 0) {
-            <button
-              type="button"
-              (click)="resendOtp()"
-              [ngClass]="textColor"
-              class="transition-colors text-green-600 font-semibold underline hover:text-green-700 duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-              Resend Code
-            </button>
+          <span class="text-green-600 font-semibold" [ngClass]="buttonColor">Resend in {{ timer }}s</span>
           }
-        </div>
-      </form>
-    </div>
+        </p>
+
+        <!-- Resend Button -->
+        @if (timer == 0) {
+        <button type="button" (click)="resendOtp()" [ngClass]="textColor"
+          class="transition-colors text-green-600 font-semibold underline hover:text-green-700 duration-200 disabled:opacity-60 disabled:cursor-not-allowed">
+          Resend Code
+        </button>
+        }
+      </div>
+    </form>
   </div>
+</div>

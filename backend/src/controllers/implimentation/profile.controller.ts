@@ -8,13 +8,14 @@ import { TYPES } from "../../shared/types/inversify.types";
 import { AppError } from "../../shared/utils/appError.util";
 import { UserDto } from "../../dtos/user.dtos";
 import { ILoggedUser } from "../../interfaces/user.interface";
+import { AuthenticatedRequest } from "../../types/authenticated-request.type";
 
 @injectable()
 export class ProfileController implements IProfileController {
   constructor(
     @inject(TYPES.ProfileService)
     private readonly _profileService: IProfileService
-  ) {}
+  ) { }
 
   async getUserByUserId(
     req: Request,
@@ -24,14 +25,23 @@ export class ProfileController implements IProfileController {
     const userData = await this._profileService.getProfile(userId);
     return res.status(HttpStatus.OK).json(userData);
   }
-  async getProfile(req: Request, res: Response): Promise<void> {
-    const userId = req.query.id || (req as any).user.id;
+  async getProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const requestedId = req.query.id as string | undefined;
+    const userId = requestedId || req.user?.id;
+
+    if (!userId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
+
     const profile = await this._profileService.getProfile(userId);
     res.status(HttpStatus.OK).json(profile);
   }
 
-  async updateProfile(req: Request, res: Response): Promise<void> {
-    const userId = (req as any).user.id;
+  async updateProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const profileData = req.body;
     const updatedProfile = await this._profileService.updateProfile(
       userId,
@@ -46,8 +56,11 @@ export class ProfileController implements IProfileController {
     res.status(HttpStatus.OK).json({ isVerified: resumeVerified });
   }
 
-  async changePassword(req: Request, res: Response): Promise<void> {
-    const userId = (req as any).user.id;
+  async changePassword(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const passwords = req.body;
 
     const updated = await this._profileService.changePassword(
@@ -68,10 +81,14 @@ export class ProfileController implements IProfileController {
   }
 
   async getCurrentUserId(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
   ): Promise<Response<ILoggedUser>> {
-    const user = (req as any).user;
+    const user = req.user;
+
+    if (!user) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
 
     return res.status(HttpStatus.OK).json({ id: user.id, role: user.role });
   }

@@ -18,11 +18,17 @@ export const sendOtpMail = async (to: string, otp: string): Promise<void> => {
     to,
     subject: "Your OTP for Account Verification",
     html: `
-      <div style="font-family: sans-serif;">
-        <h2>Hello 👋,</h2>
-        <p>Here is your OTP for verifying your account:</p>
-        <h1 style="color: green;">${otp}</h1>
-        <p>This OTP will expire in 5 minutes.</p>
+      <div style="font-family: 'Segoe UI', Arial, sans-serif; color: #0f172a; line-height: 1.6; max-width: 480px;">
+        <h2 style="margin-bottom: 8px;">ZenFit Verification Code</h2>
+        <p style="margin: 0 0 12px;">Hello,</p>
+        <p style="margin: 0 0 16px;">
+          Use the one-time passcode below to verify your account. For your security, the code expires in five minutes.
+        </p>
+        <p style="font-size: 32px; font-weight: 600; letter-spacing: 6px; margin: 24px 0; color: #111827;">
+          ${otp}
+        </p>
+        <p style="margin: 0 0 12px;">If you did not request this verification, you can safely ignore this email.</p>
+        <p style="margin: 0;">Regards,<br/>ZenFit Support</p>
       </div>
     `,
   };

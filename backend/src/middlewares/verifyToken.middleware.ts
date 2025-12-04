@@ -33,7 +33,7 @@ const authMiddleware = async (
         return;
       }
 
-      if (user.status == "blocked") {
+      if (user.status === "blocked") {
         res
           .status(HttpStatus.FORBIDDEN)
           .json({ message: HttpResponse.ACCESS_DENIED });

@@ -1,8 +1,9 @@
 import { Request, Response, NextFunction } from "express";
+import { AuthenticatedRequest } from "../../types/authenticated-request.type";
 
 export interface IFeedbackController {
   createOrUpdateFeedback(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response,
     next: NextFunction
   ): Promise<void>;
@@ -14,13 +15,13 @@ export interface IFeedbackController {
   ): Promise<void>;
 
   getFeedbacksBySlotId(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response,
     next: NextFunction
   ): Promise<void>;
 
   deleteFeedback(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response,
     next: NextFunction
   ): Promise<void>;

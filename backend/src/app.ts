@@ -28,6 +28,7 @@ import notificationRouter from "./routes/notification.routes";
 import chatRouter from "./routes/chat.routes";
 import meetingRouter from "./routes/meeting.route";
 import feedbackRouter from "./routes/feedback.routes";
+import trainerRouter from "./routes/trainer.routes";
 const app = express();
 app.use(
   cors({
@@ -71,6 +72,7 @@ app.use(API_ROUTES.PAYMENT, paymentRouter);
 app.use(API_ROUTES.SLOT_TEMPLATE, slotTemplateRouter);
 app.use(API_ROUTES.SLOT_INSTANCE, slotInstanceRouter);
 app.use(API_ROUTES.BOOKING, bookingRouter);
+app.use(API_ROUTES.TRAINER, trainerRouter);
 app.use(API_ROUTES.NOTIFICATION, notificationRouter);
 app.use(API_ROUTES.CHAT, chatRouter);
 app.use(API_ROUTES.MEETING, meetingRouter);

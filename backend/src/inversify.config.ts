@@ -33,10 +33,18 @@ import { IAuthService } from "./services/interface/auth.service.interface";
 import { IAuthController } from "./controllers/interface/auth.controller.interface";
 import { IAdminService } from "./services/interface/admin.service.interface";
 import { IAdminController } from "./controllers/interface/admin.controller.interface";
+import { IAdminDashboardService } from "./services/interface/adminDashboard.service.interface";
+import { AdminDashboardService } from "./services/implimentation/adminDashboard.service";
+import { IAdminDashboardController } from "./controllers/interface/adminDashboard.controller.interface";
+import { AdminDashboardController } from "./controllers/implimentation/adminDashboard.controller";
 import { IPaymentService } from "./services/interface/payment.service.interface";
 import { PaymentService } from "./services/implimentation/payment.service";
 import { IPaymentController } from "./controllers/interface/payment.controller.interface";
 import { PaymentController } from "./controllers/implimentation/payment.controller";
+import { ITrainerDashboardService } from "./services/interface/trainerDashboard.service.interface";
+import { TrainerDashboardService } from "./services/implimentation/trainerDashboard.service";
+import { ITrainerDashboardController } from "./controllers/interface/trainerDashboard.controller.interface";
+import { TrainerDashboardController } from "./controllers/implimentation/trainerDashboard.controller";
 import { IPaymentRepository } from "./repositories/interface/payment.repostitory.interface";
 import { PaymentRepository } from "./repositories/implimentation/payment.repository";
 import { ISlotTemplateRepository } from "./repositories/interface/slotTemplate.repository.interface";
@@ -85,6 +93,12 @@ container.bind<IAuthController>(TYPES.AuthController).to(AuthController);
 // Admin
 container.bind<IAdminService>(TYPES.AdminService).to(AdminService);
 container.bind<IAdminController>(TYPES.AdminController).to(AdminController);
+container
+  .bind<IAdminDashboardService>(TYPES.AdminDashboardService)
+  .to(AdminDashboardService);
+container
+  .bind<IAdminDashboardController>(TYPES.AdminDashboardController)
+  .to(AdminDashboardController);
 
 // S3 bucket
 container.bind<IFileService>(TYPES.FileService).to(FileService);
@@ -114,6 +128,14 @@ container.bind<IPaymentService>(TYPES.PaymentService).to(PaymentService);
 container
   .bind<IPaymentController>(TYPES.PaymentController)
   .to(PaymentController);
+
+// Trainer Dashboard
+container
+  .bind<ITrainerDashboardService>(TYPES.TrainerDashboardService)
+  .to(TrainerDashboardService);
+container
+  .bind<ITrainerDashboardController>(TYPES.TrainerDashboardController)
+  .to(TrainerDashboardController);
 
 // Slot
 container

@@ -4,6 +4,11 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import { AdminRoutes } from '../constants/api-routes.const';
+import {
+  AdminDashboardResponse,
+  AdminRangeFilter,
+  AdminReportScope,
+} from '../../interface/admin-dashboard.interface';
 
 @Injectable({ providedIn: 'root' })
 export class AdminService {
@@ -36,6 +41,29 @@ export class AdminService {
       this._apiUrl + AdminRoutes.USERS,
       {
         params: httpParams,
+        withCredentials: true,
+      }
+    );
+  }
+
+  getDashboardSnapshot(filters?: {
+    scope?: AdminReportScope;
+    range?: AdminRangeFilter;
+  }): Observable<AdminDashboardResponse> {
+    let params = new HttpParams();
+
+    if (filters?.scope) {
+      params = params.set('scope', filters.scope);
+    }
+
+    if (filters?.range) {
+      params = params.set('range', filters.range);
+    }
+
+    return this._http.get<AdminDashboardResponse>(
+      this._apiUrl + AdminRoutes.DASHBOARD,
+      {
+        params,
         withCredentials: true,
       }
     );
