@@ -117,8 +117,13 @@
       @if (!loading) {
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
         @for(program of fitnessPrograms; track program){
-        <app-program-card [program]="program" [button2Labal]="'Users'" (editProgram)="onProgramSlot($event)"
-          (viewProgram)="onViewProgram($event)"></app-program-card>
+        <app-program-card
+          [program]="program"
+          [button2Labal]="getSecondaryButtonLabel()"
+          [btn2Class]="getSecondaryButtonClass()"
+          (editProgram)="onSecondaryAction($event)"
+          (viewProgram)="onViewProgram($event)"
+        ></app-program-card>
         }
       </div>
 

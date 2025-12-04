@@ -363,8 +363,27 @@ export class ProgramListComponent implements OnInit, OnDestroy {
     this._router.navigate(['/trainer/program', programId]);
   }
 
-  onProgramSlot(programId: string): void {
+  onSecondaryAction(programId: string): void {
+    if (this.activeApprovalTab === 'Rejected') {
+      this._router.navigate(['/trainer/program', programId], {
+        queryParams: { autoEdit: 'true' }
+      });
+      return;
+    }
+
     this._router.navigate(['/trainer/programs', programId, 'users']);
+  }
+
+  getSecondaryButtonLabel(): string {
+    return this.activeApprovalTab === 'Rejected' ? 'Edit & Resubmit' : 'Users';
+  }
+
+  getSecondaryButtonClass(): string {
+    if (this.activeApprovalTab === 'Rejected') {
+      return 'px-4 py-2 border border-amber-500 text-amber-600 text-sm font-semibold rounded-lg hover:bg-amber-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:ring-offset-2';
+    }
+
+    return 'px-4 py-2 border border-green-600 text-green-600 text-sm font-medium rounded-lg hover:bg-green-50 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2';
   }
 
   onCreateProgram(): void {

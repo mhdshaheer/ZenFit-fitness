@@ -103,13 +103,30 @@ export class ProgramService implements IProgramService {
     program: Partial<IProgram>
   ): Promise<ProgramDto> {
     try {
+      const existingProgram =
+        await this._programRepository.findProgramById(id);
+      if (!existingProgram) {
+        throw new Error("Program not found");
+      }
+
+      const updatePayload: Partial<IProgram> = { ...program };
+      const wasRejected =
+        existingProgram.approvalStatus &&
+        existingProgram.approvalStatus.toLowerCase() === "rejected";
+
+      if (wasRejected) {
+        updatePayload.approvalStatus = "Pending";
+      }
+
       const updated = await this._programRepository.updateProgramById(
         id,
-        program
+        updatePayload
       );
+
       if (!updated) {
         throw new Error("Program updation is failed");
       }
+
       const mappedResult = mapToProgramDto(updated);
       return mappedResult;
     } catch (error) {

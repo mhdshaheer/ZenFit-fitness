@@ -60,6 +60,9 @@ export class ProgramController implements IProgramController {
     }
 
     data.trainerId = userId;
+    const trainerProfile = await this._profileService.getProfile(userId);
+    const trainerDisplayName =
+      trainerProfile.fullName || trainerProfile.username || "Trainer";
     const program = await this._programService.saveProgram(data);
 
     if (!program) {
@@ -80,7 +83,7 @@ export class ProgramController implements IProgramController {
         item.id,
         "admin",
         "New Program Added",
-        `Trainer has just added a new program: "${program.title}".`
+        `${trainerDisplayName} has just added a new program: "${program.title}".`
       );
     });
 
@@ -166,6 +169,23 @@ export class ProgramController implements IProgramController {
       );
     }
 
+    const [admins, trainerProfile] = await Promise.all([
+      this._profileService.getUsersByRole("admin"),
+      this._profileService.getProfile(trainerId),
+    ]);
+    const trainerDisplayName =
+      trainerProfile.fullName || trainerProfile.username || "Trainer";
+    await Promise.all(
+      admins.map((admin) =>
+        this._notificationService.createNotification(
+          admin.id,
+          "admin",
+          "Program Resubmitted",
+          `${trainerDisplayName} has resubmitted "${response.title}" for review.`
+        )
+      )
+    );
+
     return res
       .status(HttpStatus.OK)
       .json({ message: HttpResponse.PROGRAM_UPDATE_SUCCESS });
@@ -190,11 +210,22 @@ export class ProgramController implements IProgramController {
         `Exciting news! New Program is lauched: "${program.title}". Check it out now!`
       );
     });
+    const trainerId =
+      typeof program.trainerId === "object"
+        ? (program.trainerId as any)?.toString()
+        : program.trainerId!;
+    const notificationTitle =
+      approvalStatus === "Approved" ? "Program Approved" : "Program Rejected";
+    const notificationMessage =
+      approvalStatus === "Approved"
+        ? `${program.title} has been approved and is now live.`
+        : `${program.title} was rejected. Please review the feedback and update the program.`;
+
     await this._notificationService.createNotification(
-      program.programId!,
+      trainerId,
       "trainer",
-      "Program Approved",
-      `${program.title} has been approved.`
+      notificationTitle,
+      notificationMessage
     );
     return res.status(HttpStatus.OK).json(program);
   }

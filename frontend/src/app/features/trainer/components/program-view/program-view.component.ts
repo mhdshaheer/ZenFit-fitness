@@ -35,6 +35,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   private readonly _logger = inject(LoggerService);
 
   private readonly _destroy$ = new Subject<void>();
+  private autoEditRequested = false;
 
   programForm!: FormGroup;
   characterCount = 0;
@@ -46,7 +47,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   category: Category = { value: '', label: '' };
   categories: Category[] = [];
 
-  constructor(private readonly _fb: FormBuilder) {}
+  constructor(private readonly _fb: FormBuilder) { }
 
   ngOnInit() {
     // Route param subscription with cleanup
@@ -54,6 +55,15 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe((params) => {
         this.programId = params.get('id') as string;
+      });
+
+    this._activatedRoute.queryParamMap
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((params) => {
+        this.autoEditRequested = params.get('autoEdit') === 'true';
+        if (this.autoEditRequested) {
+          this.isEditMode = true;
+        }
       });
 
     this.initializeForm();
