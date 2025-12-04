@@ -7,6 +7,10 @@ export const TYPES = {
   AdminService: Symbol.for("adminService"),
   AdminController: Symbol.for("adminController"),
 
+  // Trainer Dashboard
+  TrainerDashboardService: Symbol.for("trainerDashboardService"),
+  TrainerDashboardController: Symbol.for("trainerDashboardController"),
+
   // File
   FileController: Symbol.for("FileController"),
   FileService: Symbol.for("FileService"),

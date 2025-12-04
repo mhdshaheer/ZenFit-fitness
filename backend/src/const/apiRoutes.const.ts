@@ -11,6 +11,7 @@ export const API_ROUTES = {
   ADMIN: "/api/v1/admin",
   PAYMENT: "/api/v1/payment",
   BOOKING: "/api/v1/booking",
+  TRAINER: "/api/v1/trainer",
   PROGRAM: "/api/v1/program",
   CATEGORY: "/api/v1/category",
   NOTIFICATION: "/api/v1/notifications",

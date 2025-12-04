@@ -106,6 +106,13 @@ export class BookingRepository
     return this.model.aggregate(pipeline);
   }
 
+  async getTrainerBookingRecords(trainerId: string): Promise<IBooking[]> {
+    return this.model
+      .find({ "snapshot.trainerId": new Types.ObjectId(trainerId) })
+      .populate('userId', 'fullName email')
+      .lean();
+  }
+
   async getTrainerBookings(trainerId: string): Promise<any[]> {
     const pipeline: any[] = [
       {

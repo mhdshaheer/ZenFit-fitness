@@ -37,6 +37,10 @@ import { IPaymentService } from "./services/interface/payment.service.interface"
 import { PaymentService } from "./services/implimentation/payment.service";
 import { IPaymentController } from "./controllers/interface/payment.controller.interface";
 import { PaymentController } from "./controllers/implimentation/payment.controller";
+import { ITrainerDashboardService } from "./services/interface/trainerDashboard.service.interface";
+import { TrainerDashboardService } from "./services/implimentation/trainerDashboard.service";
+import { ITrainerDashboardController } from "./controllers/interface/trainerDashboard.controller.interface";
+import { TrainerDashboardController } from "./controllers/implimentation/trainerDashboard.controller";
 import { IPaymentRepository } from "./repositories/interface/payment.repostitory.interface";
 import { PaymentRepository } from "./repositories/implimentation/payment.repository";
 import { ISlotTemplateRepository } from "./repositories/interface/slotTemplate.repository.interface";
@@ -114,6 +118,14 @@ container.bind<IPaymentService>(TYPES.PaymentService).to(PaymentService);
 container
   .bind<IPaymentController>(TYPES.PaymentController)
   .to(PaymentController);
+
+// Trainer Dashboard
+container
+  .bind<ITrainerDashboardService>(TYPES.TrainerDashboardService)
+  .to(TrainerDashboardService);
+container
+  .bind<ITrainerDashboardController>(TYPES.TrainerDashboardController)
+  .to(TrainerDashboardController);
 
 // Slot
 container

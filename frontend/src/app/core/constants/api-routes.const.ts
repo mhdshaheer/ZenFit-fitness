@@ -94,3 +94,8 @@ export const NotificationRoutes = {
 export const MeetingRoutes = {
   BASE: '/meeting',
 };
+
+export const TrainerRoutes = {
+  BASE: '/trainer',
+  DASHBOARD_SNAPSHOT: '/dashboard',
+};
