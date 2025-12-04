@@ -9,6 +9,7 @@ import { AppError } from "../../shared/utils/appError.util";
 import { HttpResponse } from "../../const/response_message.const";
 import { INotificationService } from "../../services/interface/notification.service.interface";
 import { IProfileService } from "../../services/interface/profile.service.interface";
+import { AuthenticatedRequest } from "../../types/authenticated-request.type";
 
 @injectable()
 export class ProgramController implements IProgramController {
@@ -22,9 +23,9 @@ export class ProgramController implements IProgramController {
     private readonly _programService: IProgramService
   ) { }
 
-  async saveProgramDraft(req: Request, res: Response): Promise<void> {
+  async saveProgramDraft(req: AuthenticatedRequest, res: Response): Promise<void> {
     const data = req.body;
-    const userId = (req as any)?.user?.id;
+    const userId = req.user?.id;
 
     if (!data) {
       throw new AppError(

@@ -9,6 +9,13 @@ import { IBookingService } from "../../services/interface/booking.service.interf
 import { INotificationService } from "../../services/interface/notification.service.interface";
 import { ISlotInstanceRepository } from "../../repositories/interface/slotInstance.repository.interface";
 
+type AuthenticatedRequest = Request & {
+  user?: {
+    id: string;
+    role: "user" | "trainer" | "admin";
+  };
+};
+
 @injectable()
 export class BookingController implements IBookingController {
   @inject(TYPES.BookingService)
@@ -18,11 +25,11 @@ export class BookingController implements IBookingController {
   @inject(TYPES.SlotInstanceRepository)
   private readonly _slotInstanceRepository!: ISlotInstanceRepository;
   async createBooking(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
   ): Promise<Response<IBooking>> {
     const { slotInstanceId } = req.body;
-    const userId = (req as any).user?.id;
+    const userId = req.user?.id;
 
     if (!slotInstanceId || !userId) {
       throw new AppError("Missing required fields", HttpStatus.BAD_REQUEST);
@@ -55,9 +62,12 @@ export class BookingController implements IBookingController {
     return res.status(HttpStatus.OK).json(booking);
   }
 
-  async getMyBookings(req: Request, res: Response): Promise<Response<any>> {
-    const userId = (req as any).user?.id;
-    const { programId } = req.query;
+  async getMyBookings(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<Response> {
+    const userId = req.user?.id;
+    const { programId } = req.query as { programId?: string };
 
     if (!userId) {
       throw new AppError("User not authenticated", HttpStatus.UNAUTHORIZED);
@@ -65,15 +75,17 @@ export class BookingController implements IBookingController {
 
     const bookings = await this._bookingService.getMyBookings(
       userId,
-      programId as string | undefined
+      programId
     );
 
     return res.status(HttpStatus.OK).json(bookings);
   }
 
-  async getTrainerBookings(req: Request, res: Response): Promise<Response<any>> {
-    const trainerId = (req as any).user?.id;
-
+  async getTrainerBookings(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<Response> {
+    const trainerId = req.user?.id;
     if (!trainerId) {
       throw new AppError("Trainer not authenticated", HttpStatus.UNAUTHORIZED);
     }

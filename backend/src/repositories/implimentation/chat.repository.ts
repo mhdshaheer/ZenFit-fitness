@@ -13,7 +13,7 @@ export class ChatRepository extends BaseRepository<IChatThread> implements IChat
         const existing = await ChatThreadModel.findOne({ userId, trainerId, programId })
             .populate('userId', 'fullName username profileImage')
             .populate('trainerId', 'fullName username profileImage');
-        if (existing) return existing;
+        if (existing) {return existing;}
         const created = await ChatThreadModel.create({ userId, trainerId, programId, userUnread: 0, trainerUnread: 0 });
         return ChatThreadModel.findById(created._id)
             .populate('userId', 'fullName username profileImage')
@@ -63,13 +63,13 @@ export class ChatRepository extends BaseRepository<IChatThread> implements IChat
 
     async getParticipants(threadId: string): Promise<{ userId: string; trainerId: string; programId: string }> {
         const t = await ChatThreadModel.findById(threadId);
-        if (!t) throw new Error("Thread not found");
+        if (!t) {throw new Error("Thread not found");}
         return { userId: t.userId.toString(), trainerId: t.trainerId.toString(), programId: t.programId.toString() };
     }
 
     async deleteMessage(messageId: string, deleterId: string): Promise<boolean> {
         const message = await ChatMessageModel.findById(messageId);
-        if (!message) return false;
+        if (!message) {return false;}
         
         // Check if the deleter is the sender
         if (message.senderId.toString() !== deleterId) {

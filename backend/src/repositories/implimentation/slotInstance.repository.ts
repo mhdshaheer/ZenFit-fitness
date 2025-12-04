@@ -24,7 +24,7 @@ export class SlotInstanceRepository
     }
 
     async bulkUpsertInstances(instances: Partial<ISlotInstance>[]): Promise<void> {
-        if (!instances.length) return;
+        if (!instances.length) {return;}
 
         const operations = instances.map((inst) => ({
             updateOne: {
