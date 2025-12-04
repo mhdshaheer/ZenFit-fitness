@@ -1,15 +1,8 @@
 <div class="flex h-screen">
   <!-- Sidebar -->
-  <app-sidebar
-    [menuItems]="userMenu"
-    [appName]="'ZenFit App'"
-    [userName]="'Shaheer'"
-    [userRole]="'Admin'"
-    [isMobileOpen]="true"
-    (menuItemClicked)="handleMenuClick($event)"
-    (mobileToggle)="handleMobileToggle($event)"
-    (logOutClicked)="logOutUser()"
-  ></app-sidebar>
+  <app-sidebar [menuItems]="userMenu" [appName]="'ZenFit App'" [userName]="'Shaheer'" [userRole]="'Admin'"
+    [isMobileOpen]="true" (menuItemClicked)="handleMenuClick($event)" (mobileToggle)="handleMobileToggle($event)"
+    (logOutClicked)="logOutUser()"></app-sidebar>
 
   <!-- Main content -->
   <main class="flex-1 bg-gray-100 overflow-auto p-6">

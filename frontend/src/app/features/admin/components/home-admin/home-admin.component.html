@@ -1,10 +1,8 @@
-<div class="min-h-screen bg-gray-50">
+<div class="min-h-screen bg-gradient-to-b from-white to-gray-100">
   <!-- Header -->
-  <header class="bg-white shadow-sm">
+  <header class="bg-white/90 backdrop-blur shadow-sm border-b border-gray-200">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4"
-      >
+      <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
           <p class="text-sm text-gray-500 mt-1">
@@ -59,43 +57,26 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
       <!-- Total Revenue Card -->
       <div
-        class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
-      >
+        class="bg-gradient-to-br from-slate-900 to-black text-white rounded-2xl shadow-xl p-6 border border-white/10">
         <div class="flex items-center justify-between mb-4">
-          <div class="p-3 rounded-lg bg-green-100">
-            <svg
-              class="w-6 h-6 text-green-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <div class="p-3 rounded-lg bg-white/10">
+            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
               <polyline points="17 6 23 6 23 12"></polyline>
             </svg>
           </div>
         </div>
-        <h3 class="text-gray-600 text-sm font-medium mb-1">Total Revenue</h3>
-        <p class="text-2xl font-bold text-gray-900">₹8473</p>
+        <h3 class="text-sm font-medium text-white/70 mb-1">Total Revenue</h3>
+        <p class="text-2xl font-bold">₹8473</p>
       </div>
 
       <!-- Total Users Card -->
-      <div
-        class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
-      >
+      <div class="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
         <div class="flex items-center justify-between mb-4">
-          <div class="p-3 rounded-lg bg-blue-100">
-            <svg
-              class="w-6 h-6 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"
-              ></path>
+          <div class="p-3 rounded-lg bg-slate-900/10">
+            <svg class="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
               <circle cx="9" cy="7" r="4"></circle>
               <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
               <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
@@ -107,17 +88,10 @@
       </div>
 
       <!-- Total Trainers Card -->
-      <div
-        class="bg-white rounded-lg shadow-sm p-6 hover:shadow-md transition-shadow"
-      >
+      <div class="bg-white rounded-2xl shadow-md p-6 border border-gray-100">
         <div class="flex items-center justify-between mb-4">
-          <div class="p-3 rounded-lg bg-purple-100">
-            <svg
-              class="w-6 h-6 text-purple-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
+          <div class="p-3 rounded-lg bg-slate-900/10">
+            <svg class="w-6 h-6 text-slate-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path d="M22 10v6M2 10l10-5 10 5-10 5z"></path>
               <path d="M6 12v5c3 3 9 3 12 0v-5"></path>
             </svg>
@@ -128,11 +102,8 @@
       </div>
     </div>
 
-    <zenfit-chart
-      [data]="currentRevenueData"
-      [filter]="revenueFilter"
-      (filterChange)="handleRevenueFilterChange($event)"
-    ></zenfit-chart>
+    <zenfit-chart [data]="currentRevenueData" [filter]="revenueFilter"
+      (filterChange)="handleRevenueFilterChange($event)"></zenfit-chart>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mt-8">
       <zenfit-progress-bar [categories]="topCategories"></zenfit-progress-bar>
