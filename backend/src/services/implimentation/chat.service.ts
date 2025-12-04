@@ -10,7 +10,7 @@ import { S3Service } from "../../shared/services/s3.service";
 
 @injectable()
 export class ChatService implements IChatService {
-  @inject(TYPES.ChatRepository) private readonly repo!: IChatRepository
+  @inject(TYPES.ChatRepository) private readonly repo!: IChatRepository;
   private s3Service: S3Service;
   
   constructor() {
@@ -18,7 +18,7 @@ export class ChatService implements IChatService {
   }
 
   private async generatePresignedUrls(data: any): Promise<any> {
-    if (!data) return data;
+    if (!data) {return data;}
     
     // Handle array of objects
     if (Array.isArray(data)) {
@@ -77,7 +77,7 @@ export class ChatService implements IChatService {
       programId: new mongoose.Types.ObjectId(programId),
       paymentStatus: "success",
     });
-    if (!payment) throw new Error("Not purchased");
+    if (!payment) {throw new Error("Not purchased");}
     const trainerId = payment.trainerId.toString();
     const thread = await this.repo.getOrCreateThread(userId, trainerId, programId);
     return this.generatePresignedUrls(thread);
@@ -100,8 +100,8 @@ export class ChatService implements IChatService {
 
   async sendMessage(threadId: string, senderId: string, senderType: "user" | "trainer", content: string) {
     const ok = await this.canAccessThread(threadId, senderId, senderType);
-    if (!ok) throw new Error("Forbidden");
-    if (!content || content.length > 2000) throw new Error("Invalid content");
+    if (!ok) {throw new Error("Forbidden");}
+    if (!content || content.length > 2000) {throw new Error("Invalid content");}
     const message = await this.repo.createMessage(threadId, senderId, senderType, content);
     return this.generatePresignedUrls(message);
   }
@@ -112,7 +112,7 @@ export class ChatService implements IChatService {
 
   async canAccessThread(threadId: string, actorId: string, role: "user" | "trainer") {
     const t = await this.repo.findThreadById(threadId);
-    if (!t) return false;
+    if (!t) {return false;}
     return role === "user" ? t.userId.toString() === actorId : t.trainerId.toString() === actorId;
   }
 

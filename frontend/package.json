@@ -26,6 +26,8 @@
     "@ngrx/store-devtools": "^20.0.1",
     "@stripe/stripe-js": "^8.0.0",
     "@tailwindcss/postcss": "^4.1.8",
+    "apexcharts": "^5.3.6",
+    "ng-apexcharts": "^2.0.3",
     "ngx-toastr": "^19.1.0",
     "postcss": "^8.5.4",
     "primeicons": "^7.0.0",

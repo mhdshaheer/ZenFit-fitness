@@ -91,4 +91,12 @@ export enum HttpResponse {
   SESSION_SAVE_FAILED = "Failed to save session",
   SESSION_SAVE_SUCCESS = "session is saved successfully",
   SESSION_NOT_FOUND = "Session not found",
+
+  // Notifications
+  NOTIFICATION_NOT_FOUND = "Notification not found",
+  INVALID_NOTIFICATION_IDS = "Invalid notification IDs provided",
+  NOTIFICATIONS_MARKED_AS_READ = "All notifications marked as read",
+
+  // Payments
+  TRANSACTION_HISTORY_FETCH_FAILED = "Failed to fetch transaction history",
 }

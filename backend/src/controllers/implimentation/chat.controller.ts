@@ -1,117 +1,235 @@
 import { inject, injectable } from "inversify";
-import { Request, Response } from "express";
+import { Response } from "express";
 import { HttpStatus } from "../../const/statuscode.const";
 import { IChatService } from "../../services/interface/chat.service.interface";
 import { IChatController } from "../interface/chat.controller.interface";
 import { TYPES } from "../../shared/types/inversify.types";
 import { getIO } from "../../shared/sockets/socket";
+import { AuthenticatedRequest } from "../../types/authenticated-request.type";
 
 @injectable()
 export class ChatController implements IChatController {
   constructor(
     @inject(TYPES.ChatService) private readonly chat: IChatService
-  ) {}
+  ) { }
 
-  async initThread(req: Request, res: Response): Promise<void> {
-    const userId = (req as any).user.id;
-    const programId = req.params.programId;
+  async initThread(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const userId = req.user?.id;
+    const { programId } = req.params as { programId?: string };
+    if (!userId) {
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ success: false, message: "User not authenticated" });
+      return;
+    }
+
+    if (!programId) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ success: false, message: "Program id is required" });
+      return;
+    }
+
     const thread = await this.chat.initThreadForUser(userId, programId);
     res.status(HttpStatus.OK).json({ success: true, data: thread });
   }
 
-  async getThreads(req: Request, res: Response): Promise<void> {
-    const userId = (req as any).user.id;
+  async getThreads(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const userId = req.user?.id;
+    if (!userId) {
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ success: false, message: "User not authenticated" });
+      return;
+    }
     const threads = await this.chat.listMyThreads(userId);
     res.status(HttpStatus.OK).json({ success: true, data: threads });
   }
 
-  async getTrainerThreads(req: Request, res: Response): Promise<void> {
+  async getTrainerThreads(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> {
+    const trainerId = req.user?.id;
+
+    if (!trainerId) {
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ success: false, message: "Trainer not authenticated" });
+      return;
+    }
 
     try {
-        const trainerId = (req as any).user.id;
-    const threads = await this.chat.listTrainerThreads(trainerId);
-    res.status(200).json({ success: true, data: threads });
-  } catch (error:any) {
-    console.error("Error fetching trainer threads:", error);
-    res.status(500).json({ success: false, message: error.message });
-  }
+      const threads = await this.chat.listTrainerThreads(trainerId);
+      res.status(HttpStatus.OK).json({ success: true, data: threads });
+    } catch (error) {
+      const err = error as Error;
+      console.error("Error fetching trainer threads:", err);
+      res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
+        success: false,
+        message: "Failed to fetch trainer threads",
+      });
+    }
   }
 
-  async getMessages(req: Request, res: Response): Promise<void> {
-    const threadId = req.params.threadId;
-    const page = parseInt((req.query.page as string) || "1", 10);
-    const limit = parseInt((req.query.limit as string) || "50", 10);
-    const messages = await this.chat.getMessages(threadId, page, limit);
+  async getMessages(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const { threadId } = req.params as { threadId?: string };
+    if (!threadId) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ success: false, message: "threadId is required" });
+      return;
+    }
+
+    const { page = "1", limit = "50" } = req.query as {
+      page?: string;
+      limit?: string;
+    };
+
+    const pageNumber = Number.parseInt(page, 10);
+    const limitNumber = Number.parseInt(limit, 10);
+
+    const messages = await this.chat.getMessages(
+      threadId,
+      Number.isNaN(pageNumber) ? 1 : pageNumber,
+      Number.isNaN(limitNumber) ? 50 : limitNumber
+    );
     res.status(HttpStatus.OK).json({ success: true, data: messages });
   }
 
-  async markRead(req: Request, res: Response): Promise<void> {
-    const threadId = req.params.threadId;
-    const readerId = (req as any).user.id;
-    const role = (req as any).user.role as "user" | "trainer";
+  async markRead(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const { threadId } = req.params as { threadId?: string };
+    const readerId = req.user?.id;
+    const role = req.user?.role as "user" | "trainer" | undefined;
+
+    if (!readerId || !role) {
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ success: false, message: "User not authenticated" });
+      return;
+    }
+
+    if (!threadId) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ success: false, message: "threadId is required" });
+      return;
+    }
+
     await this.chat.markThreadRead(threadId, role);
-    
-    // Emit real-time read event
+
     try {
       const io = getIO();
-      io.to(`thread-${threadId}`).emit("chat:read", { threadId, readerId, readerType: role });
+      io.to(`thread-${threadId}`).emit("chat:read", {
+        threadId,
+        readerId,
+        readerType: role,
+      });
     } catch (error) {
       console.error("Error emitting read event:", error);
     }
-    
+
     res.status(HttpStatus.OK).json({ success: true });
   }
 
-  async sendMessage(req: Request, res: Response): Promise<void> {
-    const threadId = req.params.threadId;
-    const senderId = (req as any).user.id;
-    const senderType = (req as any).user.role as "user" | "trainer";
-    const { content } = req.body as { content: string };
-    const message = await this.chat.sendMessage(threadId, senderId, senderType, content);
-    
-    // Emit real-time event to all clients in the thread
+  async sendMessage(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const { threadId } = req.params as { threadId?: string };
+    const senderId = req.user?.id;
+    const senderRole = req.user?.role as "user" | "trainer" | undefined;
+    const { content } = (req.body ?? {}) as { content?: string };
+
+    if (!threadId) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ success: false, message: "threadId is required" });
+      return;
+    }
+
+    if (!senderId || !senderRole) {
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ success: false, message: "User not authenticated" });
+      return;
+    }
+
+    if (!content) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ success: false, message: "Message content is required" });
+      return;
+    }
+
+    const message = await this.chat.sendMessage(
+      threadId,
+      senderId,
+      senderRole,
+      content
+    );
+
     try {
       const io = getIO();
       io.to(`thread-${threadId}`).emit("chat:newMessage", message);
-      
-      // Notify participants about new message
+
       const participants = await this.chat.getThreadParticipants(threadId);
       if (participants.userId) {
-        io.to(`user-${participants.userId}`).emit("chat:delivered", { threadId });
+        io.to(`user-${participants.userId}`).emit("chat:delivered", {
+          threadId,
+        });
       }
       if (participants.trainerId) {
-        io.to(`trainer-${participants.trainerId}`).emit("chat:delivered", { threadId });
+        io.to(`trainer-${participants.trainerId}`).emit("chat:delivered", {
+          threadId,
+        });
       }
     } catch (error) {
       console.error("Error emitting socket event:", error);
     }
-    
+
     res.status(HttpStatus.OK).json({ success: true, data: message });
   }
 
-  async deleteMessage(req: Request, res: Response): Promise<void> {
-    const messageId = req.params.messageId;
-    const deleterId = (req as any).user.id;
-    
+  async deleteMessage(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const { messageId } = req.params as { messageId?: string };
+    const deleterId = req.user?.id;
+
+    if (!messageId) {
+      res
+        .status(HttpStatus.BAD_REQUEST)
+        .json({ success: false, message: "messageId is required" });
+      return;
+    }
+
+    if (!deleterId) {
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ success: false, message: "User not authenticated" });
+      return;
+    }
+
     try {
       const deleted = await this.chat.deleteMessage(messageId, deleterId);
-      
+
       if (deleted) {
-        // Emit real-time delete event
         try {
           const io = getIO();
-          // Emit to all clients to remove the message
           io.emit("chat:messageDeleted", { messageId });
         } catch (error) {
           console.error("Error emitting delete event:", error);
         }
-        
-        res.status(HttpStatus.OK).json({ success: true, message: "Message deleted successfully" });
+
+        res
+          .status(HttpStatus.OK)
+          .json({ success: true, message: "Message deleted successfully" });
       } else {
-        res.status(HttpStatus.NOT_FOUND).json({ success: false, message: "Message not found" });
+        res
+          .status(HttpStatus.NOT_FOUND)
+          .json({ success: false, message: "Message not found" });
       }
-    } catch (error: any) {
-      res.status(HttpStatus.FORBIDDEN).json({ success: false, message: error.message });
+    } catch (error) {
+      console.error("Error deleting message:", error);
+      res
+        .status(HttpStatus.FORBIDDEN)
+        .json({ success: false, message: "Failed to delete message" });
     }
   }
 }

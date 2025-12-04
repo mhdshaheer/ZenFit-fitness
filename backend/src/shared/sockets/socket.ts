@@ -56,11 +56,11 @@ export const initializeSocket = (server: HttpServer): Server => {
           io.to(`thread-${data.threadId}`).emit("chat:newMessage", message);
           const participants = await chatService.getThreadParticipants(data.threadId);
           if (participants.userId)
-            io.to(`user-${participants.userId}`).emit("chat:delivered", { threadId: data.threadId });
+            {io.to(`user-${participants.userId}`).emit("chat:delivered", { threadId: data.threadId });}
           if (participants.trainerId)
-            io
+            {io
               .to(`trainer-${participants.trainerId}`)
-              .emit("chat:delivered", { threadId: data.threadId });
+              .emit("chat:delivered", { threadId: data.threadId });}
         } catch (e) {
           console.error("sendMessage error", e);
         }

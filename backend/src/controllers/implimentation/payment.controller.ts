@@ -17,6 +17,7 @@ import {
   ITrainerPurchasedProgramFilters,
 } from "../../interfaces/payment.interface";
 import { HttpResponse } from "../../const/response_message.const";
+import { AuthenticatedRequest } from "../../types/authenticated-request.type";
 
 @injectable()
 export class PaymentController implements IPaymentController {
@@ -24,29 +25,42 @@ export class PaymentController implements IPaymentController {
     @inject(TYPES.PaymentService)
     private readonly _paymentService: IPaymentService
   ) { }
-  async createCheckoutSession(req: Request, res: Response): Promise<void> {
-    const userId = (req as any)?.user?.id;
+  async createCheckoutSession(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> {
+    const userId = req.user?.id;
+    if (!userId) {
+      res
+        .status(HttpStatus.UNAUTHORIZED)
+        .json({ message: HttpResponse.UNAUTHORIZED });
+      return;
+    }
     const response = await this._paymentService.createCheckoutSession(
       req.body,
       userId
     );
-    res.json(response);
+    res.status(HttpStatus.OK).json(response);
   }
   async webhook(req: Request, res: Response): Promise<void> {
     try {
       await this._paymentService.processWebhook(req);
-      res.json({ received: true });
-    } catch (err: any) {
+      res.status(HttpStatus.OK).json({ received: true });
+    } catch (err) {
+      const error = err as Error;
       res
         .status(HttpStatus.INTERNAL_SERVER_ERROR)
-        .send(`Webhook error: ${err.message}`);
+        .send(`Webhook error: ${error.message}`);
     }
   }
   async getTrainerPayments(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
   ): Promise<Response<PaymentHistoryDto[]>> {
-    const trainerId = (req as any).user.id;
+    const trainerId = req.user?.id;
+    if (!trainerId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const response = await this._paymentService.getTrainerPayments(trainerId);
     return res.status(HttpStatus.OK).json(response);
   }
@@ -58,10 +72,13 @@ export class PaymentController implements IPaymentController {
     return res.status(HttpStatus.OK).json(response);
   }
   async getPurchasedProgram(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
   ): Promise<Response<PurchasedProgram[]>> {
-    const userId = (req as any).user.id;
+    const userId = req.user?.id;
+    if (!userId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const purchasedPrograms = await this._paymentService.getPurchasedProgram(
       userId
     );
@@ -69,22 +86,28 @@ export class PaymentController implements IPaymentController {
   }
 
   async getUserTransactionHistory(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
   ): Promise<void> {
     try {
-      const userId = (req as any).user.id;
-      
+      const userId = req.user?.id;
+      if (!userId) {
+        res
+          .status(HttpStatus.UNAUTHORIZED)
+          .json({ success: false, message: HttpResponse.UNAUTHORIZED });
+        return;
+      }
+
       // Validate and sanitize pagination parameters
-      let page = parseInt(req.query.page as string) || 1;
-      let limit = parseInt(req.query.limit as string) || 10;
-      
+      let page = Number.parseInt(req.query.page as string, 10) || 1;
+      let limit = Number.parseInt(req.query.limit as string, 10) || 10;
+
       // Ensure page is at least 1
       page = Math.max(1, page);
-      
+
       // Limit the maximum items per page to prevent performance issues
       limit = Math.min(Math.max(1, limit), 100);
-      
+
       const search = req.query.search as string || '';
       const status = req.query.status as string || '';
 
@@ -104,14 +127,17 @@ export class PaymentController implements IPaymentController {
 
       res.status(HttpStatus.OK).json({
         success: true,
-        ...result
+        ...result,
       });
     } catch (error) {
-      console.error('Error in getUserTransactionHistory:', error);
+      console.error("Error in getUserTransactionHistory:", error);
       res.status(HttpStatus.INTERNAL_SERVER_ERROR).json({
         success: false,
-        message: 'Failed to fetch transaction history',
-        error: process.env.NODE_ENV === 'development' ? (error as Error).message : 'Internal server error'
+        message: HttpResponse.TRANSACTION_HISTORY_FETCH_FAILED,
+        error:
+          process.env.NODE_ENV === "development"
+            ? (error as Error).message
+            : HttpResponse.SERVER_ERROR,
       });
     }
   }
@@ -146,20 +172,26 @@ export class PaymentController implements IPaymentController {
     return res.status(HttpStatus.OK).json(programs);
   }
   async getTopSellingCategoriesByTrainer(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
   ): Promise<Response<ITopSellingCategory[]>> {
-    const trainerId = (req as any).user.id;
+    const trainerId = req.user?.id;
+    if (!trainerId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const categoies = await this._paymentService.getTopSellingCategoryByTrainer(
       trainerId
     );
     return res.status(HttpStatus.OK).json(categoies);
   }
   async getTopSellingProgramsByTrainer(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
   ): Promise<Response<ITopSellingPrograms[]>> {
-    const trainerId = (req as any).user.id;
+    const trainerId = req.user?.id;
+    if (!trainerId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const programs = await this._paymentService.getTopSellingProgramsByTrainer(
       trainerId
     );
@@ -181,10 +213,13 @@ export class PaymentController implements IPaymentController {
     return res.status(HttpStatus.OK).json(filterData);
   }
   async getRevenueChartByTrainer(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
   ): Promise<Response<IRevenueData[]>> {
-    const trainerId = (req as any).user.id;
+    const trainerId = req.user?.id;
+    if (!trainerId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const { filter } = req.query;
 
     const validFilters = ["weekly", "monthly", "yearly"];
@@ -228,15 +263,15 @@ export class PaymentController implements IPaymentController {
   }
 
   async getTrainerPurchasedPrograms(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
   ): Promise<void> {
-    const trainerId = (req as any).user?.id;
+    const trainerId = req.user?.id;
 
     if (!trainerId) {
-      res.status(401).json({
+      res.status(HttpStatus.UNAUTHORIZED).json({
         success: false,
-        message: "Unauthorized",
+        message: HttpResponse.UNAUTHORIZED,
       });
       return;
     }
@@ -253,8 +288,8 @@ export class PaymentController implements IPaymentController {
 
     const filters: ITrainerPurchasedProgramFilters = {
       trainerId,
-      page: parseInt(page as string),
-      limit: parseInt(limit as string),
+      page: Number.parseInt(page as string, 10),
+      limit: Number.parseInt(limit as string, 10),
       paymentStatus: paymentStatus as string,
       startDate: startDate ? new Date(startDate as string) : undefined,
       endDate: endDate ? new Date(endDate as string) : undefined,

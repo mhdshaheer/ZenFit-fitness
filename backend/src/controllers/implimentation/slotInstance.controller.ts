@@ -7,14 +7,24 @@ import {
     TrainerSlotInstanceFilters,
 } from "../../services/interface/slotInstance.service.interface";
 import { HttpStatus } from "../../const/statuscode.const";
+import { AuthenticatedRequest } from "../../types/authenticated-request.type";
+import { HttpResponse } from "../../const/response_message.const";
 
 @injectable()
 export class SlotInstanceController implements ISlotInstanceController {
     @inject(TYPES.SlotInstanceService)
     private readonly _slotInstanceService!: ISlotInstanceService;
 
-    async getInstances(req: Request, res: Response): Promise<Response<any>> {
-        const trainerId = (req as any).user.id as string;
+    async getInstances(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<Response<any>> {
+        const trainerId = req.user?.id;
+        if (!trainerId) {
+            return res
+                .status(HttpStatus.UNAUTHORIZED)
+                .json({ message: HttpResponse.UNAUTHORIZED });
+        }
         const {
             from,
             to,
@@ -30,10 +40,13 @@ export class SlotInstanceController implements ISlotInstanceController {
             segment: segment === "past" ? "past" : "upcoming",
             from: typeof from === "string" ? new Date(from) : undefined,
             to: typeof to === "string" ? new Date(to) : undefined,
-            status: typeof status === "string" ? (status as any) : undefined,
+            status:
+                typeof status === "string" && (status === "OPEN" || status === "CLOSED")
+                    ? (status as "OPEN" | "CLOSED")
+                    : undefined,
             search: typeof search === "string" ? search : undefined,
-            page: typeof page === "string" ? parseInt(page, 10) : undefined,
-            limit: typeof limit === "string" ? parseInt(limit, 10) : undefined,
+            page: typeof page === "string" ? Number.parseInt(page, 10) : undefined,
+            limit: typeof limit === "string" ? Number.parseInt(limit, 10) : undefined,
         };
 
         if (programIds) {
@@ -94,8 +107,16 @@ export class SlotInstanceController implements ISlotInstanceController {
         return res.status(HttpStatus.OK).json(instances);
     }
 
-    async cancelInstance(req: Request, res: Response): Promise<Response<any>> {
-        const trainerId = (req as any).user.id as string;
+    async cancelInstance(
+        req: AuthenticatedRequest,
+        res: Response
+    ): Promise<Response<any>> {
+        const trainerId = req.user?.id;
+        if (!trainerId) {
+            return res
+                .status(HttpStatus.UNAUTHORIZED)
+                .json({ message: HttpResponse.UNAUTHORIZED });
+        }
         const instanceId = req.params.id;
 
         const updated = await this._slotInstanceService.cancelInstance(

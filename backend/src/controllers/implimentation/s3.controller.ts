@@ -14,7 +14,7 @@ export class FileController implements IFileController {
     @inject(TYPES.FileService) private readonly _fileService: IFileService,
     @inject(TYPES.ProfileService)
     private readonly _profileService: IProfileService
-  ) {}
+  ) { }
 
   async upload(req: Request, res: Response): Promise<void> {
     const { type } = req.body;
@@ -28,9 +28,9 @@ export class FileController implements IFileController {
 
     const key = await this._fileService.upload(role, type, id, file);
 
-    if (type == "profile") {
+    if (type === "profile") {
       await this._profileService.updateProfileImage(id, key);
-    } else if (type == "resume") {
+    } else if (type === "resume") {
       await this._profileService.updateResumePdf(id, key);
     }
     const signedUrl = await this._fileService.getSignedUrl(id, type);
@@ -50,9 +50,9 @@ export class FileController implements IFileController {
     const userId = await (req as any).user.id;
     const type = key?.toString().split("/")[1];
     await this._fileService.delete(key);
-    if (type == "profile") {
+    if (type === "profile") {
       await this._profileService.removeProfileImage(userId);
-    } else if (type == "resumes") {
+    } else if (type === "resumes") {
       await this._profileService.removeResumePdf(userId);
     }
 

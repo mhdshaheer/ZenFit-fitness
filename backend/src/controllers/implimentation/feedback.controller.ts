@@ -5,6 +5,7 @@ import { IFeedbackController } from "../interface/feedback.controller.interface"
 import { IFeedbackService } from "../../services/interface/feedback.service.interface";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
+import { AuthenticatedRequest } from "../../types/authenticated-request.type";
 
 @injectable()
 export class FeedbackController implements IFeedbackController {
@@ -12,14 +13,17 @@ export class FeedbackController implements IFeedbackController {
   private readonly _feedbackService!: IFeedbackService;
 
   async createOrUpdateFeedback(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const trainerId = (req as any).user.id;
+      const trainerId = req.user?.id;
       const { slotId, sessionDate, feedback } = req.body;
 
+      if (!trainerId) {
+        throw new AppError("Trainer not authenticated", HttpStatus.UNAUTHORIZED);
+      }
       if (!slotId || !sessionDate || !feedback) {
         throw new AppError(
           "Missing required fields: slotId, sessionDate, feedback",
@@ -77,12 +81,12 @@ export class FeedbackController implements IFeedbackController {
   }
 
   async getFeedbacksBySlotId(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const { slotId } = req.params;
+      const { slotId } = req.params as { slotId?: string };
 
       if (!slotId) {
         throw new AppError("Missing slotId parameter", HttpStatus.BAD_REQUEST);
@@ -96,14 +100,17 @@ export class FeedbackController implements IFeedbackController {
   }
 
   async deleteFeedback(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response,
     next: NextFunction
   ): Promise<void> {
     try {
-      const trainerId = (req as any).user.id;
+      const trainerId = req.user?.id;
       const { slotId, sessionDate } = req.body;
 
+      if (!trainerId) {
+        throw new AppError("Trainer not authenticated", HttpStatus.UNAUTHORIZED);
+      }
       if (!slotId || !sessionDate) {
         throw new AppError(
           "Missing required fields: slotId, sessionDate",

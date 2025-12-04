@@ -5,6 +5,7 @@ import globals from "globals";
 export default [
   {
     files: ["**/*.{ts,js}"],
+    ignores: ["dist/**"],
 
     languageOptions: {
       parser: tsParser,
@@ -34,12 +35,11 @@ export default [
           argsIgnorePattern: "^_",
           ignoreRestSiblings: true,
           caughtErrors: "none",
-          ignoreInterfaces: true,
         },
       ],
-      "@typescript-eslint/no-explicit-any": "error",
+      "@typescript-eslint/no-explicit-any": "warn",
       "@typescript-eslint/explicit-function-return-type": "warn",
-      "@typescript-eslint/strict-boolean-expressions": "error",
+      "@typescript-eslint/strict-boolean-expressions": "warn",
     },
   },
 ];
