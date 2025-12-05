@@ -63,7 +63,7 @@ app.use(express.json());
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 50,
   message: HttpResponse.TOO_MANY_LOGIN_ATTEMPTS,
   standardHeaders: true,
   legacyHeaders: false,
