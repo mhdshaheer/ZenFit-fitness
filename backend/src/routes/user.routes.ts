@@ -3,6 +3,7 @@ import authMiddleware from "../middlewares/verifyToken.middleware";
 import { container } from "../inversify.config";
 import { TYPES } from "../shared/types/inversify.types";
 import { IProfileController } from "../controllers/interface/profile.controller.interface";
+import { adaptHandler } from "../shared/utils/routeHandler.util";
 
 const userRouter = Router();
 const profileController = container.get<IProfileController>(
@@ -13,31 +14,33 @@ userRouter.use(authMiddleware);
 
 userRouter.get(
   "/profile",
-  profileController.getProfile.bind(profileController)
+  adaptHandler(profileController.getProfile.bind(profileController))
 );
 
-userRouter.get("/current", (req, res, next) => {
-  profileController.getCurrentUserId(req, res).catch(next);
-});
+userRouter.get(
+  "/current",
+  adaptHandler(profileController.getCurrentUserId.bind(profileController))
+);
 
 userRouter.put(
   "/profile",
-  profileController.updateProfile.bind(profileController)
+  adaptHandler(profileController.updateProfile.bind(profileController))
 );
 
 userRouter.put(
   "/resume",
-  profileController.verifyResume.bind(profileController)
+  adaptHandler(profileController.verifyResume.bind(profileController))
 );
 
 userRouter.post(
   "/password",
-  profileController.changePassword.bind(profileController)
+  adaptHandler(profileController.changePassword.bind(profileController))
 );
 
 // userRouter.delete("/resume",authMiddleware,profileController.)
 
-userRouter.get("/:userId", (req, res, next) => {
-  profileController.getUserByUserId(req, res).catch(next);
-});
+userRouter.get(
+  "/:userId",
+  adaptHandler(profileController.getUserByUserId.bind(profileController))
+);
 export default userRouter;

@@ -1,8 +1,10 @@
 import { Request } from "express";
 
-export type AuthenticatedRequest = Request & {
-    user?: {
-        id: string;
-        role: "user" | "trainer" | "admin";
-    };
+export type AuthenticatedUser = {
+    id: string;
+    role: "user" | "trainer" | "admin";
 };
+
+export interface AuthenticatedRequest extends Request {
+    user?: AuthenticatedUser;
+}

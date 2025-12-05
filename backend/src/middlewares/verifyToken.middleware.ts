@@ -1,16 +1,18 @@
 import jwt from "jsonwebtoken";
-import { Request, Response, NextFunction } from "express";
+import { RequestHandler } from "express";
 import { HttpStatus } from "../const/statuscode.const";
 import { HttpResponse } from "../const/response_message.const";
 import { env } from "../config/env.config";
 import logger from "../shared/services/logger.service";
 import { UserRepository } from "../repositories/implimentation/user.repository";
+import {
+  AuthenticatedRequest,
+  AuthenticatedUser,
+} from "../types/authenticated-request.type";
+import { IJwtPayload } from "../interfaces/auth.interface";
 
-const authMiddleware = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): Promise<void> => {
+const authMiddleware: RequestHandler = async (req, res, next) => {
+  const request = req as AuthenticatedRequest;
   const userRepository = new UserRepository();
   const { accessToken } = req.cookies;
 
@@ -22,8 +24,8 @@ const authMiddleware = async (
   }
 
   try {
-    const decoded = jwt.verify(accessToken, env.jwt_access!);
-    if (typeof decoded === "object" && "id" in decoded) {
+    const decoded = jwt.verify(accessToken, env.jwt_access!) as IJwtPayload;
+    if (decoded?.id) {
       const user = await userRepository.findById(decoded.id);
 
       if (!user) {
@@ -39,7 +41,11 @@ const authMiddleware = async (
           .json({ message: HttpResponse.ACCESS_DENIED });
         return;
       }
-      (req as any).user = decoded;
+      const authUser: AuthenticatedUser = {
+        id: decoded.id,
+        role: decoded.role,
+      };
+      request.user = authUser;
       next();
     }
   } catch (error) {
