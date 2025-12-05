@@ -7,7 +7,7 @@ export interface IProgramController {
   saveProgram(req: AuthenticatedRequest, res: Response): Promise<void>;
   getPrograms(req: AuthenticatedRequest, res: Response): Promise<void>;
   getProgramsCategories(req: AuthenticatedRequest, res: Response): Promise<void>;
-  getProgramsByParantId(req: Request, res: Response): Promise<void>;
+  getProgramsByParantId(req: AuthenticatedRequest, res: Response): Promise<void>;
   getAllPrograms(req: Request, res: Response): Promise<Response<ProgramDto[]>>;
   getProgramsForSlotCreate(
     req: AuthenticatedRequest,

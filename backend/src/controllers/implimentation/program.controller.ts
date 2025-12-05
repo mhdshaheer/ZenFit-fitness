@@ -49,9 +49,13 @@ export class ProgramController implements IProgramController {
     });
   }
 
-  async saveProgram(req: Request, res: Response): Promise<void> {
+  async saveProgram(req: AuthenticatedRequest, res: Response): Promise<void> {
     const data = req.body;
-    const userId = (req as any)?.user?.id;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
 
     if (!data) {
       throw new AppError(
@@ -93,15 +97,26 @@ export class ProgramController implements IProgramController {
     });
   }
 
-  async getPrograms(req: Request, res: Response): Promise<void> {
-    const userId = (req as any)?.user?.id;
+  async getPrograms(req: AuthenticatedRequest, res: Response): Promise<void> {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const programs = await this._programService.getPrograms(userId);
 
     res.status(HttpStatus.OK).json({ programs });
   }
 
-  async getProgramsCategories(req: Request, res: Response): Promise<void> {
-    const userId = (req as any)?.user?.id;
+  async getProgramsCategories(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> {
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const programs = await this._programService.getProgramsCategories(userId);
 
     res.status(HttpStatus.OK).json({ programs });
@@ -115,19 +130,30 @@ export class ProgramController implements IProgramController {
   }
 
   async getProgramsForSlotCreate(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
   ): Promise<Response<ProgramSlotCreateDto[]>> {
-    const trainerId = (req as any).user.id;
+    const trainerId = req.user?.id;
+
+    if (!trainerId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const programs = await this._programService.getProgramsForSlotCreate(
       trainerId
     );
     return res.status(HttpStatus.OK).json(programs);
   }
 
-  async getProgramsByParantId(req: Request, res: Response): Promise<void> {
+  async getProgramsByParantId(
+    req: AuthenticatedRequest,
+    res: Response
+  ): Promise<void> {
     const parantCategoryId = req.params.id;
-    const userId = (req as any).user.id;
+    const userId = req.user?.id;
+
+    if (!userId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const programs = await this._programService.getProgramsByParentId(
       parantCategoryId,
       userId
@@ -151,11 +177,15 @@ export class ProgramController implements IProgramController {
   }
 
   async updateProgram(
-    req: Request,
+    req: AuthenticatedRequest,
     res: Response
   ): Promise<Response<{ message: string }>> {
     const programId = req.params.id;
-    const trainerId = (req as any)?.user?.id;
+    const trainerId = req.user?.id;
+
+    if (!trainerId) {
+      throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
+    }
     const programData = req.body;
 
     const response = await this._programService.updateProgram(programId, {
