@@ -30,13 +30,26 @@ import meetingRouter from "./routes/meeting.route";
 import feedbackRouter from "./routes/feedback.routes";
 import trainerRouter from "./routes/trainer.routes";
 const app = express();
-app.use(
-  cors({
-    origin: env.frontend_url,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    credentials: true,
-  })
-);
+
+const allowedOrigins =
+  env.frontend_url
+    ?.split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean) ?? [];
+
+const corsOptions: cors.CorsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Not allowed by CORS: ${origin}`));
+    }
+  },
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 app.use(cookieParser());
 app.use(passport.initialize());
