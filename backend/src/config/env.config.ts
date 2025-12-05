@@ -1,6 +1,13 @@
 import dotenv from "dotenv";
 
 dotenv.config();
+
+const rawFrontendUrl = process.env.FRONTEND_URL ?? "";
+const parsedFrontendUrls = rawFrontendUrl
+  .split(",")
+  .map((url) => url.trim())
+  .filter(Boolean);
+
 export const env = {
   get port() {
     return process.env.PORT;
@@ -37,8 +44,19 @@ export const env = {
   get google_callback_url() {
     return process.env.GOOGLE_CALLBACK_URL;
   },
+  /**
+   * Primary frontend base URL (first value from FRONTEND_URL env var).
+   * Use this for redirects, webhooks, etc.
+   */
   get frontend_url() {
-    return process.env.FRONTEND_URL;
+    return parsedFrontendUrls[0] ?? rawFrontendUrl;
+  },
+  /**
+   * All configured frontend origins (comma separated FRONTEND_URL env var).
+   * Use this for CORS/socket configurations.
+   */
+  get frontend_urls() {
+    return parsedFrontendUrls;
   },
 
   // AWS
