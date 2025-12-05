@@ -3,39 +3,46 @@ import authMiddleware from "../middlewares/verifyToken.middleware";
 import { TYPES } from "../shared/types/inversify.types";
 import { container } from "../inversify.config";
 import { IChatController } from "../controllers/interface/chat.controller.interface";
-
+import { adaptHandler } from "../shared/utils/routeHandler.util";
 
 const chatRouter = Router();
 const controller = container.get<IChatController>(TYPES.ChatController);
 
 chatRouter.use(authMiddleware);
 
-chatRouter.post("/init/:programId", (req, res, next) => {
-  controller.initThread(req, res).catch(next);
-});
+chatRouter.post(
+  "/init/:programId",
+  adaptHandler(controller.initThread.bind(controller))
+);
 
-chatRouter.get("/threads", (req, res, next) => {
-  controller.getThreads(req, res).catch(next);
-});
+chatRouter.get(
+  "/threads",
+  adaptHandler(controller.getThreads.bind(controller))
+);
 
-chatRouter.get("/trainer/threads", (req, res, next) => {
-  controller.getTrainerThreads(req, res).catch(next);
-});
+chatRouter.get(
+  "/trainer/threads",
+  adaptHandler(controller.getTrainerThreads.bind(controller))
+);
 
-chatRouter.get("/:threadId/messages", (req, res, next) => {
-  controller.getMessages(req, res).catch(next);
-});
+chatRouter.get(
+  "/:threadId/messages",
+  adaptHandler(controller.getMessages.bind(controller))
+);
 
-chatRouter.post("/:threadId/read", (req, res, next) => {
-  controller.markRead(req, res).catch(next);
-});
+chatRouter.post(
+  "/:threadId/read",
+  adaptHandler(controller.markRead.bind(controller))
+);
 
-chatRouter.post("/:threadId/message", (req, res, next) => {
-  controller.sendMessage(req, res).catch(next);
-});
+chatRouter.post(
+  "/:threadId/message",
+  adaptHandler(controller.sendMessage.bind(controller))
+);
 
-chatRouter.delete("/message/:messageId", (req, res, next) => {
-  controller.deleteMessage(req, res).catch(next);
-});
+chatRouter.delete(
+  "/message/:messageId",
+  adaptHandler(controller.deleteMessage.bind(controller))
+);
 
 export default chatRouter;

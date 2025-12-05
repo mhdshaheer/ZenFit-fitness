@@ -3,6 +3,7 @@ import authMiddleware from "../middlewares/verifyToken.middleware";
 import { container } from "../inversify.config";
 import { TYPES } from "../shared/types/inversify.types";
 import { ISlotTemplateController } from "../controllers/interface/slotTemplate.controller.interface";
+import { adaptHandler } from "../shared/utils/routeHandler.util";
 
 const slotTemplateRouter = Router();
 const controller = container.get<ISlotTemplateController>(
@@ -11,20 +12,24 @@ const controller = container.get<ISlotTemplateController>(
 
 slotTemplateRouter.use(authMiddleware);
 
-slotTemplateRouter.post("/", (req, res, next) => {
-    controller.createTemplate(req, res).catch(next);
-});
+slotTemplateRouter.post(
+    "/",
+    adaptHandler(controller.createTemplate.bind(controller))
+);
 
-slotTemplateRouter.patch("/:id", (req, res, next) => {
-    controller.updateTemplate(req, res).catch(next);
-});
+slotTemplateRouter.patch(
+    "/:id",
+    adaptHandler(controller.updateTemplate.bind(controller))
+);
 
-slotTemplateRouter.get("/", (req, res, next) => {
-    controller.getTemplates(req, res).catch(next);
-});
+slotTemplateRouter.get(
+    "/",
+    adaptHandler(controller.getTemplates.bind(controller))
+);
 
-slotTemplateRouter.delete("/:id", (req, res, next) => {
-    controller.deleteTemplate(req, res).catch(next);
-});
+slotTemplateRouter.delete(
+    "/:id",
+    adaptHandler(controller.deleteTemplate.bind(controller))
+);
 
 export default slotTemplateRouter;

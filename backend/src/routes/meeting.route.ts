@@ -10,6 +10,7 @@ import authMiddleware from "../middlewares/verifyToken.middleware";
 import { container } from "../inversify.config";
 import { TYPES } from "../shared/types/inversify.types";
 import { INotificationService } from "../services/interface/notification.service.interface";
+import { adaptHandler } from "../shared/utils/routeHandler.util";
 
 const meetingRouter = Router();
 
@@ -34,24 +35,29 @@ const meetingController = new MeetingController(meetingService);
 meetingRouter.use(authMiddleware);
 
 // Routes
-meetingRouter.post("/create", (req, res, next) => {
-  meetingController.createMeeting(req, res).catch(next);
-});
+meetingRouter.post(
+  "/create",
+  adaptHandler(meetingController.createMeeting.bind(meetingController))
+);
 
-meetingRouter.post("/validate", (req, res, next) => {
-  meetingController.validateMeetingAccess(req, res).catch(next);
-});
+meetingRouter.post(
+  "/validate",
+  adaptHandler(meetingController.validateMeetingAccess.bind(meetingController))
+);
 
-meetingRouter.post("/join", (req, res, next) => {
-  meetingController.joinMeeting(req, res).catch(next);
-});
+meetingRouter.post(
+  "/join",
+  adaptHandler(meetingController.joinMeeting.bind(meetingController))
+);
 
-meetingRouter.post("/:meetingId/end", (req, res, next) => {
-  meetingController.endMeeting(req, res).catch(next);
-});
+meetingRouter.post(
+  "/:meetingId/end",
+  adaptHandler(meetingController.endMeeting.bind(meetingController))
+);
 
-meetingRouter.post("/:meetingId/leave", (req, res, next) => {
-  meetingController.leaveMeeting(req, res).catch(next);
-});
+meetingRouter.post(
+  "/:meetingId/leave",
+  adaptHandler(meetingController.leaveMeeting.bind(meetingController))
+);
 
 export default meetingRouter;

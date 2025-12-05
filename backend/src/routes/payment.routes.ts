@@ -3,59 +3,78 @@ import { container } from "../inversify.config";
 import { IPaymentController } from "../controllers/interface/payment.controller.interface";
 import { TYPES } from "../shared/types/inversify.types";
 import authMiddleware from "../middlewares/verifyToken.middleware";
+import { adaptHandler } from "../shared/utils/routeHandler.util";
 
 const paymentRouter = Router();
 const controller = container.get<IPaymentController>(TYPES.PaymentController);
 paymentRouter.get(
   "/purchased-programs",
   authMiddleware,
-  controller.getPurchasedPrograms.bind(controller)
+  adaptHandler(controller.getPurchasedPrograms.bind(controller))
 );
 paymentRouter.get(
   "/trainer/purchased-programs",
   authMiddleware,
-  controller.getTrainerPurchasedPrograms.bind(controller)
+  adaptHandler(controller.getTrainerPurchasedPrograms.bind(controller))
 );
 
-paymentRouter.post("/create-checkout-session", authMiddleware, (req, res) =>
-  controller.createCheckoutSession(req, res)
+paymentRouter.post(
+  "/create-checkout-session",
+  authMiddleware,
+  adaptHandler(controller.createCheckoutSession.bind(controller))
 );
-paymentRouter.get("/trainer", authMiddleware, (req, res, next) => {
-  controller.getTrainerPayments(req, res).catch(next);
-});
-paymentRouter.get("/", authMiddleware, (req, res, next) => {
-  controller.getPayment(req, res).catch(next);
-});
-paymentRouter.get("/purchased/", authMiddleware, (req, res, next) => {
-  controller.getPurchasedProgram(req, res).catch(next);
-});
-paymentRouter.get("/user/transaction-history", authMiddleware, (req, res, next) => {
-  controller.getUserTransactionHistory(req, res).catch(next);
-});
-paymentRouter.get("/revenue-chart", (req, res, next) => {
-  controller.getRevenueChart(req, res).catch(next);
-});
-paymentRouter.get("/revenue-chart/trainer", (req, res, next) => {
-  controller.getRevenueChartByTrainer(req, res).catch(next);
-});
-paymentRouter.get("/top-categories", authMiddleware, (req, res, next) => {
-  controller.getTopSellingCategories(req, res).catch(next);
-});
+paymentRouter.get(
+  "/trainer",
+  authMiddleware,
+  adaptHandler(controller.getTrainerPayments.bind(controller))
+);
+paymentRouter.get(
+  "/",
+  authMiddleware,
+  adaptHandler(controller.getPayment.bind(controller))
+);
+paymentRouter.get(
+  "/purchased/",
+  authMiddleware,
+  adaptHandler(controller.getPurchasedProgram.bind(controller))
+);
+paymentRouter.get(
+  "/user/transaction-history",
+  authMiddleware,
+  adaptHandler(controller.getUserTransactionHistory.bind(controller))
+);
+paymentRouter.get(
+  "/revenue-chart",
+  adaptHandler(controller.getRevenueChart.bind(controller))
+);
+paymentRouter.get(
+  "/revenue-chart/trainer",
+  adaptHandler(controller.getRevenueChartByTrainer.bind(controller))
+);
+paymentRouter.get(
+  "/top-categories",
+  authMiddleware,
+  adaptHandler(controller.getTopSellingCategories.bind(controller))
+);
 paymentRouter.get(
   "/top-categories/trainer",
   authMiddleware,
-  (req, res, next) => {
-    controller.getTopSellingCategoriesByTrainer(req, res).catch(next);
-  }
+  adaptHandler(controller.getTopSellingCategoriesByTrainer.bind(controller))
 );
-paymentRouter.get("/top-programs", authMiddleware, (req, res, next) => {
-  controller.getTopSellingPrograms(req, res).catch(next);
-});
-paymentRouter.get("/top-programs/trainer", authMiddleware, (req, res, next) => {
-  controller.getTopSellingProgramsByTrainer(req, res).catch(next);
-});
-paymentRouter.get("/entrolled/:programId", authMiddleware, (req, res, next) => {
-  controller.getEntrolledUsers(req, res).catch(next);
-});
+paymentRouter.get(
+  "/top-programs",
+  authMiddleware,
+  adaptHandler(controller.getTopSellingPrograms.bind(controller))
+);
+paymentRouter.get(
+  "/top-programs/trainer",
+  authMiddleware,
+  adaptHandler(controller.getTopSellingProgramsByTrainer.bind(controller))
+);
+paymentRouter.get(
+  "/entrolled/:programId",
+  authMiddleware,
+  adaptHandler(controller.getEntrolledUsers.bind(controller))
+);
 
 export default paymentRouter;
