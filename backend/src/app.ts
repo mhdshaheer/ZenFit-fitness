@@ -31,11 +31,7 @@ import feedbackRouter from "./routes/feedback.routes";
 import trainerRouter from "./routes/trainer.routes";
 const app = express();
 
-const allowedOrigins =
-  env.frontend_url
-    ?.split(",")
-    .map((origin) => origin.trim())
-    .filter(Boolean) ?? [];
+const allowedOrigins = env.frontend_urls ?? [];
 
 const corsOptions: cors.CorsOptions = {
   origin: (origin, callback) => {

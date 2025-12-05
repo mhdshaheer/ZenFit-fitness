@@ -11,7 +11,7 @@ let io: Server;
 export const initializeSocket = (server: HttpServer): Server => {
   io = new Server(server, {
     cors: {
-      origin: env.frontend_url,
+      origin: env.frontend_urls?.length ? env.frontend_urls : env.frontend_url,
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -55,12 +55,12 @@ export const initializeSocket = (server: HttpServer): Server => {
           );
           io.to(`thread-${data.threadId}`).emit("chat:newMessage", message);
           const participants = await chatService.getThreadParticipants(data.threadId);
-          if (participants.userId)
-            {io.to(`user-${participants.userId}`).emit("chat:delivered", { threadId: data.threadId });}
-          if (participants.trainerId)
-            {io
+          if (participants.userId) { io.to(`user-${participants.userId}`).emit("chat:delivered", { threadId: data.threadId }); }
+          if (participants.trainerId) {
+            io
               .to(`trainer-${participants.trainerId}`)
-              .emit("chat:delivered", { threadId: data.threadId });}
+            .emit("chat:delivered", { threadId: data.threadId });
+          }
         } catch (e) {
           console.error("sendMessage error", e);
         }
