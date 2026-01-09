@@ -376,8 +376,10 @@
 
 <!-- Students Modal -->
 @if (showStudentsModal && selectedSession) {
-<div class="modal-overlay" (click)="closeStudentsModal()">
-  <div class="modal-content" (click)="$event.stopPropagation()">
+<div class="modal-overlay" (click)="closeStudentsModal()" (keydown.enter)="closeStudentsModal()" tabindex="0"
+  role="button" aria-label="Close modal">
+  <div class="modal-content" (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()" tabindex="-1"
+    role="none">
     <div class="modal-header">
       <div class="modal-title-section">
         <h2 class="modal-title">Booked Students</h2>
@@ -427,8 +429,10 @@
 
 <!-- Feedback Modal -->
 @if (showFeedbackModal && selectedFeedbackSession) {
-<div class="modal-overlay" (click)="closeFeedbackModal()">
-  <div class="modal-content" style="max-width: 600px; width: 90vw;" (click)="$event.stopPropagation()">
+<div class="modal-overlay" (click)="closeFeedbackModal()" (keydown.enter)="closeFeedbackModal()" tabindex="0"
+  role="button" aria-label="Close modal">
+  <div class="modal-content" style="max-width: 600px; width: 90vw;" (click)="$event.stopPropagation()"
+    (keydown)="$event.stopPropagation()" tabindex="-1" role="none">
     <div class="modal-header">
       <div class="modal-title-section">
         <h2 class="modal-title">Session Feedback</h2>

@@ -42,8 +42,8 @@ export class MeetingService {
 
   // WebRTC
   private localStream: MediaStream | null = null;
-  private _peerConnections: Map<string, RTCPeerConnection> = new Map();
-  private _remoteStreams: Map<string, MediaStream> = new Map();
+  private _peerConnections = new Map<string, RTCPeerConnection>();
+  private _remoteStreams = new Map<string, MediaStream>();
   private _remoteStreams$ = new BehaviorSubject<Map<string, MediaStream>>(new Map());
 
   // WebRTC Configuration
@@ -95,7 +95,7 @@ export class MeetingService {
   /**
    * Initialize local media stream
    */
-  async initializeLocalStream(audioOnly: boolean = false): Promise<MediaStream> {
+  async initializeLocalStream(audioOnly = false): Promise<MediaStream> {
     try {
       this._meetingState$.next('connecting');
 

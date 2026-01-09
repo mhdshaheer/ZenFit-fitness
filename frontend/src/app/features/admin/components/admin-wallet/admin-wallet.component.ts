@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { PaymentHistory } from '../../../../interface/payment.interface';
 import { WalletComponent } from '../../../../shared/components/wallet/wallet.component';
@@ -9,7 +9,7 @@ import { WalletComponent } from '../../../../shared/components/wallet/wallet.com
   templateUrl: './admin-wallet.component.html',
   styleUrl: './admin-wallet.component.css',
 })
-export class AdminWalletComponent {
+export class AdminWalletComponent implements OnInit {
   totalAmont = 0;
   private readonly _paymentService = inject(PaymentService);
   paymentHistoryData: PaymentHistory[] = [];

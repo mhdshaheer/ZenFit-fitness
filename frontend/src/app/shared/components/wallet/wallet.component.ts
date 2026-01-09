@@ -3,7 +3,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
 import { PaymentHistory } from '../../../interface/payment.interface';
 
 @Component({
-  selector: 'zenfit-wallet',
+  selector: 'app-wallet',
   imports: [CommonModule],
   templateUrl: './wallet.component.html',
   styleUrl: './wallet.component.css',
@@ -12,9 +12,9 @@ export class WalletComponent {
   @Input() walletBalance = 0;
   @Input() paymentHistory: PaymentHistory[] = [];
 
-  @Output() onWithdraw = new EventEmitter<void>();
+  @Output() withdraw = new EventEmitter<void>();
 
   handleWithdraw() {
-    this.onWithdraw.emit();
+    this.withdraw.emit();
   }
 }

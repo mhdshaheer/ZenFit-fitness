@@ -67,13 +67,13 @@ export class SidebarComponent implements OnInit {
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize(event: Event): void {
+  onResize(_event: Event): void {
     this.isLargeScreen = window.innerWidth < 1024;
     this.handleScreenSize();
   }
 
   @HostListener('document:keydown.escape', ['$event'])
-  onEscapeKey(event: KeyboardEvent): void {
+  onEscapeKey(_event: KeyboardEvent): void {
     if (this.isMobileOpen) {
       this.toggleMobile();
     }

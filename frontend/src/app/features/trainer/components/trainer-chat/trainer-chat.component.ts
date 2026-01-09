@@ -30,24 +30,27 @@ export class TrainerChatComponent implements OnInit, OnDestroy, AfterViewChecked
   active: ChatThread | null = null;
   messages: ChatMessage[] = [];
   input = '';
-  
+
   // Confirmation dialog state
   showDeleteConfirm = false;
   messageToDelete: string | null = null;
 
   ngOnInit(): void {
     // Fetch trainer's chat threads
-    this.chat.getTrainerThreads().pipe(takeUntil(this.destroy$)).subscribe((res: any) => {
+    this.chat.getTrainerThreads().pipe(takeUntil(this.destroy$)).subscribe((res: { data: ChatThread[] }) => {
       this.threads = res.data || [];
       if (this.threads.length) {
         this.select(this.threads[0]);
         // Join trainer room for notifications
-        this.socket.join(this.threads[0].trainerId as any, 'trainer');
+        const trainerId = typeof this.threads[0].trainerId === 'string'
+          ? this.threads[0].trainerId
+          : this.threads[0].trainerId._id;
+        this.socket.join(trainerId, 'trainer');
       }
     });
 
     // Listen for incoming messages
-    this.socket.onNewMessage().pipe(takeUntil(this.destroy$)).subscribe((m: any) => {
+    this.socket.onNewMessage().pipe(takeUntil(this.destroy$)).subscribe((m: ChatMessage) => {
       // Update the active chat messages
       if (this.active && m.threadId === this.active._id) {
         this.messages.push(m);
@@ -57,7 +60,7 @@ export class TrainerChatComponent implements OnInit, OnDestroy, AfterViewChecked
           this.chat.markRead(this.active._id).subscribe();
         }
       }
-      
+
       // Update thread list in sidebar to show latest message
       const thread = this.threads.find(t => t._id === m.threadId);
       if (thread) {
@@ -78,7 +81,7 @@ export class TrainerChatComponent implements OnInit, OnDestroy, AfterViewChecked
     this.socket.onDelivered().pipe(takeUntil(this.destroy$)).subscribe(data => {
       const thread = this.threads.find(t => t._id === data.threadId);
       if (thread && (!this.active || this.active._id !== data.threadId)) {
-        this.chat.getTrainerThreads().subscribe((res: any) => {
+        this.chat.getTrainerThreads().subscribe((res: { data: ChatThread[] }) => {
           this.threads = res.data || [];
         });
       }
@@ -97,7 +100,7 @@ export class TrainerChatComponent implements OnInit, OnDestroy, AfterViewChecked
     // Extract trainer ID string from populated object or use as-is if string
     const trainerId = typeof t.trainerId === 'object' ? t.trainerId._id : t.trainerId;
     this.socket.joinThread(t._id, trainerId, 'trainer');
-    this.chat.getMessages(t._id, 1, 50).subscribe((res: any) => {
+    this.chat.getMessages(t._id, 1, 50).subscribe((res: { data: ChatMessage[] }) => {
       this.messages = res.data || [];
       this.shouldScrollToBottom = true;
     });
@@ -145,7 +148,7 @@ export class TrainerChatComponent implements OnInit, OnDestroy, AfterViewChecked
 
   confirmDelete() {
     if (!this.messageToDelete) return;
-    
+
     this.chat.deleteMessage(this.messageToDelete).subscribe({
       next: () => {
         this.messages = this.messages.filter(m => m._id !== this.messageToDelete);

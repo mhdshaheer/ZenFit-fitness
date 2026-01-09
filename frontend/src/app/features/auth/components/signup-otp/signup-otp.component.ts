@@ -68,10 +68,10 @@ export class SignupOtpComponent implements OnDestroy {
       .resentOtp(this.email)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
-        next: (_res) => {
+        next: () => {
           this._toastService.success('OTP resent');
         },
-        error: (_err) => {
+        error: () => {
           this._toastService.error('Failed to resend OTP');
         },
       });

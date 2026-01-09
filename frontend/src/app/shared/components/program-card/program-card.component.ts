@@ -8,7 +8,7 @@ export interface Program {
   duration: string;
   image?: string;
   description: string;
-  category: string;
+  category: string | { name?: string; _id?: string; id?: string };
   difficultyLevel: string;
   price: number;
   enrolledCount?: number;
@@ -63,8 +63,9 @@ export class ProgramCardComponent {
     }
   }
 
-  getCategoryColor(category: string): string {
-    switch (category.toLowerCase()) {
+  getCategoryColor(category: string | { name?: string }): string {
+    const categoryName = typeof category === 'string' ? category : category?.name || '';
+    switch (categoryName.toLowerCase()) {
       case 'fitness':
         return 'bg-blue-100 text-blue-800';
       case 'yoga':
@@ -74,6 +75,13 @@ export class ProgramCardComponent {
       default:
         return 'bg-gray-100 text-gray-800';
     }
+  }
+
+  get categoryDisplay(): string {
+    if (typeof this.program.category === 'string') {
+      return this.program.category;
+    }
+    return this.program.category?.name || 'Unknown';
   }
 
   onViewProgram(id: string) {

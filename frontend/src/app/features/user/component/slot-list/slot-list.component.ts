@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import {
@@ -68,7 +68,7 @@ interface ZonedDateInfo {
   templateUrl: './slot-list.component.html',
   styleUrl: './slot-list.component.css',
 })
-export class SlotListComponent implements OnDestroy {
+export class SlotListComponent implements OnDestroy, OnInit {
   private readonly _authService = inject(AuthService);
   private readonly _slotService = inject(SlotService);
   private readonly _programService = inject(ProgramService);

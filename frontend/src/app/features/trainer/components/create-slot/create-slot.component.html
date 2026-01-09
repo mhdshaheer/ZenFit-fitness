@@ -68,9 +68,9 @@
       <form [formGroup]="templateForm" (ngSubmit)="submitTemplate()" class="space-y-5">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
           <div class="md:col-span-1">
-            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Program <span
+            <label for="programId" class="block text-xs font-medium text-neutral-600 mb-1.5">Program <span
                 class="text-red-600">*</span></label>
-            <select formControlName="programId"
+            <select id="programId" formControlName="programId"
               class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
               <option value="">Select program</option>
               @for (program of programs; track program) {
@@ -82,9 +82,9 @@
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Timezone <span
+            <label for="timezone" class="block text-xs font-medium text-neutral-600 mb-1.5">Timezone <span
                 class="text-red-600">*</span></label>
-            <select formControlName="timezone"
+            <select id="timezone" formControlName="timezone"
               class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
               @for (tz of timezoneOptions; track tz) {
               <option [value]="tz">{{ tz }}</option>
@@ -93,18 +93,18 @@
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Capacity <span
+            <label for="capacity" class="block text-xs font-medium text-neutral-600 mb-1.5">Capacity <span
                 class="text-red-600">*</span></label>
-            <input type="number" formControlName="capacity" min="1" max="100"
+            <input id="capacity" type="number" formControlName="capacity" min="1" max="100"
               class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900" />
           </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Start time <span
+            <label for="startTime" class="block text-xs font-medium text-neutral-600 mb-1.5">Start time <span
                 class="text-red-600">*</span></label>
-            <select formControlName="startTime"
+            <select id="startTime" formControlName="startTime"
               class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
               <option value="">Select start</option>
               @for (option of timeOptions; track option) {
@@ -114,9 +114,10 @@
           </div>
 
           <div>
-            <label class="block text-xs font-medium text-neutral-600 mb-1.5">End time <span
+            <label for="endTime" class="block text-xs font-medium text-neutral-600 mb-1.5">End time <span
                 class="text-red-600">*</span></label>
-            <select formControlName="endTime" [class.border-red-500]="templateForm.hasError('endBeforeStart')"
+            <select id="endTime" formControlName="endTime"
+              [class.border-red-500]="templateForm.hasError('endBeforeStart')"
               class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
               <option value="">Select end</option>
               @for (option of filteredEndOptions; track option) {
@@ -128,9 +129,9 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Recurrence <span
-                class="text-red-600">*</span></label>
-            <div class="flex gap-3">
+            <div id="recurrenceLabel" class="block text-xs font-medium text-neutral-600 mb-1.5">Recurrence <span
+                class="text-red-600">*</span></div>
+            <div role="radiogroup" aria-labelledby="recurrenceLabel" class="flex gap-3">
               @for (rec of recurrenceOptions; track rec) {
               <label class="flex items-center gap-2 text-sm text-neutral-700">
                 <input type="radio" class="text-neutral-900" [value]="rec" formControlName="recurrenceType" />
@@ -142,8 +143,8 @@
 
           @if (templateForm.value.recurrenceType === 'DAILY') {
           <div>
-            <label class="block text-xs font-medium text-neutral-600 mb-1.5">Interval (days)</label>
-            <input type="number" formControlName="intervalDays" min="1" max="30"
+            <label for="intervalDays" class="block text-xs font-medium text-neutral-600 mb-1.5">Interval (days)</label>
+            <input id="intervalDays" type="number" formControlName="intervalDays" min="1" max="30"
               class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900" />
           </div>
           }
@@ -151,8 +152,8 @@
 
         @if (templateForm.value.recurrenceType === 'WEEKLY') {
         <div>
-          <label class="block text-xs font-medium text-neutral-600 mb-1.5">Days of week</label>
-          <div class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
+          <div id="daysOfWeekLabel" class="block text-xs font-medium text-neutral-600 mb-1.5">Days of week</div>
+          <div aria-labelledby="daysOfWeekLabel" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
             @for (day of weekDays; track day) {
             <button type="button" class="px-3 py-2 text-xs font-medium rounded-md border transition"
               [class.bg-neutral-900]="day.selected" [class.text-white]="day.selected"

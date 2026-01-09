@@ -21,7 +21,9 @@ export class ForgotPasswordComponent {
   isLoading = false;
   private _logger = inject(LoggerService)
 
-  constructor(private fb: FormBuilder) {
+  private fb = inject(FormBuilder);
+
+  constructor() {
     this.forgotPasswordForm = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
     });

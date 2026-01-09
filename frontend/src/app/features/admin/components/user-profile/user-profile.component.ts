@@ -13,13 +13,13 @@ interface TrainerProfile {
   image: string;
   name: string;
   email: string;
-  phone: string;
+  phone: string | null;
   languages: string[];
   gender: string;
   role?: string;
   dob: string;
   isVerified?: boolean;
-  status?: 'active' | 'blocked';
+  status?: 'active' | 'blocked' | 'inactive';
   resume?: {
     fileName: string;
     fileSize: number;
@@ -54,8 +54,8 @@ export class UserProfileComponent implements OnDestroy, OnInit {
   private readonly _destroy$ = new Subject<void>();
   trainer: TrainerProfile | null = null;
 
-  onImageError(event: any) {
-    event.target.src =
+  onImageError(event: Event) {
+    (event.target as HTMLImageElement).src =
       'https://via.placeholder.com/150x150/e5e7eb/9ca3af?text=No+Image';
   }
 

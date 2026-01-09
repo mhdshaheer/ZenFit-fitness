@@ -56,6 +56,7 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   loadPurchasedPrograms(): void {
     this.loading = true;
     if (this.filters) {
+      this.filters.page = 1;
     }
     this._paymentService
       .getPurchasedProgramsOnAdmin(this.filters)
@@ -132,7 +133,7 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
     });
   }
 
-  formatCurrency(amount: number, currency: string = 'INR'): string {
+  formatCurrency(amount: number, currency = 'INR'): string {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: currency,

@@ -4,6 +4,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import {
   TableAction,
   TableColumn,
+  ActionEvent,
 } from '../../../../interface/shared.interface';
 import { TableComponent } from '../../../../shared/components/table/table.component';
 import { IProgramTable } from '../../../../interface/program.interface';
@@ -11,7 +12,6 @@ import { Program } from '../../../trainer/store/trainer.model';
 import { ApprovalStatusColorPipe } from '../../../../shared/pipes/approval-status-color.pipe';
 import { NgClass } from '@angular/common';
 import { Router } from '@angular/router';
-import { ActionEvent } from '../user-manage/user-manage.component';
 
 type ApprovalTabValue = 'Pending' | 'Approved' | 'Rejected';
 
@@ -85,7 +85,7 @@ export class ProgramListComponent implements OnInit {
 
   activeApprovalTab: ApprovalTabValue = 'Pending';
 
-  programAction: TableAction[] = [
+  programAction: TableAction<IProgramTable>[] = [
     { label: 'View', icon: 'view', color: 'blue', action: 'view' },
   ];
 
@@ -178,7 +178,7 @@ export class ProgramListComponent implements OnInit {
     return 'Pending';
   }
 
-  onViewProgram(event: ActionEvent) {
+  onViewProgram(event: ActionEvent<IProgramTable>) {
     if (event.action == 'view') {
       this._logger.info('view action is clicked :', event.row.id);
       this._router.navigate(['admin/programs', event.row.id]);

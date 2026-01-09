@@ -54,7 +54,7 @@
         </p>
 
         <!-- Resend Button -->
-        @if (timer == 0) {
+        @if (timer === 0) {
         <button type="button" (click)="resendOtp()" [ngClass]="textColor"
           class="transition-colors text-green-600 font-semibold underline hover:text-green-700 duration-200 disabled:opacity-60 disabled:cursor-not-allowed">
           Resend Code

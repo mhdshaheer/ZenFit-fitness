@@ -20,7 +20,7 @@ export class AuthEffects {
       ofType(AuthActions.signup),
       mergeMap(({ payload }) =>
         this.authService.signup(payload).pipe(
-          map((res) => {
+          map(() => {
             return AuthActions.signupSuccess({
               email: payload.email,
             });
@@ -90,7 +90,7 @@ export class AuthEffects {
     () =>
       this.actions$.pipe(
         ofType(AuthActions.loginSuccess),
-        tap(({ accessToken, role }) => {
+        tap(({ role }) => {
           // Token is already set as httpOnly cookie by backend
           // Clean up any old localStorage tokens and store minimal info for client-side role checking
           localStorage.removeItem('accessToken'); // Remove old token if exists

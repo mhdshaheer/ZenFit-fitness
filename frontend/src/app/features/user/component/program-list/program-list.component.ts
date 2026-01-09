@@ -63,7 +63,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
       );
 
       this.programs = res.programs.map((item) => {
-        const categories = JSON.parse(item.category);
+        const categories = JSON.parse(item.category) as ISubCategory;
         const subCatName = categories.name;
         this.subcategories.push(categories);
         return { ...item, category: subCatName };
@@ -90,19 +90,19 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   ];
 
   extractUniqueSubCategories(subcategories: ISubCategory[]) {
-    let unique = new Set<string>();
-    for (let i = 0; i < subcategories.length; i++) {
-      let str = JSON.stringify(subcategories[i]);
+    const unique = new Set<string>();
+    for (const subcategory of subcategories) {
+      const str = JSON.stringify(subcategory);
       if (!unique.has(str)) {
         unique.add(str);
       }
     }
-    let newArr = [];
-    for (let item of unique) {
+    const newArr = [];
+    for (const item of unique) {
       newArr.push(JSON.parse(item));
     }
     this.programTypes = newArr.map((item) => {
-      let obj: IProgramType = {
+      const obj: IProgramType = {
         label: item.name,
         value: item._id,
         selected: false,
@@ -125,20 +125,24 @@ export class ProgramListComponent implements OnDestroy, OnInit {
     this.isFilterMenuOpen = !this.isFilterMenuOpen;
   }
   onFilterChange(option: IProgramType) {
-    for (let item of this.programTypes) {
-      if (item.value == option.value) {
+    for (const item of this.programTypes) {
+      if (item.value === option.value) {
         item.selected = !item.selected;
       }
     }
   }
 
-  clearAllFilters() {}
+  clearAllFilters() {
+    this._logger.info('Clearing all filters');
+  }
 
   // Sorting
   toggleSortMenu() {
     this.isSortMenuOpen = !this.isSortMenuOpen;
   }
-  onSortChange(option: any) {}
+  onSortChange(_option: unknown) {
+    this._logger.info('Sorting changed');
+  }
 
   ngOnDestroy(): void {
     this._destroy$.next();

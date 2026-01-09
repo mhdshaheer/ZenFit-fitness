@@ -18,6 +18,12 @@ interface Menu {
   icon: string;
 }
 
+interface ActivityLogItem {
+  icon: string;
+  message: string;
+  timestamp: Date;
+}
+
 @Component({
   selector: 'app-trainer-layout',
   imports: [RouterModule, HeaderComponent],
@@ -138,8 +144,8 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
     },
   ];
 
-  searchResults: any[] = [];
-  activityLog: any[] = [];
+  searchResults: unknown[] = [];
+  activityLog: ActivityLogItem[] = [];
 
   handleSearchChange(query: string) {
     this._logger.info('Search query changed:', query);

@@ -18,7 +18,7 @@ module.exports = tseslint.config(
         "error",
         {
           type: "attribute",
-          prefix: "app",
+          prefix: ["app", "zenfit"],
           style: "camelCase",
         },
       ],
@@ -26,8 +26,16 @@ module.exports = tseslint.config(
         "error",
         {
           type: "element",
-          prefix: "app",
+          prefix: ["app", "zenfit"],
           style: "kebab-case",
+        },
+      ],
+      "@typescript-eslint/no-unused-vars": [
+        "error",
+        {
+          argsIgnorePattern: "^_",
+          varsIgnorePattern: "^_",
+          caughtErrorsIgnorePattern: "^_",
         },
       ],
     },

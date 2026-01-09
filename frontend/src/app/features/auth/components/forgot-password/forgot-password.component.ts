@@ -31,7 +31,7 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   fb = inject(FormBuilder);
   private readonly _authService = inject(AuthService);
   timer!: number;
-  intervel: any;
+  intervalId?: ReturnType<typeof setInterval>;
 
   // ========= Styles ========
   buttonColor = 'text-green-600 font-semibold';
@@ -191,10 +191,10 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   startTimer() {
     this.timer = 30;
-    this.intervel = setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.timer--;
       if (this.timer === 0) {
-        clearInterval(this.intervel);
+        clearInterval(this.intervalId);
       }
     }, 1000);
   }
@@ -202,6 +202,6 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
-    clearInterval(this.intervel);
+    clearInterval(this.intervalId);
   }
 }

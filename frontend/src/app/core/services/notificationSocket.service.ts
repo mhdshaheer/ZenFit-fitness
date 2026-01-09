@@ -12,7 +12,9 @@ export class NotificationSocketService {
   private _connectionStatus = new BehaviorSubject<boolean>(false);
   private _loggerService = inject(LoggerService);
 
-  constructor(private _ngZone: NgZone) {
+  private _ngZone = inject(NgZone);
+
+  constructor() {
     this.initializeSocket();
   }
 

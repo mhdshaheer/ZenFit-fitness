@@ -3,18 +3,21 @@ import { io, Socket } from 'socket.io-client';
 import { Observable, Subject } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { LoggerService } from './logger.service';
+import { ChatMessage } from './chat.service';
 
 @Injectable({ providedIn: 'root' })
 export class ChatSocketService {
   private _socket!: Socket;
   private _logger = inject(LoggerService);
-  private _newMessage$ = new Subject<any>();
+  private _newMessage$ = new Subject<ChatMessage>();
   private _typing$ = new Subject<{ threadId: string; senderType: 'user' | 'trainer' }>();
   private _read$ = new Subject<{ threadId: string; readerId: string; readerType: 'user' | 'trainer' }>();
   private _delivered$ = new Subject<{ threadId: string }>();
   private _messageDeleted$ = new Subject<{ messageId: string }>();
 
-  constructor(private _zone: NgZone) {
+  private readonly _zone = inject(NgZone);
+
+  constructor() {
     this._socket = io(environment.socketUrl, { reconnection: true, withCredentials: true, transports: ['websocket', 'polling'] });
     // Connection events
     this._socket.on('connect', () => {
@@ -59,7 +62,7 @@ export class ChatSocketService {
     this._socket.emit('chat:read', { threadId, readerId, readerType });
   }
 
-  onNewMessage(): Observable<any> {
+  onNewMessage(): Observable<ChatMessage> {
     return this._newMessage$.asObservable();
   }
 

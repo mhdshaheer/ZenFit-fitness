@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
@@ -20,7 +20,7 @@ import { CategoryNameValidator } from '../../../../shared/validators/categoryNam
   templateUrl: './category-view.component.html',
   styleUrl: './category-view.component.css',
 })
-export class CategoryViewComponent {
+export class CategoryViewComponent implements OnInit, OnDestroy {
   editForm: FormGroup;
 
   isSubmitting = false;
@@ -34,7 +34,9 @@ export class CategoryViewComponent {
 
   private readonly _destroy$ = new Subject<void>();
 
-  constructor(private readonly _fb: FormBuilder) {
+  private readonly _fb = inject(FormBuilder);
+
+  constructor() {
     // Initialize create form
     this.editForm = this._fb.group({
       name: [

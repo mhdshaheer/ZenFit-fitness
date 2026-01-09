@@ -16,27 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { Router } from '@angular/router';
 
-export interface TableColumn {
-  key: string;
-  label: string;
-  sortable?: boolean;
-  type?: 'text' | 'email' | 'date' | 'status' | 'avatar';
-  width?: string;
-}
-
-export interface TableAction {
-  label: string;
-  icon: string;
-  color: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'gray';
-  action: string;
-  condition?: (row: User) => boolean;
-}
-
-export interface ActionEvent {
-  action: string;
-  row: User;
-  index: number;
-}
+import { ActionEvent, TableAction, TableColumn } from '../../../../interface/shared.interface';
 
 @Component({
   selector: 'app-user-manage',
@@ -124,7 +104,7 @@ export class UserManageComponent implements OnInit {
     },
   ];
 
-  userActions: TableAction[] = [
+  userActions: TableAction<User>[] = [
     { label: 'View', icon: 'view', color: 'blue', action: 'view' },
     {
       label: 'Block',
@@ -142,7 +122,7 @@ export class UserManageComponent implements OnInit {
     },
   ];
 
-  onUserAction(event: ActionEvent) {
+  onUserAction(event: ActionEvent<User>) {
     const { action, row } = event;
     if (action == 'view') {
       this._router.navigate(['/admin/profile', row.id]);

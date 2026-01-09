@@ -10,8 +10,16 @@ export interface LoginPayload {
   password: string;
 }
 
+export interface AuthUser {
+  id?: string;
+  username?: string;
+  email?: string;
+  role?: string;
+  accessToken?: string;
+}
+
 export interface AuthState {
-  user: any | null;
+  user: AuthUser | null;
   accessToken: string | null;
   loading: boolean;
   error: string | null;

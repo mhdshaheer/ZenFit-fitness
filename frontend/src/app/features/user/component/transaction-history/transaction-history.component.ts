@@ -28,8 +28,8 @@ export class TransactionHistoryComponent implements OnInit, OnDestroy {
   totalPages = 1;
 
   // Filters
-  selectedStatus: string = 'all';
-  searchTerm: string = '';
+  selectedStatus = 'all';
+  searchTerm = '';
 
   ngOnInit(): void {
     this.loadTransactions();
@@ -128,7 +128,7 @@ export class TransactionHistoryComponent implements OnInit, OnDestroy {
     const pages: number[] = [];
     const maxVisiblePages = 5;
     let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+    const endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);

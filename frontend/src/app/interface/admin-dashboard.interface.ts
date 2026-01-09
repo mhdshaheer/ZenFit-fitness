@@ -27,7 +27,7 @@ export interface AdminDualSeries {
 
 export interface AdminStackedSeries {
     categories: string[];
-    series: Array<{ name: string; data: number[] }>;
+    series: { name: string; data: number[] }[];
 }
 
 export interface AdminCategorySeries {

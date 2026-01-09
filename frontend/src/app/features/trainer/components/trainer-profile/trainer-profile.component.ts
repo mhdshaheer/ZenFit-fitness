@@ -30,9 +30,9 @@ interface ProfileUser {
   fullName: string;
   username: string;
   dob: string;
-  gender: 'male' | 'female' | null;
+  gender: 'Male' | 'Female' | 'Other' | null;
   email: string;
-  phone: string;
+  phone: string | null;
   role: string;
 }
 type TabKey = 'personal' | 'security' | 'upload';
@@ -90,6 +90,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (event) => {
           if (event.type === HttpEventType.UploadProgress && event.total) {
+            // progress tracking
           } else if (event.type === HttpEventType.Response) {
             this.profileImageUrl = event.body?.url ?? null;
             this.isUploading = false;
@@ -320,12 +321,13 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
   private generateFileId(): string {
     return Date.now().toString() + Math.random().toString(36).substr(2, 9);
   }
-  onCvFileSelected(event: any): void {
-    const file = event.target.files?.[0];
+  onCvFileSelected(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    const file = input.files?.[0];
     if (file) {
       this.processFile(file);
     }
-    event.target.value = '';
+    input.value = '';
   }
 
   formatFileSize(bytes: number): string {

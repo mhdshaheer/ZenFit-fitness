@@ -50,7 +50,7 @@ export class ChatService {
   }
 
   getMessages(threadId: string, page = 1, limit = 50): Observable<{ success: boolean; data: ChatMessage[] }> {
-    let params = new HttpParams().set('page', page).set('limit', limit);
+    const params = new HttpParams().set('page', page).set('limit', limit);
     return this._http.get<{ success: boolean; data: ChatMessage[] }>(`${this._api}/${threadId}/messages`, { params });
   }
 

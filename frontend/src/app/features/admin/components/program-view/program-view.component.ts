@@ -27,7 +27,7 @@ interface Trainer {
   avatar?: string;
 }
 @Component({
-  selector: 'zenfit-program-view',
+  selector: 'app-program-view',
   imports: [CommonModule],
   templateUrl: './program-view.component.html',
   styleUrl: './program-view.component.css',
@@ -99,7 +99,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
             email: res.email,
             phone: res.phone!,
           };
-          this.getProfileImage(res.profileImage, this.trainerId);
+          this.getProfileImage();
         },
         error: (err) => {
           this._logger.error('Failed to fetch trainer info :', err);
@@ -107,7 +107,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
       });
   }
 
-  getProfileImage(profileUrl: string, trainerId: string) {
+  getProfileImage() {
     // setTimeout(() => {
     //   this._profileService.getFile(profileUrl, trainerId).subscribe({
     //     next: (res) => {

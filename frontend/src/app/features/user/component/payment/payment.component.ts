@@ -30,7 +30,7 @@ interface PaymentMethod {
   styleUrl: './payment.component.css',
 })
 export class PaymentComponent implements OnInit, OnDestroy {
-  selectedPayment: string = 'card';
+  selectedPayment = 'card';
   myProgram: Program[] = [];
   programId!: string;
 
@@ -59,7 +59,7 @@ export class PaymentComponent implements OnInit, OnDestroy {
   }
 
   getDifficultyColor(difficulty: string): string {
-    const colors: { [key: string]: string } = {
+    const colors: Record<string, string> = {
       Beginner: 'bg-green-100 text-green-800',
       Intermediate: 'bg-yellow-100 text-yellow-800',
       Advanced: 'bg-red-100 text-red-800',

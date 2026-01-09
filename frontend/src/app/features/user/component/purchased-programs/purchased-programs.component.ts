@@ -4,7 +4,6 @@ import { PurchasedProgram } from '../../../../interface/payment.interface';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { Router } from '@angular/router';
-import { LoggerService } from '../../../../core/services/logger.service';
 interface Course {
   id: string;
   title: string;
@@ -13,7 +12,7 @@ interface Course {
   purchasedAt: Date;
 }
 @Component({
-  selector: 'zenfit-purchased-programs',
+  selector: 'app-purchased-programs',
   imports: [CommonModule],
   templateUrl: './purchased-programs.component.html',
   styleUrl: './purchased-programs.component.css',

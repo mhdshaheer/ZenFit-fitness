@@ -24,17 +24,17 @@ export class OtpComponent implements OnInit {
     'text-green-600 font-semibold underline hover:text-green-700';
   @Input() email = 'gmail';
   @Input() context: 'signup' | 'login' | 'reset' = 'signup';
-  @Output() onVerify = new EventEmitter<string>();
-  @Output() onResend = new EventEmitter<void>();
+  @Output() verify = new EventEmitter<string>();
+  @Output() resend = new EventEmitter<void>();
 
   otpDigits = new Array(6).fill('');
   timer = 30;
-  intervel: any;
+  intervalId?: ReturnType<typeof setInterval>;
 
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef>;
 
-  onInput(event: any, index: number) {
-    const input = event.target;
+  onInput(event: Event, index: number) {
+    const input = event.target as HTMLInputElement;
     const value = input.value;
 
     // Allow only digits
@@ -68,10 +68,10 @@ export class OtpComponent implements OnInit {
 
   startTimer() {
     this.timer = 30;
-    this.intervel = setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.timer--;
       if (this.timer == 0) {
-        clearInterval(this.intervel);
+        clearInterval(this.intervalId);
       }
     }, 1000);
   }
@@ -79,12 +79,12 @@ export class OtpComponent implements OnInit {
     this.startTimer();
   }
   resendOtp() {
-    this.onResend.emit();
+    this.resend.emit();
     this.startTimer();
   }
   onSubmit() {
     const otp = this.getOtp();
     if (otp.length !== 6) return alert('Enter full 6-digit OTP');
-    this.onVerify.emit(otp);
+    this.verify.emit(otp);
   }
 }

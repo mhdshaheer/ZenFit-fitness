@@ -17,6 +17,12 @@ interface Menu {
   icon: string;
 }
 
+interface ActivityLogItem {
+  icon: string;
+  message: string;
+  timestamp: Date;
+}
+
 @Component({
   selector: 'app-user-layout',
   imports: [RouterModule, HeaderComponent],
@@ -122,8 +128,8 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
     { label: 'My Profile', route: '/user/profile', icon: 'fas fa-user' },
   ];
 
-  searchResults: any[] = [];
-  activityLog: any[] = [];
+  searchResults: unknown[] = [];
+  activityLog: ActivityLogItem[] = [];
 
   handleSearchChange(query: string) {
     this._logger.info('Search query changed:', query);

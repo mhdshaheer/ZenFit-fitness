@@ -8,11 +8,9 @@ import {
   Input,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpClient } from '@angular/common/http';
-import { map, Subject, switchMap, take, takeUntil } from 'rxjs';
+import { map, Subject, switchMap, takeUntil } from 'rxjs';
 import { NotificationSocketService } from '../../../core/services/notificationSocket.service';
 import { INotification } from '../../../interface/notification.interface';
-import { environment } from '../../../../environments/environment';
 import { NotificationService } from '../../../core/services/notificaiton.service';
 import { ProfileService } from '../../../core/services/profile.service';
 import { ToastService } from '../../../core/services/toast.service';

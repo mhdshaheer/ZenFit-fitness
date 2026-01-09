@@ -26,7 +26,8 @@
               [ngClass]="{
                 'border-[#2F3241] bg-[#2f32410d]': f['role'].value === 'user',
                 'border-gray-200 hover:border-gray-400': f['role'].value !== 'user'
-              }" (click)="selectRole('user')">
+              }" (click)="selectRole('user')" (keydown.enter)="selectRole('user')" (keydown.space)="selectRole('user')"
+              tabindex="0" role="button" aria-label="Select User Role">
               <div class="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
                 [ngClass]="f['role'].value === 'user' ? 'bg-[#2f324120]' : 'bg-gray-100'">
                 <svg class="w-6 h-6" [ngClass]="f['role'].value === 'user' ? 'text-[#2F3241]' : 'text-gray-500'"
@@ -47,7 +48,8 @@
               [ngClass]="{
                 'border-[#2F3241] bg-[#2f32410d]': f['role'].value === 'trainer',
                 'border-gray-200 hover:border-gray-400': f['role'].value !== 'trainer'
-              }" (click)="selectRole('trainer')">
+              }" (click)="selectRole('trainer')" (keydown.enter)="selectRole('trainer')"
+              (keydown.space)="selectRole('trainer')" tabindex="0" role="button" aria-label="Select Trainer Role">
               <div class="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
                 [ngClass]="f['role'].value === 'trainer' ? 'bg-[#2f324120]' : 'bg-gray-100'">
                 <svg class="w-6 h-6" [ngClass]="f['role'].value === 'trainer' ? 'text-[#2F3241]' : 'text-gray-500'"

@@ -53,40 +53,43 @@
               @case ('avatar') {
               <div class="avatar-cell">
                 <div class="avatar">
-                  @if (row[column.key]) {
-                  <img [src]="row[column.key]" [alt]="row.name || row.email" />
+                  @if (getCellValue(row, column.key)) {
+                  <img [src]="getCellValue(row, column.key)"
+                    [alt]="asTableData(row).name || asTableData(row).email || 'User'" />
                   } @else {
-                  <span>{{ row.name?.charAt(0) || '?' }}</span>
+                  <span>{{ asTableData(row).name?.charAt(0) || '?' }}</span>
                   }
                 </div>
                 <div>
                   <p class="avatar__name">
-                    {{ row.name || row.firstName + " " + row.lastName }}
+                    {{ asTableData(row).name || (asTableData(row).firstName && asTableData(row).lastName ?
+                    asTableData(row).firstName + " " + asTableData(row).lastName : 'Unknown')
+                    }}
                   </p>
-                  <p class="avatar__meta">{{ row.email }}</p>
+                  <p class="avatar__meta">{{ asTableData(row).email || '' }}</p>
                 </div>
               </div>
               }
               @case ('status') {
-              <span class="status-pill" [ngClass]="getStatusClass(row[column.key])">
-                {{ row[column.key] }}
+              <span class="status-pill" [ngClass]="getStatusClass(getCellValue(row, column.key))">
+                {{ getCellValue(row, column.key) }}
               </span>
               }
               @case ('date') {
-              <span class="date-text">{{ formatDate(row[column.key]) }}</span>
+              <span class="date-text">{{ formatDate(getCellValue(row, column.key)) }}</span>
               }
               @case ('email') {
-              <a [href]="'mailto:' + row[column.key]" class="email-link">
-                {{ row[column.key] }}
+              <a [href]="'mailto:' + getCellValue(row, column.key)" class="email-link">
+                {{ getCellValue(row, column.key) }}
               </a>
               }
               @case ('approval') {
-              <span class="approval-chip" [ngClass]="getApprovalClass(row.approvalStatus)">
-                {{ row.approvalStatus }}
+              <span class="approval-chip" [ngClass]="getApprovalClass(asTableData(row).approvalStatus || '')">
+                {{ asTableData(row).approvalStatus || 'Pending' }}
               </span>
               }
               @default {
-              <span>{{ row[column.key] }}</span>
+              <span>{{ getCellValue(row, column.key) }}</span>
               }
               }
             </div>
@@ -135,11 +138,11 @@
       results
     </div>
     <div class="pager">
-      <button type="button" class="pager__btn" (click)="previousPage()" [disabled]="currentPage == 1">
+      <button type="button" class="pager__btn" (click)="previousPage()" [disabled]="currentPage === 1">
         Previous
       </button>
       <span class="pager__page active">{{ currentPage }}</span>
-      <button type="button" class="pager__btn" (click)="nextPage()" [disabled]="currentPage == totalPages">
+      <button type="button" class="pager__btn" (click)="nextPage()" [disabled]="currentPage === totalPages">
         Next
       </button>
     </div>

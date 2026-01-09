@@ -78,7 +78,7 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
   });
 
   private readonly INSTANCES_PAGE_SIZE = 6;
-  private filterReloadHandle: any = null;
+  private filterReloadHandle: ReturnType<typeof setTimeout> | null = null;
 
   readonly recurrenceOptions: RecurrenceType[] = ['WEEKLY', 'DAILY'];
   readonly timezoneOptions = [
@@ -104,7 +104,9 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
     { name: 'Sun', value: 'Sun', selected: false },
   ];
 
-  constructor(private readonly _fb: FormBuilder) {
+  private readonly _fb = inject(FormBuilder);
+
+  constructor() {
     this.generateTimeOptions();
     this.filteredEndOptions = [...this.timeOptions];
 

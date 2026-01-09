@@ -21,7 +21,7 @@ export class ProgramDetailsComponent implements OnInit, OnDestroy {
   private readonly _destroy$ = new Subject<void>();
   private _logger = inject(LoggerService)
 
-  programId: string = '';
+  programId = '';
   program: PurchasedProgram | null = null;
   bookedSlots: BookedSlot[] = [];
   isLoading = true;

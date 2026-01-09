@@ -28,7 +28,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   private readonly _router = inject(Router);
   private readonly _programService = inject(ProgramService);
   private readonly _authService = inject(AuthService);
-  private _intervalId: any;
+  private _intervalId?: ReturnType<typeof setInterval>;
   private _logger = inject(LoggerService)
 
   programs: Program[] = [];
@@ -69,7 +69,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       if (this.isLoggedIn) {
         this.getCurrentUserName();
       }
-    } catch (error) {
+    } catch {
       // Silently handle auth errors for landing page
       this.isLoggedIn = false;
       this.currentUserName = '';
@@ -103,15 +103,15 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   private loadPrograms() {
     this.isLoading = true;
     this._programService.getAllPrograms().subscribe({
-      next: (programs: any) => {
+      next: (programs) => {
         // Filter only approved and active programs for public display
-        this.programs = programs.filter((program: any) => 
-          program.status === 'active' && 
+        this.programs = (programs as Program[]).filter((program) =>
+          program.status === 'active' &&
           program.approvalStatus === 'Approved'
         ).slice(0, 6); // Limit to 6 programs for the landing page
         this.isLoading = false;
       },
-      error: (error: any) => {
+      error: () => {
         this._logger.info('Programs not available or user not authenticated');
         this.isLoading = false;
         // For landing page, show empty programs if API fails (user might not be logged in)
@@ -123,7 +123,7 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   toLogin() {
     this._router.navigate(['/auth/login']);
   }
-  
+
   toSignup() {
     this._router.navigate(['/auth/signup']);
   }
@@ -133,8 +133,8 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       this._router.navigate(['/user/workouts']);
     } else {
       // Redirect to login first, then to workouts after login
-      this._router.navigate(['/auth/login'], { 
-        queryParams: { returnUrl: '/user/workouts' } 
+      this._router.navigate(['/auth/login'], {
+        queryParams: { returnUrl: '/user/workouts' }
       });
     }
   }
@@ -144,8 +144,8 @@ export class LandingPageComponent implements OnInit, OnDestroy {
       this._router.navigate(['/user/dashboard']);
     } else {
       // Redirect to login first, then to dashboard after login
-      this._router.navigate(['/auth/login'], { 
-        queryParams: { returnUrl: '/user/dashboard' } 
+      this._router.navigate(['/auth/login'], {
+        queryParams: { returnUrl: '/user/dashboard' }
       });
     }
   }

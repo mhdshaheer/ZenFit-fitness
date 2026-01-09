@@ -1,32 +1,23 @@
-<nav
-  class="bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-lg fixed top-0 left-0 w-full z-5"
->
+<nav class="bg-gradient-to-r from-emerald-600 to-emerald-700 shadow-lg fixed top-0 left-0 w-full z-5">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <div class="flex items-center space-x-8">
         <div class="flex-shrink-0">
           <a [routerLink]="'/'" class="flex items-center space-x-2">
             <div class="bg-green p-2 rounded-full">
-              <img
-                src="zenfit.webp"
-                alt="Logo"
-                class="h-8 w-8 object-contain rounded-full"
-              />
+              <img src="zenfit.webp" alt="Logo" class="h-8 w-8 object-contain rounded-full" />
             </div>
             <span class="text-white text-xl font-bold tracking-wide">{{
               logoText
-            }}</span>
+              }}</span>
           </a>
         </div>
 
         <!-- Website Navigation Options (Hidden on mobile) -->
         <div class="hidden lg:flex items-center space-x-6">
           @for (item of navigationItems; track item) {
-          <a
-            [routerLink]="item.route"
-            routerLinkActive="text-emerald-200 border-b-2 border-emerald-200"
-            class="text-white hover:text-emerald-200 px-3 py-2 text-sm font-medium transition-colors duration-200"
-          >
+          <a [routerLink]="item.route" routerLinkActive="text-emerald-200 border-b-2 border-emerald-200"
+            class="text-white hover:text-emerald-200 px-3 py-2 text-sm font-medium transition-colors duration-200">
             @if (item.icon) {
             <i [class]="item.icon" class="mr-2"></i>
             }
@@ -40,22 +31,15 @@
       <div class="flex items-center space-x-4">
         <!-- User Profile Dropdown -->
         <div class="relative">
-          <button
-            (click)="toggleUserMenu()"
+          <button (click)="toggleUserMenu()"
             class="flex items-center space-x-2 text-white hover:text-emerald-200 transition-colors duration-200 bg-emerald-500 bg-opacity-30 rounded-lg px-3 py-2"
-            aria-label="User menu"
-          >
+            aria-label="User menu">
             <div class="flex items-center space-x-2">
               @if (userProfile?.avatar) {
-              <img
-                [src]="userProfile?.avatar"
-                [alt]="userProfile?.name"
-                class="h-8 w-8 rounded-full object-cover border-2 border-white"
-              />
+              <img [src]="userProfile?.avatar" [alt]="userProfile?.name"
+                class="h-8 w-8 rounded-full object-cover border-2 border-white" />
               } @else {
-              <div
-                class="h-8 w-8 bg-white rounded-full flex items-center justify-center"
-              >
+              <div class="h-8 w-8 bg-white rounded-full flex items-center justify-center">
                 <i class="fas fa-user text-emerald-600 text-sm"></i>
               </div>
               }
@@ -68,22 +52,15 @@
 
           <!-- User Dropdown Menu -->
           @if (isUserMenuOpen) {
-          <div
-            class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50"
-          >
+          <div class="absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg border border-gray-200 py-2 z-50">
             <!-- User Info Header -->
             <div class="px-4 py-3 border-b border-gray-200">
               <div class="flex items-center space-x-3">
                 @if (userProfile?.avatar) {
-                <img
-                  [src]="userProfile?.avatar"
-                  [alt]="userProfile?.name"
-                  class="h-10 w-10 rounded-full object-cover"
-                />
+                <img [src]="userProfile?.avatar" [alt]="userProfile?.name"
+                  class="h-10 w-10 rounded-full object-cover" />
                 } @else {
-                <div
-                  class="h-10 w-10 bg-emerald-100 rounded-full flex items-center justify-center"
-                >
+                <div class="h-10 w-10 bg-emerald-100 rounded-full flex items-center justify-center">
                   <i class="fas fa-user text-emerald-600"></i>
                 </div>
                 }
@@ -100,23 +77,18 @@
             <!-- Menu Items -->
             <div class="py-1">
               @for (item of userMenuItems; track item) {
-              <a
-                [routerLink]="item.route"
-                (click)="onUserMenuClick(item)"
-                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200"
-              >
+              <a [routerLink]="item.route" (click)="onUserMenuClick(item)"
+                class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors duration-200">
                 <i [class]="item.icon" class="mr-3 text-gray-400 w-4"></i>
                 {{ item.label }}
               </a>
               }
             </div>
-            
+
             <!-- Logout -->
             <div class="border-t border-gray-200 py-1">
-              <button
-                (click)="onLogout()"
-                class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200"
-              >
+              <button (click)="onLogout()"
+                class="flex items-center w-full px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors duration-200">
                 <i class="fas fa-sign-out-alt mr-3 text-red-400 w-4"></i>
                 Sign Out
               </button>
@@ -126,27 +98,15 @@
         </div>
 
         <!-- Mobile Menu Button -->
-        <button
-          (click)="toggleMobileMenu()"
+        <button (click)="toggleMobileMenu()"
           class="lg:hidden p-2 rounded-md text-white hover:text-emerald-200 hover:bg-emerald-500 hover:bg-opacity-30 transition-colors"
-          aria-label="Toggle mobile menu"
-        >
-          <svg
-            class="h-6 w-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              [attr.d]="
+          aria-label="Toggle mobile menu">
+          <svg class="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="
                 isMobileMenuOpen
                   ? 'M6 18L18 6M6 6l12 12'
                   : 'M4 6h16M4 12h16M4 18h16'
-              "
-            ></path>
+              "></path>
           </svg>
         </button>
         <div>
@@ -161,12 +121,8 @@
       <div class="px-2 pt-4 pb-3 space-y-1">
         <!-- Mobile Navigation Items -->
         @for (item of navigationItems; track item) {
-        <a
-          [routerLink]="item.route"
-          (click)="closeMobileMenu()"
-          routerLinkActive="bg-emerald-500 bg-opacity-50"
-          class="text-white hover:text-emerald-200 hover:bg-emerald-500 hover:bg-opacity-30 block px-3 py-2 rounded-md text-base font-medium transition-colors"
-        >
+        <a [routerLink]="item.route" (click)="closeMobileMenu()" routerLinkActive="bg-emerald-500 bg-opacity-50"
+          class="text-white hover:text-emerald-200 hover:bg-emerald-500 hover:bg-opacity-30 block px-3 py-2 rounded-md text-base font-medium transition-colors">
           @if (item.icon) {
           <i [class]="item.icon" class="mr-2"></i>
           }
@@ -180,7 +136,8 @@
 
   <!-- Click outside to close menus -->
   @if (isUserMenuOpen) {
-  <div class="fixed inset-0 z-40" (click)="closeUserMenu()"></div>
+  <div class="fixed inset-0 z-40" (click)="closeUserMenu()" (keydown.enter)="closeUserMenu()" role="button" tabindex="0"
+    aria-label="Close menu"></div>
   }
 </nav>
 
