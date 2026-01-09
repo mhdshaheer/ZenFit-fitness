@@ -14,9 +14,9 @@ export const errorMiddleware = (
   _req: Request,
   res: Response<ErrorResponse>,
   _next: NextFunction
-) => {
-  const status = err.status || HttpStatus.INTERNAL_SERVER_ERROR;
-  const message = err.message || "Something went wrong";
+): void => {
+  const status = err.status ?? HttpStatus.INTERNAL_SERVER_ERROR;
+  const message = err.message ?? "Something went wrong";
 
   logger.error(err);
 

@@ -279,7 +279,7 @@ export class AdminDashboardService implements IAdminDashboardService {
     private buildCategoryMix(programs: IProgram[]): AdminCategorySeries {
         const grouped = programs.reduce<Record<string, number>>((acc, program) => {
             const category = typeof program.category === 'object' && program.category !== null
-                ? (program.category as any).name ?? 'Uncategorized'
+                ? (program.category as { name?: string }).name ?? 'Uncategorized'
                 : program.category ?? 'Uncategorized';
             acc[category] = (acc[category] ?? 0) + 1;
             return acc;
@@ -304,7 +304,7 @@ export class AdminDashboardService implements IAdminDashboardService {
         const grouped = payments.reduce<Record<string, number>>((acc, payment) => {
             const program = programMap.get(payment.programId?.toString() ?? '');
             const category = program && typeof program.category === 'object' && program.category !== null
-                ? (program.category as any).name ?? 'Uncategorized'
+                ? (program.category as { name?: string }).name ?? 'Uncategorized'
                 : 'Uncategorized';
             acc[category] = (acc[category] ?? 0) + (payment.amount ?? 0);
             return acc;
@@ -338,7 +338,13 @@ export class AdminDashboardService implements IAdminDashboardService {
         }));
     }
 
-    private buildBookingVolume(bookings: IBooking[]) {
+    private buildBookingVolume(bookings: IBooking[]): {
+        categories: string[];
+        primary: number[];
+        secondary: number[];
+        primaryLabel: string;
+        secondaryLabel: string;
+    } {
         const weeks = ['Week 1', 'Week 2', 'Week 3', 'Week 4'];
         const counts = weeks.map((_, index) => {
             const start = new Date();
@@ -402,7 +408,7 @@ export class AdminDashboardService implements IAdminDashboardService {
         return payments.reduce<Record<string, RevenueSplit>>((acc, payment) => {
             const date = new Date(payment.createdAt ?? new Date());
             const quarter = `Q${Math.floor(date.getMonth() / 3) + 1}`;
-            if (!acc[quarter]) {
+            if (acc[quarter] === undefined) {
                 acc[quarter] = { admin: 0, trainer: 0 };
             }
             acc[quarter].admin += payment.platformFee ?? 0;
@@ -411,7 +417,11 @@ export class AdminDashboardService implements IAdminDashboardService {
         }, {});
     }
 
-    private aggregateTrainerRevenue(payments: IPayment[], users: IUser[]) {
+    private aggregateTrainerRevenue(payments: IPayment[], users: IUser[]): {
+        name: string;
+        value: number;
+        programs: number;
+    }[] {
         const trainerMap = new Map<string, { name: string; value: number; programs: number }>();
 
         payments.forEach((payment) => {
@@ -422,14 +432,16 @@ export class AdminDashboardService implements IAdminDashboardService {
             const user = users.find((candidate) => candidate._id?.toString() === trainerId);
             if (!trainerMap.has(trainerId)) {
                 trainerMap.set(trainerId, {
-                    name: user?.fullName || user?.username || 'Trainer',
+                    name: (user?.fullName !== null && user?.fullName !== undefined && user?.fullName !== "") ? user.fullName : (user?.username !== undefined && user?.username !== "" ? user.username : 'Trainer'),
                     value: 0,
                     programs: 0,
                 });
             }
-            const entry = trainerMap.get(trainerId)!;
-            entry.value += payment.trainerEarning ?? 0;
-            entry.programs += 1;
+            const entry = trainerMap.get(trainerId);
+            if (entry !== undefined) {
+                entry.value += payment.trainerEarning ?? 0;
+                entry.programs += 1;
+            }
         });
 
         return Array.from(trainerMap.values()).sort((a, b) => b.value - a.value);
@@ -451,7 +463,7 @@ export class AdminDashboardService implements IAdminDashboardService {
             .map(([userId, sessions]) => {
                 const user = users.find((candidate) => candidate._id?.toString() === userId);
                 return {
-                    name: user?.fullName || user?.username || 'Member',
+                    name: (user?.fullName !== null && user?.fullName !== undefined && user?.fullName !== "") ? user.fullName : (user?.username !== undefined && user?.username !== "" ? user.username : 'Member'),
                     sessions,
                     streak: Math.max(1, Math.round(sessions / 2)),
                 };
@@ -474,7 +486,7 @@ export class AdminDashboardService implements IAdminDashboardService {
             .map(([userId, spend]) => {
                 const user = users.find((candidate) => candidate._id?.toString() === userId);
                 return {
-                    name: user?.fullName || user?.username || 'Member',
+                    name: (user?.fullName !== null && user?.fullName !== undefined && user?.fullName !== "") ? user.fullName : (user?.username !== undefined && user?.username !== "" ? user.username : 'Member'),
                     spend,
                     programs: payments.filter((payment) => payment.userId?.toString() === userId).length,
                 };
@@ -541,14 +553,14 @@ export class AdminDashboardService implements IAdminDashboardService {
         programs: IProgram[],
         users: IUser[],
         scope: AdminReportScope,
-    ) {
+    ): { payments: IPayment[]; bookings: IBooking[]; programs: IProgram[] } {
         if (scope === 'global') {
             return { payments, bookings, programs };
         }
 
         const roleMap = this.buildRoleMap(users);
-        const shouldInclude = (trainerId?: string) => {
-            const isMarketplaceTrainer = trainerId ? roleMap.get(trainerId) === 'trainer' : false;
+        const shouldInclude = (trainerId?: string): boolean => {
+            const isMarketplaceTrainer = (trainerId !== undefined && trainerId !== "") ? roleMap.get(trainerId) === 'trainer' : false;
             return scope === 'marketplace' ? isMarketplaceTrainer : !isMarketplaceTrainer;
         };
 
@@ -570,7 +582,7 @@ export class AdminDashboardService implements IAdminDashboardService {
     }
 
     private toPlainId(value: string | { toString(): string } | undefined | null): string | undefined {
-        if (!value) {
+        if (value === undefined || value === null || value === "") {
             return undefined;
         }
         if (typeof value === 'string') {
@@ -580,7 +592,7 @@ export class AdminDashboardService implements IAdminDashboardService {
     }
 
     private isOnOrAfter(dateValue: Date | string | undefined | null, startDate?: Date): boolean {
-        if (!startDate || !dateValue) {
+        if (startDate === undefined || dateValue === undefined || dateValue === null || dateValue === "") {
             return true;
         }
         const candidate = new Date(dateValue);
@@ -605,7 +617,7 @@ export class AdminDashboardService implements IAdminDashboardService {
     }
 
     private matchesMonth(dateValue: Date | string | undefined, key: string): boolean {
-        if (!dateValue) {
+        if (dateValue === undefined || dateValue === "" || dateValue === null) {
             return false;
         }
         const date = new Date(dateValue);

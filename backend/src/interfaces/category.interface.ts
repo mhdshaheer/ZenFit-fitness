@@ -1,5 +1,5 @@
 export interface GetCategoryParams {
-  filter?: Record<string, any>;
+  filter?: Record<string, unknown>;
   page: number;
   pageSize: number;
   search?: string;

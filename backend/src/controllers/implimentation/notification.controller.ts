@@ -19,7 +19,7 @@ export class NotificationController implements INotificationController {
   ): Promise<void> {
     try {
       const receiverId = req.user?.id;
-      if (!receiverId) {
+      if (receiverId === undefined) {
         res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: HttpResponse.UNAUTHORIZED });
@@ -44,7 +44,7 @@ export class NotificationController implements INotificationController {
         notificationId
       );
 
-      if (!notification) {
+      if (notification === null) {
         res
           .status(HttpStatus.NOT_FOUND)
           .json({ message: HttpResponse.NOTIFICATION_NOT_FOUND });
@@ -64,7 +64,7 @@ export class NotificationController implements INotificationController {
   ): Promise<void> {
     try {
       const receiverId = req.user?.id;
-      if (!receiverId) {
+      if (receiverId === undefined) {
         res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ message: HttpResponse.UNAUTHORIZED });
@@ -72,7 +72,7 @@ export class NotificationController implements INotificationController {
       }
       const { ids } = req.body;
 
-      if (!ids || !Array.isArray(ids)) {
+      if (ids === undefined || !Array.isArray(ids)) {
         res
           .status(HttpStatus.BAD_REQUEST)
           .json({ message: HttpResponse.INVALID_NOTIFICATION_IDS });

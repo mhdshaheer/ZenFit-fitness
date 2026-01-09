@@ -30,7 +30,7 @@ export class PaymentController implements IPaymentController {
     res: Response
   ): Promise<void> {
     const userId = req.user?.id;
-    if (!userId) {
+    if (userId === undefined) {
       res
         .status(HttpStatus.UNAUTHORIZED)
         .json({ message: HttpResponse.UNAUTHORIZED });
@@ -58,7 +58,7 @@ export class PaymentController implements IPaymentController {
     res: Response
   ): Promise<Response<PaymentHistoryDto[]>> {
     const trainerId = req.user?.id;
-    if (!trainerId) {
+    if (trainerId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const response = await this._paymentService.getTrainerPayments(trainerId);
@@ -76,7 +76,7 @@ export class PaymentController implements IPaymentController {
     res: Response
   ): Promise<Response<PurchasedProgram[]>> {
     const userId = req.user?.id;
-    if (!userId) {
+    if (userId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const purchasedPrograms = await this._paymentService.getPurchasedProgram(
@@ -91,7 +91,7 @@ export class PaymentController implements IPaymentController {
   ): Promise<void> {
     try {
       const userId = req.user?.id;
-      if (!userId) {
+      if (userId === undefined) {
         res
           .status(HttpStatus.UNAUTHORIZED)
           .json({ success: false, message: HttpResponse.UNAUTHORIZED });
@@ -115,7 +115,7 @@ export class PaymentController implements IPaymentController {
       const validStatuses = ['all', 'success', 'pending', 'failed'];
       const validatedStatus = validStatuses.includes(status) ? status : 'all';
 
-      const startTime = Date.now();
+
       const result = await this._paymentService.getUserTransactionHistory(
         userId,
         page,
@@ -123,7 +123,7 @@ export class PaymentController implements IPaymentController {
         search.trim(),
         validatedStatus
       );
-      const endTime = Date.now();
+
 
       res.status(HttpStatus.OK).json({
         success: true,
@@ -146,7 +146,7 @@ export class PaymentController implements IPaymentController {
     res: Response
   ): Promise<Response<{ count: number }>> {
     const { programId } = req.params;
-    if (!programId) {
+    if (programId === undefined) {
       throw new AppError(
         HttpResponse.PROGRAM_ID_MISSING,
         HttpStatus.BAD_REQUEST
@@ -176,7 +176,7 @@ export class PaymentController implements IPaymentController {
     res: Response
   ): Promise<Response<ITopSellingCategory[]>> {
     const trainerId = req.user?.id;
-    if (!trainerId) {
+    if (trainerId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const categoies = await this._paymentService.getTopSellingCategoryByTrainer(
@@ -189,7 +189,7 @@ export class PaymentController implements IPaymentController {
     res: Response
   ): Promise<Response<ITopSellingPrograms[]>> {
     const trainerId = req.user?.id;
-    if (!trainerId) {
+    if (trainerId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const programs = await this._paymentService.getTopSellingProgramsByTrainer(
@@ -217,7 +217,7 @@ export class PaymentController implements IPaymentController {
     res: Response
   ): Promise<Response<IRevenueData[]>> {
     const trainerId = req.user?.id;
-    if (!trainerId) {
+    if (trainerId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const { filter } = req.query;
@@ -250,8 +250,8 @@ export class PaymentController implements IPaymentController {
       page: parseInt(page as string),
       limit: parseInt(limit as string),
       paymentStatus: paymentStatus as string,
-      startDate: startDate ? new Date(startDate as string) : undefined,
-      endDate: endDate ? new Date(endDate as string) : undefined,
+      startDate: typeof startDate === "string" && startDate !== "" ? new Date(startDate) : undefined,
+      endDate: typeof endDate === "string" && endDate !== "" ? new Date(endDate) : undefined,
       search: search as string,
       trainerId: trainerId as string,
       categoryId: categoryId as string,
@@ -268,7 +268,7 @@ export class PaymentController implements IPaymentController {
   ): Promise<void> {
     const trainerId = req.user?.id;
 
-    if (!trainerId) {
+    if (trainerId === undefined) {
       res.status(HttpStatus.UNAUTHORIZED).json({
         success: false,
         message: HttpResponse.UNAUTHORIZED,
@@ -291,8 +291,8 @@ export class PaymentController implements IPaymentController {
       page: Number.parseInt(page as string, 10),
       limit: Number.parseInt(limit as string, 10),
       paymentStatus: paymentStatus as string,
-      startDate: startDate ? new Date(startDate as string) : undefined,
-      endDate: endDate ? new Date(endDate as string) : undefined,
+      startDate: typeof startDate === "string" && startDate !== "" ? new Date(startDate) : undefined,
+      endDate: typeof endDate === "string" && endDate !== "" ? new Date(endDate) : undefined,
       search: search as string,
       programId: programId as string,
     };
@@ -301,6 +301,6 @@ export class PaymentController implements IPaymentController {
       filters
     );
 
-    res.status(200).json(result);
+    res.status(HttpStatus.OK).json(result);
   }
 }

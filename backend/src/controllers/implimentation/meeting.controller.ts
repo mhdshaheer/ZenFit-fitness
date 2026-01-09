@@ -11,15 +11,15 @@ export class MeetingController implements IMeetingController {
   async createMeeting(
     req: AuthenticatedRequest,
     res: Response
-  ): Promise<Response<any>> {
+  ): Promise<Response> {
     const { slotId } = req.body;
     const hostId = req.user?.id;
 
-    if (!hostId) {
+    if (hostId === undefined) {
       throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 
-    if (!slotId) {
+    if (typeof slotId !== "string" || slotId === "") {
       throw new AppError("Slot ID is required", HttpStatus.BAD_REQUEST);
     }
 
@@ -30,15 +30,15 @@ export class MeetingController implements IMeetingController {
   async validateMeetingAccess(
     req: AuthenticatedRequest,
     res: Response
-  ): Promise<Response<any>> {
+  ): Promise<Response> {
     const { slotId, bookingId } = req.body;
     const userId = req.user?.id;
 
-    if (!userId) {
+    if (userId === undefined) {
       throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 
-    if (!slotId) {
+    if (typeof slotId !== "string" || slotId === "") {
       throw new AppError("Slot ID is required", HttpStatus.BAD_REQUEST);
     }
 
@@ -49,15 +49,15 @@ export class MeetingController implements IMeetingController {
   async joinMeeting(
     req: AuthenticatedRequest,
     res: Response
-  ): Promise<Response<any>> {
+  ): Promise<Response> {
     const { meetingId, slotId } = req.body;
     const userId = req.user?.id;
 
-    if (!userId) {
+    if (userId === undefined) {
       throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 
-    if (!meetingId || !slotId) {
+    if (typeof meetingId !== "string" || meetingId === "" || typeof slotId !== "string" || slotId === "") {
       throw new AppError("Meeting ID and Slot ID are required", HttpStatus.BAD_REQUEST);
     }
 
@@ -68,11 +68,11 @@ export class MeetingController implements IMeetingController {
   async endMeeting(
     req: AuthenticatedRequest,
     res: Response
-  ): Promise<Response<any>> {
+  ): Promise<Response> {
     const { meetingId } = req.params;
     const hostId = req.user?.id;
 
-    if (!hostId) {
+    if (hostId === undefined) {
       throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 
@@ -83,11 +83,11 @@ export class MeetingController implements IMeetingController {
   async leaveMeeting(
     req: AuthenticatedRequest,
     res: Response
-  ): Promise<Response<any>> {
+  ): Promise<Response> {
     const { meetingId } = req.params;
     const userId = req.user?.id;
 
-    if (!userId) {
+    if (userId === undefined) {
       throw new AppError("Unauthorized", HttpStatus.UNAUTHORIZED);
     }
 

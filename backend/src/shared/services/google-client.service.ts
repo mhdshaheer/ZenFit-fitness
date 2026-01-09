@@ -1,9 +1,9 @@
-import { OAuth2Client } from "google-auth-library";
+import { OAuth2Client, TokenPayload } from "google-auth-library";
 import { env } from "../../config/env.config";
 
 export const googleClient = new OAuth2Client(env.google_client_id);
 
-export const verifyGoogleToken = async (idToken: string) => {
+export const verifyGoogleToken = async (idToken: string): Promise<TokenPayload | undefined> => {
   const ticket = await googleClient.verifyIdToken({
     idToken,
     audience: env.google_client_id,

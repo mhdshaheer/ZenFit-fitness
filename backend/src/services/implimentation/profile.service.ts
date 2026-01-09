@@ -17,7 +17,7 @@ export class ProfileService implements IProfileService {
 
   async getProfile(userId: string): Promise<UserDto> {
     const user = await this._userRepository.findById(userId);
-    if (user) {
+    if (user !== null) {
       const profileDto = mapToUserDto(user);
       return profileDto;
     } else {
@@ -29,7 +29,7 @@ export class ProfileService implements IProfileService {
       userId,
       userData
     );
-    if (updateProfile) {
+    if (updateProfile !== null) {
       const profileDto = mapToUserDto(updateProfile);
       return profileDto;
     } else {
@@ -37,18 +37,19 @@ export class ProfileService implements IProfileService {
     }
   }
 
-  async updateProfileImage(userId: string, key: string) {
+  async updateProfileImage(userId: string, key: string): Promise<IUser | null> {
     return this._userRepository.updateById(userId, { profileImage: key });
   }
 
-  async removeProfileImage(userId: string) {
+  async removeProfileImage(userId: string): Promise<IUser | null> {
     return this._userRepository.updateById(userId, { profileImage: "" });
   }
 
-  async updateResumePdf(userId: string, key: string) {
+  async updateResumePdf(userId: string, key: string): Promise<IUser | null> {
     return this._userRepository.updateById(userId, { resume: key });
   }
-  async removeResumePdf(userId: string) {
+
+  async removeResumePdf(userId: string): Promise<IUser | null> {
     return this._userRepository.updateById(userId, {
       resumeVerified: false,
       resume: "",
@@ -56,7 +57,7 @@ export class ProfileService implements IProfileService {
   }
   async verifyResume(userId: string): Promise<boolean> {
     const user = await this._userRepository.findById(userId);
-    if (!user) {
+    if (user === null) {
       throw new AppError(HttpResponse.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
@@ -86,7 +87,7 @@ export class ProfileService implements IProfileService {
 
   async getUsersByRole(role: string): Promise<UserDto[]> {
     const users = await this._userRepository.getAllUsers();
-    const filteredUsers = users.filter((item) => item.role == role);
+    const filteredUsers = users.filter((item) => item.role === role);
     const mappedUsers = filteredUsers.map(mapToUserDto);
     return mappedUsers;
   }

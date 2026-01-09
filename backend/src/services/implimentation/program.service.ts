@@ -111,7 +111,7 @@ export class ProgramService implements IProgramService {
 
       const updatePayload: Partial<IProgram> = { ...program };
       const wasRejected =
-        existingProgram.approvalStatus &&
+        (existingProgram.approvalStatus !== undefined && existingProgram.approvalStatus !== null) &&
         existingProgram.approvalStatus.toLowerCase() === "rejected";
 
       if (wasRejected) {

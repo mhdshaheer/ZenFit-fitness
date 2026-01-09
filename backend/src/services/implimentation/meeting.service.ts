@@ -1,3 +1,4 @@
+import { Types } from "mongoose";
 import { IMeetingService, MeetingValidation } from "../interface/meeting.service.interface";
 import { IMeetingRepository } from "../../repositories/interface/meeting.repository.interface";
 import { IBookingRepository } from "../../repositories/interface/booking.repository.interface";
@@ -32,7 +33,7 @@ export class MeetingService implements IMeetingService {
       ? await this._bookingRepository.getBookingsForSlotOnDate(slotInstanceId, options.date)
       : await this._bookingRepository.getBookingsBySlotId(slotInstanceId);
 
-    if ((!bookings || bookings.length === 0) && options?.date && options?.fallbackToAll !== false) {
+    if ((bookings === null || bookings.length === 0) && options?.date !== undefined && options?.fallbackToAll !== false) {
       bookings = await this._bookingRepository.getBookingsBySlotId(slotInstanceId);
     }
 
@@ -45,7 +46,10 @@ export class MeetingService implements IMeetingService {
     const uniqueReceiverIds = Array.from(
       new Set(
         bookings
-          .map((b: any) => (b.userId?._id ?? b.userId)?.toString())
+          .map((b) => {
+            const u = b.userId as unknown as { _id?: string };
+            return (u?._id ?? b.userId)?.toString();
+          })
           .filter((id): id is string => Boolean(id))
       )
     );
@@ -75,12 +79,12 @@ export class MeetingService implements IMeetingService {
     const meetingId = uuidv4();
     const meeting = await this._meetingRepository.create({
       meetingId,
-      slotId: slotInstanceId,
-      hostId,
+      slotId: new Types.ObjectId(slotInstanceId),
+      hostId: new Types.ObjectId(hostId),
       participants: [],
       status: 'active',
       startTime: new Date(),
-    } as any);
+    });
 
 
     try {
@@ -100,8 +104,8 @@ export class MeetingService implements IMeetingService {
 
   async validateMeetingAccess(
     slotInstanceId: string,
-    userId: string,
-    bookingId?: string
+    _userId: string,
+    _bookingId?: string
   ): Promise<MeetingValidation> {
 
     // For now, allow access if meeting exists (booking validation can be added later)

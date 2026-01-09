@@ -1,9 +1,1 @@
-import { IJwtPayload } from "../../interfaces/auth.interface";
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: IJwtPayload;
-    }
-  }
-}
+﻿declare namespace Express { interface User { id: string; } }

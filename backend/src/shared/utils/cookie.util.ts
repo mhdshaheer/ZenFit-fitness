@@ -13,7 +13,7 @@ const COOKIE_CONFIG = {
 
 const DEFAULT_EXPIRY = {
   ACCESS_TOKEN: 15 * 60 * 1000,
-  REFRESH_TOKEN: 7 * 24 * 60 * 60 * 1000, 
+  REFRESH_TOKEN: 7 * 24 * 60 * 60 * 1000,
 };
 
 const parseExpiry = (value: string | undefined, fallback: number): number => {
@@ -98,5 +98,5 @@ export const clearAuthCookies = (res: Response): void => {
  * Call this in production to enable secure cookies
  */
 export const enableSecureCookies = (): void => {
-  (COOKIE_CONFIG as any).secure = true;
+  COOKIE_CONFIG.secure = true;
 };

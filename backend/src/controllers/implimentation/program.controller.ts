@@ -27,7 +27,7 @@ export class ProgramController implements IProgramController {
     const data = req.body;
     const userId = req.user?.id;
 
-    if (!data) {
+    if (data === null || data === undefined) {
       throw new AppError(
         HttpResponse.PROGRAM_DATA_REQUIRED,
         HttpStatus.BAD_REQUEST
@@ -37,7 +37,7 @@ export class ProgramController implements IProgramController {
     data.trainerId = userId;
     const draft = await this._programService.saveProgramDraft(data);
 
-    if (!draft) {
+    if (draft === null || draft === undefined) {
       throw new AppError(
         HttpResponse.PROGRAM_SAVED_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
@@ -53,11 +53,11 @@ export class ProgramController implements IProgramController {
     const data = req.body;
     const userId = req.user?.id;
 
-    if (!userId) {
+    if (userId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
 
-    if (!data) {
+    if (data === null || data === undefined) {
       throw new AppError(
         HttpResponse.PROGRAM_DATA_REQUIRED,
         HttpStatus.BAD_REQUEST
@@ -67,10 +67,10 @@ export class ProgramController implements IProgramController {
     data.trainerId = userId;
     const trainerProfile = await this._profileService.getProfile(userId);
     const trainerDisplayName =
-      trainerProfile.fullName || trainerProfile.username || "Trainer";
+      (trainerProfile.fullName !== null && trainerProfile.fullName !== "") ? trainerProfile.fullName : (trainerProfile.username !== "" ? trainerProfile.username : "Trainer");
     const program = await this._programService.saveProgram(data);
 
-    if (!program) {
+    if (program === null || program === undefined) {
       throw new AppError(
         HttpResponse.PROGRAM_SAVED_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
@@ -100,7 +100,7 @@ export class ProgramController implements IProgramController {
   async getPrograms(req: AuthenticatedRequest, res: Response): Promise<void> {
     const userId = req.user?.id;
 
-    if (!userId) {
+    if (userId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const programs = await this._programService.getPrograms(userId);
@@ -114,7 +114,7 @@ export class ProgramController implements IProgramController {
   ): Promise<void> {
     const userId = req.user?.id;
 
-    if (!userId) {
+    if (userId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const programs = await this._programService.getProgramsCategories(userId);
@@ -135,7 +135,7 @@ export class ProgramController implements IProgramController {
   ): Promise<Response<ProgramSlotCreateDto[]>> {
     const trainerId = req.user?.id;
 
-    if (!trainerId) {
+    if (trainerId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const programs = await this._programService.getProgramsForSlotCreate(
@@ -151,7 +151,7 @@ export class ProgramController implements IProgramController {
     const parantCategoryId = req.params.id;
     const userId = req.user?.id;
 
-    if (!userId) {
+    if (userId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const programs = await this._programService.getProgramsByParentId(
@@ -169,7 +169,7 @@ export class ProgramController implements IProgramController {
     const { id } = req.params;
     const program = await this._programService.findProgram(id);
 
-    if (!program) {
+    if (program === null || program === undefined) {
       throw new AppError(HttpResponse.PROGRAM_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
@@ -183,7 +183,7 @@ export class ProgramController implements IProgramController {
     const programId = req.params.id;
     const trainerId = req.user?.id;
 
-    if (!trainerId) {
+    if (trainerId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const programData = req.body;
@@ -193,7 +193,7 @@ export class ProgramController implements IProgramController {
       trainerId,
     });
 
-    if (!response) {
+    if (response === null || response === undefined) {
       throw new AppError(
         HttpResponse.PROGRAM_UPDATE_FAILED,
         HttpStatus.NOT_FOUND
@@ -205,7 +205,7 @@ export class ProgramController implements IProgramController {
       this._profileService.getProfile(trainerId),
     ]);
     const trainerDisplayName =
-      trainerProfile.fullName || trainerProfile.username || "Trainer";
+      (trainerProfile.fullName !== null && trainerProfile.fullName !== "") ? trainerProfile.fullName : (trainerProfile.username !== "" ? trainerProfile.username : "Trainer");
     await Promise.all(
       admins.map((admin) =>
         this._notificationService.createNotification(
@@ -243,7 +243,7 @@ export class ProgramController implements IProgramController {
     });
     const trainerId =
       typeof program.trainerId === "object"
-        ? (program.trainerId as any)?.toString()
+        ? (program.trainerId as unknown as { toString(): string })?.toString()
         : program.trainerId!;
     const notificationTitle =
       approvalStatus === "Approved" ? "Program Approved" : "Program Rejected";

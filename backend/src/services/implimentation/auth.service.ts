@@ -1,7 +1,7 @@
 import { inject, injectable } from "inversify";
 import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
-import { IUser } from "../../interfaces/user.interface";
+import { IUser, IGoogleProfile } from "../../interfaces/user.interface";
 import { comparePassword, hashedPassword } from "../../shared/utils/hash.util";
 import logger from "../../shared/services/logger.service";
 import { generateOtp } from "../../shared/utils/otp.util";
@@ -296,7 +296,7 @@ export class AuthService implements IAuthService {
     return;
   }
 
-  async handleGoogleLogin(profile: any): Promise<IUser> {
+  async handleGoogleLogin(profile: IGoogleProfile): Promise<IUser> {
     let user = await this._userRepository.findByGoogleId(profile.id);
     if (!user) {
       user = await this._userRepository.createGoogleUser({

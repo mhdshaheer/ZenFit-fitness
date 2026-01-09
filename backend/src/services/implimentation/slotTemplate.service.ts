@@ -49,7 +49,7 @@ export class SlotTemplateService implements ISlotTemplateService {
         const template = await this._templateRepo.createTemplate(templateData);
 
         await this._instanceService.generateFutureInstancesForTemplate(
-            (template as any)._id.toString(),
+            (template._id as Types.ObjectId).toString(),
             this.HORIZON_DAYS_DEFAULT
         );
 

@@ -31,7 +31,7 @@ export class BookingController implements IBookingController {
     const { slotInstanceId } = req.body;
     const userId = req.user?.id;
 
-    if (!slotInstanceId || !userId) {
+    if (typeof slotInstanceId !== "string" || slotInstanceId === "" || userId === undefined) {
       throw new AppError("Missing required fields", HttpStatus.BAD_REQUEST);
     }
 
@@ -41,7 +41,7 @@ export class BookingController implements IBookingController {
     );
 
     const slotInstance = await this._slotInstanceRepository.findById(slotInstanceId);
-    if (!slotInstance) {
+    if (slotInstance === null) {
       throw new AppError("Slot instance not found", HttpStatus.NOT_FOUND);
     }
 
@@ -69,7 +69,7 @@ export class BookingController implements IBookingController {
     const userId = req.user?.id;
     const { programId } = req.query as { programId?: string };
 
-    if (!userId) {
+    if (userId === undefined) {
       throw new AppError("User not authenticated", HttpStatus.UNAUTHORIZED);
     }
 
@@ -86,7 +86,7 @@ export class BookingController implements IBookingController {
     res: Response
   ): Promise<Response> {
     const trainerId = req.user?.id;
-    if (!trainerId) {
+    if (trainerId === undefined) {
       throw new AppError("Trainer not authenticated", HttpStatus.UNAUTHORIZED);
     }
 

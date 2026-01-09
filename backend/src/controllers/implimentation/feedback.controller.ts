@@ -21,10 +21,10 @@ export class FeedbackController implements IFeedbackController {
       const trainerId = req.user?.id;
       const { slotId, sessionDate, feedback } = req.body;
 
-      if (!trainerId) {
+      if (trainerId === undefined) {
         throw new AppError("Trainer not authenticated", HttpStatus.UNAUTHORIZED);
       }
-      if (!slotId || !sessionDate || !feedback) {
+      if (typeof slotId !== "string" || slotId === "" || typeof sessionDate !== "string" || sessionDate === "" || typeof feedback !== "string" || feedback === "") {
         throw new AppError(
           "Missing required fields: slotId, sessionDate, feedback",
           HttpStatus.BAD_REQUEST
@@ -62,7 +62,7 @@ export class FeedbackController implements IFeedbackController {
     try {
       const { slotId, sessionDate } = req.query;
 
-      if (!slotId || !sessionDate) {
+      if (typeof slotId !== "string" || typeof sessionDate !== "string" || slotId === "" || sessionDate === "") {
         throw new AppError(
           "Missing required parameters: slotId, sessionDate",
           HttpStatus.BAD_REQUEST
@@ -88,7 +88,7 @@ export class FeedbackController implements IFeedbackController {
     try {
       const { slotId } = req.params as { slotId?: string };
 
-      if (!slotId) {
+      if (slotId === undefined || slotId === "") {
         throw new AppError("Missing slotId parameter", HttpStatus.BAD_REQUEST);
       }
 
@@ -108,10 +108,10 @@ export class FeedbackController implements IFeedbackController {
       const trainerId = req.user?.id;
       const { slotId, sessionDate } = req.body;
 
-      if (!trainerId) {
+      if (trainerId === undefined) {
         throw new AppError("Trainer not authenticated", HttpStatus.UNAUTHORIZED);
       }
-      if (!slotId || !sessionDate) {
+      if (typeof slotId !== "string" || slotId === "" || typeof sessionDate !== "string" || sessionDate === "") {
         throw new AppError(
           "Missing required fields: slotId, sessionDate",
           HttpStatus.BAD_REQUEST

@@ -7,7 +7,7 @@ export const mapToCategoryDto = (category: ICategory): CategoryDto => {
     description: category.description,
     name: category.name,
     parantId: category.parantId?.toString()!,
-    isBlocked: category.isBlocked || false,
+    isBlocked: category.isBlocked ?? false,
     createdAt: category.createdAt?.toString()!,
   };
 };

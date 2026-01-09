@@ -4,6 +4,7 @@ import { ITrainerDashboardController } from '../interface/trainerDashboard.contr
 import { ITrainerDashboardService } from '../../services/interface/trainerDashboard.service.interface';
 import { TYPES } from '../../shared/types/inversify.types';
 import { HttpStatus } from '../../const/statuscode.const';
+import { AuthenticatedRequest } from '../../types/authenticated-request.type';
 
 @injectable()
 export class TrainerDashboardController implements ITrainerDashboardController {
@@ -12,12 +13,12 @@ export class TrainerDashboardController implements ITrainerDashboardController {
         private readonly _trainerDashboardService: ITrainerDashboardService,
     ) { }
 
-    async getSnapshot(req: Request, res: Response): Promise<Response<any>> {
-        const trainer = (req as any).user;
+    async getSnapshot(req: Request, res: Response): Promise<Response> {
+        const trainer = (req as AuthenticatedRequest).user;
         const trainerId = trainer?.id;
         const role = trainer?.role;
 
-        if (!trainerId || role !== 'trainer') {
+        if (trainerId === undefined || role !== 'trainer') {
             return res.status(HttpStatus.UNAUTHORIZED).json({
                 success: false,
                 message: 'Unauthorized',
