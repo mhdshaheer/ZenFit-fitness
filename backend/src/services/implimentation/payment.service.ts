@@ -13,6 +13,7 @@ import { TYPES } from "../../shared/types/inversify.types";
 import { IProgramRepository } from "../../repositories/interface/program.repository.interface";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
+import { HttpResponse } from "../../const/response_message.const";
 import { IPayment } from "../../models/payment.model";
 import {
   ITopSellingCategory,
@@ -51,7 +52,7 @@ export class PaymentService implements IPaymentService {
 
     const program = await this.programRepository.findProgramById(data.courseId);
     if (!program) {
-      throw new AppError("Couldn't find the program", HttpStatus.NOT_FOUND);
+      throw new AppError(HttpResponse.PROGRAM_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     let purchaseData: Partial<IPayment> = {
       userId,
@@ -111,7 +112,7 @@ export class PaymentService implements IPaymentService {
         env.stripe_web_hook as string
       );
     } catch {
-      throw new AppError("Invalid signature", HttpStatus.BAD_REQUEST);
+      throw new AppError(HttpResponse.INVALID_SIGNATURE, HttpStatus.BAD_REQUEST);
     }
 
     await this.handleWebhook(event);

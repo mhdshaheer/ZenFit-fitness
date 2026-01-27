@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from "express";
 import { IAppError } from "../shared/types/error.interface";
 import logger from "../shared/services/logger.service";
 import { HttpStatus } from "../const/statuscode.const";
+import { HttpResponse } from "../const/response_message.const";
 import { env } from "../config/env.config";
 
 interface ErrorResponse {
@@ -16,7 +17,7 @@ export const errorMiddleware = (
   _next: NextFunction
 ): void => {
   const status = err.status ?? HttpStatus.INTERNAL_SERVER_ERROR;
-  const message = err.message ?? "Something went wrong";
+  const message = err.message ?? HttpResponse.SERVER_ERROR;
 
   logger.error(err);
 

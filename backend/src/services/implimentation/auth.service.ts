@@ -204,7 +204,7 @@ export class AuthService implements IAuthService {
   ): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
     const strategy = this._strategies.find((s) => s.name === "email");
     if (!strategy) {
-      throw new Error("Email authentication not supported");
+      throw new Error(HttpResponse.EMAIL_AUTH_NOT_SUPPORTED);
     }
 
     const user = await strategy.authenticate({ email, password });
@@ -300,7 +300,7 @@ export class AuthService implements IAuthService {
   async handleGoogleLogin(profile: IGoogleProfile): Promise<IUser> {
     const strategy = this._strategies.find((s) => s.name === "google");
     if (!strategy) {
-      throw new Error("Google authentication not supported");
+      throw new Error(HttpResponse.GOOGLE_AUTH_NOT_SUPPORTED);
     }
     return strategy.authenticate(profile);
   }
