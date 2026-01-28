@@ -1,0 +1,44 @@
+@reference "../../../../styles.css";
+
+/* Custom badge colors for difficulty levels */
+.badge-beginner {
+  @apply bg-success-100 text-success-700 border border-success-200 !py-0.5 !px-2 !text-[9px];
+}
+
+.badge-intermediate {
+  @apply bg-warning-100 text-warning-700 border border-warning-200 !py-0.5 !px-2 !text-[9px];
+}
+
+.badge-advanced {
+  @apply bg-error-100 text-error-700 border border-error-200 !py-0.5 !px-2 !text-[9px];
+}
+
+/* Custom badge colors for categories */
+.badge-strength {
+  @apply bg-primary-100 text-primary-700 border border-primary-200 !py-0.5 !px-2 !text-[9px];
+}
+
+.badge-cardio {
+  @apply bg-secondary-100 text-secondary-700 border border-secondary-200 !py-0.5 !px-2 !text-[9px];
+}
+
+.badge-flexibility {
+  @apply bg-info-100 text-info-700 border border-info-200 !py-0.5 !px-2 !text-[9px];
+}
+
+.badge-nutrition {
+  @apply bg-success-100 text-success-700 border border-success-200 !py-0.5 !px-2 !text-[9px];
+}
+
+/* Approval status badges */
+.badge-approved {
+  @apply bg-success-100 text-success-700 border border-success-200 !py-0.5 !px-2 !text-[9px];
+}
+
+.badge-pending {
+  @apply bg-warning-100 text-warning-700 border border-warning-200 !py-0.5 !px-2 !text-[9px];
+}
+
+.badge-rejected {
+  @apply bg-error-100 text-error-700 border border-error-200 !py-0.5 !px-2 !text-[9px];
+}

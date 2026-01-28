@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, HostBinding, inject, OnDestroy, OnInit } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Router, RouterModule } from '@angular/router';
@@ -31,6 +31,7 @@ interface ActivityLogItem {
   styleUrl: './trainer-layout.component.css',
 })
 export class TrainerLayoutComponent implements OnDestroy, OnInit {
+  @HostBinding('class.theme-trainer') readonly trainerTheme = true;
   isMobileMenuOpen = false;
   private readonly _authService = inject(AuthService);
   private _notificationSocketService = inject(NotificationSocketService);
@@ -125,14 +126,9 @@ export class TrainerLayoutComponent implements OnDestroy, OnInit {
       icon: 'fas fa-tachometer-alt',
     },
     { label: 'Programs', route: '/trainer/programs', icon: 'fas fa-dumbbell' },
-    {
-      label: 'Purchased Programs',
-      route: '/trainer/purchased-programs',
-      icon: 'fas fa-users',
-    },
-    { label: 'Slots', route: '/trainer/slots', icon: 'fas fa-chart-line' },
-    { label: 'Sessions', route: '/trainer/sessions', icon: 'fas fa-chart-line' },
-    { label: 'Chat', route: '/trainer/chat', icon: 'fas fa-chart-line' },
+    { label: 'Slots', route: '/trainer/slots', icon: 'fas fa-th-list' },
+    { label: 'Sessions', route: '/trainer/sessions', icon: 'fas fa-calendar-alt' },
+    { label: 'Chat', route: '/trainer/chat', icon: 'fas fa-comment-alt' },
   ];
 
   userMenuItems: NavMenuItem[] = [

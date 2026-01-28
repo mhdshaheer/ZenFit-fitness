@@ -17,7 +17,6 @@ const startServer = async (): Promise<void> => {
   server.listen(port, () => {
     logger.info(`Server is running on port ${port}...`);
   });
-  console.log('demo..');
 };
 
 startServer();

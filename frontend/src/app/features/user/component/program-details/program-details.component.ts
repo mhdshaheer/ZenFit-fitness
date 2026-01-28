@@ -7,9 +7,11 @@ import { PaymentService } from '../../../../core/services/payment.service';
 import { PurchasedProgram } from '../../../../interface/payment.interface';
 import { LoggerService } from '../../../../core/services/logger.service';
 
+import { RouterModule } from '@angular/router';
+
 @Component({
   selector: 'zenfit-program-details',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './program-details.component.html',
   styleUrl: './program-details.component.css'
 })

@@ -13,10 +13,12 @@ import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
 
+import { RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, SharedFormComponent],
+  imports: [ReactiveFormsModule, CommonModule, SharedFormComponent, RouterLink],
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.css'],
 })

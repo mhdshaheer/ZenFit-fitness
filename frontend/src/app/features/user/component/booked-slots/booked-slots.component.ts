@@ -1,11 +1,11 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil, forkJoin, switchMap, filter } from 'rxjs';
 import { BookingService, BookedSlot } from '../../../../core/services/booking.service';
 import { MeetingService } from '../../../../core/services/meeting.service';
 import { MeetingRoomComponent } from '../../../../shared/components/meeting-room/meeting-room.component';
 import { ToastService } from '../../../../core/services/toast.service';
-import { Router } from '@angular/router';
 import { ProgramService } from '../../../../core/services/program.service';
 import { Program } from '../../../trainer/store/trainer.model';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -17,6 +17,7 @@ interface SlotWithProgram extends BookedSlot {
   programName?: string;
   programDuration?: string;
   programDifficulty?: string;
+  programCategory?: string;
   isUpcoming?: boolean;
 }
 
@@ -38,7 +39,7 @@ type ProgramIdentifier = string | { toString(): string } | null | undefined;
 
 @Component({
   selector: 'zenfit-booked-slots',
-  imports: [CommonModule, MeetingRoomComponent],
+  imports: [CommonModule, MeetingRoomComponent, RouterModule],
   templateUrl: './booked-slots.component.html',
   styleUrl: './booked-slots.component.css'
 })
@@ -285,11 +286,35 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     slots.forEach(slot => {
       const slotDateTime = new Date(slot.date);
       const program = slot.programId ? programMap.get(slot.programId) : undefined;
+
+      // Helper to extract category name safely from diverse backend formats
+      let categoryOutput = 'Training';
+      try {
+        const categoryData = program?.category;
+        if (categoryData) {
+          if (typeof categoryData === 'object') {
+            const catObj = categoryData as any;
+            categoryOutput = catObj.name || catObj.NAME || catObj.title || catObj.TITLE || 'Training';
+          } else if (typeof categoryData === 'string') {
+            const trimmed = categoryData.trim();
+            if (trimmed.startsWith('{')) {
+              const parsed = JSON.parse(trimmed);
+              categoryOutput = parsed.name || parsed.NAME || parsed.title || parsed.TITLE || 'Training';
+            } else {
+              categoryOutput = trimmed;
+            }
+          }
+        }
+      } catch (e) {
+        categoryOutput = 'Training';
+      }
+
       const slotWithProgram: SlotWithProgram = {
         ...slot,
         programName: program?.title || 'Fitness Program',
-        programDuration: program?.duration || 'N/A',
+        programDuration: String(program?.duration || 'N/A'),
         programDifficulty: program?.difficultyLevel || 'Beginner',
+        programCategory: categoryOutput,
         isUpcoming: slotDateTime >= now
       };
 

@@ -195,7 +195,7 @@ export class SlotInstanceService implements ISlotInstanceService {
                 title: { $regex: searchRegex },
             });
 
-            const searchedIds = matchingPrograms.map((program) => program._id.toString());
+            const searchedIds = matchingPrograms.map((program) => program._id?.toString() ?? '').filter(id => id !== '');
 
             if (programIds && programIds.length) {
                 programIds = programIds.filter((id) => searchedIds.includes(id));

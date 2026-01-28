@@ -16,7 +16,6 @@ export class AuthEffects {
       mergeMap(({ email, password, role }) =>
         this.authService.login(email, password, role).pipe(
           map((res) => {
-            console.log('login success...', res);
             Swal.fire({
               position: 'top-end',
               icon: 'success',

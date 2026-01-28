@@ -58,7 +58,6 @@ export class AuthService implements IAuthService {
     const { username, email, password, role } = req.body;
 
     const otp = generateOtp();
-    console.log("Otp is : ", otp);
     logger.info("otp is :", otp);
     const hashPassword = await hashedPassword(password);
 
@@ -183,7 +182,6 @@ export class AuthService implements IAuthService {
     await this._tempRepository.updateOtp(email, newOtp);
     try {
       await sendOtpMail(email, newOtp);
-      console.log("resent otp : ", newOtp);
       logger.info("Resend otp is :", newOtp);
       res
         .status(HttpStatus.OK)
@@ -229,7 +227,6 @@ export class AuthService implements IAuthService {
     }
 
     const otp = generateOtp();
-    console.log("forgot password otp is[console] : ", otp);
     logger.info(`forgot password otp is : ${otp}`);
     await this._tempRepository.saveTempUser(email, otp, {});
 

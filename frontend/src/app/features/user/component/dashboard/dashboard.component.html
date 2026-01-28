@@ -1,3 +1,183 @@
-<div><zenfit-bmi-calculator /></div>
+<div class="min-h-screen bg-gradient-to-br from-neutral-50 via-primary-50/10 to-neutral-50 py-12">
+    <div class="container-custom space-y-12">
+        <!-- Welcome Hero Section -->
+        <div
+            class="relative overflow-hidden rounded-[2.5rem] bg-gradient-to-br from-primary-600 via-primary-700 to-primary-900 p-12 shadow-2xl">
+            <!-- Decorative Elements -->
+            <div class="absolute -top-20 -right-20 w-64 h-64 bg-white/10 rounded-full blur-3xl"></div>
+            <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-secondary-400/20 rounded-full blur-3xl"></div>
 
+            <div class="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+                <div class="flex-1 text-white space-y-4">
+                    <div
+                        class="inline-flex items-center gap-2 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full border border-white/20">
+                        <div class="w-2 h-2 bg-success-400 rounded-full animate-pulse"></div>
+                        <span class="text-xs font-black uppercase tracking-widest">Active Member</span>
+                    </div>
+                    <h1 class="heading-3 text-white">Welcome Back, Champion! 💪</h1>
+                    <p class="body-base text-primary-100 max-w-2xl">
+                        Ready to crush your fitness goals today? Let's make every rep count and transform your potential
+                        into power.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button routerLink="/user/workouts"
+                            class="btn btn-md bg-white text-primary-700 hover:bg-primary-50 shadow-xl !px-6 !py-3">
+                            <span class="text-xs font-black uppercase tracking-widest">Browse Programs</span>
+                            <i class="fas fa-arrow-right ml-2 text-xs"></i>
+                        </button>
+                        <button routerLink="/user/my-programs"
+                            class="btn btn-md bg-white/10 backdrop-blur-md text-white border-2 border-white/20 hover:bg-white/20 !px-6 !py-3">
+                            <span class="text-xs font-black uppercase tracking-widest">My Programs</span>
+                        </button>
+                    </div>
+                </div>
 
+                <div class="flex-shrink-0">
+                    <div class="relative">
+                        <div
+                            class="w-48 h-48 rounded-[2rem] bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center shadow-2xl rotate-6 hover:rotate-0 transition-transform duration-500">
+                            <svg class="w-24 h-24 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M13 10V3L4 14h7v7l9-11h-7z" />
+                            </svg>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Stats Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="card p-6 hover:shadow-xl transition-all group cursor-pointer">
+                <div class="flex items-center justify-between mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center text-primary-600 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-dumbbell text-xl"></i>
+                    </div>
+                    <span class="caption text-neutral-400">This Week</span>
+                </div>
+                <h3 class="text-2xl font-black text-neutral-900 mb-1">12</h3>
+                <p class="text-xs font-bold text-neutral-500 uppercase tracking-wide">Workouts Completed</p>
+                <div class="mt-4 flex items-center gap-2 text-success-600">
+                    <i class="fas fa-arrow-up text-xs"></i>
+                    <span class="text-xs font-black">+23% from last week</span>
+                </div>
+            </div>
+
+            <div class="card p-6 hover:shadow-xl transition-all group cursor-pointer">
+                <div class="flex items-center justify-between mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-secondary-100 flex items-center justify-center text-secondary-600 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-fire text-xl"></i>
+                    </div>
+                    <span class="caption text-neutral-400">Total</span>
+                </div>
+                <h3 class="text-2xl font-black text-neutral-900 mb-1">2,847</h3>
+                <p class="text-xs font-bold text-neutral-500 uppercase tracking-wide">Calories Burned</p>
+                <div class="mt-4 flex items-center gap-2 text-success-600">
+                    <i class="fas fa-arrow-up text-xs"></i>
+                    <span class="text-xs font-black">On track</span>
+                </div>
+            </div>
+
+            <div class="card p-6 hover:shadow-xl transition-all group cursor-pointer">
+                <div class="flex items-center justify-between mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-warning-100 flex items-center justify-center text-warning-600 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-clock text-xl"></i>
+                    </div>
+                    <span class="caption text-neutral-400">This Month</span>
+                </div>
+                <h3 class="text-2xl font-black text-neutral-900 mb-1">48h</h3>
+                <p class="text-xs font-bold text-neutral-500 uppercase tracking-wide">Training Time</p>
+                <div class="mt-4 flex items-center gap-2 text-success-600">
+                    <i class="fas fa-arrow-up text-xs"></i>
+                    <span class="text-xs font-black">+15% increase</span>
+                </div>
+            </div>
+
+            <div class="card p-6 hover:shadow-xl transition-all group cursor-pointer">
+                <div class="flex items-center justify-between mb-4">
+                    <div
+                        class="w-12 h-12 rounded-xl bg-success-100 flex items-center justify-center text-success-600 group-hover:scale-110 transition-transform">
+                        <i class="fas fa-trophy text-xl"></i>
+                    </div>
+                    <span class="caption text-neutral-400">Streak</span>
+                </div>
+                <h3 class="text-2xl font-black text-neutral-900 mb-1">7</h3>
+                <p class="text-xs font-bold text-neutral-500 uppercase tracking-wide">Days Active</p>
+                <div class="mt-4 flex items-center gap-2 text-success-600">
+                    <i class="fas fa-fire text-xs"></i>
+                    <span class="text-xs font-black">Keep it up!</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- BMI Calculator Section -->
+        <div class="card p-8 border-none shadow-xl">
+            <div class="flex items-center justify-between mb-8">
+                <div>
+                    <h2 class="heading-5 text-neutral-900 mb-2">Health Metrics</h2>
+                    <p class="body-base text-neutral-500">Track your body composition and progress</p>
+                </div>
+                <div
+                    class="w-14 h-14 rounded-2xl gradient-primary flex items-center justify-center text-white shadow-lg">
+                    <i class="fas fa-heartbeat text-2xl"></i>
+                </div>
+            </div>
+            <zenfit-bmi-calculator />
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <button routerLink="/user/booked-slots"
+                class="card p-8 hover:shadow-2xl hover:border-primary-300 transition-all text-left group">
+                <div
+                    class="w-12 h-12 rounded-xl bg-primary-100 flex items-center justify-center text-primary-600 mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-calendar-check text-xl"></i>
+                </div>
+                <h3 class="heading-6 text-neutral-900 mb-2 group-hover:text-primary-600 transition-colors">My Sessions
+                </h3>
+                <p class="text-xs text-neutral-500 font-medium font-semibold">View and manage your booked training
+                    sessions</p>
+                <div class="mt-4 flex items-center gap-2 text-primary-600 font-black text-xs uppercase tracking-widest">
+                    <span>View Schedule</span>
+                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </button>
+
+            <button routerLink="/user/transaction-history"
+                class="card p-8 hover:shadow-2xl hover:border-secondary-300 transition-all text-left group">
+                <div
+                    class="w-12 h-12 rounded-xl bg-secondary-100 flex items-center justify-center text-secondary-600 mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-receipt text-xl"></i>
+                </div>
+                <h3 class="heading-6 text-neutral-900 mb-2 group-hover:text-secondary-600 transition-colors">
+                    Transactions</h3>
+                <p class="text-xs text-neutral-500 font-medium font-semibold">Review your payment history and invoices
+                </p>
+                <div
+                    class="mt-4 flex items-center gap-2 text-secondary-600 font-black text-xs uppercase tracking-widest">
+                    <span>View History</span>
+                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </button>
+
+            <button routerLink="/user/profile"
+                class="card p-8 hover:shadow-2xl hover:border-warning-300 transition-all text-left group">
+                <div
+                    class="w-12 h-12 rounded-xl bg-warning-100 flex items-center justify-center text-warning-600 mb-4 group-hover:scale-110 transition-transform">
+                    <i class="fas fa-user-circle text-xl"></i>
+                </div>
+                <h3 class="heading-6 text-neutral-900 mb-2 group-hover:text-warning-600 transition-colors">My Profile
+                </h3>
+                <p class="text-xs text-neutral-500 font-medium font-semibold">Update your personal information and
+                    preferences</p>
+                <div class="mt-4 flex items-center gap-2 text-warning-600 font-black text-xs uppercase tracking-widest">
+                    <span>Edit Profile</span>
+                    <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                </div>
+            </button>
+        </div>
+    </div>
+</div>

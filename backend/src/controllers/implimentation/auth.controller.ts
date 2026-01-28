@@ -181,7 +181,10 @@ export class AuthController implements IAuthController {
     req: Request,
     res: Response
   ): Promise<Response<{ userId: string }>> {
-    const userId = (req.user as unknown as IUser)._id!.toString();
-    return res.status(HttpStatus.OK).json({ userId });
+    const user = (req as any).user;
+    if (!user || !user.id) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({ message: "User not authenticated" } as any);
+    }
+    return res.status(HttpStatus.OK).json({ userId: user.id });
   }
 }

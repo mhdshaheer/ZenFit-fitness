@@ -84,7 +84,7 @@ export class AuthService {
     // Clear client-side storage
     localStorage.removeItem('userRole');
     localStorage.removeItem('signupEmail');
-    
+
     return this._http
       .post<{ message: string }>(
         this._api + AuthRoutes.LOGOUT,
@@ -154,7 +154,9 @@ export class AuthService {
     return localStorage.getItem('userRole');
   }
   getUserId(): Observable<{ userId: string }> {
-    return this._http.get<{ userId: string }>(this._api);
+    return this._http.get<{ userId: string }>(this._api, {
+      withCredentials: true,
+    });
   }
 
   getUserProfile(): Observable<{ username: string; email: string; role: string }> {

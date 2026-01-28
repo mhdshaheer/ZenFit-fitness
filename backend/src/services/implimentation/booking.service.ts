@@ -61,7 +61,7 @@ export class BookingService implements IBookingService {
     }
 
     const program = await this._programRepository.findProgramById(
-      slotInstance.programId.toString()
+      slotInstance.programId?.toString() ?? ''
     );
 
     const day = this.getDayOfWeek(slotInstance.date);
@@ -84,7 +84,7 @@ export class BookingService implements IBookingService {
     try {
       const booking = await this._bookingRepository.createBooking({
         slotId: slotInstanceId,
-        templateId: slotInstance.templateId.toString(),
+        templateId: slotInstance.templateId?.toString() ?? '',
         userId,
         day,
         date: slotInstance.date,

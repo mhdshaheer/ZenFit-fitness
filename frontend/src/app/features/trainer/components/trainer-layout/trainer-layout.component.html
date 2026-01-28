@@ -1,17 +1,9 @@
-<app-header
-  [logoText]="'Zenfit'"
-  [userProfile]="currentUser"
-  [navigationItems]="navItems"
-  [userMenuItems]="userMenuItems"
-  [searchPlaceholder]="'Search exercises, workouts, nutrition...'"
-  [showDateBanner]="true"
-  (searchChange)="handleSearchChange($event)"
-  (searchSubmit)="handleSearchSubmit($event)"
-  (userMenuClick)="handleUserMenuClick($event)"
-  (logout)="handleLogout()"
-  (mobileMenuToggle)="handleMobileMenuToggle($event)"
->
+<app-header [logoText]="'Zenfit'" [userProfile]="currentUser" [navigationItems]="navItems"
+  [userMenuItems]="userMenuItems" [searchPlaceholder]="'Search exercises, workouts, nutrition...'"
+  [showDateBanner]="true" (searchChange)="handleSearchChange($event)" (searchSubmit)="handleSearchSubmit($event)"
+  (userMenuClick)="handleUserMenuClick($event)" (logout)="handleLogout()"
+  (mobileMenuToggle)="handleMobileMenuToggle($event)">
 </app-header>
-<div class="p-4">
+<div class="pt-28">
   <router-outlet></router-outlet>
 </div>

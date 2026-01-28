@@ -18,10 +18,12 @@ import { environment } from '../../../../../environments/environment';
 import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
 import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
 
+import { RouterLink } from '@angular/router';
+
 @Component({
   selector: 'app-signup-user',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, SharedFormComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink, SharedFormComponent],
   templateUrl: './signup-user.component.html',
   styleUrl: './signup-user.component.css',
 })

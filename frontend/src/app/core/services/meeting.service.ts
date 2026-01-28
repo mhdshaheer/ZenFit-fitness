@@ -109,7 +109,6 @@ export class MeetingService {
       };
 
       this.localStream = await navigator.mediaDevices.getUserMedia(constraints);
-      console.log('✅ Local stream initialized');
       return this.localStream;
     } catch (error) {
       console.error('❌ Error accessing media devices:', error);
@@ -169,7 +168,7 @@ export class MeetingService {
     const current = this._participants$.value;
     this._participants$.next(current.filter(p => p.userId !== userId));
 
- 
+
     this.closePeerConnection(userId);
   }
 
@@ -202,7 +201,6 @@ export class MeetingService {
 
     // Handle connection state changes
     peerConnection.onconnectionstatechange = () => {
-      console.log(`🔗 Connection state with ${userId}:`, peerConnection.connectionState);
       if (peerConnection.connectionState === 'disconnected' ||
         peerConnection.connectionState === 'failed') {
         this.closePeerConnection(userId);
@@ -220,7 +218,6 @@ export class MeetingService {
     const peerConnection = await this.createPeerConnection(userId);
     const offer = await peerConnection.createOffer();
     await peerConnection.setLocalDescription(offer);
-    console.log('📤 Created offer for:', userId);
     return offer;
   }
 
@@ -232,7 +229,6 @@ export class MeetingService {
     await peerConnection.setRemoteDescription(offer);
     const answer = await peerConnection.createAnswer();
     await peerConnection.setLocalDescription(answer);
-    console.log('📤 Created answer for:', userId);
     return answer;
   }
 
@@ -243,7 +239,6 @@ export class MeetingService {
     const peerConnection = this._peerConnections.get(userId);
     if (peerConnection) {
       await peerConnection.setRemoteDescription(answer);
-      console.log('✅ Set remote description for:', userId);
     }
   }
 
@@ -254,7 +249,6 @@ export class MeetingService {
     const peerConnection = this._peerConnections.get(userId);
     if (peerConnection) {
       await peerConnection.addIceCandidate(candidate);
-      console.log('🧊 Added ICE candidate from:', userId);
     }
   }
 
@@ -309,8 +303,6 @@ export class MeetingService {
     this._currentMeeting$.next(null);
     this._meetingState$.next('idle');
     this._participants$.next([]);
-
-    console.log('🧹 Meeting resources cleaned up');
   }
 
   /**

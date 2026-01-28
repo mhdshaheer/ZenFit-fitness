@@ -23,9 +23,10 @@ interface PaymentMethod {
   name: string;
   icon: string;
 }
+import { NgClass } from '@angular/common';
 @Component({
   selector: 'zenfit-payment',
-  imports: [],
+  imports: [NgClass],
   templateUrl: './payment.component.html',
   styleUrl: './payment.component.css',
 })

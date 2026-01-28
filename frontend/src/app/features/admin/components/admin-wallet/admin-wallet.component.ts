@@ -28,6 +28,5 @@ export class AdminWalletComponent implements OnInit {
   }
 
   withdrawMoney() {
-    console.log('Withdraw clicked!');
   }
 }

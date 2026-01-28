@@ -18,10 +18,10 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./otp.component.css'],
 })
 export class OtpComponent implements OnInit {
-  @Input() bgColor = ' from-green-950 via-emerald-950 to-teal-700';
-  @Input() buttonColor = 'text-green-600 font-semibold';
+  @Input() bgColor = ' from-primary-950 via-primary-900 to-primary-700';
+  @Input() buttonColor = 'text-primary-600 font-semibold';
   @Input() textColor =
-    'text-green-600 font-semibold underline hover:text-green-700';
+    'text-primary-600 font-semibold underline hover:text-primary-700';
   @Input() email = 'gmail';
   @Input() context: 'signup' | 'login' | 'reset' = 'signup';
   @Output() verify = new EventEmitter<string>();

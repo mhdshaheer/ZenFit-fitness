@@ -3,7 +3,7 @@ import { PaymentService } from '../../../../core/services/payment.service';
 import { PurchasedProgram } from '../../../../interface/payment.interface';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 interface Course {
   id: string;
   title: string;
@@ -13,7 +13,7 @@ interface Course {
 }
 @Component({
   selector: 'app-purchased-programs',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './purchased-programs.component.html',
   styleUrl: './purchased-programs.component.css',
 })
@@ -28,16 +28,20 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
     this._paymentService
       .getPurchasedPrograms()
       .pipe(takeUntil(this._destroy$))
-      .subscribe((res: PurchasedProgram[]) => {
-        this.courses = res.map((item) => {
-          return {
-            id: item.programId,
-            title: item.title,
-            description: item.description,
-            difficultyLevel: item.difficultyLevel,
-            purchasedAt: item.purchasedAt,
-          };
-        });
+      .subscribe({
+        next: (res: PurchasedProgram[]) => {
+          this.courses = res.map((item) => {
+            return {
+              id: item.programId || '',
+              title: item.title || 'Untitled Program',
+              description: item.description || '',
+              difficultyLevel: item.difficultyLevel || 'Beginner',
+              purchasedAt: item.purchasedAt,
+            };
+          }).filter(course => course.id !== ''); // Filter out courses without valid IDs
+        },
+        error: () => {
+        }
       });
   }
 
@@ -47,13 +51,13 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   getDifficultyColor(level: string): string {
     switch (level.toLowerCase()) {
       case 'beginner':
-        return 'bg-neutral-100 text-neutral-700 border-neutral-200';
+        return 'bg-success-100 text-success-700 border-success-200';
       case 'intermediate':
-        return 'bg-neutral-200 text-neutral-800 border-neutral-300';
+        return 'bg-warning-100 text-warning-700 border-warning-200';
       case 'advanced':
-        return 'bg-neutral-900 text-white border-neutral-900';
+        return 'bg-error-100 text-error-700 border-error-200';
       default:
-        return 'bg-black text-white border-black';
+        return 'bg-neutral-100 text-neutral-700 border-neutral-200';
     }
   }
 
@@ -62,6 +66,9 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   }
 
   viewSlots(course: Course): void {
+    if (!course.id) {
+      return;
+    }
     this._router.navigate(['/user/slots', course.id]);
   }
 

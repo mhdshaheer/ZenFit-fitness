@@ -8,6 +8,7 @@ import {
   NavMenuItem,
   UserProfile,
 } from '../../../../shared/components/header/header.component';
+import { FooterComponent } from '../../../../shared/components/footer/footer.component';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { Subject, takeUntil } from 'rxjs';
 
@@ -25,7 +26,7 @@ interface ActivityLogItem {
 
 @Component({
   selector: 'app-user-layout',
-  imports: [RouterModule, HeaderComponent],
+  imports: [RouterModule, HeaderComponent, FooterComponent],
   templateUrl: './user-layout.component.html',
   styleUrl: './user-layout.component.css',
 })

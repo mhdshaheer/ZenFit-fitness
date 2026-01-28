@@ -1,180 +1,226 @@
-<div class="min-h-screen bg-gray-50 py-8">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- Header Section -->
-    <div class="mb-8">
-      <div class="flex items-center justify-between mb-6 gap-4">
-        <div>
-          <h1 class="text-2xl font-bold text-gray-900 mb-2">
-            My Training Programs
-          </h1>
-          <p class="text-sm text-gray-600">
-            Manage and monitor your fitness programs
-          </p>
-        </div>
-        <button type="button" (click)="onCreateProgram()"
-          class="inline-flex items-center px-5 py-2.5 rounded-xl font-semibold text-white bg-gradient-to-r from-green-600 to-emerald-500 shadow-md shadow-green-200 hover:from-green-700 hover:to-emerald-600 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-emerald-500">
-          <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-          </svg>
-          Create Program
-        </button>
-      </div>
-
-      <!-- Approval Tabs -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-        <div class="flex items-center justify-between flex-wrap gap-4 mb-4">
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900">Approval Status</h3>
-            <p class="text-sm text-gray-500">Switch between your pending, approved, and rejected programs.</p>
+<div class="min-h-screen bg-neutral-50/50 pb-20 animate-fadeIn">
+  <!-- Dynamic Header Section -->
+  <div class="bg-white border-b border-neutral-200/50 mb-8">
+    <div class="container-custom py-8 md:py-10">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div class="space-y-1.5 animate-slideInUp">
+          <div class="flex items-center gap-2 mb-1">
+            <span class="badge badge-primary !py-0.5 !px-2 !text-[9px]">Program Engine</span>
+            <span class="w-1 h-1 rounded-full bg-neutral-300"></span>
+            <span class="caption text-neutral-400 !text-[9px]">Total Assets: {{ pagination.total }}</span>
           </div>
-          <span [ngClass]="getActiveBadgeClasses()">
-            {{ activeApprovalTab }} Programs
-          </span>
+          <h1 class="heading-4 md:heading-3 text-neutral-900">Training Programs</h1>
+          <p class="body-base text-neutral-500 max-w-2xl font-medium">Manage, monitor, and scale your fitness
+            methodologies.</p>
         </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          @for (tab of approvalTabs; track tab.value) {
-          <button type="button" (click)="setApprovalTab(tab.value)" [ngClass]="getTabButtonClasses(tab.value)">
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-base font-semibold">{{ tab.label }}</span>
-              @if (activeApprovalTab === tab.value) {
-              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/20 text-white text-xs">
-                ✓
-              </span>
-              }
-            </div>
-            <p [ngClass]="getTabHelperClasses(tab.value)">
-              {{ tab.helper }}
-            </p>
+        <div class="flex items-center gap-3 animate-slideInUp" style="animation-delay: 100ms;">
+          <button (click)="onNavigateToSales()"
+            class="btn btn-ghost btn-sm ring-1 ring-neutral-200 shadow-lg group !py-2.5 !px-5">
+            <svg class="w-4 h-4 mr-2 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path
+                d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Sales Intelligence
           </button>
-          }
+          <button (click)="onCreateProgram()" class="btn btn-primary btn-sm shadow-xl group !py-2.5 !px-5">
+            <svg class="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform duration-300" fill="none"
+              stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4" />
+            </svg>
+            Create New Program
+          </button>
         </div>
       </div>
+    </div>
+  </div>
 
+  <div class="container-custom">
+    <!-- Sophisticated Tabs -->
+    <div class="flex flex-wrap items-center justify-center gap-4 mb-12 animate-slideInUp"
+      style="animation-delay: 200ms;">
+      @for (tab of approvalTabs; track tab.value) {
+      <button (click)="setApprovalTab(tab.value)"
+        class="group flex items-center gap-3 px-8 py-4 rounded-2xl transition-all relative overflow-hidden"
+        [class.bg-primary-600]="activeApprovalTab === tab.value" [class.text-white]="activeApprovalTab === tab.value"
+        [class.bg-white]="activeApprovalTab !== tab.value" [class.text-neutral-500]="activeApprovalTab !== tab.value"
+        [class.shadow-xl]="activeApprovalTab === tab.value">
 
+        @if(tab.value === 'Pending') {
+        <svg class="w-5 h-5 !transition-transform group-hover:scale-110" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        }
+        @if(tab.value === 'Approved') {
+        <svg class="w-5 h-5 !transition-transform group-hover:scale-110" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
+        }
+        @if(tab.value === 'Rejected') {
+        <svg class="w-5 h-5 !transition-transform group-hover:scale-110" fill="none" stroke="currentColor"
+          viewBox="0 0 24 24">
+          <path
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        }
 
-      <!-- Search and Filter Section -->
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mb-8">
-        <h3 class="text-lg font-semibold text-gray-900 mb-4">Search & Filter Programs</h3>
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <!-- Search Input -->
-          <div>
-            <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Search</label>
-            <input id="search" type="text" [(ngModel)]="filters.search" (input)="onRealTimeSearch()"
-              placeholder="Search by title or description"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500" />
-          </div>
+        <div class="flex flex-col items-start">
+          <span class="text-[10px] font-black uppercase tracking-[0.2em]">{{ tab.label }}</span>
+          <span class="text-[8px] font-bold opacity-80 uppercase tracking-widest">{{ tab.helper }}</span>
+        </div>
+      </button>
+      }
+    </div>
 
-          <!-- Category Filter -->
-          <div>
-            <label for="category" class="block text-sm font-medium text-gray-700 mb-2">Category</label>
-            <select id="category" [(ngModel)]="filters.category" (change)="onRealTimeSearch()"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <option value="">All Categories</option>
-              @if (categories.length === 0) {
-              <option disabled>Loading categories...</option>
-              }
-              @for (category of categories; track category) {
-              <option [value]="category._id">{{ category.name || 'Unnamed Category' }}</option>
+    <!-- Smart Filters Section -->
+    <div class="card p-6 mb-10 border-none shadow-xl animate-slideInUp" style="animation-delay: 300ms;">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="w-1.5 h-6 gradient-primary rounded-full"></div>
+        <h3 class="text-xs text-neutral-900 uppercase tracking-widest font-black">Refine Collection</h3>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="space-y-1.5">
+          <label class="caption !text-[10px] text-neutral-400 ml-1">Search Keywords</label>
+          <input type="text" [(ngModel)]="filters.search" (input)="onRealTimeSearch()" placeholder="Type to search..."
+            class="form-input !py-2.5 !text-xs" />
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="caption !text-[10px] text-neutral-400 ml-1">Category</label>
+          <div class="relative">
+            <select [(ngModel)]="filters.category" (change)="onRealTimeSearch()"
+              class="form-input !py-2.5 !text-xs appearance-none cursor-pointer">
+              <option value="">All Architectures</option>
+              @for (category of categories; track category._id) {
+              <option [value]="category._id">{{ category.name }}</option>
               }
             </select>
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
           </div>
+        </div>
 
-          <!-- Difficulty Filter -->
-          <div>
-            <label for="difficulty" class="block text-sm font-medium text-gray-700 mb-2">Difficulty</label>
-            <select id="difficulty" [(ngModel)]="filters.difficultyLevel" (change)="onRealTimeSearch()"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <option value="">All Levels</option>
+        <div class="space-y-1.5">
+          <label class="caption !text-[10px] text-neutral-400 ml-1">Difficulty</label>
+          <div class="relative">
+            <select [(ngModel)]="filters.difficultyLevel" (change)="onRealTimeSearch()"
+              class="form-input !py-2.5 !text-xs appearance-none cursor-pointer">
+              <option value="">All Intensity Levels</option>
               <option value="Beginner">Beginner</option>
               <option value="Intermediate">Intermediate</option>
               <option value="Advanced">Advanced</option>
             </select>
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
           </div>
+        </div>
 
-          <!-- Status Filter -->
-          <div>
-            <label for="status" class="block text-sm font-medium text-gray-700 mb-2">Status</label>
-            <select id="status" [(ngModel)]="filters.status" (change)="onRealTimeSearch()"
-              class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-              <option value="">All Status</option>
+        <div class="space-y-1.5">
+          <label class="caption !text-[10px] text-neutral-400 ml-1">Publication Status</label>
+          <div class="relative">
+            <select [(ngModel)]="filters.status" (change)="onRealTimeSearch()"
+              class="form-input !py-2.5 !text-xs appearance-none cursor-pointer">
+              <option value="">Full Lifecycle</option>
               <option value="active">Active</option>
               <option value="draft">Draft</option>
-              <option value="pending">Pending Approval</option>
+              <option value="pending">In Review</option>
             </select>
+            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-neutral-400">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
+            </div>
           </div>
         </div>
       </div>
+    </div>
 
-      <!-- Loading State -->
-      @if (loading) {
-      <div class="flex justify-center items-center py-12">
-        <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+    <!-- Content Grid -->
+    @if (loading) {
+    <div class="py-32 flex flex-col items-center justify-center animate-pulse">
+      <div class="w-16 h-16 border-4 border-primary-200 border-t-primary-600 rounded-full animate-spin mb-4"></div>
+      <p class="caption text-primary-600 font-black">Syncing data...</p>
+    </div>
+    } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mb-16">
+      @for (program of fitnessPrograms; track program._id; let i = $index) {
+      <div class="animate-slideInUp" [style.animation-delay]="(i * 100) + 'ms'">
+        <app-program-card [program]="program" [button2Labal]="getSecondaryButtonLabel()"
+          [btn2Class]="getSecondaryButtonClass()" (editProgram)="onSecondaryAction($event)"
+          (viewProgram)="onViewProgram($event)"></app-program-card>
       </div>
       }
+    </div>
 
-      <!-- Programs Grid -->
-      @if (!loading) {
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        @for(program of fitnessPrograms; track program){
-        <app-program-card
-          [program]="program"
-          [button2Labal]="getSecondaryButtonLabel()"
-          [btn2Class]="getSecondaryButtonClass()"
-          (editProgram)="onSecondaryAction($event)"
-          (viewProgram)="onViewProgram($event)"
-        ></app-program-card>
-        }
-      </div>
-
-      <!-- Empty State -->
-      @if (fitnessPrograms.length === 0) {
-      <div class="text-center py-12">
-        <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+    <!-- Empty State -->
+    @if (fitnessPrograms.length === 0) {
+    <div class="py-32 flex flex-col items-center justify-center text-center animate-fadeIn">
+      <div
+        class="w-24 h-24 bg-neutral-100 rounded-[2.5rem] flex items-center justify-center text-neutral-300 mb-8 shadow-inner">
+        <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
             d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
           </path>
         </svg>
-        <h3 class="mt-2 text-sm font-medium text-gray-900">No programs found</h3>
-        <p class="mt-1 text-sm text-gray-500">
-          You don't have any {{ activeApprovalTab.toLowerCase() }} programs yet. Try switching the tab or adjusting your
-          search filters.
-        </p>
       </div>
-      }
-
-      <!-- Pagination -->
-      @if (pagination.totalPages > 1) {
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 mt-8">
-        <div class="flex items-center justify-between">
-          <div class="text-sm text-gray-700">
-            Showing {{ (pagination.page - 1) * pagination.limit + 1 }} to
-            {{ Math.min(pagination.page * pagination.limit, pagination.total) }} of
-            {{ pagination.total }} programs
-          </div>
-          <div class="flex space-x-2">
-            <button (click)="onPageChange(pagination.page - 1)" [disabled]="pagination.page === 1"
-              class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-              Previous
-            </button>
-
-            @for (page of getPaginationArray(); track page) {
-            <button (click)="page !== -1 && onPageChange(page)" [class.bg-blue-600]="page === pagination.page"
-              [class.text-white]="page === pagination.page" [class.text-gray-500]="page !== pagination.page"
-              [disabled]="page === -1"
-              class="px-3 py-2 text-sm font-medium border border-gray-300 rounded-lg hover:bg-gray-50 disabled:cursor-default">
-              {{ page === -1 ? '...' : page }}
-            </button>
-            }
-
-            <button (click)="onPageChange(pagination.page + 1)" [disabled]="pagination.page === pagination.totalPages"
-              class="px-3 py-2 text-sm font-medium text-gray-500 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed">
-              Next
-            </button>
-          </div>
-        </div>
-      </div>
-      }
-      }
+      <h3 class="heading-5 text-neutral-900 mb-2 uppercase tracking-tight">No Results Found</h3>
+      <p class="body-base text-neutral-400 font-medium max-w-sm mb-8">Refine your search parameters or explore other
+        publication states.</p>
+      <button (click)="filters.search = ''; onRealTimeSearch()" class="btn btn-ghost ring-1 ring-neutral-200">Clear All
+        Filters</button>
     </div>
+    }
+
+    <!-- Pagination -->
+    @if (pagination.totalPages > 1) {
+    <div
+      class="flex flex-col md:flex-row items-center justify-between gap-6 py-10 border-t border-neutral-100 animate-fadeIn">
+      <p class="body-small text-neutral-500 font-bold uppercase tracking-widest leading-none">
+        Page <span class="text-primary-600">{{ pagination.page }}</span> of {{ pagination.totalPages }}
+      </p>
+      <div class="flex items-center gap-2">
+        <button (click)="onPageChange(pagination.page - 1)" [disabled]="pagination.page === 1"
+          class="w-12 h-12 rounded-xl border border-neutral-200 flex items-center justify-center text-neutral-600 hover:bg-neutral-50 transition-all disabled:opacity-30">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M15 19l-7-7 7-7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+
+        @for (page of getPaginationArray(); track page) {
+        @if (page === -1) {
+        <span class="px-2 text-neutral-300">...</span>
+        } @else {
+        <button (click)="onPageChange(page)"
+          class="w-12 h-12 rounded-xl border flex items-center justify-center text-sm font-black transition-all"
+          [class.border-primary-600]="page === pagination.page" [class.bg-primary-600]="page === pagination.page"
+          [class.text-white]="page === pagination.page" [class.border-neutral-200]="page !== pagination.page"
+          [class.text-neutral-600]="page !== pagination.page" [class.hover:bg-neutral-50]="page !== pagination.page">
+          {{ page }}
+        </button>
+        }
+        }
+
+        <button (click)="onPageChange(pagination.page + 1)" [disabled]="pagination.page === pagination.totalPages"
+          class="w-12 h-12 rounded-xl border border-neutral-200 flex items-center justify-center text-neutral-600 hover:bg-neutral-50 transition-all disabled:opacity-30">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path d="M9 5l7 7-7 7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+          </svg>
+        </button>
+      </div>
+    </div>
+    }
+    }
   </div>
+</div>

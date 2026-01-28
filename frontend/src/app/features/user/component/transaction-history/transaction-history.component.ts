@@ -1,4 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { PaymentService } from '../../../../core/services/payment.service';
@@ -9,7 +10,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 @Component({
   selector: 'zenfit-transaction-history',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './transaction-history.component.html',
   styleUrl: './transaction-history.component.css'
 })
@@ -53,7 +54,7 @@ export class TransactionHistoryComponent implements OnInit, OnDestroy {
   loadTransactions(): void {
     this.isLoading = true;
     this._paymentService.getUserTransactionHistory(
-      this.currentPage, 
+      this.currentPage,
       this.itemsPerPage,
       this.searchTerm,
       this.selectedStatus

@@ -46,7 +46,10 @@ const authMiddleware: RequestHandler = async (req, res, next) => {
         role: decoded.role,
       };
       request.user = authUser;
-      next();
+      return next();
+    } else {
+      res.status(HttpStatus.UNAUTHORIZED).json({ message: "Invalid token structure" });
+      return;
     }
   } catch (error) {
     logger.error(error);

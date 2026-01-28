@@ -1,49 +1,49 @@
-<div class="min-h-screen bg-gray-50 flex flex-col">
-  <!-- Main Content -->
-  <main
-    class="flex-grow flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8"
-  >
-    <div class="w-full max-w-md">
-      <!-- Success Icon -->
-      <div class="flex justify-center mb-6">
+<div
+  class="min-h-screen bg-neutral-50 flex flex-col items-center justify-center p-6 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-error-50/50 via-neutral-50 to-neutral-50">
+  <div class="max-w-md w-full animate-fadeIn">
+    <!-- Failure Badge -->
+    <div
+      class="card p-12 py-16 text-center border-none shadow-[0_0_100px_-20px_rgba(239,68,68,0.2)] bg-white relative overflow-hidden">
+      <!-- Animated Background Decor -->
+      <div class="absolute top-0 left-0 w-full h-2 bg-error-600"></div>
+
+      <div class="relative z-10">
         <div
-          class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-red-500 flex items-center justify-center"
-        >
-          <svg
-            class="w-10 h-10 sm:w-12 sm:h-12 text-white"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="3"
-              d="M6 18 18 6M6 6l12 12"
-            />
+          class="w-28 h-28 bg-error-100 rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 shadow-inner group overflow-hidden">
+          <svg class="w-16 h-16 text-error-600 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M6 18L18 6M6 6l12 12" />
           </svg>
         </div>
-      </div>
 
-      <!-- Success Message -->
-      <div class="text-center mb-8">
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-          Payment Failed
-        </h1>
-        <p class="text-gray-600 text-sm sm:text-base">
-          Unfortunately, your payment couldn’t be processed.
-        </p>
-      </div>
+        <h1 class="heading-3 text-neutral-900 mb-3">Transaction Failed</h1>
+        <p class="body-large text-neutral-500 font-bold uppercase tracking-[0.2em] mb-12">Authorization declined</p>
 
-      <!-- Return Button -->
-      <div class="flex justify-center">
-        <button
-          (click)="returnToHomepage()"
-          class="bg-red-600 hover:bg-red-700 text-white font-medium px-8 py-3 rounded-md transition-colors duration-200 text-sm sm:text-base w-full sm:w-auto"
-        >
-          Return to Homepage
-        </button>
+        <div class="bg-error-50 rounded-3xl p-6 border border-error-100 mb-12 text-left space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="caption font-black text-error-800 uppercase tracking-widest">Error Status</span>
+            <span class="badge badge-error px-4 py-1.5 shadow-sm font-black italic">UNSUCCESSFUL</span>
+          </div>
+          <p class="body-small text-error-700 leading-relaxed font-semibold italic">"The payment could not be processed
+            at this time. Please check your bank details or try another payment method."</p>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <button (click)="returnToHomepage()"
+            class="btn btn-primary btn-lg w-full py-5 rounded-2xl shadow-xl transform active:scale-95 group/btn">
+            <span class="font-black uppercase tracking-[0.2em]">Retry Payment</span>
+            <svg class="w-6 h-6 ml-2 transition-transform group-hover/btn:rotate-180" fill="none" stroke="currentColor"
+              viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+              </path>
+            </svg>
+          </button>
+          <button routerLink="/user/workouts"
+            class="btn btn-ghost w-full py-4 text-xs font-black uppercase tracking-widest text-neutral-400 hover:text-neutral-600 transition-all rounded-xl">
+            Explore Other Programs
+          </button>
+        </div>
       </div>
     </div>
-  </main>
+  </div>
 </div>

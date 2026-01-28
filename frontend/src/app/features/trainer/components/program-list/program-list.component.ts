@@ -7,7 +7,6 @@ import { firstValueFrom, forkJoin, Subject } from 'rxjs';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { FormsModule } from '@angular/forms';
-import { NgClass } from '@angular/common';
 
 export interface FitnessProgram {
   id?: string;
@@ -59,7 +58,7 @@ export interface PaginationResult {
 
 @Component({
   selector: 'app-program-list',
-  imports: [ProgramCardComponent, FormsModule, NgClass],
+  imports: [ProgramCardComponent, FormsModule],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
@@ -358,6 +357,10 @@ export class ProgramListComponent implements OnInit, OnDestroy {
     } finally {
       this.loading = false;
     }
+  }
+
+  onNavigateToSales(): void {
+    this._router.navigate(['/trainer/purchased-programs']);
   }
 
   onViewProgram(programId: string): void {

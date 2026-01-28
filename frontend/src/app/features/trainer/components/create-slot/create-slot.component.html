@@ -1,450 +1,472 @@
-@if (instanceTab() === 'cancelled') {
-@if (cancelledInstances().length === 0) {
-<div class="py-12 text-center text-neutral-500">
-  <p>No sessions have been cancelled recently.</p>
-</div>
-}
-
-<div class="grid md:grid-cols-2 gap-4" *ngIf="cancelledInstances().length">
-  @for (instance of cancelledInstances(); track trackByInstance($index, instance)) {
-  <div class="border border-rose-100 rounded-xl p-4 flex flex-col gap-3 bg-rose-50 shadow-sm">
-    <div class="flex items-start justify-between gap-3">
-      <div>
-        <p class="text-sm font-semibold text-neutral-900">
-          {{ getProgramDetails(instance.programId)?.title || 'Program removed' }}
-        </p>
-        <p class="text-xs text-neutral-500">
-          {{ instance.date | date: 'EEE, MMM d, y' }}
-        </p>
+<!-- Interactive Header Hub -->
+<div class="bg-white border-b border-neutral-200/50 mb-8">
+  <div class="container-custom py-8 md:py-10">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 animate-slideInUp">
+      <div class="space-y-1.5">
+        <div class="flex items-center gap-2 mb-1">
+          <span class="badge badge-primary !py-0.5 !px-2 !text-[9px]">Temporal Architecture</span>
+          <span class="w-1 h-1 rounded-full bg-neutral-300"></span>
+          <span class="caption text-neutral-400 !text-[9px]">Ledger Status: Synchronized</span>
+        </div>
+        <h1 class="heading-5 md:heading-4 text-neutral-900">Slot Templates</h1>
+        <p class="body-base text-neutral-500 max-w-2xl font-medium">Design your operational availability and
+          automate session generation through architectural blueprints.</p>
       </div>
-      <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full bg-rose-200 text-rose-700">
-        Cancelled
-      </span>
-    </div>
-
-    <div class="text-sm text-neutral-700 space-y-2">
-      <div class="text-xs uppercase tracking-wide text-neutral-500">Time</div>
-      <div class="font-semibold text-neutral-900">
-        {{ formatTimeDisplay(instance.startTime) }} → {{ formatTimeDisplay(instance.endTime) }}
+      <div class="flex items-center gap-4">
+        <button (click)="onNavigateToSessions()"
+          class="group flex items-center gap-2.5 px-5 py-2.5 bg-white ring-1 ring-neutral-200 rounded-xl shadow-lg hover:ring-primary-300 transition-all">
+          <div
+            class="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center text-primary-600 transition-colors group-hover:bg-primary-600 group-hover:text-white">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <div class="text-left">
+            <span class="block text-[7px] font-black text-neutral-400 uppercase tracking-widest leading-tight">Global
+              Access</span>
+            <span class="block text-[11px] font-black text-neutral-900 capitalize leading-tight">Session Monitor</span>
+          </div>
+        </button>
       </div>
-      <div class="flex items-center justify-between text-sm">
-        <span class="text-neutral-500">Booked capacity</span>
-        <span class="font-semibold text-neutral-900">
-          {{ instance.capacity - instance.availableCapacity }}/{{ instance.capacity }}
-        </span>
-      </div>
-    </div>
-
-    <div class="pt-2 border-t border-dashed border-rose-200 text-xs text-rose-600">
-      Cancelled by trainer
     </div>
   </div>
-  }
 </div>
-}
 
-<div class="min-h-screen bg-neutral-50">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-6">
-    <header class="mb-4">
-      <h1 class="text-2xl font-semibold text-neutral-900">Slot Templates</h1>
-      <p class="text-neutral-600 text-sm">Create recurring availability and monitor generated slot instances.</p>
-    </header>
+<div class="container-custom space-y-10">
+  <!-- Main Configuration Matrix -->
+  <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
-    <section class="bg-white border border-neutral-200 rounded-xl p-5 sm:p-6">
-      <div class="flex items-center justify-between gap-4 mb-4 flex-wrap">
-        <div>
-          <h2 class="text-lg font-semibold">Create / Update Template</h2>
-          <p class="text-sm text-neutral-500">Define recurrence, timezone, and capacity. Instances will be generated
-            automatically.</p>
-        </div>
-        @if (editingTemplate()) {
-        <button type="button" (click)="cancelEdit()"
-          class="px-4 py-2 text-sm border border-neutral-300 rounded-md hover:border-neutral-900 hover:bg-neutral-50">
-          Cancel edit
-        </button>
-        }
-      </div>
-
-      <form [formGroup]="templateForm" (ngSubmit)="submitTemplate()" class="space-y-5">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div class="md:col-span-1">
-            <label for="programId" class="block text-xs font-medium text-neutral-600 mb-1.5">Program <span
-                class="text-red-600">*</span></label>
-            <select id="programId" formControlName="programId"
-              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
-              <option value="">Select program</option>
-              @for (program of programs; track program) {
-              <option [value]="program.id">
-                {{ program.title }} · {{ program.duration }} · {{ program.difficultyLevel }}
-              </option>
-              }
-            </select>
-          </div>
-
-          <div>
-            <label for="timezone" class="block text-xs font-medium text-neutral-600 mb-1.5">Timezone <span
-                class="text-red-600">*</span></label>
-            <select id="timezone" formControlName="timezone"
-              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
-              @for (tz of timezoneOptions; track tz) {
-              <option [value]="tz">{{ tz }}</option>
-              }
-            </select>
-          </div>
-
-          <div>
-            <label for="capacity" class="block text-xs font-medium text-neutral-600 mb-1.5">Capacity <span
-                class="text-red-600">*</span></label>
-            <input id="capacity" type="number" formControlName="capacity" min="1" max="100"
-              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900" />
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label for="startTime" class="block text-xs font-medium text-neutral-600 mb-1.5">Start time <span
-                class="text-red-600">*</span></label>
-            <select id="startTime" formControlName="startTime"
-              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
-              <option value="">Select start</option>
-              @for (option of timeOptions; track option) {
-              <option [value]="option.value">{{ option.display }}</option>
-              }
-            </select>
-          </div>
-
-          <div>
-            <label for="endTime" class="block text-xs font-medium text-neutral-600 mb-1.5">End time <span
-                class="text-red-600">*</span></label>
-            <select id="endTime" formControlName="endTime"
-              [class.border-red-500]="templateForm.hasError('endBeforeStart')"
-              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900">
-              <option value="">Select end</option>
-              @for (option of filteredEndOptions; track option) {
-              <option [value]="option.value">{{ option.display }}</option>
-              }
-            </select>
-          </div>
-        </div>
-
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <div id="recurrenceLabel" class="block text-xs font-medium text-neutral-600 mb-1.5">Recurrence <span
-                class="text-red-600">*</span></div>
-            <div role="radiogroup" aria-labelledby="recurrenceLabel" class="flex gap-3">
-              @for (rec of recurrenceOptions; track rec) {
-              <label class="flex items-center gap-2 text-sm text-neutral-700">
-                <input type="radio" class="text-neutral-900" [value]="rec" formControlName="recurrenceType" />
-                {{ rec === 'WEEKLY' ? 'Weekly (select days)' : 'Daily (interval)' }}
-              </label>
-              }
+    <!-- Creation Engine (Form) -->
+    <div class="lg:col-span-4 lg:sticky lg:top-24 self-start">
+      <div class="card p-0 border-none shadow-2xl bg-white overflow-hidden animate-slideInLeft">
+        <div class="p-6 border-b border-neutral-100 bg-neutral-50/50">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2.5">
+              <div class="w-9 h-9 gradient-primary rounded-lg flex items-center justify-center text-white shadow-lg">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <div>
+                <h3 class="text-[11px] font-black text-neutral-900 uppercase tracking-widest leading-tight">{{
+                  editingTemplate() ?
+                  'Modify Template' : 'Blueprint Creation' }}</h3>
+                <p class="text-[7px] font-bold text-neutral-400 uppercase tracking-widest leading-tight">{{
+                  editingTemplate() ?
+                  'Stateless Override' : 'New Sequence' }}</p>
+              </div>
             </div>
-          </div>
-
-          @if (templateForm.value.recurrenceType === 'DAILY') {
-          <div>
-            <label for="intervalDays" class="block text-xs font-medium text-neutral-600 mb-1.5">Interval (days)</label>
-            <input id="intervalDays" type="number" formControlName="intervalDays" min="1" max="30"
-              class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900" />
-          </div>
-          }
-        </div>
-
-        @if (templateForm.value.recurrenceType === 'WEEKLY') {
-        <div>
-          <div id="daysOfWeekLabel" class="block text-xs font-medium text-neutral-600 mb-1.5">Days of week</div>
-          <div aria-labelledby="daysOfWeekLabel" class="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-2">
-            @for (day of weekDays; track day) {
-            <button type="button" class="px-3 py-2 text-xs font-medium rounded-md border transition"
-              [class.bg-neutral-900]="day.selected" [class.text-white]="day.selected"
-              [class.border-neutral-900]="day.selected" [class.bg-white]="!day.selected"
-              [class.text-neutral-700]="!day.selected" [class.border-neutral-300]="!day.selected"
-              (click)="toggleDay(day)">
-              {{ day.name }}
+            @if (editingTemplate()) {
+            <button (click)="cancelEdit()"
+              class="p-1.5 hover:bg-error-50 text-neutral-400 hover:text-error-600 rounded-lg transition-all">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              </svg>
             </button>
             }
           </div>
         </div>
-        }
 
-        <div class="flex items-center justify-between flex-wrap gap-3">
-          <div class="text-xs text-neutral-500">
-            Template is currently <span class="font-medium text-neutral-900">{{ templateForm.value.isActive ? 'Active' :
-              'Inactive' }}</span>
-          </div>
-          <button type="submit" [disabled]="templateForm.invalid"
-            class="px-5 py-2 bg-neutral-900 text-white text-sm font-medium rounded-md hover:bg-black disabled:bg-neutral-400 disabled:cursor-not-allowed">
-            {{ editingTemplate() ? 'Save template' : 'Create template' }}
-          </button>
-        </div>
-      </form>
-    </section>
-
-    <section class="bg-white border border-neutral-200 rounded-xl p-5 sm:p-6">
-      <div class="flex items-center justify-between mb-4">
-        <div>
-          <h2 class="text-lg font-semibold">Templates</h2>
-          <p class="text-sm text-neutral-500">{{ templates().length }} total</p>
-        </div>
-      </div>
-
-      @if (templates().length === 0) {
-      <div class="py-12 text-center text-neutral-500">
-        <p>No templates yet. Create one above to generate availability.</p>
-      </div>
-      }
-
-      <div class="grid gap-4 md:grid-cols-2" *ngIf="templates().length">
-        @for (template of templates(); track trackByTemplate($index, template)) {
-        <div class="border border-neutral-200 rounded-lg p-4 flex flex-col gap-3">
-          <div class="flex items-start justify-between">
-            <div>
-              <p class="text-sm font-semibold text-neutral-900">
-                {{ getProgramDetails(template.programId)?.title || 'Program removed' }}
-              </p>
-              <p class="text-xs text-neutral-500">
-                {{ formatRecurrence(template) }} · {{ template.timezone }}
-              </p>
+        <form [formGroup]="templateForm" (ngSubmit)="submitTemplate()" class="p-6 space-y-6">
+          <!-- Methodology Selection -->
+          <div class="space-y-1.5">
+            <label class="caption !text-[10px] text-neutral-400 ml-1">Protocol Methodology</label>
+            <div class="relative group">
+              <select formControlName="programId"
+                class="form-input !py-3 !pl-4 !pr-10 !text-xs appearance-none bg-neutral-50/50 group-hover:bg-white transition-colors">
+                <option value="">Select Methodology</option>
+                @for (program of programs; track program.id) {
+                <option [value]="program.id">{{ program.title }}</option>
+                }
+              </select>
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-neutral-400">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
             </div>
-            <span class="px-2 py-0.5 text-xs rounded-full" [class.bg-green-100]="template.isActive"
-              [class.text-green-700]="template.isActive" [class.bg-neutral-200]="!template.isActive"
-              [class.text-neutral-600]="!template.isActive">
-              {{ template.isActive ? 'Active' : 'Paused' }}
+          </div>
+
+          <!-- Parameters Grid -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label class="caption !text-[10px] text-neutral-400 ml-1">Temporal Zone</label>
+              <select formControlName="timezone" class="form-input !py-3 !text-xs appearance-none bg-neutral-50/50">
+                @for (tz of timezoneOptions; track tz) {
+                <option [value]="tz">{{ tz }}</option>
+                }
+              </select>
+            </div>
+            <div class="space-y-1.5">
+              <label class="caption !text-[10px] text-neutral-400 ml-1">Density (Max)</label>
+              <input type="number" formControlName="capacity"
+                class="form-input !py-3 !text-xs bg-neutral-50/50 focus:bg-white" placeholder="10" />
+            </div>
+          </div>
+
+          <!-- Time Sequence -->
+          <div class="grid grid-cols-2 gap-4">
+            <div class="space-y-1.5">
+              <label class="caption !text-[10px] text-neutral-400 ml-1">Sequence Start</label>
+              <select formControlName="startTime" class="form-input !py-3 !text-xs appearance-none bg-neutral-50/50">
+                <option value="">Start</option>
+                @for (option of timeOptions; track option.value) {
+                <option [value]="option.value">{{ option.display }}</option>
+                }
+              </select>
+            </div>
+            <div class="space-y-1.5">
+              <label class="caption !text-[10px] text-neutral-400 ml-1">Sequence End</label>
+              <select formControlName="endTime" class="form-input !py-3 !text-xs appearance-none bg-neutral-50/50"
+                [class.border-error-500]="templateForm.hasError('endBeforeStart')">
+                <option value="">End</option>
+                @for (option of filteredEndOptions; track option.value) {
+                <option [value]="option.value">{{ option.display }}</option>
+                }
+              </select>
+            </div>
+          </div>
+
+          <!-- Logic Selection -->
+          <div class="space-y-3">
+            <label class="caption !text-[10px] text-neutral-400 ml-1">Recurrence Logic</label>
+            <div class="flex p-1 bg-neutral-100 rounded-xl">
+              @for (rec of recurrenceOptions; track rec) {
+              <button type="button" (click)="templateForm.patchValue({recurrenceType: rec})"
+                class="flex-1 py-2 text-[9px] font-black uppercase tracking-widest rounded-lg transition-all"
+                [class.bg-white]="templateForm.value.recurrenceType === rec"
+                [class.shadow-lg]="templateForm.value.recurrenceType === rec"
+                [class.text-primary-600]="templateForm.value.recurrenceType === rec"
+                [class.text-neutral-500]="templateForm.value.recurrenceType !== rec">
+                {{ rec }}
+              </button>
+              }
+            </div>
+          </div>
+
+          <!-- Dynamic Logic Inputs -->
+          @if (templateForm.value.recurrenceType === 'DAILY') {
+          <div class="space-y-1.5 animate-scaleIn">
+            <label class="caption !text-[10px] text-neutral-400 ml-1">Interval Magnitude (Days)</label>
+            <input type="number" formControlName="intervalDays" class="form-input !py-3 !text-xs bg-neutral-50/50" />
+          </div>
+          }
+
+          @if (templateForm.value.recurrenceType === 'WEEKLY') {
+          <div class="space-y-2.5 animate-scaleIn">
+            <label class="caption !text-[10px] text-neutral-400 ml-1">Temporal Validation Days</label>
+            <div class="grid grid-cols-4 gap-1.5">
+              @for (day of weekDays; track day.name) {
+              <button type="button" (click)="toggleDay(day)"
+                class="h-9 text-[9px] font-black rounded-lg border transition-all uppercase tracking-tighter"
+                [class.border-primary-600]="day.selected" [class.bg-primary-600]="day.selected"
+                [class.text-white]="day.selected" [class.border-neutral-200]="!day.selected"
+                [class.text-neutral-500]="!day.selected" [class.hover:border-primary-300]="!day.selected">
+                {{ day.name }}
+              </button>
+              }
+            </div>
+          </div>
+          }
+
+          <div class="pt-2">
+            <button type="submit" [disabled]="templateForm.invalid"
+              class="btn btn-primary btn-sm w-full shadow-xl shadow-primary-200 !py-3 !rounded-xl group overflow-hidden relative">
+              <div
+                class="absolute inset-0 bg-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700">
+              </div>
+              {{ editingTemplate() ? 'Initialize Override' : 'Commit Blueprint' }}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Protocol Ledger (Template List) -->
+    <div class="lg:col-span-8 space-y-8">
+      <div>
+        <div class="flex items-center justify-between mb-6 ml-2">
+          <div class="flex items-center gap-3">
+            <h3 class="text-[11px] text-neutral-900 uppercase tracking-widest font-black">Active Blueprints</h3>
+            <span
+              class="w-6 h-6 rounded-full gradient-primary flex items-center justify-center text-white text-[8px] font-black shadow-lg">
+              {{ templates().length }}
             </span>
           </div>
-
-          <div class="text-sm text-neutral-600">
-            <div>Time: {{ formatTimeDisplay(template.startTime) }} → {{ formatTimeDisplay(template.endTime) }}</div>
-            <div>Capacity: {{ template.capacity }} seats</div>
-          </div>
-
-          <div class="flex gap-2">
-            <button
-              class="flex-1 px-3 py-2 text-xs font-medium border border-neutral-300 rounded-md hover:border-neutral-900"
-              type="button" (click)="startEdit(template)">
-              Edit
-            </button>
-            <button
-              class="flex-1 px-3 py-2 text-xs font-medium border border-neutral-300 rounded-md hover:border-neutral-900"
-              type="button" (click)="regenerateInstances(template._id)">
-              Generate 2 weeks
-            </button>
-            <button
-              class="px-3 py-2 text-xs font-medium border border-red-200 text-red-600 rounded-md hover:border-red-500"
-              type="button" (click)="deleteTemplate(template)">
-              Delete
-            </button>
-          </div>
         </div>
-        }
-      </div>
-    </section>
 
-    <section class="bg-white border border-neutral-200 rounded-xl p-5 sm:p-6">
-      <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-        <div>
-          <h2 class="text-lg font-semibold">Slot instances</h2>
-          <p class="text-sm text-neutral-500">
-            {{ instanceTab() === 'upcoming' ? 'Next 14 days from active templates.' : instanceTab() === 'past' ? 'Last
-            30 days of finished slots.' : 'Cancelled instances'}}
+        @if (templates().length === 0) {
+        <div
+          class="card p-16 text-center border-2 border-dashed border-neutral-200 bg-white/50 animate-fadeIn rounded-3xl">
+          <div
+            class="w-16 h-16 bg-neutral-100 rounded-2xl flex items-center justify-center text-neutral-300 mx-auto mb-5">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+          </div>
+          <h4 class="text-base font-black text-neutral-900 uppercase tracking-tight">System Idle</h4>
+          <p class="caption !text-[10px] text-neutral-400 mt-2">Generate a blueprint to initialize the temporal
+            matrix.
           </p>
         </div>
-        <div class="inline-flex rounded-lg border border-neutral-200 overflow-hidden">
-          <button type="button" class="px-4 py-2 text-sm font-medium border-r border-neutral-200"
-            [class.bg-neutral-900]="instanceTab() === 'upcoming'" [class.text-white]="instanceTab() === 'upcoming'"
-            [class.text-neutral-600]="instanceTab() !== 'upcoming'" (click)="setInstanceTab('upcoming')">
-            Upcoming ({{ upcomingActiveInstances().length }})
-          </button>
-          <button type="button" class="px-4 py-2 text-sm font-medium border-r border-neutral-200"
-            [class.bg-neutral-900]="instanceTab() === 'past'" [class.text-white]="instanceTab() === 'past'"
-            [class.text-neutral-600]="instanceTab() !== 'past'" (click)="setInstanceTab('past')">
-            Past ({{ pastActiveInstances().length }})
-          </button>
-          <button type="button" class="px-4 py-2 text-sm font-medium"
-            [class.bg-neutral-900]="instanceTab() === 'cancelled'" [class.text-white]="instanceTab() === 'cancelled'"
-            [class.text-neutral-600]="instanceTab() !== 'cancelled'" (click)="setInstanceTab('cancelled')">
-            Cancelled ({{ cancelledInstances().length }})
-          </button>
+        }
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          @for (template of templates(); track template._id; let i = $index) {
+          <div class="card p-0 border-none shadow-xl bg-white group overflow-hidden animate-slideInUp"
+            [style.animation-delay]="(i * 100) + 'ms'">
+
+            <div class="px-6 py-4.5 border-b border-neutral-100 flex items-start justify-between bg-neutral-50/30">
+              <div class="space-y-1">
+                <span class="badge !text-[7px] !px-1.5 mb-1.5" [class.badge-primary]="template.isActive"
+                  [class.badge-neutral]="!template.isActive">
+                  {{ template.isActive ? 'Active Sequence' : 'Paused Sequence' }}
+                </span>
+                <h4 class="text-[11px] font-black text-neutral-900 uppercase tracking-tight line-clamp-1">
+                  {{ getProgramDetails(template.programId)?.title || 'Global Methodology' }}
+                </h4>
+                <p class="text-[7px] font-bold text-neutral-400 uppercase tracking-[0.2em]">{{
+                  formatRecurrence(template) }}</p>
+              </div>
+              <div class="flex gap-1.5">
+                <button (click)="startEdit(template)"
+                  class="w-8 h-8 rounded-lg bg-white border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-primary-600 hover:border-primary-200 hover:shadow-lg transition-all">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button (click)="deleteTemplate(template)"
+                  class="w-8 h-8 rounded-lg bg-white border border-neutral-200 flex items-center justify-center text-neutral-400 hover:text-error-600 hover:border-error-200 hover:shadow-lg transition-all">
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="p-6">
+              <div class="grid grid-cols-2 gap-4 mb-6">
+                <div class="p-3 bg-neutral-50 rounded-xl border border-neutral-100 flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-primary-600 shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[7px] font-black text-neutral-400 uppercase tracking-widest leading-none mb-1">
+                      Window</p>
+                    <p class="text-[10px] font-black text-neutral-900">{{ formatTimeDisplay(template.startTime) }} —
+                      {{ formatTimeDisplay(template.endTime) }}</p>
+                  </div>
+                </div>
+                <div class="p-3 bg-neutral-50 rounded-xl border border-neutral-100 flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-lg bg-white flex items-center justify-center text-primary-600 shadow-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                  </div>
+                  <div>
+                    <p class="text-[7px] font-black text-neutral-400 uppercase tracking-widest leading-none mb-1">
+                      Density</p>
+                    <p class="text-[10px] font-black text-neutral-900">{{ template.capacity }} Nodes/Session</p>
+                  </div>
+                </div>
+              </div>
+
+              <button (click)="regenerateInstances(template._id)"
+                class="btn btn-primary btn-sm w-full shadow-lg !py-3 !rounded-xl group flex items-center justify-center gap-2.5">
+                <svg class="w-3.5 h-3.5 group-hover:rotate-180 transition-transform duration-500" fill="none"
+                  stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                Initialize 14d Sync
+              </button>
+            </div>
+          </div>
+          }
         </div>
       </div>
+    </div>
+  </div>
 
-      <div class="flex flex-wrap gap-3 mb-5">
-        <div class="flex-1 min-w-[220px]">
-          <label class="sr-only" for="instance-search">Search program</label>
-          <input id="instance-search" type="text" placeholder="Search program"
-            class="w-full px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900"
-            [value]="instanceSearch()" (input)="setInstanceSearch(($any($event.target)?.value) ?? '')" />
+  <!-- Output Explorer (Generated Instances) -->
+  <div class="space-y-8 pt-12 border-t border-neutral-200/60">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+      <div class="space-y-1">
+        <div class="flex items-center gap-2.5">
+          <h3 class="text-[11px] text-neutral-900 uppercase tracking-widest font-black">Temporal Output</h3>
+          <span class="badge badge-primary !py-0.5 !px-2 !text-[8px]">Synchronized Real-time</span>
         </div>
-        <div>
-          <label class="sr-only" for="instance-status">Status</label>
-          <select id="instance-status"
-            class="px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900"
-            [value]="statusFilter()" (change)="setStatusFilter(($any($event.target)?.value) ?? 'ALL')">
-            <option value="ALL">All statuses</option>
-            <option value="OPEN">Open</option>
-            <option value="CLOSED">Closed</option>
-            <option value="CANCELLED">Cancelled</option>
+        <p class="caption !text-[9px] text-neutral-400">Monitor and manage the active generated instance stream.</p>
+      </div>
+
+      <div class="flex bg-neutral-100 p-1 rounded-xl shadow-inner">
+        @for (tab of ['upcoming', 'past', 'cancelled']; track tab) {
+        <button (click)="setInstanceTab(tab === 'upcoming' ? 'upcoming' : tab === 'past' ? 'past' : 'cancelled')"
+          class="px-5 py-1.5 text-[8px] font-black uppercase tracking-widest rounded-lg transition-all"
+          [class.bg-white]="instanceTab() === tab" [class.shadow-lg]="instanceTab() === tab"
+          [class.text-primary-600]="instanceTab() === tab" [class.text-neutral-500]="instanceTab() !== tab">
+          {{ tab }}
+        </button>
+        }
+      </div>
+    </div>
+
+    <!-- Filter Console -->
+    <div class="card bg-white border-none shadow-2xl p-6 animate-slideInUp">
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div class="space-y-1.5">
+          <label class="text-[7px] font-black text-neutral-400 uppercase tracking-widest ml-1">Protocol Filter</label>
+          <input type="text" [value]="instanceSearch()" (input)="setInstanceSearch(($any($event.target)?.value) ?? '')"
+            placeholder="Search Methodology..." class="form-input !py-2 !text-[11px] bg-neutral-50/50" />
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-[7px] font-black text-neutral-400 uppercase tracking-widest ml-1">Status Filter</label>
+          <select [value]="statusFilter()" (change)="setStatusFilter(($any($event.target)?.value) ?? 'ALL')"
+            class="form-input appearance-none !py-2 !text-[11px] bg-neutral-50/50">
+            <option value="ALL">All States</option>
+            <option value="OPEN">Open Access</option>
+            <option value="CLOSED">Sealed</option>
           </select>
         </div>
-        <div>
-          <label class="sr-only" for="instance-from">From date</label>
-          <input id="instance-from" type="date"
-            class="px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900"
-            [value]="dateFromFilter() ?? ''" (change)="setDateFilter('from', $any($event.target)?.value ?? null)" />
+
+        <div class="space-y-1.5">
+          <label class="text-[7px] font-black text-neutral-400 uppercase tracking-widest ml-1">Temporal Origin</label>
+          <input type="date" [value]="dateFromFilter() ?? ''"
+            (change)="setDateFilter('from', $any($event.target)?.value ?? null)"
+            class="form-input !py-2 !text-[11px] bg-neutral-50/50" />
         </div>
-        <div>
-          <label class="sr-only" for="instance-to">To date</label>
-          <input id="instance-to" type="date"
-            class="px-3 py-2 text-sm border border-neutral-300 rounded-md focus:ring-1 focus:ring-neutral-900"
-            [value]="dateToFilter() ?? ''" (change)="setDateFilter('to', $any($event.target)?.value ?? null)" />
-        </div>
-        <div>
-          <button type="button" class="px-3 py-2 text-sm border border-neutral-300 rounded-md hover:border-neutral-900"
-            (click)="clearInstanceFilters()">
-            Reset
+
+        <div class="flex items-end pb-1">
+          <button (click)="clearInstanceFilters()"
+            class="text-[7px] font-black text-primary-600 uppercase tracking-widest hover:text-primary-700 transition-all flex items-center gap-2">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path
+                d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Reset Filters
           </button>
         </div>
       </div>
+    </div>
 
-      @if (isInstancesLoading()) {
-      <div class="py-12 text-center text-neutral-500">
-        <p>Loading slot instances...</p>
-      </div>
-      } @else {
-      @if (instanceTab() === 'upcoming') {
-      @if (upcomingActiveInstances().length === 0) {
-      <div class="py-12 text-center text-neutral-500">
-        <p>No upcoming instances match the current filters.</p>
-      </div>
-      }
+    @if (isInstancesLoading()) {
+    <div class="py-24 flex flex-col items-center justify-center animate-pulse">
+      <div class="w-12 h-12 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin mb-5"></div>
+      <p class="text-[9px] font-black uppercase tracking-[0.2em] text-neutral-400">Decrypting Instance stream...</p>
+    </div>
+    } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      @for (instance of (instanceTab() === 'upcoming' ? upcomingActiveInstances() : instanceTab() === 'past' ?
+      pastActiveInstances() : cancelledInstances()); track instance._id; let i = $index) {
+      <div
+        class="card p-0 border-none shadow-xl bg-white hover:-translate-y-1 transition-all duration-300 animate-slideInUp group"
+        [style.animation-delay]="(i * 50) + 'ms'">
 
-      <div class="grid md:grid-cols-2 gap-4" *ngIf="upcomingActiveInstances().length">
-        @for (instance of upcomingActiveInstances(); track trackByInstance($index, instance)) {
-        <div
-          class="border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 bg-white shadow-sm hover:border-neutral-300 transition">
-          <div class="flex items-start justify-between gap-3">
+        <div class="p-5">
+          <div class="flex items-start justify-between mb-5">
             <div>
-              <p class="text-sm font-semibold text-neutral-900">
-                {{ getProgramDetails(instance.programId)?.title || 'Program removed' }}
-              </p>
-              <p class="text-xs text-neutral-500">
-                {{ instance.date | date: 'EEE, MMM d, y' }}
-              </p>
+              <h5
+                class="text-[10px] font-black text-neutral-900 uppercase tracking-tight mb-0.5 group-hover:text-primary-600 transition-colors">
+                {{ getProgramDetails(instance.programId)?.title || 'Undefined Protocol' }}
+              </h5>
+              <div class="flex items-center gap-2 text-[7px] font-bold text-neutral-400 uppercase tracking-widest">
+                <svg class="w-3 h-3 text-primary-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                {{ instance.date | date: 'EEE, MMM d' }}
+              </div>
             </div>
-            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full whitespace-nowrap"
-              [ngClass]="{
-                'bg-emerald-100 text-emerald-700': instance.status === 'OPEN',
-                'bg-amber-100 text-amber-700': instance.status === 'CLOSED',
-                'bg-rose-100 text-rose-700': instance.status === 'CANCELLED'
-              }">
-              {{ instance.status | titlecase }}
+            <span class="badge !px-2 font-black !text-[7px]" [ngClass]="{
+                        'badge-primary': instance.status === 'OPEN',
+                        'badge-neutral': instance.status === 'CLOSED',
+                        'badge-error': instance.status === 'CANCELLED'
+                      }">
+              {{ instance.status }}
             </span>
           </div>
 
-          <div class="text-sm text-neutral-700 space-y-2">
-            <div class="text-xs uppercase tracking-wide text-neutral-500">Time</div>
-            <div class="font-semibold text-neutral-900">
-              {{ formatTimeDisplay(instance.startTime) }} → {{ formatTimeDisplay(instance.endTime) }}
+          <div class="grid grid-cols-2 gap-3">
+            <div class="p-2.5 bg-neutral-50 rounded-lg border border-neutral-100">
+              <p class="text-[7px] font-black text-neutral-400 uppercase tracking-widest leading-none mb-1">Window</p>
+              <p class="text-[9px] font-black text-neutral-800">{{ formatTimeDisplay(instance.startTime) }}</p>
             </div>
-            <div class="flex items-center justify-between text-sm">
-              <span class="text-neutral-500">Capacity</span>
-              <span class="font-semibold text-neutral-900">
-                {{ instance.availableCapacity }}/{{ instance.capacity }} available
-              </span>
-            </div>
-          </div>
-
-          <div class="pt-2 flex items-center justify-end border-t border-dashed border-neutral-200">
-            <button type="button" class="px-3 py-1.5 text-xs font-semibold rounded-md border transition-colors"
-              [ngClass]="instance.status === 'CANCELLED'
-                ? 'border-neutral-200 text-neutral-400 bg-neutral-100 cursor-not-allowed'
-                : 'border-rose-200 text-rose-600 bg-rose-50 hover:bg-rose-100 hover:border-rose-400'"
-              (click)="cancelSlotInstance(instance)" [disabled]="instance.status === 'CANCELLED'">
-              {{ instance.status === 'CANCELLED' ? 'Cancelled' : 'Cancel slot' }}
-            </button>
-          </div>
-        </div>
-        }
-      </div>
-
-      <div class="flex items-center justify-end gap-3 mt-4" *ngIf="upcomingPagination()">
-        <button type="button" class="px-3 py-1.5 text-xs font-medium border rounded-md"
-          (click)="changePage('upcoming', 'prev')"
-          [disabled]="isInstancesLoading() || (upcomingPagination()?.page ?? 1) === 1">
-          Previous
-        </button>
-        <span class="text-xs text-neutral-600">
-          Page {{ upcomingPagination()?.page }} / {{ upcomingPagination()?.totalPages }}
-        </span>
-        <button type="button" class="px-3 py-1.5 text-xs font-medium border rounded-md"
-          (click)="changePage('upcoming', 'next')"
-          [disabled]="isInstancesLoading() || !(upcomingPagination()?.hasNextPage)">
-          Next
-        </button>
-      </div>
-      }
-
-      @if (instanceTab() === 'past') {
-      @if (pastActiveInstances().length === 0) {
-      <div class="py-12 text-center text-neutral-500">
-        <p>No past sessions match the current filters.</p>
-      </div>
-      }
-
-      <div class="grid md:grid-cols-2 gap-4" *ngIf="pastActiveInstances().length">
-        @for (instance of pastActiveInstances(); track trackByInstance($index, instance)) {
-        <div
-          class="border border-neutral-200 rounded-xl p-4 flex flex-col gap-3 bg-neutral-50 shadow-sm hover:border-neutral-300 transition">
-          <div class="flex items-start justify-between gap-3">
-            <div>
-              <p class="text-sm font-semibold text-neutral-900">
-                {{ getProgramDetails(instance.programId)?.title || 'Program removed' }}
+            <div class="p-2.5 bg-neutral-50 rounded-lg border border-neutral-100">
+              <p class="text-[7px] font-black text-neutral-400 uppercase tracking-widest leading-none mb-1">Density
               </p>
-              <p class="text-xs text-neutral-500">
-                {{ instance.date | date: 'EEE, MMM d, y' }}
-              </p>
-            </div>
-            <span class="inline-flex items-center px-2 py-0.5 text-xs font-semibold rounded-full whitespace-nowrap"
-              [ngClass]="{
-                'bg-emerald-100 text-emerald-700': instance.status === 'OPEN',
-                'bg-amber-100 text-amber-700': instance.status === 'CLOSED',
-                'bg-rose-100 text-rose-700': instance.status === 'CANCELLED'
-              }">
-              {{ instance.status | titlecase }}
-            </span>
-          </div>
-
-          <div class="text-sm text-neutral-700 space-y-2">
-            <div class="text-xs uppercase tracking-wide text-neutral-500">Time</div>
-            <div class="font-semibold text-neutral-900">
-              {{ formatTimeDisplay(instance.startTime) }} → {{ formatTimeDisplay(instance.endTime) }}
-            </div>
-            <div class="flex items-center justify-between text-sm">
-              <span class="text-neutral-500">Filled</span>
-              <span class="font-semibold text-neutral-900">
-                {{ instance.capacity - instance.availableCapacity }}/{{ instance.capacity }}
-              </span>
+              <p class="text-[9px] font-black text-neutral-800">{{ instance.availableCapacity }}/{{ instance.capacity
+                }}</p>
             </div>
           </div>
         </div>
+
+        @if (instanceTab() === 'upcoming' && instance.status !== 'CANCELLED') {
+        <div class="px-5 py-3 bg-neutral-50/50 border-t border-neutral-100 flex justify-end">
+          <button (click)="cancelSlotInstance(instance)"
+            class="text-[8px] font-black text-error-500 uppercase tracking-widest hover:bg-error-50 px-2.5 py-1 rounded-lg transition-all">
+            Terminate Instance
+          </button>
+        </div>
         }
       </div>
+      }
+    </div>
 
-      <div class="flex items-center justify-end gap-3 mt-4" *ngIf="pastPagination()">
-        <button type="button" class="px-3 py-1.5 text-xs font-medium border rounded-md"
-          (click)="changePage('past', 'prev')" [disabled]="isInstancesLoading() || (pastPagination()?.page ?? 1) === 1">
-          Previous
-        </button>
-        <span class="text-xs text-neutral-600">
-          Page {{ pastPagination()?.page }} / {{ pastPagination()?.totalPages }}
-        </span>
-        <button type="button" class="px-3 py-1.5 text-xs font-medium border rounded-md"
-          (click)="changePage('past', 'next')" [disabled]="isInstancesLoading() || !(pastPagination()?.hasNextPage)">
-          Next
-        </button>
+    @if ((instanceTab() === 'upcoming' && upcomingActiveInstances().length === 0) ||
+    (instanceTab() === 'past' && pastActiveInstances().length === 0) ||
+    (instanceTab() === 'cancelled' && cancelledInstances().length === 0)) {
+    <div class="py-24 text-center bg-white rounded-[2rem] shadow-xl border border-neutral-100 animate-fadeIn">
+      <div class="w-12 h-12 bg-neutral-50 rounded-xl flex items-center justify-center text-neutral-200 mx-auto mb-5">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" stroke-width="2" stroke-linecap="round"
+            stroke-linejoin="round" />
+        </svg>
       </div>
-      }
-      }
-    </section>
+      <h4 class="text-[11px] font-black text-neutral-900 uppercase tracking-tight">Zero Delta Detection</h4>
+      <p class="caption !text-[9px] text-neutral-400 mt-1">No active instances identified for the selected temporal
+        window.</p>
+    </div>
+    }
+
+    <!-- Pagination Ledger -->
+    @if (instanceTab() === 'upcoming' && (upcomingPagination()?.totalPages ?? 0) > 1) {
+    <div class="flex items-center justify-center gap-3 py-10">
+      <button (click)="changePage('upcoming', 'prev')" [disabled]="upcomingPagination()?.page === 1"
+        class="btn btn-ghost btn-sm ring-1 ring-neutral-200 !px-5 !py-2 rounded-xl disabled:opacity-30 !text-[9px]">Previous
+        Sequence</button>
+      <div class="flex items-center gap-2">
+        <span
+          class="w-8 h-8 gradient-primary rounded-lg flex items-center justify-center text-white text-[10px] font-black shadow-lg">
+          {{ upcomingPagination()?.page }}
+        </span>
+        <span class="text-[9px] font-black text-neutral-400 uppercase px-1">of</span>
+        <span
+          class="w-8 h-8 bg-white ring-1 ring-neutral-200 rounded-lg flex items-center justify-center text-neutral-900 text-[10px] font-black">
+          {{ upcomingPagination()?.totalPages }}
+        </span>
+      </div>
+      <button (click)="changePage('upcoming', 'next')" [disabled]="!upcomingPagination()?.hasNextPage"
+        class="btn btn-ghost btn-sm ring-1 ring-neutral-200 !px-5 !py-2 rounded-xl disabled:opacity-30 !text-[9px]">Next
+        Sequence</button>
+    </div>
+    }
+    }
   </div>
 </div>

@@ -1,86 +1,98 @@
-<div
-  class="program-card group bg-white border border-gray-100 rounded-2xl shadow-sm overflow-hidden hover:shadow-xl transition-all duration-300 h-full flex flex-col">
-  <!-- Image -->
-  <div class="relative h-48 overflow-hidden">
+<!-- Modern Program Card Component -->
+<div class="card card-hover card-interactive group h-full flex flex-col overflow-hidden">
+  <!-- Image Section -->
+  <div class="relative h-44 overflow-hidden">
     <img [src]="program.image ? program.image : defaultImage" [alt]="program.title"
-      class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
-    <div class="absolute inset-x-0 top-0 px-4 pt-4 flex items-start justify-between">
-      <span [class]="
-          'px-3 py-1 rounded-full text-xs font-semibold ' +
-          getDifficultyColor(program.difficultyLevel)
-        ">
+      class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 bg-gradient-to-t from-neutral-900/60 via-transparent to-transparent"></div>
+
+    <!-- Top Badges -->
+    <div class="absolute inset-x-0 top-0 px-4 pt-4 flex items-start justify-between gap-2">
+      <!-- Difficulty Badge -->
+      <span [class]="'badge !py-0.5 !px-2 !text-[9px] ' + getDifficultyColor(program.difficultyLevel)">
         {{ program.difficultyLevel }}
       </span>
-      <span class="px-3 py-1 rounded-full text-xs font-semibold" [ngClass]="getApprovalBadge(program.approvalStatus)">
+
+      <!-- Approval Status Badge -->
+      <span class="badge !py-0.5 !px-2 !text-[9px]" [ngClass]="getApprovalBadge(program.approvalStatus)">
         {{ (program.approvalStatus || 'Pending') | titlecase }}
+      </span>
+    </div>
+
+    <!-- Category Badge (Bottom Left) -->
+    <div class="absolute bottom-4 left-4">
+      <span [class]="'badge !py-0.5 !px-2 !text-[9px] ' + getCategoryColor(program.category)">
+        {{ categoryDisplay }}
       </span>
     </div>
   </div>
 
-  <!-- Content -->
-  <div class="p-5 flex flex-col flex-1">
-    <div class="flex items-center justify-between mb-4">
-      <span [class]="
-          'px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wide ' +
-          getCategoryColor(program.category)
-        ">
-        {{ categoryDisplay }}
-      </span>
+  <!-- Content Section -->
+  <div class="flex-1 flex flex-col p-5 space-y-3.5">
+    <!-- Title & Description -->
+    <div class="flex-1 space-y-2">
+      <h3
+        class="text-sm font-black text-neutral-900 line-clamp-2 group-hover:text-primary-700 transition-colors leading-tight">
+        {{ program.title }}
+      </h3>
+      <p class="body-small text-neutral-600 line-clamp-2 leading-relaxed">
+        {{ program.description }}
+      </p>
     </div>
 
-    <h3 class="text-lg font-semibold text-gray-900 leading-snug line-clamp-2 mb-2">
-      {{ program.title }}
-    </h3>
-    <p class="text-gray-600 text-sm line-clamp-3 mb-4 flex-1">
-      {{ program.description }}
-    </p>
-
-    <div class="border-t border-gray-100 pt-4 mt-4 grid grid-cols-2 gap-4 text-sm text-gray-600">
-      <div class="flex items-center gap-3">
-        <span class="w-10 h-10 rounded-xl bg-gray-50 text-gray-500 inline-flex items-center justify-center">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <!-- Meta Information -->
+    <div class="grid grid-cols-2 gap-3 pt-3.5 border-t border-neutral-100">
+      <!-- Duration -->
+      <div class="flex items-center gap-2.5">
+        <div
+          class="w-8 h-8 rounded-lg bg-primary-50 flex items-center justify-center group-hover:bg-primary-600 group-hover:text-white transition-all duration-300">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
               d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-        </span>
+        </div>
         <div>
-          <p class="text-xs uppercase tracking-wide text-gray-400">Duration</p>
-          <p class="font-semibold text-gray-900">{{ program.duration }}</p>
+          <p class="text-[7px] font-black text-neutral-400 uppercase tracking-widest leading-none mb-1">Duration</p>
+          <p class="text-[11px] font-black text-neutral-900">{{ program.duration }}</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-3">
-        <span class="w-10 h-10 rounded-xl bg-gray-50 text-gray-500 inline-flex items-center justify-center">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <!-- Price -->
+      <div class="flex items-center gap-2.5">
+        <div
+          class="w-8 h-8 rounded-lg bg-secondary-50 flex items-center justify-center group-hover:bg-secondary-600 group-hover:text-white transition-all duration-300">
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M12 8c-3.866 0-7 1.79-7 4v2h14v-2c0-2.21-3.134-4-7-4z" />
+              d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
-        </span>
+        </div>
         <div>
-          <p class="text-xs uppercase tracking-wide text-gray-400">Price</p>
-          <p class="font-semibold text-gray-900">₹ {{ program.price }}</p>
+          <p class="text-[7px] font-black text-neutral-400 uppercase tracking-widest leading-none mb-1">Price</p>
+          <p class="text-[11px] font-black gradient-text">₹{{ program.price }}</p>
         </div>
       </div>
     </div>
 
-    <div class="flex gap-3 pt-5">
+    <!-- Action Buttons -->
+    <div class="flex gap-2.5 pt-1.5">
+      <!-- View Details Button -->
       <button (click)="onViewProgram(program.id!)"
-        class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 text-white text-sm font-semibold py-2.5 hover:bg-emerald-700 transition focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
-        </svg>
-        {{ button1Labal }}
+        class="flex-1 btn btn-primary btn-sm !py-2 !rounded-lg !text-[9px] group/btn">
+        <span>{{ button1Labal }}</span>
       </button>
+
+      <!-- Secondary Action Button -->
       <button (click)="onViewProgramSlot(program.id!)"
-        class="flex-1 inline-flex items-center justify-center gap-2 rounded-xl border border-gray-200 text-sm font-semibold py-2.5 text-gray-700 hover:bg-gray-50 transition focus:outline-none focus:ring-2 focus:ring-offset-2"
-        [ngClass]="btn2Class">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="btn2Icon" />
-        </svg>
-        {{ button2Labal }}
+        class="flex-1 btn btn-outline btn-sm !py-2 !rounded-lg !text-[9px]" [ngClass]="btn2Class">
+        <span>{{ button2Labal }}</span>
       </button>
     </div>
+  </div>
+
+  <!-- Hover Effect Overlay -->
+  <div
+    class="absolute inset-0 border-2 border-primary-400 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
   </div>
 </div>
