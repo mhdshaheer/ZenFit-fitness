@@ -5,6 +5,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { OtpAccessService } from '../../../core/services/otp-access.service';
 import { Router } from '@angular/router';
 import { catchError, map, mergeMap, of, switchMap, tap } from 'rxjs';
+import { ToastService } from '../../../core/services/toast.service';
 import Swal from 'sweetalert2';
 
 @Injectable()
@@ -13,6 +14,7 @@ export class AuthEffects {
   private authService = inject(AuthService);
   private router = inject(Router);
   private otpService = inject(OtpAccessService);
+  private toastService = inject(ToastService);
 
   // Signup
   signup$ = createEffect(() =>
@@ -45,17 +47,9 @@ export class AuthEffects {
         tap(({ email }) => {
           localStorage.setItem('signupEmail', email);
           this.otpService.allowAccess();
-          Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: 'OTP sent successfully!',
-            showConfirmButton: false,
-            toast: true,
-            timer: 1500,
-          }).then(() => {
-            sessionStorage.setItem('canAccessOtp', 'true');
-            this.router.navigate(['/auth/otp']);
-          });
+          this.toastService.success('OTP sent successfully!', 'Check your email for the verification code.');
+          sessionStorage.setItem('canAccessOtp', 'true');
+          this.router.navigate(['/auth/otp']);
         })
       ),
     { dispatch: false }
@@ -95,16 +89,8 @@ export class AuthEffects {
           // Clean up any old localStorage tokens and store minimal info for client-side role checking
           localStorage.removeItem('accessToken'); // Remove old token if exists
           localStorage.setItem('userRole', role);
-          Swal.fire({
-            position: 'top-end',
-            icon: 'success',
-            title: 'Login successfull!',
-            showConfirmButton: false,
-            toast: true,
-            timer: 1500,
-          }).then(() => {
-            this.router.navigate([`/${role}/dashboard`]);
-          });
+          this.toastService.success('Login Successful', 'Welcome back to ZenFit Command Hub.');
+          this.router.navigate([`/${role}/dashboard`]);
         })
       ),
     { dispatch: false }
@@ -115,15 +101,7 @@ export class AuthEffects {
       this.actions$.pipe(
         ofType(AuthActions.loginFailure),
         tap(({ error }) => {
-          Swal.fire({
-            icon: 'error',
-            title: 'Login Failed',
-            text: error || 'Invalid email or password',
-            toast: true,
-            position: 'top-end',
-            timer: 3000,
-            showConfirmButton: false,
-          });
+          this.toastService.error('Login Failed', error || 'Invalid email or password');
         })
       ),
     { dispatch: false }

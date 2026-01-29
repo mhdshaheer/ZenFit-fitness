@@ -340,3 +340,142 @@ body {
     -webkit-overflow-scrolling: touch;
   }
 }
+/* Premium Toast Styling */
+.premium-toast-container {
+  padding: 1.5rem !important;
+}
+
+.premium-toast-popup {
+  background: rgba(20, 20, 20, 0.98) !important;
+  backdrop-filter: blur(40px) saturate(250%) !important;
+  -webkit-backdrop-filter: blur(40px) saturate(250%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  border-left: 4px solid #6366f1 !important;
+  border-radius: 0.75rem !important;
+  box-shadow: 0 15px 35px -12px rgba(0, 0, 0, 0.95) !important;
+  padding: 0.6rem 1rem !important;
+  display: flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  min-height: 0 !important;
+  width: auto !important;
+  gap: 0.85rem !important;
+  overflow: hidden !important;
+}
+
+/* Force Vertical Stacking of Title and Message */
+.premium-toast-popup .swal2-title,
+.premium-toast-popup .swal2-html-container {
+  display: flex !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  text-align: left !important;
+  justify-content: flex-start !important;
+}
+
+.premium-toast-popup .swal2-title {
+  color: #ffffff !important;
+  font-family: 'Outfit', sans-serif !important;
+  font-weight: 800 !important;
+  font-size: 0.75rem !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  line-height: 1.1 !important;
+  margin-bottom: 2px !important;
+}
+
+.premium-toast-popup .swal2-html-container {
+  color: rgba(255, 255, 255, 0.5) !important;
+  font-size: 0.65rem !important;
+  font-weight: 500 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.01em !important;
+}
+
+/* Unify the Text Block Wrapper */
+.premium-toast-popup > .swal2-title,
+.premium-toast-popup > .swal2-html-container {
+  flex: 1 !important;
+}
+
+.premium-toast-icon {
+  width: 1.15rem !important;
+  height: 1.15rem !important;
+  margin: 0 !important ;
+  border: none !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  transform: none !important;
+  flex-shrink: 0 !important;
+}
+
+.premium-toast-icon .swal2-icon-content {
+  font-size: 0.7rem !important;
+}
+
+.premium-toast-timer {
+  background: linear-gradient(to right, #6366f1, #a855f7) !important;
+  height: 2px !important;
+}
+
+/* Global SweetAlert2 Premium Theme - Exclude Toasts */
+.swal2-popup:not(.swal2-toast) {
+  background: #171717 !important;
+  color: #ffffff !important;
+  border-radius: 2rem !important;
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  font-family: 'Outfit', sans-serif !important;
+  padding: 2.5rem !important;
+}
+
+.swal2-backdrop-show {
+  backdrop-filter: blur(8px) !important;
+}
+
+.swal2-title {
+  color: #ffffff !important;
+  font-weight: 900 !important;
+  text-transform: uppercase !important;
+  letter-spacing: -0.02em !important;
+  padding-bottom: 0.5rem !important;
+}
+
+.swal2-html-container {
+  color: rgba(255, 255, 255, 0.6) !important;
+  font-weight: 500 !important;
+  line-height: 1.6 !important;
+}
+
+.swal2-confirm {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%) !important;
+  border-radius: 1rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  padding: 1rem 2.5rem !important;
+  box-shadow: 0 10px 20px -5px rgba(168, 85, 247, 0.4) !important;
+}
+
+.swal2-cancel {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+  border-radius: 1rem !important;
+  font-weight: 800 !important;
+  text-transform: uppercase !important;
+  letter-spacing: 0.1em !important;
+  padding: 1rem 2.5rem !important;
+}
+
+.swal2-icon {
+  transform: scale(1.2) !important;
+  margin: 1rem auto 2.5rem !important;
+}
+
+.swal2-success-circular-line-left,
+.swal2-success-circular-line-right,
+.swal2-success-fix {
+  background-color: transparent !important;
+}

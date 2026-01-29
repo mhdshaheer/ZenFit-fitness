@@ -10,7 +10,7 @@ import {
 } from '@angular/forms';
 import { SharedFormComponent } from '../../../../shared/components/shared-form/shared-form.component';
 import { Store } from '@ngrx/store';
-import { selectAuthLoading } from '../../../../features/auth/store/auth.selectors';
+import { selectAuthError, selectAuthLoading } from '../../../../features/auth/store/auth.selectors';
 import * as AuthActions from '../../../../features/auth/store/auth.actions';
 import { OtpAccessService } from '../../../../core/services/otp-access.service';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -39,6 +39,9 @@ export class SignupUserComponent {
 
   isLoading = toSignal(this._store.select(selectAuthLoading), {
     initialValue: false,
+  });
+  error = toSignal(this._store.select(selectAuthError), {
+    initialValue: null,
   });
 
   constructor() {
