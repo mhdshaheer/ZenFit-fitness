@@ -29,7 +29,7 @@ export class TableComponent<T extends object = object> {
   @Input() data: T[] = [];
   @Input() actions: TableAction<T>[] = [];
   @Input() showAddButton = true;
-  @Input() customCell?: TemplateRef<T>;
+  @Input() customCell?: TemplateRef<any>;
 
   // Pagination
   @Input() pageSize = 10;

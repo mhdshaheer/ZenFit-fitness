@@ -1,69 +1,81 @@
-<div class="min-h-screen bg-neutral-50/50 pb-20 animate-fadeIn">
-  <!-- Dynamic Header Section -->
-  <div class="bg-white border-b border-neutral-200/50 mb-10">
-    <div class="container-custom py-10 md:py-14">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8 animate-slideInUp">
-        <div class="space-y-1">
-          <div class="flex items-center gap-3 mb-2">
-            <span class="badge badge-primary">Financial Vault</span>
-            <span class="w-1.5 h-1.5 rounded-full bg-neutral-300"></span>
-            <span class="caption text-neutral-400">Secure Protocol Active</span>
-          </div>
-          <h1 class="heading-3 md:heading-2 text-neutral-900">Capital Management</h1>
-          <p class="body-large text-neutral-500 max-w-2xl font-medium">Monitoring your architectural fitness investments
-            and revenue distributions.</p>
+<div class="min-h-screen bg-[#F8FAFC]">
+  <!-- Global Administrative Header: Command Hub -->
+  <header class="bg-white border-b border-neutral-200/50 sticky top-0 z-[100] backdrop-blur-xl bg-white/80">
+    <div
+      class="max-w-[1500px] mx-auto py-6 px-6 md:px-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      <div class="space-y-1 animate-fadeIn">
+        <div class="flex items-center gap-3 mb-1">
+          <div class="w-10 h-1 grad-indigo rounded-full"></div>
+          <span class="caption text-primary-600 font-black tracking-[0.3em] text-[10px]">ZenFit Capital Oracle</span>
         </div>
+        <h1 class="text-4xl font-black text-neutral-900 tracking-tighter leading-none">Financial Ledger</h1>
+        <p class="text-neutral-400 font-medium text-sm md:text-base max-w-xl">
+          Secure oversight of architectural investments and revenue distribution artifacts.
+        </p>
       </div>
     </div>
-  </div>
+  </header>
 
   <div class="container-custom space-y-10">
     <!-- Wallet Asset Matrix -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12">
+    <div class="mb-12">
       <!-- High-Impact Balance Artifact -->
       <div
-        class="lg:col-span-2 card border-none shadow-2xl p-10 md:p-14 bg-neutral-950 text-white overflow-hidden relative group animate-slideInUp">
+        class="card border-none shadow-2xl p-4 bg-gradient-to-br from-neutral-950 via-neutral-900 to-neutral-950 text-white overflow-hidden relative group animate-slideInUp">
         <div
-          class="absolute top-0 right-0 w-80 h-80 gradient-primary opacity-20 rounded-bl-[10rem] group-hover:scale-110 transition-transform duration-700">
+          class="absolute top-0 right-0 w-96 h-96 gradient-primary opacity-10 rounded-bl-[12rem] group-hover:scale-110 group-hover:opacity-20 transition-all duration-700">
         </div>
-        <div class="absolute -bottom-20 -left-20 w-60 h-60 bg-primary-600/10 rounded-full blur-3xl"></div>
+        <div class="absolute -bottom-24 -left-24 w-72 h-72 bg-primary-600/5 rounded-full blur-3xl"></div>
 
-        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-12">
-          <div class="text-center md:text-left space-y-4">
-            <div class="flex items-center justify-center md:justify-start gap-3 text-primary-400">
-              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-              </svg>
-              <span class="text-[10px] font-black uppercase tracking-[0.3em]">Available Capital Liquid</span>
+        <div class="relative z-10 flex flex-row items-center justify-between gap-6">
+          <div class="flex items-center gap-4 flex-1">
+            <!-- Enhanced Icon with Background -->
+            <div class="flex items-center gap-2.5">
+              <div
+                class="w-9 h-9 gradient-primary rounded-lg flex items-center justify-center shadow-lg shadow-primary-500/20">
+                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path d="M3 10h18M7 15h1m4 0h1m-7 4h12a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+              </div>
+              <div class="flex flex-col">
+                <span
+                  class="text-[7px] font-black text-primary-400 uppercase tracking-[0.2em] leading-tight">Available</span>
+                <span
+                  class="text-[9px] font-black text-neutral-400 uppercase tracking-wide leading-tight">Capital</span>
+              </div>
             </div>
-            <h2 class="text-6xl md:text-7xl font-black tracking-tighter">{{ walletBalance | currency : "INR" }}</h2>
-            <p class="text-[10px] font-bold text-neutral-500 uppercase tracking-widest">Verified Ledger Balance</p>
+
+            <!-- Divider -->
+            <div class="w-px h-8 bg-gradient-to-b from-transparent via-neutral-700 to-transparent"></div>
+
+            @if (isLoading) {
+            <div class="flex flex-col gap-1">
+              <app-shared-skeleton type="text" width="200px" height="32px" borderRadius="0.5rem"></app-shared-skeleton>
+              <app-shared-skeleton type="text" width="110px" height="8px"></app-shared-skeleton>
+            </div>
+            } @else {
+            <div class="flex flex-col">
+              <h2
+                class="text-3xl font-black tracking-tighter leading-none bg-gradient-to-r from-white to-neutral-300 bg-clip-text text-transparent">
+                {{ walletBalance | currency : "INR" }}
+              </h2>
+              <p class="text-[8px] font-bold text-neutral-500 uppercase tracking-widest flex items-center gap-1 mt-0.5">
+                <span class="w-1 h-1 bg-success-500 rounded-full animate-pulse"></span>
+                Verified Balance
+              </p>
+            </div>
+            }
           </div>
 
           <button (click)="handleWithdraw()"
-            class="btn btn-primary btn-lg !px-12 !py-5 shadow-2xl hover:scale-[1.05] transition-all group/btn">
-            <span class="font-black uppercase tracking-widest">Withdraw Asset</span>
-            <svg class="w-6 h-6 ml-3 transition-transform group-hover/btn:translate-x-1" fill="none"
+            class="btn btn-primary !px-6 !py-2.5 shadow-xl shadow-primary-500/30 hover:shadow-2xl hover:shadow-primary-500/40 hover:scale-[1.03] active:scale-95 transition-all group/btn flex-shrink-0">
+            <span class="font-black uppercase tracking-widest text-[10px]">Withdraw</span>
+            <svg class="w-4 h-4 ml-2 transition-transform group-hover/btn:translate-x-1" fill="none"
               stroke="currentColor" viewBox="0 0 24 24">
               <path d="M14 5l7 7m0 0l-7 7m7-7H3" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg>
           </button>
-        </div>
-      </div>
-
-      <!-- Quick Actions / Meta Data -->
-      <div class="card p-10 border-none shadow-xl bg-white flex flex-col justify-center animate-slideInUp"
-        style="animation-delay: 100ms;">
-        <span class="text-[9px] font-black text-neutral-300 uppercase tracking-[0.2em] block mb-4">Security
-          Protocol</span>
-        <h3 class="text-sm font-black text-neutral-900 uppercase tracking-widest mb-4">Encrypted Payouts</h3>
-        <p class="body-small text-neutral-500 font-medium leading-relaxed mb-8">All transactions are processed through
-          an end-to-end encrypted financial gateway to ensure capital integrity.</p>
-        <div class="pt-6 border-t border-neutral-100">
-          <button
-            class="btn btn-ghost ring-1 ring-neutral-200 w-full text-[9px] font-black uppercase tracking-widest">View
-            Settlement Rules</button>
         </div>
       </div>
     </div>
@@ -71,7 +83,7 @@
     <!-- Ledger Transaction Cluster -->
     <div class="card border-none shadow-2xl bg-white overflow-hidden animate-slideInUp" style="animation-delay: 200ms;">
       <div
-        class="px-10 py-8 border-b border-neutral-100 bg-neutral-50/50 flex flex-col sm:flex-row items-center justify-between gap-6">
+        class="px-6 py-6 border-b border-neutral-100 bg-neutral-50/50 flex flex-col sm:flex-row items-center justify-between gap-6">
         <div class="flex items-center gap-4">
           <div class="w-2 h-8 gradient-primary rounded-full"></div>
           <h3 class="text-sm font-black text-neutral-900 uppercase tracking-[0.2em]">Transaction Ledger</h3>
@@ -83,8 +95,11 @@
       </div>
 
       <div class="divide-y divide-neutral-100">
+        @if (isLoading) {
+        <app-shared-skeleton type="list" [count]="5"></app-shared-skeleton>
+        } @else {
         @for (payment of paymentHistory; track payment.referenceNumber) {
-        <div class="px-10 py-8 hover:bg-neutral-50/50 transition-all group cursor-default">
+        <div class="px-6 py-6 hover:bg-neutral-50/50 transition-all group cursor-default">
           <div class="flex flex-col md:flex-row md:items-center gap-8">
             <!-- Entity Status -->
             <div
@@ -99,7 +114,8 @@
             <!-- Transaction Meta -->
             <div class="flex-1 min-w-0">
               <div class="flex items-center gap-3 mb-1">
-                <span class="text-[9px] font-black text-primary-600 uppercase tracking-widest">{{ payment.date }}</span>
+                <span class="text-[9px] font-black text-primary-600 uppercase tracking-widest">{{ payment.date
+                  }}</span>
                 <span class="w-1 h-1 rounded-full bg-neutral-200"></span>
                 <span class="text-[9px] font-bold text-neutral-400">REF: {{ payment.referenceNumber }}</span>
               </div>
@@ -109,7 +125,8 @@
 
             <!-- Economic Data -->
             <div class="text-right flex flex-col items-end gap-3">
-              <p class="text-xl font-black text-neutral-900 tracking-tighter leading-none">+{{ payment.price | currency
+              <p class="text-xl font-black text-neutral-900 tracking-tighter leading-none">+{{ payment.price |
+                currency
                 : "INR" }}</p>
               <span class="badge !text-[8px] !px-3" [class.badge-primary]="payment.status === 'success'"
                 [class.badge-warning]="payment.status === 'pending'" [class.badge-error]="payment.status === 'failed'">
@@ -136,6 +153,7 @@
             the current ledger cycle.</p>
           <button class="btn btn-primary btn-sm px-10">Sync External Ledger</button>
         </div>
+        }
         }
       </div>
     </div>

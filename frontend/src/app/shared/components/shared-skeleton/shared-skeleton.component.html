@@ -1,0 +1,40 @@
+<div class="skeleton-wrapper" [class.grid-layout]="type === 'card' || type === 'list'">
+    @for (item of arrayFromCount; track $index) {
+    @switch (type) {
+    @case ('card') {
+    <div class="skeleton-card p-4 border border-neutral-100 rounded-2xl bg-white shadow-sm space-y-4">
+        <div class="skeleton-shimmer h-40 w-full rounded-xl"></div>
+        <div class="space-y-2">
+            <div class="skeleton-shimmer h-4 w-3/4 rounded-md"></div>
+            <div class="skeleton-shimmer h-3 w-1/2 rounded-md"></div>
+        </div>
+        <div class="flex justify-between items-center pt-2">
+            <div class="skeleton-shimmer h-8 w-24 rounded-lg"></div>
+            <div class="skeleton-shimmer h-6 w-6 rounded-full"></div>
+        </div>
+    </div>
+    }
+    @case ('list') {
+    <div class="skeleton-list-item flex items-center space-x-4 p-4 border-b border-neutral-50">
+        <div class="skeleton-shimmer h-12 w-12 rounded-xl flex-shrink-0"></div>
+        <div class="flex-1 space-y-2 min-w-0">
+            <div class="skeleton-shimmer h-4 w-1/3 rounded-md"></div>
+            <div class="skeleton-shimmer h-3 w-2/3 rounded-md"></div>
+        </div>
+        <div class="skeleton-shimmer h-8 w-20 rounded-lg"></div>
+    </div>
+    }
+    @case ('text') {
+    <div class="skeleton-shimmer mb-2" [style.width]="width" [style.height]="height"
+        [style.border-radius]="borderRadius"></div>
+    }
+    @case ('round') {
+    <div class="skeleton-shimmer" [style.width]="width" [style.height]="width" style="border-radius: 50%;"></div>
+    }
+    @default {
+    <div class="skeleton-shimmer" [style.width]="width" [style.height]="height" [style.border-radius]="borderRadius">
+    </div>
+    }
+    }
+    }
+</div>

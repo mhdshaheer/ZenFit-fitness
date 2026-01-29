@@ -13,13 +13,16 @@ export class AdminWalletComponent implements OnInit {
   totalAmont = 0;
   private readonly _paymentService = inject(PaymentService);
   paymentHistoryData: PaymentHistory[] = [];
+  isLoading = false;
 
   getHistoryPayments() {
+    this.isLoading = true;
     this._paymentService
       .getHistoryAdmin()
       .subscribe((res: PaymentHistory[]) => {
         this.paymentHistoryData = res;
         this.totalAmont = res.reduce((acc, curr) => acc + curr.price, 0);
+        this.isLoading = false;
       });
   }
 

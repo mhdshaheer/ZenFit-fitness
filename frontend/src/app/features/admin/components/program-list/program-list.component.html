@@ -1,68 +1,115 @@
-<div class="min-h-screen bg-gray-50 py-6">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold text-gray-900">Program Management</h1>
-      <p class="text-sm text-gray-600">Manage all trainer programs across approval statuses.</p>
+<header class="bg-white border-b border-neutral-200/50 sticky top-0 z-[100] backdrop-blur-xl bg-white/80">
+  <div
+    class="max-w-[1500px] mx-auto py-6 px-6 md:px-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+    <div class="space-y-1 animate-fadeIn">
+      <div class="flex items-center gap-3 mb-1">
+        <div class="w-10 h-1 grad-indigo rounded-full"></div>
+        <span class="caption text-primary-600 font-black tracking-[0.3em] text-[10px]">ZenFit Inventory Nexus</span>
+      </div>
+      <h1 class="text-4xl font-black text-neutral-900 tracking-tighter leading-none">Program Management</h1>
+      <p class="text-neutral-400 font-medium text-sm md:text-base max-w-xl">
+        Direct oversight and curation of fitness artifacts. Synchronizing trainer assets across the global ecosystem.
+      </p>
     </div>
+  </div>
+</header>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
-      <div class="p-6 border-b border-gray-100">
-        <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
-          <div>
-            <h3 class="text-lg font-semibold text-gray-900">Approval Status</h3>
-            <p class="text-sm text-gray-500">
-              Switch between pending, approved, and rejected programs.
-            </p>
+<main class="container-custom py-10 space-y-12 overflow-hidden">
+  <!-- Status Matrix Hub -->
+  <section class="animate-slideInUp" style="animation-delay: 100ms;">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+      @for (tab of approvalTabs; track tab.value) {
+      <button type="button" (click)="setApprovalTab(tab.value)"
+        class="group relative bg-white rounded-2xl p-5 border border-neutral-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:translate-y-[-2px] overflow-hidden select-none"
+        [class.ring-2]="activeApprovalTab === tab.value" [class.ring-primary-600]="activeApprovalTab === tab.value"
+        [class.bg-neutral-900]="activeApprovalTab === tab.value">
+
+        <div
+          class="absolute top-0 right-0 w-32 h-32 grad-indigo opacity-0 group-hover:opacity-[0.03] transition-opacity rounded-bl-[4rem]"
+          [class.!opacity-[0.1]]="activeApprovalTab === tab.value"></div>
+
+        <div class="relative z-10 flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <div
+              class="w-12 h-12 rounded-xl flex items-center justify-center transition-all duration-300 border border-neutral-100/50 shadow-sm"
+              [class.bg-primary-600]="activeApprovalTab === tab.value"
+              [class.text-white]="activeApprovalTab === tab.value"
+              [class.bg-neutral-50]="activeApprovalTab !== tab.value"
+              [class.text-neutral-400]="activeApprovalTab !== tab.value">
+              <i [class]="tab.icon" class="text-lg"></i>
+            </div>
+
+            <div class="text-left">
+              <p class="text-[10px] font-black uppercase tracking-[0.3em] mb-0.5"
+                [class.text-neutral-400]="activeApprovalTab !== tab.value"
+                [class.text-primary-100]="activeApprovalTab === tab.value">
+                {{ tab.label }}
+              </p>
+              <h3 class="text-xl font-black tracking-tighter leading-none"
+                [class.text-neutral-900]="activeApprovalTab !== tab.value"
+                [class.text-white]="activeApprovalTab === tab.value">
+                {{ programCounts[tab.value] }} Items
+              </h3>
+            </div>
           </div>
-          <span class="inline-flex items-center text-sm font-medium px-3 py-1 rounded-full bg-primary/10 text-primary">
-            {{ activeApprovalTab }} Programs · {{ programCounts[activeApprovalTab] }}
-          </span>
-        </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-          @for (tab of approvalTabs; track tab.value) {
-          <button type="button" (click)="setApprovalTab(tab.value)" [ngClass]="getTabButtonClasses(tab.value)">
-            <div class="flex items-center justify-between mb-1">
-              <span class="text-base">{{ tab.label }}</span>
-              <span class="inline-flex items-center justify-center w-6 h-6 rounded-full bg-white/20 text-white text-xs"
-                [class.opacity-0]="activeApprovalTab !== tab.value">
-                ✓
-              </span>
-            </div>
-            <div class="flex items-center justify-between text-xs text-gray-500">
-              <span [ngClass]="getTabHelperClasses(tab.value)">{{ tab.helper }}</span>
-              <span class="font-semibold text-gray-900">
-                {{ programCounts[tab.value] }}
-              </span>
-            </div>
-          </button>
+          @if (activeApprovalTab === tab.value) {
+          <div class="w-2 h-2 rounded-full bg-primary-400 animate-pulse shadow-[0_0_12px_rgba(167,139,250,0.6)]"></div>
           }
         </div>
-      </div>
+      </button>
+      }
+    </div>
+  </section>
+
+  <!-- Content Matrix -->
+  <section class="animate-slideInUp" style="animation-delay: 200ms;">
+    <div class="flex items-center gap-4 mb-8">
+      <div class="w-2.5 h-10 grad-indigo rounded-full shadow-lg shadow-indigo-500/20"></div>
+      <h2 class="text-xs font-black text-neutral-900 uppercase tracking-[0.3em]">Operational Ledger</h2>
     </div>
 
-    <div class="bg-white rounded-xl shadow-sm border border-gray-200">
-      @if (isLoading) {
-      <div class="p-8 flex items-center justify-center text-gray-500">
-        Loading programs...
+    @if (isLoading) {
+    <div class="card p-12 bg-white border-none shadow-2xl rounded-[2.5rem]">
+      <app-shared-skeleton type="list" [count]="6"></app-shared-skeleton>
+    </div>
+    } @else if (programs.length === 0) {
+    <div class="card py-32 text-center bg-white border-none shadow-2xl rounded-[2.5rem] animate-fadeIn">
+      <div
+        class="w-24 h-24 bg-neutral-100 rounded-[2.5rem] flex items-center justify-center text-neutral-300 mx-auto mb-8 shadow-inner border border-neutral-200/50">
+        <i class="fas fa-database text-4xl opacity-50"></i>
       </div>
-      } @else if (programs.length === 0) {
-      <div class="p-8 text-center text-gray-500">
-        No {{ activeApprovalTab.toLowerCase() }} programs found.
-      </div>
-      } @else {
-      <app-table [title]="'Program Listings'" [subtitle]="activeApprovalTab + ' programs'" [entityName]="'Program'"
-        [data]="programs" [columns]="programsColumn" [actions]="programAction" [customCell]="customCell"
-        (actionClicked)="onViewProgram($event)">
+      <h3 class="text-xl font-black text-neutral-900 uppercase tracking-[0.2em] mb-2">Registry Silent</h3>
+      <p class="text-sm text-neutral-400 font-medium max-w-md mx-auto leading-relaxed"> No artifacts detected within the
+        <span class="text-indigo-600 font-black">{{ activeApprovalTab }}</span> synchronization tier.
+      </p>
+    </div>
+    } @else {
+    <div class="animate-slideInUp">
+      <app-table [title]="'Program Inventory'" [subtitle]="activeApprovalTab + ' programs tier'"
+        [entityName]="'Program'" [data]="programs" [columns]="programsColumn" [actions]="programAction"
+        [customCell]="customCell" (actionClicked)="onViewProgram($event)">
         <ng-template #customCell let-row let-column="column">
           @if (column.key === 'approvalStatus') {
-          <span [ngClass]="row.approvalStatus | approvalStatusColor">
+          <span class="badge" [ngClass]="row.approvalStatus | approvalStatusColor">
             {{ row.approvalStatus }}
           </span>
+          } @else if (column.key === 'price') {
+          <span>{{ row[column.key] | currency : 'INR' }}</span>
+          } @else if (column.key === 'createdAt') {
+          <span>{{ row[column.key] | date : 'MMM d, y' }}</span>
+          } @else {
+          <span>{{ row[column.key] }}</span>
           }
         </ng-template>
       </app-table>
-      }
     </div>
-  </div>
-</div>
+    }
+  </section>
+</main>
+
+<style>
+  .grad-indigo {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  }
+</style>

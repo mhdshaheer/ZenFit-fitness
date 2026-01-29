@@ -1,384 +1,448 @@
-<div class="dashboard-shell">
-  <header class="dashboard-header">
-    <div>
-      <p class="dashboard-eyebrow">ZenFit Command Center</p>
-      <h1>Dashboard</h1>
+<div class="min-h-screen bg-[#F8FAFC]">
+  <!-- Global Administrative Header: Command Hub -->
+  <header class="bg-white border-b border-neutral-200/50 sticky top-0 z-[100] backdrop-blur-xl bg-white/80">
+    <div
+      class="max-w-[1500px] mx-auto py-8 px-6 md:px-10 flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      <div class="space-y-1 animate-fadeIn">
+        <div class="flex items-center gap-3 mb-2">
+          <div class="w-10 h-1 grad-indigo rounded-full"></div>
+          <span class="caption text-primary-600 font-black tracking-[0.3em]">ZenFit Command Matrix</span>
+        </div>
+        <h1 class="text-4xl font-black text-neutral-900 tracking-tighter leading-none">System Overview</h1>
+        <p class="text-neutral-400 font-medium text-sm md:text-base max-w-xl">
+          Real-time intelligence across the global fitness ecosystem. Monitoring commerce, growth, and performance
+          signals.
+        </p>
+      </div>
+
+      <div class="flex items-center gap-3">
+        <button type="button"
+          class="btn bg-neutral-100 hover:bg-neutral-200 text-neutral-600 btn-sm gap-2 rounded-2xl border-none font-black uppercase tracking-widest text-[10px]">
+          <i class="fas fa-file-export"></i>
+          Snapshot
+        </button>
+        <button type="button" (click)="retryLoad()"
+          class="btn btn-primary btn-sm gap-2 rounded-2xl shadow-lg shadow-primary-500/30 font-black uppercase tracking-widest text-[10px]">
+          <i class="fas fa-satellite-dish"></i>
+          Live Scan
+        </button>
+      </div>
     </div>
   </header>
 
-  <main class="dashboard-main">
+  <main class="max-w-[1500px] mx-auto px-6 md:px-10 py-10 space-y-12">
     @if (loading) {
-    <section class="dashboard-state" aria-live="polite">
-      <div class="dashboard-state__spinner" aria-hidden="true"></div>
-      <p class="dashboard-state__title">Loading insights</p>
-      <p class="dashboard-state__body">Crunching program, booking, and revenue signals…</p>
-    </section>
+    <div class="py-32 flex flex-col items-center justify-center animate-pulse">
+      <div class="w-20 h-20 grad-indigo rounded-3xl animate-spin mb-8 shadow-2xl shadow-primary-500/20"></div>
+      <p class="caption text-primary-600 animate-bounce">Synchronizing Global Signals...</p>
+    </div>
     }
     @else if (error) {
-    <section class="dashboard-state" role="alert">
-      <p class="dashboard-state__title">We couldn't load the dashboard</p>
-      <p class="dashboard-state__body">{{ error }}. Please try again in a moment.</p>
-      <button type="button" class="state-button" (click)="retryLoad()">Retry</button>
-    </section>
+    <div class="card p-20 text-center bg-white border-none shadow-2xl relative overflow-hidden group">
+      <div class="absolute inset-0 bg-error-50/10 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+      <div class="relative z-10">
+        <div
+          class="w-20 h-20 bg-error-50 text-error-500 rounded-[2.5rem] flex items-center justify-center mx-auto mb-8 shadow-inner">
+          <i class="fas fa-plug-circle-exclamation text-4xl"></i>
+        </div>
+        <h3 class="heading-3 text-neutral-900 mb-2 tracking-tighter uppercase">Signal Interruption</h3>
+        <p class="body-base text-neutral-500 max-w-md mx-auto mb-8 leading-relaxed font-medium">{{ error }}</p>
+        <button type="button" class="btn btn-primary px-10 rounded-2xl" (click)="retryLoad()">Retry Deep Scan</button>
+      </div>
+    </div>
     }
     @else {
-    <section class="kpi-grid">
-      @for (card of kpiCards; track trackByTitle($index, card)) {
-      <article class="kpi-card" [ngClass]="{ 'kpi-card--accent': card.accent === 'dark' }">
-        <div class="kpi-card__icon">
-          @switch (card.icon) {
-          @case ('sales') { ₹ }
-          @case ('bookings') { 🗓️ }
-          @case ('users') { 👥 }
-          @case ('revenue') { 📈 }
-          @case ('programs') { ✅ }
-          }
-        </div>
-        <p class="kpi-card__title">{{ card.title }}</p>
-        <p class="kpi-card__value">{{ card.value }}</p>
-        <div class="kpi-card__meta">
-          <span class="trend" [class.trend--down]="card.trend === 'down'">
-            {{ getTrendLabel(card.change, card.trend) }}
-          </span>
-          <span>{{ card.helper }}</span>
-        </div>
-      </article>
-      }
-    </section>
+    <!-- Performance Analytics Section -->
+    <section>
+      <div class="flex items-center gap-4 mb-8">
+        <div class="w-2 h-8 grad-indigo rounded-full"></div>
+        <h2 class="text-sm font-black text-neutral-900 uppercase tracking-[0.2em]">Key Performance Signals</h2>
+      </div>
 
-    <div class="report-controls">
-      <div class="control-group" role="group" aria-label="Report filter">
-        @for (filter of reportFilters; track filter.key) {
-        <button type="button" class="filter-chip" [class.filter-chip--active]="selectedReportFilter === filter.key"
-          (click)="setReportFilter(filter.key)">
-          {{ filter.label }}
-        </button>
-        }
-      </div>
-      <label class="date-range" aria-label="Date range">
-        <span>Range</span>
-        <select [ngModel]="activeDateRange" (ngModelChange)="setDateRange($event)">
-          @for (range of reportDateRanges; track range.key) {
-          <option [value]="range.key">{{ range.label }}</option>
-          }
-        </select>
-      </label>
-    </div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        @for (card of kpiCards; track trackByTitle($index, card)) {
+        <div
+          class="group relative bg-white rounded-2xl p-4 border border-neutral-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:translate-y-[-2px] overflow-hidden"
+          [class.bg-neutral-900]="card.accent === 'dark'" [class.ring-1]="card.accent === 'dark'"
+          [class.ring-neutral-800]="card.accent === 'dark'">
 
-    <nav class="tab-bar" role="tablist">
-      @for (tab of tabs; track tab.key) {
-      <button type="button" role="tab" class="tab-chip" [class.tab-chip--active]="activeTab === tab.key"
-        (click)="setActiveTab(tab.key)">
-        <span>{{ tab.label }}</span>
-      </button>
-      }
-    </nav>
+          <div
+            class="absolute top-0 right-0 w-24 h-24 grad-indigo opacity-0 group-hover:opacity-[0.05] transition-opacity rounded-bl-[3rem]"
+            [style.opacity]="card.accent === 'dark' ? '0.15' : null"></div>
 
-    @if (activeTab === 'sales') {
-    <section class="module" role="tabpanel">
-      <div class="module__head">
-        <div>
-          <p class="module__eyebrow">Sales analytics</p>
-          <h2>Commerce pulse</h2>
-        </div>
-        <span class="module__helper">Last 12 months</span>
-      </div>
-      <div class="module__filters" role="group" aria-label="Sales filters">
-        @for (filter of tabFilters['sales']; track filter.key) {
-        <button type="button" class="filter-chip" [class.filter-chip--active]="activeTabFilters['sales'] === filter.key"
-          (click)="setTabFilter('sales', filter.key)">
-          {{ filter.label }}
-        </button>
-        }
-      </div>
-      <div class="module-grid module-grid--sales">
-        <article class="panel span-2">
-          <div class="panel__title">Monthly Sales Trend</div>
-          <apx-chart class="chart" [series]="monthlySalesTrendChart.series!" [chart]="monthlySalesTrendChart.chart!"
-            [stroke]="monthlySalesTrendChart.stroke!" [markers]="monthlySalesTrendChart.markers!"
-            [colors]="monthlySalesTrendChart.colors!" [dataLabels]="monthlySalesTrendChart.dataLabels!"
-            [xaxis]="monthlySalesTrendChart.xaxis!" [yaxis]="monthlySalesTrendChart.yaxis!"
-            [grid]="monthlySalesTrendChart.grid!" [tooltip]="monthlySalesTrendChart.tooltip!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Total Sales Over Time</div>
-          <apx-chart class="chart" [series]="totalSalesAreaChart.series!" [chart]="totalSalesAreaChart.chart!"
-            [stroke]="totalSalesAreaChart.stroke!" [colors]="totalSalesAreaChart.colors!"
-            [fill]="totalSalesAreaChart.fill!" [dataLabels]="totalSalesAreaChart.dataLabels!"
-            [xaxis]="totalSalesAreaChart.xaxis!" [yaxis]="totalSalesAreaChart.yaxis!"
-            [legend]="totalSalesAreaChart.legend!" [grid]="totalSalesAreaChart.grid!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Sales per Program</div>
-          <apx-chart class="chart" [series]="programSalesBarChart.series!" [chart]="programSalesBarChart.chart!"
-            [plotOptions]="programSalesBarChart.plotOptions!" [colors]="programSalesBarChart.colors!"
-            [dataLabels]="programSalesBarChart.dataLabels!" [xaxis]="programSalesBarChart.xaxis!"
-            [grid]="programSalesBarChart.grid!" [yaxis]="programSalesBarChart.yaxis!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Category-Based Sales</div>
-          <apx-chart class="chart" [series]="categorySalesDonutChart.series!" [chart]="categorySalesDonutChart.chart!"
-            [labels]="categorySalesDonutChart.labels!" [plotOptions]="categorySalesDonutChart.plotOptions!"
-            [colors]="categorySalesDonutChart.colors!" [legend]="categorySalesDonutChart.legend!"
-            [dataLabels]="categorySalesDonutChart.dataLabels!" [stroke]="categorySalesDonutChart.stroke!"
-            [tooltip]="categorySalesDonutChart.tooltip!">
-          </apx-chart>
-        </article>
-      </div>
-    </section>
-    <section class="module" role="region" aria-label="Revenue analytics">
-      <div class="module__head">
-        <div>
-          <p class="module__eyebrow">Revenue analytics</p>
-          <h2>Admin & Trainer earnings</h2>
-        </div>
-        <span class="module__helper">Quarterly split</span>
-      </div>
-      <div class="module__filters" role="group" aria-label="Revenue filters">
-        @for (filter of tabFilters['revenue']; track filter.key) {
-        <button type="button" class="filter-chip"
-          [class.filter-chip--active]="activeTabFilters['revenue'] === filter.key"
-          (click)="setTabFilter('revenue', filter.key)">
-          {{ filter.label }}
-        </button>
-        }
-      </div>
-      <div class="module-grid module-grid--revenue">
-        <article class="panel">
-          <div class="panel__title">Admin vs Trainer Split</div>
-          <apx-chart class="chart" [series]="revenueSplitChart.series!" [chart]="revenueSplitChart.chart!"
-            [plotOptions]="revenueSplitChart.plotOptions!" [colors]="revenueSplitChart.colors!"
-            [dataLabels]="revenueSplitChart.dataLabels!" [xaxis]="revenueSplitChart.xaxis!"
-            [legend]="revenueSplitChart.legend!" [grid]="revenueSplitChart.grid!"
-            [tooltip]="revenueSplitChart.tooltip!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Revenue per Trainer</div>
-          <apx-chart class="chart" [series]="trainerRevenueChart.series!" [chart]="trainerRevenueChart.chart!"
-            [plotOptions]="trainerRevenueChart.plotOptions!" [colors]="trainerRevenueChart.colors!"
-            [dataLabels]="trainerRevenueChart.dataLabels!" [xaxis]="trainerRevenueChart.xaxis!"
-            [legend]="trainerRevenueChart.legend!" [grid]="trainerRevenueChart.grid!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Revenue by Category</div>
-          <apx-chart class="chart" [series]="revenueContributionChart.series!" [chart]="revenueContributionChart.chart!"
-            [labels]="revenueContributionChart.labels!" [plotOptions]="revenueContributionChart.plotOptions!"
-            [colors]="revenueContributionChart.colors!" [legend]="revenueContributionChart.legend!"
-            [dataLabels]="revenueContributionChart.dataLabels!">
-          </apx-chart>
-        </article>
-      </div>
-    </section>
-    }
+          <div class="relative z-10 flex items-center gap-4">
+            <!-- Compact Icon Artifact -->
+            <div
+              class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 border border-neutral-100/50 shadow-sm"
+              [class.bg-primary-600]="card.accent === 'dark'" [class.text-white]="card.accent === 'dark'"
+              [class.bg-neutral-50]="card.accent !== 'dark'" [class.text-neutral-400]="card.accent !== 'dark'"
+              [class.group-hover:bg-primary-600]="card.accent !== 'dark'"
+              [class.group-hover:text-white]="card.accent !== 'dark'">
+              @switch (card.icon) {
+              @case ('sales') { <i class="fas fa-receipt text-lg"></i> }
+              @case ('bookings') { <i class="fas fa-calendar-check text-lg"></i> }
+              @case ('users') { <i class="fas fa-user-shield text-lg"></i> }
+              @case ('revenue') { <i class="fas fa-chart-pie text-lg"></i> }
+              @case ('programs') { <i class="fas fa-bolt text-lg"></i> }
+              }
+            </div>
 
-    @if (activeTab === 'bookings') {
-    <section class="module" role="tabpanel">
-      <div class="module__head">
-        <div>
-          <p class="module__eyebrow">Booking analytics</p>
-          <h2>Utilization watch</h2>
-        </div>
-        <span class="module__helper">Conversion funnel & volume</span>
-      </div>
-      <div class="module__filters" role="group" aria-label="Booking filters">
-        @for (filter of tabFilters['bookings']; track filter.key) {
-        <button type="button" class="filter-chip"
-          [class.filter-chip--active]="activeTabFilters['bookings'] === filter.key"
-          (click)="setTabFilter('bookings', filter.key)">
-          {{ filter.label }}
-        </button>
-        }
-      </div>
-      <div class="module-grid module-grid--bookings">
-        <article class="panel span-2">
-          <div class="panel__title">Bookings by Day & Time</div>
-          <apx-chart class="chart" [series]="bookingsHeatmapChart.series!" [chart]="bookingsHeatmapChart.chart!"
-            [dataLabels]="bookingsHeatmapChart.dataLabels!" [plotOptions]="bookingsHeatmapChart.plotOptions!"
-            [xaxis]="bookingsHeatmapChart.xaxis!" [legend]="bookingsHeatmapChart.legend!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Weekly vs Monthly Bookings</div>
-          <apx-chart class="chart" [series]="bookingVolumeChart.series!" [chart]="bookingVolumeChart.chart!"
-            [plotOptions]="bookingVolumeChart.plotOptions!" [colors]="bookingVolumeChart.colors!"
-            [dataLabels]="bookingVolumeChart.dataLabels!" [xaxis]="bookingVolumeChart.xaxis!"
-            [legend]="bookingVolumeChart.legend!" [grid]="bookingVolumeChart.grid!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Booking Conversion Funnel</div>
-          <apx-chart class="chart" [series]="bookingFunnelChart.series!" [chart]="bookingFunnelChart.chart!"
-            [plotOptions]="bookingFunnelChart.plotOptions!" [colors]="bookingFunnelChart.colors!"
-            [dataLabels]="bookingFunnelChart.dataLabels!" [xaxis]="bookingFunnelChart.xaxis!"
-            [grid]="bookingFunnelChart.grid!">
-          </apx-chart>
-        </article>
-      </div>
-    </section>
-    }
-
-    @if (activeTab === 'portfolio') {
-    <section class="module" role="tabpanel">
-      <div class="module__head">
-        <div>
-          <p class="module__eyebrow">Program insights</p>
-          <h2>Portfolio snapshot</h2>
-        </div>
-        <span class="module__helper">Programs & discipline mix</span>
-      </div>
-      <div class="module__filters" role="group" aria-label="Portfolio filters">
-        @for (filter of tabFilters['portfolio']; track filter.key) {
-        <button type="button" class="filter-chip"
-          [class.filter-chip--active]="activeTabFilters['portfolio'] === filter.key"
-          (click)="setTabFilter('portfolio', filter.key)">
-          {{ filter.label }}
-        </button>
-        }
-      </div>
-      <div class="module-grid module-grid--programs">
-        <article class="panel">
-          <div class="panel__title">Approved vs Pending Programs</div>
-          <apx-chart class="chart" [series]="programStatusChart.series!" [chart]="programStatusChart.chart!"
-            [labels]="programStatusChart.labels!" [colors]="programStatusChart.colors!"
-            [legend]="programStatusChart.legend!" [dataLabels]="programStatusChart.dataLabels!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Programs per Trainer</div>
-          <apx-chart class="chart" [series]="programsPerTrainerChart.series!" [chart]="programsPerTrainerChart.chart!"
-            [plotOptions]="programsPerTrainerChart.plotOptions!" [colors]="programsPerTrainerChart.colors!"
-            [dataLabels]="programsPerTrainerChart.dataLabels!" [xaxis]="programsPerTrainerChart.xaxis!"
-            [grid]="programsPerTrainerChart.grid!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Program Popularity</div>
-          <apx-chart class="chart" [series]="programPopularityChart.series!" [chart]="programPopularityChart.chart!"
-            [plotOptions]="programPopularityChart.plotOptions!" [colors]="programPopularityChart.colors!"
-            [dataLabels]="programPopularityChart.dataLabels!" [xaxis]="programPopularityChart.xaxis!"
-            [grid]="programPopularityChart.grid!">
-          </apx-chart>
-        </article>
-      </div>
-      <div class="module__head mt-8">
-        <div>
-          <p class="module__eyebrow">Category sales</p>
-          <h2>Fitness category contribution</h2>
-        </div>
-        <span class="module__helper">Sales share by discipline</span>
-      </div>
-      <article class="panel panel--full">
-        <apx-chart class="chart" [series]="fitnessCategoryChart.series!" [chart]="fitnessCategoryChart.chart!"
-          [labels]="fitnessCategoryChart.labels!" [colors]="fitnessCategoryChart.colors!"
-          [legend]="fitnessCategoryChart.legend!" [dataLabels]="fitnessCategoryChart.dataLabels!"
-          [tooltip]="fitnessCategoryChart.tooltip!" [plotOptions]="fitnessCategoryChart.plotOptions!">
-        </apx-chart>
-      </article>
-    </section>
-    }
-
-    @if (activeTab === 'people') {
-    <section class="module" role="tabpanel">
-      <div class="module__head">
-        <div>
-          <p class="module__eyebrow">Trainer performance</p>
-          <h2>Earning leaders</h2>
-        </div>
-        <span class="module__helper">Revenue share & rankings</span>
-      </div>
-      <div class="module__filters" role="group" aria-label="People filters">
-        @for (filter of tabFilters['people']; track filter.key) {
-        <button type="button" class="filter-chip"
-          [class.filter-chip--active]="activeTabFilters['people'] === filter.key"
-          (click)="setTabFilter('people', filter.key)">
-          {{ filter.label }}
-        </button>
-        }
-      </div>
-      <div class="module-grid module-grid--trainer">
-        <article class="panel">
-          <div class="panel__title">Top-Selling Trainer Programs</div>
-          <apx-chart class="chart" [series]="topTrainerProgramsChart.series!" [chart]="topTrainerProgramsChart.chart!"
-            [plotOptions]="topTrainerProgramsChart.plotOptions!" [colors]="topTrainerProgramsChart.colors!"
-            [dataLabels]="topTrainerProgramsChart.dataLabels!" [xaxis]="topTrainerProgramsChart.xaxis!"
-            [yaxis]="topTrainerProgramsChart.yaxis!" [grid]="topTrainerProgramsChart.grid!">
-          </apx-chart>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Trainer Revenue Ranking</div>
-          <ul class="leaderboard">
-            @for (trainer of trainerLeaderboard; track trackByName($index, trainer)) {
-            <li class="leaderboard__item">
-              <div>
-                <p class="leaderboard__name">{{ trainer.name }}</p>
-                <p class="leaderboard__helper">{{ trainer.helper }}</p>
+            <!-- Value Cluster -->
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center justify-between mb-0.5">
+                <p class="text-[9px] font-black uppercase tracking-[0.2em] truncate"
+                  [class.text-neutral-400]="card.accent !== 'dark'"
+                  [class.text-primary-400/60]="card.accent === 'dark'">
+                  {{ card.title }}
+                </p>
+                @if (card.change) {
+                <span class="text-[9px] font-black flex items-center" [class.text-success-600]="card.trend === 'up'"
+                  [class.text-error-600]="card.trend === 'down'">
+                  <i [class]="card.trend === 'up' ? 'fas fa-caret-up mr-0.5' : 'fas fa-caret-down mr-0.5'"></i>
+                  {{ card.change }}%
+                </span>
+                }
               </div>
-              <div class="leaderboard__meta">
-                <span>{{ trainer.value }}</span>
-                <div class="leaderboard__bar">
-                  <span [style.width.%]="trainer.percent"></span>
+
+              <h3 class="text-2xl font-black tracking-tighter leading-none"
+                [class.text-neutral-900]="card.accent !== 'dark'" [class.text-white]="card.accent === 'dark'">
+                {{ card.value }}
+              </h3>
+
+              <div class="flex items-center gap-1.5 mt-1.5">
+                <div class="w-1 h-1 rounded-full animate-pulse" [class.bg-primary-500]="card.trend === 'up'"
+                  [class.bg-error-500]="card.trend === 'down'"></div>
+                <p class="text-[8px] font-bold text-neutral-400 uppercase tracking-widest truncate">
+                  {{ card.helper }}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+    </section>
+
+    <!-- Advanced Filter Matrice -->
+    <section class="animate-fadeIn" style="animation-delay: 200ms;">
+      <div
+        class="bg-white rounded-[2.5rem] p-3 shadow-xl shadow-neutral-200/20 border border-neutral-100/50 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+        <div class="flex flex-wrap items-center gap-2" role="group">
+          @for (filter of reportFilters; track filter.key) {
+          <button type="button"
+            class="px-8 py-4 rounded-2xl text-[11px] font-black uppercase tracking-[0.2em] transition-all duration-300 select-none border-none cursor-pointer"
+            [class.bg-neutral-900]="selectedReportFilter === filter.key"
+            [class.text-white]="selectedReportFilter === filter.key"
+            [class.shadow-xl]="selectedReportFilter === filter.key"
+            [class.shadow-neutral-900/30]="selectedReportFilter === filter.key"
+            [class.bg-transparent]="selectedReportFilter !== filter.key"
+            [class.text-neutral-400]="selectedReportFilter !== filter.key"
+            [class.hover:bg-neutral-50]="selectedReportFilter !== filter.key" (click)="setReportFilter(filter.key)">
+            {{ filter.label }}
+          </button>
+          }
+        </div>
+
+        <div class="flex items-center gap-6 px-6">
+          <div class="h-10 w-[1px] bg-neutral-100 hidden lg:block"></div>
+          <div class="flex items-center gap-4">
+            <span class="caption text-neutral-300">Data Horizon</span>
+            <div class="relative group">
+              <select [ngModel]="activeDateRange" (ngModelChange)="setDateRange($event)"
+                class="bg-neutral-50 hover:bg-neutral-100 border-none rounded-2xl px-8 py-4 font-black uppercase tracking-widest text-[10px] text-neutral-900 focus:ring-4 focus:ring-primary-100 transition-all cursor-pointer appearance-none pr-12">
+                @for (range of reportDateRanges; track range.key) {
+                <option [value]="range.key">{{ range.label }}</option>
+                }
+              </select>
+              <i
+                class="fas fa-chevron-down absolute right-5 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none group-hover:text-primary-500 transition-colors"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contextual Intelligence Panels -->
+    <section class="space-y-8 animate-fadeIn" style="animation-delay: 300ms;">
+      <nav class="flex items-center gap-2 bg-white/50 p-2 rounded-[2rem] border border-neutral-200/30 shadow-sm"
+        role="tablist">
+        @for (tab of tabs; track tab.key) {
+        <button type="button" role="tab"
+          class="flex-1 py-4 rounded-[1.25rem] font-black uppercase tracking-[0.2em] text-[10px] transition-all duration-500 select-none border-none cursor-pointer"
+          [class.bg-white]="activeTab === tab.key" [class.text-primary-600]="activeTab === tab.key"
+          [class.shadow-xl]="activeTab === tab.key" [class.shadow-primary-500/10]="activeTab === tab.key"
+          [class.text-neutral-400]="activeTab !== tab.key" [class.hover:text-neutral-600]="activeTab !== tab.key"
+          (click)="setActiveTab(tab.key)">
+          {{ tab.label }}
+        </button>
+        }
+      </nav>
+
+      <div class="animate-slideInUp">
+        @if (activeTab === 'sales') {
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div class="lg:col-span-2 card bg-white border-none shadow-2xl p-6 rounded-2xl">
+            <div class="flex items-center justify-between mb-6">
+              <div class="space-y-1">
+                <p class="caption text-primary-500 uppercase tracking-widest">Growth Matrice</p>
+                <h2 class="text-2xl font-black text-neutral-900 tracking-tighter">Commerce Velocity</h2>
+              </div>
+              <div class="flex gap-2">
+                @for (filter of tabFilters['sales']; track filter.key) {
+                <button (click)="setTabFilter('sales', filter.key)"
+                  class="px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all"
+                  [class.bg-neutral-900]="activeTabFilters['sales'] === filter.key"
+                  [class.text-white]="activeTabFilters['sales'] === filter.key"
+                  [class.bg-neutral-100]="activeTabFilters['sales'] !== filter.key"
+                  [class.text-neutral-400]="activeTabFilters['sales'] !== filter.key">
+                  {{ filter.label }}
+                </button>
+                }
+              </div>
+            </div>
+            <div class="h-[350px]">
+              <apx-chart class="w-full h-full" [series]="monthlySalesTrendChart.series!"
+                [chart]="monthlySalesTrendChart.chart!" [stroke]="monthlySalesTrendChart.stroke!"
+                [markers]="monthlySalesTrendChart.markers!" [colors]="monthlySalesTrendChart.colors!"
+                [dataLabels]="monthlySalesTrendChart.dataLabels!" [xaxis]="monthlySalesTrendChart.xaxis!"
+                [yaxis]="monthlySalesTrendChart.yaxis!" [grid]="monthlySalesTrendChart.grid!"
+                [tooltip]="monthlySalesTrendChart.tooltip!">
+              </apx-chart>
+            </div>
+          </div>
+
+          <div class="card bg-neutral-900 text-white border-none shadow-2xl p-6 rounded-2xl relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-48 h-48 grad-indigo opacity-20 rounded-bl-[6rem] blur-3xl"></div>
+            <div class="relative z-10 space-y-6">
+              <div class="space-y-1">
+                <p class="caption text-primary-400 uppercase tracking-widest">Share Matrix</p>
+                <h2 class="text-2xl font-black text-white tracking-tighter">Category Weight</h2>
+              </div>
+              <div class="h-[300px]">
+                <apx-chart class="w-full h-full" [series]="categorySalesDonutChart.series!"
+                  [chart]="categorySalesDonutChart.chart!" [labels]="categorySalesDonutChart.labels!"
+                  [plotOptions]="categorySalesDonutChart.plotOptions!" [colors]="categorySalesDonutChart.colors!"
+                  [legend]="categorySalesDonutChart.legend!" [dataLabels]="categorySalesDonutChart.dataLabels!"
+                  [stroke]="categorySalesDonutChart.stroke!" [tooltip]="categorySalesDonutChart.tooltip!">
+                </apx-chart>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-3 card bg-white border-none shadow-2xl p-6 rounded-2xl">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-6">
+              <div class="space-y-1">
+                <p class="caption text-primary-500 uppercase tracking-widest">Inventory Performance</p>
+                <h2 class="text-2xl font-black text-neutral-900 tracking-tighter">Program Distribution</h2>
+              </div>
+            </div>
+            <div class="h-[350px]">
+              <apx-chart class="w-full h-full" [series]="programSalesBarChart.series!"
+                [chart]="programSalesBarChart.chart!" [plotOptions]="programSalesBarChart.plotOptions!"
+                [colors]="programSalesBarChart.colors!" [dataLabels]="programSalesBarChart.dataLabels!"
+                [xaxis]="programSalesBarChart.xaxis!" [grid]="programSalesBarChart.grid!"
+                [yaxis]="programSalesBarChart.yaxis!">
+              </apx-chart>
+            </div>
+          </div>
+        </div>
+        }
+
+        @if (activeTab === 'bookings') {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="card bg-white border-none shadow-2xl p-6 rounded-2xl lg:col-span-2">
+            <div class="flex items-center justify-between mb-6">
+              <div class="space-y-1">
+                <p class="caption text-primary-500 uppercase tracking-widest">Heat Map</p>
+                <h2 class="text-2xl font-black text-neutral-900 tracking-tighter">Peak Utilization</h2>
+              </div>
+            </div>
+            <div class="h-[350px]">
+              <apx-chart class="w-full h-full" [series]="bookingsHeatmapChart.series!"
+                [chart]="bookingsHeatmapChart.chart!" [dataLabels]="bookingsHeatmapChart.dataLabels!"
+                [plotOptions]="bookingsHeatmapChart.plotOptions!" [xaxis]="bookingsHeatmapChart.xaxis!"
+                [legend]="bookingsHeatmapChart.legend!">
+              </apx-chart>
+            </div>
+          </div>
+
+          <div class="card bg-white border-none shadow-2xl p-6 rounded-2xl">
+            <div class="space-y-1 mb-6">
+              <p class="caption text-primary-500 uppercase tracking-widest">Conversion Funnel</p>
+              <h2 class="text-2xl font-black text-neutral-900 tracking-tighter">User Journey</h2>
+            </div>
+            <div class="h-[350px]">
+              <apx-chart class="w-full h-full" [series]="bookingFunnelChart.series!" [chart]="bookingFunnelChart.chart!"
+                [plotOptions]="bookingFunnelChart.plotOptions!" [colors]="bookingFunnelChart.colors!"
+                [dataLabels]="bookingFunnelChart.dataLabels!" [xaxis]="bookingFunnelChart.xaxis!"
+                [grid]="bookingFunnelChart.grid!">
+              </apx-chart>
+            </div>
+          </div>
+
+          <div class="card bg-neutral-900 text-white border-none shadow-2xl p-6 rounded-2xl">
+            <div class="space-y-1 mb-6">
+              <p class="caption text-primary-400 uppercase tracking-widest">Volume Monitor</p>
+              <h2 class="text-2xl font-black text-white tracking-tighter">Booking Pulse</h2>
+            </div>
+            <div class="h-[350px]">
+              <apx-chart class="w-full h-full" [series]="bookingVolumeChart.series!" [chart]="bookingVolumeChart.chart!"
+                [plotOptions]="bookingVolumeChart.plotOptions!" [colors]="bookingVolumeChart.colors!"
+                [dataLabels]="bookingVolumeChart.dataLabels!" [xaxis]="bookingVolumeChart.xaxis!"
+                [legend]="bookingVolumeChart.legend!" [grid]="bookingVolumeChart.grid!">
+              </apx-chart>
+            </div>
+          </div>
+        </div>
+        }
+
+        @if (activeTab === 'portfolio') {
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div class="card bg-white border-none shadow-2xl p-6 rounded-2xl">
+            <div class="space-y-1 mb-6">
+              <p class="caption text-primary-500 uppercase tracking-widest">Compliance Status</p>
+              <h2 class="text-2xl font-black text-neutral-900 tracking-tighter">Program Approvals</h2>
+            </div>
+            <div class="h-[300px]">
+              <apx-chart class="w-full h-full" [series]="programStatusChart.series!" [chart]="programStatusChart.chart!"
+                [labels]="programStatusChart.labels!" [colors]="programStatusChart.colors!"
+                [legend]="programStatusChart.legend!" [dataLabels]="programStatusChart.dataLabels!">
+              </apx-chart>
+            </div>
+          </div>
+
+          <div class="card bg-white border-none shadow-2xl p-6 rounded-2xl">
+            <div class="space-y-1 mb-6">
+              <p class="caption text-primary-500 uppercase tracking-widest">Popularity Bias</p>
+              <h2 class="text-2xl font-black text-neutral-900 tracking-tighter">Top Enrollments</h2>
+            </div>
+            <div class="h-[350px]">
+              <apx-chart class="w-full h-full" [series]="programPopularityChart.series!"
+                [chart]="programPopularityChart.chart!" [plotOptions]="programPopularityChart.plotOptions!"
+                [colors]="programPopularityChart.colors!" [dataLabels]="programPopularityChart.dataLabels!"
+                [xaxis]="programPopularityChart.xaxis!" [grid]="programPopularityChart.grid!">
+              </apx-chart>
+            </div>
+          </div>
+
+          <div class="card bg-neutral-900 text-white border-none shadow-2xl p-6 rounded-2xl lg:col-span-2">
+            <div class="flex items-center justify-between mb-6">
+              <div class="space-y-1">
+                <p class="caption text-primary-400 uppercase tracking-widest">Trainer Output</p>
+                <h2 class="text-2xl font-black text-white tracking-tighter">Programs per Trainer</h2>
+              </div>
+            </div>
+            <div class="h-[350px]">
+              <apx-chart class="w-full h-full" [series]="programsPerTrainerChart.series!"
+                [chart]="programsPerTrainerChart.chart!" [plotOptions]="programsPerTrainerChart.plotOptions!"
+                [colors]="programsPerTrainerChart.colors!" [dataLabels]="programsPerTrainerChart.dataLabels!"
+                [xaxis]="programsPerTrainerChart.xaxis!" [grid]="programsPerTrainerChart.grid!">
+              </apx-chart>
+            </div>
+          </div>
+        </div>
+        }
+
+        @if (activeTab === 'people') {
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Leaderboards -->
+          <div class="card bg-white border-none shadow-2xl p-6 rounded-2xl">
+            <p class="caption text-primary-500 uppercase tracking-widest mb-1">Trainer Elite</p>
+            <h3 class="text-xl font-black text-neutral-900 tracking-tighter mb-6">Revenue Leaders</h3>
+            <div class="space-y-4">
+              @for (trainer of trainerLeaderboard; track trackByName($index, trainer)) {
+              <div class="group/item">
+                <div class="flex items-center justify-between mb-2">
+                  <div>
+                    <p class="text-sm font-black text-neutral-900 group-hover/item:text-primary-600 transition-colors">
+                      {{ trainer.name }}</p>
+                    <p class="text-[10px] font-bold text-neutral-400 uppercase">{{ trainer.helper }}</p>
+                  </div>
+                  <p class="text-sm font-black text-neutral-900">{{ trainer.value }}</p>
+                </div>
+                <div class="h-1.5 w-full bg-neutral-50 rounded-full overflow-hidden">
+                  <div class="h-full grad-indigo rounded-full" [style.width.%]="trainer.percent"></div>
                 </div>
               </div>
-            </li>
-            }
-          </ul>
-        </article>
-      </div>
-      <div class="module__head mt-8">
-        <div>
-          <p class="module__eyebrow">User analytics</p>
-          <h2>Activity & spend</h2>
+              }
+            </div>
+          </div>
+
+          <div class="card bg-white border-none shadow-2xl p-6 rounded-2xl">
+            <p class="caption text-primary-500 uppercase tracking-widest mb-1">Power Users</p>
+            <h3 class="text-xl font-black text-neutral-900 tracking-tighter mb-6">Engagement Giants</h3>
+            <div class="space-y-4">
+              @for (user of userActivityLeaders; track trackByUser($index, user)) {
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-neutral-100 flex items-center justify-center font-black text-neutral-500 text-xs shadow-inner">
+                    {{ user.name.charAt(0) }}
+                  </div>
+                  <div>
+                    <p class="text-sm font-black text-neutral-900">{{ user.name }}</p>
+                    <p class="text-[10px] font-bold text-neutral-400 uppercase">{{ user.sessions }} Sessions Logged</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-xs font-black text-primary-600 tracking-tighter">{{ user.streak }} 🔥</p>
+                  <p class="text-[9px] font-bold text-neutral-300 uppercase">Streak</p>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+
+          <div class="card bg-neutral-900 text-white border-none shadow-2xl p-6 rounded-2xl">
+            <p class="caption text-primary-400 uppercase tracking-widest mb-1">Whale Watch</p>
+            <h3 class="text-xl font-black text-white tracking-tighter mb-6">Top Purchasers</h3>
+            <div class="space-y-4">
+              @for (user of purchasingLeaders; track trackByUser($index, user)) {
+              <div class="flex items-center justify-between">
+                <div class="flex items-center gap-4">
+                  <div
+                    class="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center font-black text-white/50 text-xs shadow-inner">
+                    {{ user.name.charAt(0) }}
+                  </div>
+                  <div>
+                    <p class="text-sm font-black text-white">{{ user.name }}</p>
+                    <p class="text-[10px] font-bold text-white/40 uppercase">{{ user.programs }} Program Assets</p>
+                  </div>
+                </div>
+                <div class="text-right">
+                  <p class="text-sm font-black text-white tracking-tighter">{{ user.spend }}</p>
+                  <p class="text-[9px] font-bold text-white/30 uppercase">LTV</p>
+                </div>
+              </div>
+              }
+            </div>
+          </div>
+
+          <!-- High Complexity Visual -->
+          <div class="lg:col-span-3 card bg-white border-none shadow-2xl p-6 rounded-2xl">
+            <div class="space-y-1 mb-6">
+              <p class="caption text-primary-500 uppercase tracking-widest">Behavioral Scatter</p>
+              <h2 class="text-2xl font-black text-neutral-900 tracking-tighter">Sessions vs Expenditures</h2>
+            </div>
+            <div class="h-[400px]">
+              <apx-chart class="w-full h-full" [series]="activityScatterChart.series!"
+                [chart]="activityScatterChart.chart!" [colors]="activityScatterChart.colors!"
+                [xaxis]="activityScatterChart.xaxis!" [yaxis]="activityScatterChart.yaxis!"
+                [grid]="activityScatterChart.grid!" [markers]="activityScatterChart.markers!"
+                [tooltip]="activityScatterChart.tooltip!">
+              </apx-chart>
+            </div>
+          </div>
         </div>
-        <span class="module__helper">Engagement cohorts</span>
-      </div>
-      <div class="module__filters" role="group" aria-label="People filters secondary">
-        @for (filter of tabFilters['people']; track filter.key) {
-        <button type="button" class="filter-chip"
-          [class.filter-chip--active]="activeTabFilters['people'] === filter.key"
-          (click)="setTabFilter('people', filter.key)">
-          {{ filter.label }}
-        </button>
         }
       </div>
-      <div class="module-grid module-grid--users">
-        <article class="panel">
-          <div class="panel__title">Most Active Users</div>
-          <ul class="mini-board">
-            @for (user of userActivityLeaders; track trackByUser($index, user)) {
-            <li>
-              <p class="mini-board__name">{{ user.name }}</p>
-              <p class="mini-board__helper">{{ user.sessions }} sessions · {{ user.streak }} wk streak</p>
-            </li>
-            }
-          </ul>
-        </article>
-        <article class="panel">
-          <div class="panel__title">Highest Purchasing Users</div>
-          <ul class="mini-board">
-            @for (user of purchasingLeaders; track trackByUser($index, user)) {
-            <li>
-              <p class="mini-board__name">{{ user.name }}</p>
-              <p class="mini-board__helper">{{ user.spend }} · {{ user.programs }} programs</p>
-            </li>
-            }
-          </ul>
-        </article>
-        <article class="panel span-2">
-          <div class="panel__title">User Activity vs Spending</div>
-          <apx-chart class="chart" [series]="activityScatterChart.series!" [chart]="activityScatterChart.chart!"
-            [colors]="activityScatterChart.colors!" [xaxis]="activityScatterChart.xaxis!"
-            [yaxis]="activityScatterChart.yaxis!" [grid]="activityScatterChart.grid!"
-            [markers]="activityScatterChart.markers!" [tooltip]="activityScatterChart.tooltip!">
-          </apx-chart>
-        </article>
-      </div>
     </section>
-    }
     }
   </main>
 </div>
+
+<style>
+  .grad-indigo {
+    background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+  }
+</style>

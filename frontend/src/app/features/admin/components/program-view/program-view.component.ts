@@ -1,4 +1,4 @@
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { ProgramService } from '../../../../core/services/program.service';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -39,6 +39,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   private readonly _dialog = inject(MatDialog);
   private readonly _toastService = inject(ToastService);
   private readonly _activatedRoute = inject(ActivatedRoute);
+  private readonly _location = inject(Location);
   private readonly _destroy$ = new Subject<void>();
 
   programId!: string;
@@ -46,14 +47,18 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   trainerId!: string;
   trainer!: Trainer;
 
+  goBack(): void {
+    this._location.back();
+  }
+
   getDifficultyClass(level: string): string {
     switch (level.toLowerCase()) {
       case 'beginner':
-        return 'bg-green-100 text-green-700';
+        return 'bg-success-100 text-success-700';
       case 'intermediate':
-        return 'bg-yellow-100 text-yellow-700';
+        return 'bg-warning-100 text-warning-700';
       case 'advanced':
-        return 'bg-red-100 text-red-700';
+        return 'bg-error-100 text-error-700';
       default:
         return 'bg-gray-100 text-gray-700';
     }

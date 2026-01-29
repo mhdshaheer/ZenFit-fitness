@@ -166,7 +166,7 @@ body {
 @layer components {
   /* Layout Utilities */
   .container-custom {
-    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+    @apply w-full max-w-[1400px] mx-auto px-6 md:px-10;
   }
 
   .section-padding {
@@ -239,6 +239,37 @@ body {
   .form-error {
     @apply text-error-600 font-black uppercase tracking-widest text-[8px] animate-slideInDown mt-1.5;
   }
+
+  /* Admin High Density Scale */
+  .admin-scaled {
+    font-size: 0.9em;
+  }
+
+  .admin-scaled .text-4xl { @apply text-2xl md:text-3xl; }
+  .admin-scaled .text-xl { @apply text-lg; }
+  .admin-scaled .text-lg { @apply text-base; }
+  .admin-scaled .text-sm { @apply text-xs; }
+  .admin-scaled .text-base { @apply text-sm; }
+  
+  .admin-scaled .p-6 { @apply p-4; }
+  .admin-scaled .p-8 { @apply p-6; }
+  .admin-scaled .p-10 { @apply p-8; }
+  .admin-scaled .py-10 { @apply py-6; }
+  .admin-scaled .space-y-10 { @apply space-y-6; }
+  .admin-scaled .space-y-12 { @apply space-y-8; }
+  
+  .admin-scaled .card { @apply rounded-[1.25rem]; }
+  .admin-scaled .btn { @apply rounded-lg py-2 px-4; }
+  .admin-scaled .btn-primary { @apply text-[10px]; }
+  
+  .admin-scaled .caption { @apply text-[8px]; }
+  .admin-scaled .badge { @apply text-[8px] px-2 py-0.5; }
+  .admin-scaled .avatar-cell .avatar { @apply w-8 h-8; }
+  .admin-scaled .avatar-cell .avatar__name { @apply text-[11px]; }
+  .admin-scaled .avatar-cell .avatar__meta { @apply text-[9px]; }
+  
+  .admin-scaled .container-custom { @apply px-4 md:px-6; }
+  .admin-scaled header .py-6 { @apply py-4; }
 }
 
 /* Page Specific Animations */
@@ -250,4 +281,62 @@ body {
 }
 .custom-scrollbar::-webkit-scrollbar-thumb {
   @apply bg-neutral-200 rounded-full hover:bg-neutral-300;
+}
+
+/* Mobile Responsive Utilities */
+@media (max-width: 768px) {
+  /* Touch-friendly button sizing */
+  .btn {
+    @apply min-h-[44px] px-4 py-3;
+  }
+  
+  .btn-sm {
+    @apply min-h-[36px] px-3 py-2;
+  }
+  
+  /* Mobile spacing adjustments */
+  .container-custom {
+    @apply px-4;
+  }
+  
+  .section-padding {
+    @apply py-8;
+  }
+  
+  /* Mobile card adjustments */
+  .card {
+    @apply rounded-xl;
+  }
+  
+  /* Mobile modal adjustments */
+  .modal-content {
+    @apply max-w-full mx-4 rounded-2xl;
+  }
+  
+  /* Text truncation for mobile */
+  .truncate-mobile {
+    @apply truncate max-w-[200px];
+  }
+}
+
+/* Tablet responsive adjustments */
+@media (min-width: 768px) and (max-width: 1024px) {
+  .container-custom {
+    @apply px-6;
+  }
+}
+
+/* Prevent text selection on buttons and interactive elements */
+.btn, button, [role="button"] {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  user-select: none;
+}
+
+/* Smooth scrolling for mobile */
+@media (max-width: 768px) {
+  html {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
 }
