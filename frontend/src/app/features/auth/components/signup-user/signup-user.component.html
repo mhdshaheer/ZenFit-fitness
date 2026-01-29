@@ -103,9 +103,10 @@
             [placeholder]="'@username'"></app-shared-form>
           @if (f['username'].touched && f['username'].invalid) {
           <div class="form-error">
-            @if (f['username'].errors?.['required']) { <span>Required</span> }
-            @if (f['username'].errors?.['minlength']) { <span>Too short</span> }
-            @if (f['username'].errors?.['pattern']) { <span>Invalid characters</span> }
+            @if (f['username'].errors?.['required']) { <span>Username is required</span> }
+            @if (f['username'].errors?.['minlength']) { <span>Must be at least 3 characters</span> }
+            @if (f['username'].errors?.['maxlength']) { <span>Too long (max 20)</span> }
+            @if (f['username'].errors?.['pattern']) { <span>Only letters, numbers, and underscores</span> }
           </div>
           }
 
@@ -114,8 +115,9 @@
             [placeholder]="'email@address.com'"></app-shared-form>
           @if (f['email'].touched && f['email'].invalid) {
           <div class="form-error">
-            @if (f['email'].errors?.['required']) { <span>Required</span> }
-            @if (f['email'].errors?.['email']) { <span>Invalid email</span> }
+            @if (f['email'].errors?.['required']) { <span>Email is required</span> }
+            @else if (f['email'].errors?.['email'] || f['email'].errors?.['pattern']) { <span>Please enter a valid
+              email</span> }
           </div>
           }
 
@@ -126,8 +128,9 @@
                 [label]="'Password'" [placeholder]="'••••••••'"></app-shared-form>
               @if (f['password'].touched && f['password'].invalid) {
               <div class="form-error">
-                @if (f['password'].errors?.['required']) { <span>Required</span> }
-                @if (f['password'].errors?.['minPasswordStrength']) { <span>Too weak</span> }
+                @if (f['password'].errors?.['required']) { <span>Password is required</span> }
+                @if (f['password'].errors?.['passwordStrength']) { <span>Too weak (8+ chars, mixed case, digit,
+                  special)</span> }
               </div>
               }
             </div>
@@ -136,8 +139,8 @@
                 [label]="'Repeat'" [placeholder]="'••••••••'"></app-shared-form>
               @if (f['confirmPassword'].touched && (f['confirmPassword'].invalid || signupForm.errors?.['mismatch'])) {
               <div class="form-error">
-                @if (f['confirmPassword'].errors?.['required']) { <span>Required</span> }
-                @if (signupForm.errors?.['mismatch']) { <span>No match</span> }
+                @if (f['confirmPassword'].errors?.['required']) { <span>Please repeat password</span> }
+                @else if (signupForm.errors?.['mismatch']) { <span>Passwords do not match</span> }
               </div>
               }
             </div>

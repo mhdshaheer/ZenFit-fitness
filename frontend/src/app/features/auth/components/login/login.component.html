@@ -31,8 +31,9 @@
             [placeholder]="'Enter your email'"></app-shared-form>
           @if (f['email'].touched && f['email'].invalid) {
           <div class="form-error">
-            @if (f['email'].errors?.['required']) { <span>Required</span> }
-            @if (f['email'].errors?.['email']) { <span>Invalid email</span> }
+            @if (f['email'].errors?.['required']) { <span>Email is required</span> }
+            @else if (f['email'].errors?.['email'] || f['email'].errors?.['pattern']) { <span>Please enter a valid
+              email</span> }
           </div>
           }
         </div>
@@ -49,7 +50,9 @@
           </div>
           @if (f['password'].touched && f['password'].invalid) {
           <div class="form-error">
-            @if (f['password'].errors?.['required']) { <span>Required</span> }
+            @if (f['password'].errors?.['required']) { <span>Password is required</span> }
+            @if (f['password'].errors?.['passwordStrength']) { <span>Must be stronger (8+ chars, upper, lower, digit,
+              special)</span> }
           </div>
           }
         </div>
