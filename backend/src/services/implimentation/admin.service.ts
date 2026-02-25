@@ -1,4 +1,4 @@
-import { GetUsersParams, IUser } from "../../interfaces/user.interface";
+import { GetUsersParams } from "../../interfaces/user.interface";
 import { inject, injectable } from "inversify";
 import { UserDto, UserStatusDto } from "../../dtos/user.dtos";
 import { mapToUserDto, mapToUserStatusDto } from "../../mapper/user.mapper";
@@ -20,7 +20,7 @@ export class AdminService implements IAdminService {
   ): Promise<UserStatusDto> {
     const user = await this._userRepository.findById(id);
     if (!user) {
-      throw new AppError(HttpResponse.USER_NOT_FOUND,HttpStatus.NOT_FOUND);
+      throw new AppError(HttpResponse.USER_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
     const updatedUser = await this._userRepository.updateStatus(id, status);
     if (!updatedUser) {

@@ -61,7 +61,7 @@ export class BookingService implements IBookingService {
     }
 
     const program = await this._programRepository.findProgramById(
-      slotInstance.programId.toString()
+      slotInstance.programId?.toString() ?? ''
     );
 
     const day = this.getDayOfWeek(slotInstance.date);
@@ -79,12 +79,12 @@ export class BookingService implements IBookingService {
       programTitle: program?.title,
       programDuration: program?.duration,
       programDifficulty: program?.difficultyLevel,
-    } as any;
+    };
 
     try {
       const booking = await this._bookingRepository.createBooking({
         slotId: slotInstanceId,
-        templateId: slotInstance.templateId.toString(),
+        templateId: slotInstance.templateId?.toString() ?? '',
         userId,
         day,
         date: slotInstance.date,
@@ -98,11 +98,11 @@ export class BookingService implements IBookingService {
     }
   }
 
-  async getMyBookings(userId: string, programId?: string): Promise<any[]> {
+  async getMyBookings(userId: string, programId?: string): Promise<Record<string, unknown>[]> {
     const bookings = await this._bookingRepository.getMyBookings(userId, programId);
 
     // Transform the data to match frontend interface
-    return bookings.map((booking: any) => ({
+    return bookings.map((booking: IBooking & { feedback?: unknown }) => ({
       _id: booking._id,
       slotId: booking.slotId,
       userId: booking.userId,
@@ -118,12 +118,12 @@ export class BookingService implements IBookingService {
     }));
   }
 
-  async getTrainerBookings(trainerId: string): Promise<any[]> {
+  async getTrainerBookings(trainerId: string): Promise<Record<string, unknown>[]> {
     const bookings = await this._bookingRepository.getTrainerBookings(trainerId);
 
-    return bookings.map((session: any) => ({
+    return bookings.map((session: Record<string, unknown>) => ({
       ...session,
-      date: this.formatDateOnly(session.date),
+      date: this.formatDateOnly(session.date as Date | string),
     }));
   }
 
@@ -137,7 +137,7 @@ export class BookingService implements IBookingService {
   }
 
   private formatDateOnly(date?: Date | string): string | null {
-    if (!date) {
+    if (date === undefined || date === null || date === "") {
       return null;
     }
 

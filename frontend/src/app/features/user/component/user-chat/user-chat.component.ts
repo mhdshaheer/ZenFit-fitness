@@ -1,4 +1,4 @@
-import { CommonModule } from "@angular/common";
+import { CommonModule, Location } from "@angular/common";
 import { Component, inject, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewChecked } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
@@ -21,6 +21,7 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private chat = inject(ChatService);
   private socket = inject(ChatSocketService);
   private toastr = inject(ToastrService);
+  private location = inject(Location);
   private destroy$ = new Subject<void>();
   private _logger = inject(LoggerService)
 
@@ -30,10 +31,14 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   thread: ChatThread | null = null;
   messages: ChatMessage[] = [];
   input = '';
-  
+
   // Confirmation dialog state
   showDeleteConfirm = false;
   messageToDelete: string | null = null;
+
+  goBack(): void {
+    this.location.back();
+  }
 
   ngOnInit(): void {
     const programId = this.route.snapshot.paramMap.get('programId')!;
@@ -112,7 +117,7 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
 
   confirmDelete() {
     if (!this.messageToDelete) return;
-    
+
     this.chat.deleteMessage(this.messageToDelete).subscribe({
       next: () => {
         this.messages = this.messages.filter(m => m._id !== this.messageToDelete);

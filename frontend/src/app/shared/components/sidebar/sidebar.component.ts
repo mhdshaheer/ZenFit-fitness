@@ -9,6 +9,7 @@ import {
   inject,
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { LoggerService } from '../../../core/services/logger.service';
 
 export interface MenuItem {
@@ -20,7 +21,7 @@ export interface MenuItem {
 
 @Component({
   selector: 'app-sidebar',
-  imports: [RouterModule],
+  imports: [RouterModule, CommonModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
 })
@@ -56,6 +57,12 @@ export class SidebarComponent implements OnInit {
     }
   }
 
+  toggleDesktop(): void {
+    this.isDesktopOpen = !this.isDesktopOpen;
+    localStorage.setItem('sidebarOpen', JSON.stringify(this.isDesktopOpen));
+    this.desktopToggle.emit(this.isDesktopOpen);
+  }
+
   onMenuItemClick(item: MenuItem): void {
     this.menuItemClicked.emit(item);
 
@@ -67,13 +74,13 @@ export class SidebarComponent implements OnInit {
   }
 
   @HostListener('window:resize', ['$event'])
-  onResize(event: Event): void {
-    this.isLargeScreen = window.innerWidth < 1024;
+  onResize(_event: Event): void {
+    this.isLargeScreen = window.innerWidth >= 1024;
     this.handleScreenSize();
   }
 
   @HostListener('document:keydown.escape', ['$event'])
-  onEscapeKey(event: KeyboardEvent): void {
+  onEscapeKey(_event: KeyboardEvent): void {
     if (this.isMobileOpen) {
       this.toggleMobile();
     }

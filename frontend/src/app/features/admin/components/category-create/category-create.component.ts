@@ -17,13 +17,13 @@ import { Subject, takeUntil } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
 
 @Component({
-  selector: 'zenfit-category-create',
+  selector: 'app-category-create',
   imports: [ReactiveFormsModule],
   templateUrl: './category-create.component.html',
   styleUrl: './category-create.component.css',
 })
 export class CategoryCreateComponent implements OnInit, OnDestroy {
-  createForm: FormGroup;
+
   editForm: FormGroup | null = null;
   categorySelectControl = new FormControl('');
   isSubmitting = false;
@@ -36,31 +36,30 @@ export class CategoryCreateComponent implements OnInit, OnDestroy {
   private readonly _router = inject(Router);
   private _logger = inject(LoggerService)
 
+  private readonly _fb = inject(FormBuilder);
   private readonly _destroy$ = new Subject<void>();
 
-  constructor(private fb: FormBuilder) {
-    this.createForm = this.fb.group({
-      name: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(CATEGORY_FORM_CONSTANTS.NAME.MIN_LENGTH),
-          Validators.maxLength(CATEGORY_FORM_CONSTANTS.NAME.MAX_LENGTH),
-          Validators.pattern(CATEGORY_FORM_CONSTANTS.NAME.PATTERN),
-        ],
-        [CategoryNameValidator(this._categoryService)],
+  createForm = this._fb.group({
+    name: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(CATEGORY_FORM_CONSTANTS.NAME.MIN_LENGTH),
+        Validators.maxLength(CATEGORY_FORM_CONSTANTS.NAME.MAX_LENGTH),
+        Validators.pattern(CATEGORY_FORM_CONSTANTS.NAME.PATTERN),
       ],
-      description: [
-        '',
-        [
-          Validators.required,
-          Validators.maxLength(CATEGORY_FORM_CONSTANTS.DESCRIPTION.MAX_LENGTH),
-          Validators.pattern(CATEGORY_FORM_CONSTANTS.DESCRIPTION.PATTERN),
-        ],
+      [CategoryNameValidator(this._categoryService)],
+    ],
+    description: [
+      '',
+      [
+        Validators.required,
+        Validators.maxLength(CATEGORY_FORM_CONSTANTS.DESCRIPTION.MAX_LENGTH),
+        Validators.pattern(CATEGORY_FORM_CONSTANTS.DESCRIPTION.PATTERN),
       ],
-      parantId: [null],
-    });
-  }
+    ],
+    parantId: [null],
+  });
 
   ngOnInit() {
     this.getCategory();
@@ -72,10 +71,10 @@ export class CategoryCreateComponent implements OnInit, OnDestroy {
       const formValue = this.createForm.value;
 
       this._categoryService
-        .createCategory(formValue)
+        .createCategory(formValue as unknown as ICategory)
         .pipe(takeUntil(this._destroy$))
         .subscribe({
-          next: (res: ICategory) => {
+          next: () => {
             this._toastService.success('Category is created');
             this.resetCreateForm();
             this._router.navigate(['/admin/category']);

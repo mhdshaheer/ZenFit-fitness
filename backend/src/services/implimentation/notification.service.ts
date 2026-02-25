@@ -1,4 +1,5 @@
 import { inject, injectable } from "inversify";
+import { Types } from "mongoose";
 import { INotification } from "../../models/notification.model";
 import { getIO } from "../../shared/sockets/socket";
 import { INotificationService } from "../interface/notification.service.interface";
@@ -46,10 +47,10 @@ export class NotificationService implements INotificationService {
   async markAllAsRead(receiverId: string, notificationIds: string[]): Promise<void> {
     // Filter notifications to only mark those belonging to the receiver
     const userNotifications = await this._notificationRepository.getNotificationsByReceiver(receiverId);
-    const validIds = notificationIds.filter(id => 
-      userNotifications.some(notification => (notification._id as any).toString() === id)
+    const validIds = notificationIds.filter(id =>
+      userNotifications.some(notification => (notification._id as Types.ObjectId).toString() === id)
     );
-    
+
     if (validIds.length > 0) {
       await this._notificationRepository.markMultipleAsRead(validIds);
     }

@@ -5,7 +5,7 @@ import { mongoDb_connect } from "./config/db.config";
 import { createServer } from "http";
 import { initializeSocket } from "./shared/sockets/socket";
 
-const startServer = async () => {
+const startServer = async (): Promise<void> => {
   await mongoDb_connect();
 
 

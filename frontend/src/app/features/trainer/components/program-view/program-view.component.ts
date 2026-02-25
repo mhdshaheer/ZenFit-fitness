@@ -1,7 +1,7 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { ProgramService } from '../../../../core/services/program.service';
 import { ToastService } from '../../../../core/services/toast.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import {
   FormBuilder,
   FormGroup,
@@ -47,7 +47,9 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   category: Category = { value: '', label: '' };
   categories: Category[] = [];
 
-  constructor(private readonly _fb: FormBuilder) { }
+  private readonly _fb = inject(FormBuilder);
+
+
 
   ngOnInit() {
     // Route param subscription with cleanup
@@ -107,7 +109,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
 
   initializeForm() {
     this.programForm = this._fb.group({
-      programId: [, [Validators.required, Validators.minLength(3)]],
+      programId: ['', [Validators.required, Validators.minLength(3)]],
       title: [
         '',
         [

@@ -6,18 +6,28 @@ import Swal, { SweetAlertIcon } from 'sweetalert2';
 })
 export class ToastService {
   private _showToast(
-    message: string,
+    title: string,
+    message: string = '',
     icon: SweetAlertIcon = 'success',
-    duration = 2000
+    duration = 3000
   ) {
     Swal.fire({
       position: 'top-end',
       icon: icon,
-      title: message,
+      title: title,
+      html: message,
       showConfirmButton: false,
       toast: true,
       timer: duration,
       timerProgressBar: true,
+      customClass: {
+        container: 'premium-toast-container',
+        popup: 'premium-toast-popup',
+        title: 'premium-toast-title',
+        htmlContainer: 'premium-toast-html',
+        icon: 'premium-toast-icon',
+        timerProgressBar: 'premium-toast-timer',
+      },
       didOpen: (toast) => {
         toast.addEventListener('mouseenter', Swal.stopTimer);
         toast.addEventListener('mouseleave', Swal.resumeTimer);
@@ -25,19 +35,35 @@ export class ToastService {
     });
   }
 
-  success(message: string, duration?: number) {
-    this._showToast(message, 'success', duration);
+  success(title: string, subMessage: string | number = '', duration: number = 3000) {
+    if (typeof subMessage === 'number') {
+      this._showToast(title, '', 'success', subMessage);
+    } else {
+      this._showToast(title, subMessage, 'success', duration);
+    }
   }
 
-  error(message: string, duration?: number) {
-    this._showToast(message, 'error', duration);
+  error(title: string, subMessage: string | number = '', duration: number = 3000) {
+    if (typeof subMessage === 'number') {
+      this._showToast(title, '', 'error', subMessage);
+    } else {
+      this._showToast(title, subMessage, 'error', duration);
+    }
   }
 
-  warning(message: string, duration?: number) {
-    this._showToast(message, 'warning', duration);
+  warning(title: string, subMessage: string | number = '', duration: number = 3000) {
+    if (typeof subMessage === 'number') {
+      this._showToast(title, '', 'warning', subMessage);
+    } else {
+      this._showToast(title, subMessage, 'warning', duration);
+    }
   }
 
-  info(message: string, duration?: number) {
-    this._showToast(message, 'info', duration);
+  info(title: string, subMessage: string | number = '', duration: number = 3000) {
+    if (typeof subMessage === 'number') {
+      this._showToast(title, '', 'info', subMessage);
+    } else {
+      this._showToast(title, subMessage, 'info', duration);
+    }
   }
 }

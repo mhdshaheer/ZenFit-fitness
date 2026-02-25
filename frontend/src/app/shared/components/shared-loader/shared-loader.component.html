@@ -1,0 +1,33 @@
+<div [class.fixed]="fullScreen" [class.inset-0]="fullScreen" [class.z-[9999]]="fullScreen"
+    [class.bg-white/80]="fullScreen" [class.backdrop-blur-md]="fullScreen"
+    class="flex flex-col items-center justify-center transition-all duration-500 ease-in-out">
+
+    <div class="loader-container relative" [ngClass]="size">
+        <!-- Outer Orbit -->
+        <div class="orbit outer-orbit"></div>
+
+        <!-- Inner Orbit (Counter Rotating) -->
+        <div class="orbit inner-orbit"></div>
+
+        <!-- Central Zen Core -->
+        <div class="zen-core flex items-center justify-center">
+            <div class="pulse-ring"></div>
+            <div class="core-dot"></div>
+            <svg class="w-6 h-6 text-primary-600 z-10 animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2L2 7v10c0 5.55 3.84 9.74 9 11 5.16-1.26 9-5.45 9-11V7l-10-5z" />
+            </svg>
+        </div>
+    </div>
+
+    @if (text) {
+    <div class="mt-8 text-center animate-fadeIn">
+        <p class="text-[10px] font-black uppercase tracking-[0.3em] text-neutral-400 mb-1">Processing</p>
+        <h3 class="text-sm font-black text-neutral-900 tracking-tight">{{ text }}</h3>
+        <div class="flex justify-center mt-2 space-x-1">
+            <div class="dot-bounce w-1 h-1 bg-primary-400 rounded-full"></div>
+            <div class="dot-bounce w-1 h-1 bg-primary-500 rounded-full [animation-delay:0.2s]"></div>
+            <div class="dot-bounce w-1 h-1 bg-primary-600 rounded-full [animation-delay:0.4s]"></div>
+        </div>
+    </div>
+    }
+</div>

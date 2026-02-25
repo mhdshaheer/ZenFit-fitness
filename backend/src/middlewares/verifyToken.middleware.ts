@@ -16,7 +16,7 @@ const authMiddleware: RequestHandler = async (req, res, next) => {
   const userRepository = new UserRepository();
   const { accessToken } = req.cookies;
 
-  if (!accessToken) {
+  if (accessToken === undefined || accessToken === "") {
     res
       .status(HttpStatus.UNAUTHORIZED)
       .json({ message: HttpResponse.NO_TOKEN });
@@ -25,10 +25,10 @@ const authMiddleware: RequestHandler = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(accessToken, env.jwt_access!) as IJwtPayload;
-    if (decoded?.id) {
+    if (decoded?.id !== undefined) {
       const user = await userRepository.findById(decoded.id);
 
-      if (!user) {
+      if (user === null) {
         res
           .status(HttpStatus.NOT_FOUND)
           .json({ message: HttpResponse.USER_NOT_FOUND });
@@ -46,7 +46,10 @@ const authMiddleware: RequestHandler = async (req, res, next) => {
         role: decoded.role,
       };
       request.user = authUser;
-      next();
+      return next();
+    } else {
+      res.status(HttpStatus.UNAUTHORIZED).json({ message: "Invalid token structure" });
+      return;
     }
   } catch (error) {
     logger.error(error);

@@ -5,7 +5,7 @@ import { MeetingRepository } from "../repositories/implimentation/meeting.reposi
 import { BookingRepository } from "../repositories/implimentation/booking.repository";
 import { SlotInstanceRepository } from "../repositories/implimentation/slotInstance.repository";
 import { MeetingModel } from "../models/meeting.model";
-import { BookingModel } from "../models/booking.model";
+
 import authMiddleware from "../middlewares/verifyToken.middleware";
 import { container } from "../inversify.config";
 import { TYPES } from "../shared/types/inversify.types";

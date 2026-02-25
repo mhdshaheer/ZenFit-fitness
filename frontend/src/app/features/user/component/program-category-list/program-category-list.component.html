@@ -1,47 +1,80 @@
-<div class="min-h-screen bg-gray-50 py-16 px-4">
-  <div class="max-w-5xl mx-auto">
-    <!-- Header -->
-    <div class="text-center mb-16">
-      <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
-        Explore Training Categories
+<div class="min-h-screen bg-neutral-50/50 py-12 md:py-20 lg:py-24">
+  <div class="container-custom">
+    <!-- Header Section -->
+    <div class="max-w-4xl mx-auto text-center mb-20 animate-fadeIn">
+      <div
+        class="inline-flex items-center px-4 py-2 rounded-2xl bg-primary-100/50 text-primary-700 font-black text-[10px] uppercase tracking-[0.2em] mb-8 border border-primary-200/50">
+        Choose Your Path
+      </div>
+
+      <h1 class="heading-1 mb-8">
+        Explore <span class="gradient-text">Training Categories</span>
       </h1>
-      <p class="text-lg text-gray-600">
-        Whether you’re chasing a goal, improving your lifestyle, or exploring
-        specialized training, find the right path for you.
+
+      <p class="text-xl md:text-2xl text-neutral-500 font-medium leading-relaxed max-w-2xl mx-auto">
+        Whether you're chasing a specific goal, improving your lifestyle, or seeking specialized training, we have the
+        perfect program for you.
       </p>
     </div>
 
-    <!-- Category Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 mb-12">
-      @for(card of categoryCards;track card){
+    <!-- Category Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+      @for(card of categoryCards; track card.id; let i = $index) {
+      <div class="card group cursor-pointer p-8 md:p-10 relative overflow-hidden active:scale-95 animate-slideInUp"
+        [style.animation-delay]="(i * 100) + 'ms'" (click)="onCardClick(card)" (keydown.enter)="onCardClick(card)"
+        tabindex="0" role="button">
+        <!-- Background Decoration -->
+        <div
+          class="absolute -right-12 -top-12 w-48 h-48 rounded-full opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500"
+          [ngClass]="getIconBgClass(card.color!)"></div>
 
-      <div
-        class="category-card group cursor-pointer border-2 border-gray-200 rounded-2xl p-6 shadow-sm transition-all duration-300 hover:shadow-lg hover:scale-105 hover:border-emerald-400"
-        (click)="onCardClick(card)"
-      >
-        <!-- Icon Circle -->
-        <div class="flex justify-center mb-6">
+        <!-- Icon Box -->
+        <div class="mb-10 relative">
           <div
-            class="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:scale-110"
-            [ngClass]="getIconBgClass(card.color!)"
-          >
-            <span class="text-2xl">{{ card.icon }}</span>
+            class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-6 shadow-sm"
+            [ngClass]="getIconBgClass(card.color!)">
+            <span class="group-hover:scale-110 transition-transform duration-500">{{ card.icon }}</span>
+          </div>
+
+          <!-- Glow Effect -->
+          <div
+            class="absolute inset-0 blur-2xl rounded-full opacity-0 group-hover:opacity-10 transition-opacity duration-500 -z-10 bg-primary-400">
           </div>
         </div>
 
-        <!-- Card Content -->
-        <div class="text-center">
-          <h3
-            class="font-semibold text-gray-900 text-lg mb-3 group-hover:text-gray-700 transition-colors"
-          >
+        <!-- Content -->
+        <div class="relative z-10">
+          <h3 class="heading-5 mb-4 group-hover:text-primary-700 transition-colors">
             {{ card.title }}
           </h3>
-          <p class="text-gray-600 text-sm leading-relaxed mb-4 px-1">
+          <p class="body-base text-neutral-500 mb-8 font-medium">
             {{ card.description }}
           </p>
+
+          <div class="flex items-center gap-3 text-primary-600 font-black text-xs uppercase tracking-widest group/btn">
+            <span>View Programs</span>
+            <div
+              class="w-8 h-[2px] bg-primary-200 group-hover/btn:w-12 group-hover/btn:bg-primary-600 transition-all duration-300">
+            </div>
+          </div>
         </div>
       </div>
       }
+      <!-- Bottom Info -->
+      <div class="mt-24 p-10 rounded-[3rem] bg-neutral-900 text-white relative overflow-hidden group">
+        <div
+          class="absolute top-0 right-0 w-1/3 h-full bg-gradient-to-l from-primary-600/20 to-transparent pointer-events-none">
+        </div>
+
+        <div class="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div>
+            <h2 class="text-3xl font-black mb-2">Not sure where to start?</h2>
+            <p class="text-neutral-400 font-medium">Our AI-powered assistant can help you pick the right track.</p>
+          </div>
+          <button class="btn bg-white text-neutral-900 hover:bg-primary-50 px-10 py-5 rounded-2xl">
+            Get Consultation
+          </button>
+        </div>
+      </div>
     </div>
   </div>
-</div>

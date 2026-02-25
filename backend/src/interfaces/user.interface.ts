@@ -22,7 +22,7 @@ export interface IPassword {
 }
 
 export interface GetUsersParams {
-  filter?: Record<string, any>;
+  filter?: Record<string, unknown>;
   page: number;
   pageSize: number;
   search?: string;
@@ -33,4 +33,11 @@ export interface GetUsersParams {
 export interface ILoggedUser {
   userId: string;
   role: "user" | "trainer" | "admin";
+}
+
+export interface IGoogleProfile {
+  id: string;
+  displayName: string;
+  emails: { value: string; verified: boolean }[];
+  photos?: { value: string }[];
 }

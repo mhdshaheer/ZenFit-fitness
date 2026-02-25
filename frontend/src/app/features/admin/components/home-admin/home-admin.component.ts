@@ -139,14 +139,6 @@ export class HomeAdminComponent implements OnInit {
       accent: 'dark',
     },
     {
-      title: 'Total Bookings',
-      value: '2,348',
-      change: 6.1,
-      helper: 'completed this month',
-      trend: 'up',
-      icon: 'bookings',
-    },
-    {
       title: 'Active Users',
       value: '18,420',
       change: 3.5,
@@ -572,15 +564,17 @@ export class HomeAdminComponent implements OnInit {
 
   private applySnapshot(snapshot: AdminDashboardSnapshot): void {
     this.snapshot = snapshot;
-    this.kpiCards = snapshot.kpis.map((card) => ({
-      title: card.title,
-      value: this.formatMetric(card.icon, card.value),
-      change: card.change,
-      helper: card.helper,
-      trend: card.trend,
-      icon: card.icon,
-      accent: card.accent,
-    }));
+    this.kpiCards = snapshot.kpis
+      .filter((card) => card.title !== 'Total Bookings')
+      .map((card) => ({
+        title: card.title,
+        value: this.formatMetric(card.icon, card.value),
+        change: card.change,
+        helper: card.helper,
+        trend: card.trend,
+        icon: card.icon,
+        accent: card.accent,
+      }));
 
     this.trainerLeaderboard = snapshot.people.trainerLeaderboard.map((entry) => ({
       name: entry.name,

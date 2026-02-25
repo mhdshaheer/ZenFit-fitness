@@ -1,4 +1,4 @@
-export const ErrorMessages: any = {
+export const ErrorMessages = {
   phone: {
     required: 'Phone number is required',
     invalidPhone: 'Please enter a valid 10-digit phone number',

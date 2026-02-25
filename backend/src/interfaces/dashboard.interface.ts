@@ -1,3 +1,4 @@
+import { Types } from 'mongoose';
 import { IProgram } from '../models/program.model';
 import { IPayment } from '../models/payment.model';
 
@@ -60,7 +61,7 @@ export interface TrainerSnapshotTotals {
 
 export interface PaymentSummary extends Pick<IPayment, 'trainerEarning' | 'amount' | 'paymentStatus'> {
     createdAt?: Date;
-    programId?: any;
+    programId?: string | Types.ObjectId;
     programName?: string;
 }
 

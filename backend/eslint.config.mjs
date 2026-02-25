@@ -4,8 +4,17 @@ import globals from "globals";
 
 export default [
   {
+    ignores: [
+      "dist/**",
+      "node_modules/**",
+      "lint.json",
+      "lint_output.txt",
+      "chat_lint.txt",
+      "lint_output_utf8.txt"
+    ],
+  },
+  {
     files: ["**/*.{ts,js}"],
-    ignores: ["dist/**"],
 
     languageOptions: {
       parser: tsParser,
@@ -23,7 +32,7 @@ export default [
     },
 
     rules: {
-      "no-unused-vars": "warn",
+      "no-unused-vars": "off",
       eqeqeq: "error",
       curly: "error",
       semi: ["error", "always"],

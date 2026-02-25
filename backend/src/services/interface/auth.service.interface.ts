@@ -1,4 +1,4 @@
-import { IUser } from "../../interfaces/user.interface";
+import { IUser, IGoogleProfile } from "../../interfaces/user.interface";
 import { Request, Response } from "express";
 
 export interface IAuthService {
@@ -20,7 +20,7 @@ export interface IAuthService {
 
   resetPassword(req: Request, res: Response): Promise<void>;
 
-  handleGoogleLogin(profile: any): Promise<IUser>;
+  handleGoogleLogin(profile: IGoogleProfile): Promise<IUser>;
 
   logout(res: Response): Promise<void>;
 

@@ -57,14 +57,14 @@ export class ProfileService {
       `${this._apiUrl}${ProfileRouter.USER_BASE}/${userId}`
     );
   }
-  getProfile(id = '') {
-    return this._http.get<any>(
+  getProfile(id = ''): Observable<IUserResponse> {
+    return this._http.get<IUserResponse>(
       `${this._apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PROFILE}?id=${id}`
     );
   }
 
-  updateProfile(data: any) {
-    return this._http.put<any>(
+  updateProfile(data: Partial<IUserResponse>): Observable<IUserResponse> {
+    return this._http.put<IUserResponse>(
       `${this._apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PROFILE}`,
       data
     );

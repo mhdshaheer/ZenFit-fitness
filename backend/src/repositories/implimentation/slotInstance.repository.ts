@@ -24,7 +24,7 @@ export class SlotInstanceRepository
     }
 
     async bulkUpsertInstances(instances: Partial<ISlotInstance>[]): Promise<void> {
-        if (!instances.length) {return;}
+        if (!instances.length) { return; }
 
         const operations = instances.map((inst) => ({
             updateOne: {
@@ -44,7 +44,7 @@ export class SlotInstanceRepository
         await SlotInstanceModel.bulkWrite(operations);
     }
 
-    async findById(id: string) {
+    async findById(id: string): Promise<HydratedDocument<ISlotInstance> | null> {
         return await this.model.findById(id);
     }
 
@@ -73,10 +73,10 @@ export class SlotInstanceRepository
             })
             .sort({ date: 1, startTime: 1 });
 
-        if (options?.skip) {
+        if (typeof options?.skip === "number") {
             query.skip(options.skip);
         }
-        if (options?.limit) {
+        if (typeof options?.limit === "number") {
             query.limit(options.limit);
         }
 
@@ -162,7 +162,7 @@ export class SlotInstanceRepository
         return result.modifiedCount ?? 0;
     }
 
-    async decrementCapacityAtomically(id: string) {
+    async decrementCapacityAtomically(id: string): Promise<HydratedDocument<ISlotInstance> | null> {
         return await this.model.findOneAndUpdate(
             {
                 _id: new Types.ObjectId(id),
@@ -184,8 +184,8 @@ export class SlotInstanceRepository
     private buildTrainerFilterQuery(
         trainerId: string,
         filters: TrainerInstanceFilterOptions
-    ) {
-        const andConditions: Record<string, any>[] = [
+    ): Record<string, unknown> {
+        const andConditions: Record<string, unknown>[] = [
             { trainerId: new Types.ObjectId(trainerId) },
             { date: { $gte: filters.from, $lte: filters.to } },
         ];
@@ -203,7 +203,7 @@ export class SlotInstanceRepository
         }
 
         const { segment, currentDayStart, currentTimeString } = filters;
-        if (segment && currentDayStart && currentTimeString) {
+        if (segment !== undefined && currentDayStart !== undefined && currentTimeString !== undefined && currentTimeString !== "") {
             const boundary = new Date(currentDayStart);
             const isWithinRange =
                 filters.from.getTime() <= boundary.getTime() &&

@@ -1,5 +1,2 @@
-<zenfit-wallet
-  [walletBalance]="totalAmont"
-  [paymentHistory]="paymentHistoryData"
-  (onWithdraw)="withdrawMoney()"
-></zenfit-wallet>
+<app-wallet [walletBalance]="totalAmont" [paymentHistory]="paymentHistoryData"
+    (withdraw)="withdrawMoney()"></app-wallet>

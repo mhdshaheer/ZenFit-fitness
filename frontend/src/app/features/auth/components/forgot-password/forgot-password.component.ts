@@ -12,11 +12,14 @@ import { SharedFormComponent } from '../../../../shared/components/shared-form/s
 import { Router } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
+import { ToastService } from '../../../../core/services/toast.service';
+
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-forgot-password',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, SharedFormComponent],
+  imports: [ReactiveFormsModule, CommonModule, SharedFormComponent, RouterLink],
   templateUrl: './forgot-password.component.html',
   styleUrls: ['./forgot-password.component.css'],
 })
@@ -30,8 +33,9 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   router = inject(Router);
   fb = inject(FormBuilder);
   private readonly _authService = inject(AuthService);
+  private readonly _toastService = inject(ToastService);
   timer!: number;
-  intervel: any;
+  intervalId?: ReturnType<typeof setInterval>;
 
   // ========= Styles ========
   buttonColor = 'text-green-600 font-semibold';
@@ -92,17 +96,16 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           this.email = this.form.value.email;
-          Swal.fire('Success', res.message, 'success');
+          this._toastService.success('Success', res.message);
           this.step = 2;
           this.submitted = false;
           this.isLoading.set(false);
         },
         error: (err) => {
           this.isLoading.set(false);
-          Swal.fire(
+          this._toastService.error(
             'Error',
-            err.error?.message || 'Failed to send OTP',
-            'error'
+            err.error?.message || 'Failed to send OTP'
           );
         },
       });
@@ -118,17 +121,16 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: () => {
-          Swal.fire('OTP Verified', 'success');
+          this._toastService.success('OTP Verified');
           this.step = 3;
           this.submitted = false;
           this.isLoading.set(false);
         },
         error: (err) => {
           this.isLoading.set(false);
-          Swal.fire(
+          this._toastService.error(
             'Invalid OTP',
-            err.error?.message || 'OTP verification failed',
-            'error'
+            err.error?.message || 'OTP verification failed'
           );
         },
       });
@@ -145,24 +147,12 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.isLoading.set(false);
-          Swal.fire({
-            icon: 'success',
-            title: 'Password reset successful!',
-            text: 'You can now log in with your new password.',
-            timer: 2000,
-            showConfirmButton: false,
-            position: 'top-end',
-          }).then(() => {
-            this.router.navigate(['/auth/login']);
-          });
+          this._toastService.success('Password Reset Successful', 'You can now log in with your new password.');
+          this.router.navigate(['/auth/login']);
         },
         error: (err) => {
           this.isLoading.set(false);
-          Swal.fire({
-            icon: 'error',
-            title: 'Reset Failed',
-            text: err.error?.message || 'Something went wrong!',
-          });
+          this._toastService.error('Reset Failed', err.error?.message || 'Something went wrong!');
         },
       });
   }
@@ -175,15 +165,14 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
       .subscribe({
         next: (res) => {
           this.email = this.form.value.email;
-          Swal.fire('Success', res.message, 'success');
+          this._toastService.success('Success', res.message);
           this.step = 2;
         },
         error: (err) => {
           this.isLoading.set(false);
-          Swal.fire(
+          this._toastService.error(
             'Error',
-            err.error?.message || 'Failed to resend OTP',
-            'error'
+            err.error?.message || 'Failed to resend OTP'
           );
         },
       });
@@ -191,10 +180,10 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
 
   startTimer() {
     this.timer = 30;
-    this.intervel = setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.timer--;
       if (this.timer === 0) {
-        clearInterval(this.intervel);
+        clearInterval(this.intervalId);
       }
     }, 1000);
   }
@@ -202,6 +191,6 @@ export class ForgotPasswordComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this._destroy$.next();
     this._destroy$.complete();
-    clearInterval(this.intervel);
+    clearInterval(this.intervalId);
   }
 }

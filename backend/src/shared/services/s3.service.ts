@@ -40,7 +40,7 @@ export class S3Service {
       })
     );
   }
-  async getFileDetails(key: string) {
+  async getFileDetails(key: string): Promise<string> {
     const command = new HeadObjectCommand({
       Bucket: S3_BUCKET,
       Key: key,

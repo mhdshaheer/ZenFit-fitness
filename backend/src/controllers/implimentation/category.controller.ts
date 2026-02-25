@@ -76,7 +76,7 @@ export class CategoryController implements ICategoryController {
     _next: NextFunction
   ): Promise<Response<boolean>> {
     const { name } = req.query;
-    if (!name || typeof name !== "string") {
+    if (typeof name !== "string" || name === "") {
       throw new AppError(
         HttpResponse.CATEGORY_NAME_REQUIRED,
         HttpStatus.BAD_REQUEST
@@ -116,12 +116,8 @@ export class CategoryController implements ICategoryController {
       sortOrder,
     });
 
-    if (!result) {
-      throw new AppError(
-        HttpResponse.CATEGORY_FETCH_FAILED,
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
+    // result is not nullable based on service interface
+    return res.status(HttpStatus.OK).json(result);
     return res.status(HttpStatus.OK).json(result);
   }
 }

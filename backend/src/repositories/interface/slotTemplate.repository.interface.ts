@@ -1,4 +1,4 @@
-import { HydratedDocument } from "mongoose";
+
 import { ISlotTemplate } from "../../models/slotTemplate.model";
 
 export interface ISlotTemplateRepository {

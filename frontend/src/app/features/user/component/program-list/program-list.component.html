@@ -1,227 +1,131 @@
-<div class="min-h-screen bg-gray-50 py-8">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+<div class="animate-fadeIn py-8 md:py-12">
+  <div class="container-custom">
     <!-- Header Section -->
-    <!-- Enhanced Header with Search and Filter -->
-    <div class="mb-8">
-      <div
-        class="flex flex-col lg:flex-row lg:items-center lg:justify-between mb-6 space-y-4 lg:space-y-0"
-        >
-        <!-- Title Section -->
-        <div class="flex-shrink-0">
-          <h1
-            class="text-2xl lg:text-3xl font-bold text-gray-900 mb-2 tracking-tight"
-            >
-            My Training Programs
+    <div class="mb-12">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
+        <div class="space-y-1.5">
+          <h1 class="heading-4 text-neutral-900 group-hover:text-primary-700 transition-colors">
+            Our <span class="gradient-text">Training Programs</span>
           </h1>
-          <p class="text-sm text-gray-600 font-medium">
-            Manage and monitor your fitness programs
+          <p class="text-[9px] font-bold text-neutral-500 uppercase tracking-widest">
+            Explore and manage your fitness journey
           </p>
         </div>
 
         <!-- Search and Filter Section -->
-        <div
-          class="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-4 w-full lg:w-auto"
-          >
-          <zenfit-search-bar
-            (searchChanged)="onSearch($event)"
-          ></zenfit-search-bar>
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full lg:w-auto">
+          <div class="flex-1 sm:flex-initial sm:w-80">
+            <zenfit-search-bar (searchChanged)="onSearch($event)"></zenfit-search-bar>
+          </div>
+
           <!-- Filter Dropdown -->
           <div class="relative">
-            <button
-              (click)="toggleFilterMenu()"
-              class="inline-flex items-center justify-center px-4 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200 hover:shadow-md min-w-0 flex-shrink-0 w-full sm:w-auto"
-              [class.ring-2]="isFilterMenuOpen"
-              [class.ring-blue-500]="isFilterMenuOpen"
-              [class.bg-blue-50]="isFilterMenuOpen"
-              >
-              <svg
-                class="w-4 h-4 mr-2 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"
-                ></path>
-              </svg>
-              <span class="truncate">{{ selectedFilter }}</span>
+            <button (click)="toggleFilterMenu()"
+              class="btn btn-secondary w-full sm:w-auto py-3 text-[9px] uppercase font-black tracking-widest flex items-center justify-center gap-2"
+              [class.ring-2]="isFilterMenuOpen" [class.ring-primary-500]="isFilterMenuOpen">
+              <i class="fas fa-filter text-xs"></i>
+              <span>{{ selectedFilter }}</span>
               @if (activeFiltersCount > 0) {
-                <span
-                  class="ml-2 bg-blue-600 text-white text-xs rounded-full px-2 py-0.5 font-semibold"
-                  >
-                  {{ activeFiltersCount }}
-                </span>
+              <span class="px-2 py-0.5 rounded-full bg-primary-600 text-white text-[8px] font-black">{{
+                activeFiltersCount
+                }}</span>
               }
-              <svg
-                class="w-4 h-4 ml-2 transition-transform duration-200"
-                [class.rotate-180]="isFilterMenuOpen"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 9l-7 7-7-7"
-                ></path>
-              </svg>
             </button>
 
-            <!-- Filter Dropdown Menu -->
             @if (isFilterMenuOpen) {
-              <div
-                class="absolute right-0 mt-2 w-72 bg-white rounded-xl shadow-xl border border-gray-200 z-50 transform transition-all duration-200 origin-top-right animate-in slide-in-from-top-2 fade-in"
-                >
-                <!-- Filter Header -->
-                <div
-                  class="px-4 py-3 border-b border-gray-100 bg-gray-50 rounded-t-xl"
-                  >
-                  <div class="flex items-center justify-between">
-                    <h3 class="text-sm font-semibold text-gray-900">
-                      Filter Programs
-                    </h3>
-                    @if (activeFiltersCount > 0) {
-                      <button
-                        (click)="clearAllFilters()"
-                        class="text-xs text-blue-600 hover:text-blue-800 font-medium"
-                        >
-                        Clear All
-                      </button>
+            <div
+              class="absolute right-0 mt-3 w-80 card shadow-2xl border border-neutral-200 z-30 animate-slideInDown overflow-hidden">
+              <div class="px-6 py-5 border-b border-neutral-100 bg-neutral-50">
+                <div class="flex items-center justify-between">
+                  <h3 class="text-[9px] font-black text-neutral-900 uppercase tracking-widest">Filter Programs</h3>
+                  @if (activeFiltersCount > 0) {
+                  <button (click)="clearAllFilters()"
+                    class="text-[9px] font-black text-primary-600 hover:text-primary-700 uppercase tracking-widest underline decoration-2 underline-offset-4">Clear
+                    All</button>
+                  }
+                </div>
+              </div>
+              <div class="py-4 max-h-80 overflow-y-auto">
+                <div class="px-6 py-2">
+                  <div class="text-[9px] font-black text-neutral-400 uppercase tracking-widest mb-4">Program Categories
+                  </div>
+                  <div class="space-y-2">
+                    @for (type of programTypes; track type) {
+                    <label
+                      class="flex items-center gap-4 p-3 hover:bg-neutral-50 rounded-2xl cursor-pointer transition-all group">
+                      <div class="relative flex items-center">
+                        <input type="checkbox" [checked]="type.selected" (change)="onFilterChange(type)"
+                          class="w-5 h-5 appearance-none border-2 border-neutral-300 rounded-lg checked:bg-primary-600 checked:border-primary-600 transition-all cursor-pointer" />
+                        <svg class="w-2.5 h-2.5 text-white absolute left-1 pointer-events-none hidden"
+                          [class.!block]="type.selected" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" />
+                        </svg>
+                      </div>
+                      <span
+                        class="text-[11px] font-bold text-neutral-600 group-hover:text-primary-700 transition-colors">{{
+                        type.label
+                        }}</span>
+                    </label>
                     }
                   </div>
                 </div>
-                <!-- Filter Options -->
-                <div class="py-2 max-h-80 overflow-y-auto">
-                  <div class="border-t border-gray-100 my-2"></div>
-                  <!-- Program Type -->
-                  <div class="px-4 py-2">
-                    <div
-                      class="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2"
-                      >
-                      Program Type
-                    </div>
-                    <div class="space-y-2">
-                      @for (type of programTypes; track type) {
-                        <label
-                          class="flex items-center p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition-colors duration-150"
-                          >
-                          <input
-                            type="checkbox"
-                            [checked]="type.selected"
-                            (change)="onFilterChange(type)"
-                            class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                            />
-                            <span class="ml-3 text-sm text-gray-700 font-medium">{{
-                              type.label
-                            }}</span>
-                          </label>
-                        }
-                      </div>
-                    </div>
-                    <div class="border-t border-gray-100 my-2"></div>
-                  </div>
-                </div>
-              }
+              </div>
             </div>
+            }
+          </div>
 
-            <!-- Sort Dropdown -->
-            <div class="relative">
-              <button
-                (click)="toggleSortMenu()"
-                class="inline-flex items-center justify-center px-4 py-3 border border-gray-300 rounded-xl text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-1 transition-all duration-200 hover:shadow-md min-w-0 flex-shrink-0 w-full sm:w-auto"
-                [class.ring-2]="isSortMenuOpen"
-                [class.ring-blue-500]="isSortMenuOpen"
-                [class.bg-blue-50]="isSortMenuOpen"
-                >
-                <svg
-                  class="w-4 h-4 mr-2 text-gray-500"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"
-                  ></path>
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M8 5v4m4-4v4m4-4v4"
-                  ></path>
-                </svg>
-                <span class="truncate">{{ selectedSort }}</span>
-                <svg
-                  class="w-4 h-4 ml-2 transition-transform duration-200"
-                  [class.rotate-180]="isSortMenuOpen"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 9l-7 7-7-7"
-                  ></path>
-                </svg>
+          <!-- Sort Dropdown -->
+          <div class="relative">
+            <button (click)="toggleSortMenu()"
+              class="btn btn-secondary w-full sm:w-auto py-3 text-[9px] uppercase font-black tracking-widest flex items-center justify-center gap-2">
+              <i class="fas fa-sort-amount-down text-xs"></i>
+              <span>{{ selectedSort }}</span>
+            </button>
+
+            @if (isSortMenuOpen) {
+            <div
+              class="absolute right-0 mt-3 w-56 card shadow-2xl border border-neutral-200 z-30 py-3 animate-slideInDown overflow-hidden">
+              @for (option of sortOptions; track option) {
+              <button (click)="onSortChange(option)"
+                class="flex items-center justify-between w-full px-5 py-3 text-[11px] font-bold text-neutral-600 hover:bg-neutral-50 hover:text-primary-700 transition-all"
+                [class.text-primary-700]="selectedSort === option.label"
+                [class.bg-primary-50]="selectedSort === option.label">
+                <span>{{ option.label }}</span>
+                @if (selectedSort === option.label) {
+                <i class="fas fa-check text-primary-600 text-[9px]"></i>
+                }
               </button>
-
-              <!-- Sort Dropdown Menu -->
-              @if (isSortMenuOpen) {
-                <div
-                  class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-200 py-2 z-50 transform transition-all duration-200 origin-top-right animate-in slide-in-from-top-2 fade-in"
-                  >
-                  @for (option of sortOptions; track option) {
-                    <button
-                      (click)="onSortChange(option)"
-                      class="flex items-center justify-between w-full px-4 py-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors duration-150"
-                      [class.bg-blue-50]="selectedSort === option.label"
-                      [class.text-blue-700]="selectedSort === option.label"
-                      >
-                      <span class="font-medium">{{ option.label }}</span>
-                      @if (selectedSort === option.label) {
-                        <svg
-                          class="w-4 h-4 text-blue-600"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M5 13l4 4L19 7"
-                          ></path>
-                        </svg>
-                      }
-                    </button>
-                  }
-                </div>
               }
             </div>
+            }
           </div>
         </div>
       </div>
-
-      <!-- Programs Grid -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        @for(program of programs;track program){
-          <app-program-card
-            [program]="program"
-            (editProgram)="onSubscribeProgram($event)"
-            (viewProgram)="onViewProgram($event)"
-            [button2Labal]="btn2Label"
-            [btn2Class]="btn2Class"
-            [btn2Icon]="btn2Icon"
-          ></app-program-card>
-        }
-      </div>
     </div>
+
+    <!-- Programs Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
+      @for(program of programs; track program.id; let i = $index) {
+      <app-program-card class="animate-slideInUp" [style.animation-delay]="(i * 100) + 'ms'" [program]="program"
+        (editProgram)="onSubscribeProgram($event)" (viewProgram)="onViewProgram($event)" [button2Labal]="btn2Label"
+        [btn2Class]="btn2Class" [btn2Icon]="btn2Icon">
+      </app-program-card>
+      }
+    </div>
+
+    <!-- Empty State -->
+    @if (programs.length === 0) {
+    <div class="text-center py-24 bg-white rounded-[3rem] border border-neutral-100 shadow-sm animate-fadeIn">
+      <div
+        class="w-24 h-24 mx-auto rounded-[2rem] bg-neutral-50 flex items-center justify-center text-neutral-200 mb-8">
+        <i class="fas fa-search text-3xl"></i>
+      </div>
+      <h3 class="heading-5 text-neutral-400 mb-8 max-w-sm mx-auto">We couldn't find any programs matching your search
+        criteria</h3>
+      <button (click)="clearAllFilters()"
+        class="btn btn-primary px-8 py-3 text-[9px] uppercase font-black tracking-widest rounded-2xl shadow-xl shadow-primary-500/20">Reset
+        Search Filters</button>
+    </div>
+    }
   </div>
+</div>

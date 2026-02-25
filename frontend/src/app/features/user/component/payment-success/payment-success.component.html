@@ -1,49 +1,54 @@
-<div class="min-h-screen bg-gray-50 flex flex-col">
-  <!-- Main Content -->
-  <main
-    class="flex-grow flex items-center justify-center px-4 py-12 sm:px-6 lg:px-8"
-  >
-    <div class="w-full max-w-md">
-      <!-- Success Icon -->
-      <div class="flex justify-center mb-6">
+<div
+  class="min-h-screen bg-neutral-50 flex flex-col items-center justify-center p-6 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-primary-50/50 via-neutral-50 to-secondary-50/30">
+  <div class="max-w-md w-full animate-fadeIn">
+    <!-- Success Badge -->
+    <div
+      class="card p-12 py-16 text-center border-none shadow-[0_0_100px_-20px_rgba(34,197,94,0.2)] bg-white relative overflow-hidden">
+      <!-- Animated Background Decor -->
+      <div class="absolute top-0 left-0 w-full h-2 gradient-success"></div>
+
+      <div class="relative z-10">
         <div
-          class="w-20 h-20 sm:w-24 sm:h-24 rounded-full bg-green-100 flex items-center justify-center"
-        >
-          <svg
-            class="w-10 h-10 sm:w-12 sm:h-12 text-green-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="3"
-              d="M5 13l4 4L19 7"
-            />
+          class="w-28 h-28 gradient-success rounded-[2.5rem] flex items-center justify-center mx-auto mb-10 shadow-2xl relative">
+          <!-- Sparkles -->
+          <div
+            class="absolute -top-4 -right-4 w-10 h-10 bg-success-200 rounded-2xl animate-pulse delay-75 shadow-lg flex items-center justify-center text-success-700">
+            <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20">
+              <path
+                d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+            </svg>
+          </div>
+          <svg class="w-16 h-16 text-white animate-scaleIn" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7" />
           </svg>
         </div>
-      </div>
 
-      <!-- Success Message -->
-      <div class="text-center mb-8">
-        <h1 class="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">
-          Payment Successful
-        </h1>
-        <p class="text-gray-600 text-sm sm:text-base">
-          Thank you for your purchase!
-        </p>
-      </div>
+        <h1 class="heading-3 text-neutral-900 mb-3">Payment Secured</h1>
+        <p class="body-large text-neutral-500 font-bold uppercase tracking-[0.2em] mb-12">Enrollment successful</p>
 
-      <!-- Return Button -->
-      <div class="flex justify-center">
-        <button
-          (click)="returnToHomepage()"
-          class="bg-green-600 hover:bg-green-700 text-white font-medium px-8 py-3 rounded-md transition-colors duration-200 text-sm sm:text-base w-full sm:w-auto"
-        >
-          Return to Homepage
-        </button>
+        <div class="bg-neutral-50 rounded-3xl p-6 border border-neutral-100 mb-12 text-left space-y-4">
+          <div class="flex items-center justify-between">
+            <span class="caption font-black text-neutral-400 uppercase tracking-widest">Transaction Status</span>
+            <span class="badge badge-success px-4 py-1.5 shadow-sm font-black italic">VERIFIED</span>
+          </div>
+          <p class="body-base text-neutral-600 leading-relaxed font-medium">Your program access has been granted
+            immediately. You can now view your materials and schedule sessions.</p>
+        </div>
+
+        <div class="flex flex-col gap-4">
+          <button (click)="returnToHomepage()"
+            class="btn btn-primary btn-lg w-full py-5 rounded-2xl shadow-xl transform active:scale-95 group/btn">
+            <span class="font-black uppercase tracking-[0.2em]">Go to My Programs</span>
+            <svg class="w-6 h-6 ml-2 transition-transform group-hover/btn:translate-x-2" fill="none"
+              stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6">
+              </path>
+            </svg>
+          </button>
+          <p class="caption font-bold text-neutral-400 uppercase tracking-widest mt-4">A receipt has been sent to your
+            email.</p>
+        </div>
       </div>
     </div>
-  </main>
+  </div>
 </div>

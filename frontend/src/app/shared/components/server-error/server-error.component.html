@@ -1,23 +1,67 @@
-<div
-  class="min-h-screen bg-green-100 flex items-center justify-center px-4 sm:px-6 lg:px-8"
->
-  <div class="text-center">
-    <h1
-      class="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold text-gray-800 mb-4"
-    >
-      Oops!
-    </h1>
-    <p class="text-lg sm:text-xl md:text-2xl text-gray-700 mb-2">
-      Something went wrong!
-    </p>
-    <p class="text-sm sm:text-base text-gray-600 mb-8">
-      500 - Internal Server error
-    </p>
-    <button
-      (click)="goBack()"
-      class="bg-gray-800 hover:bg-gray-900 text-white font-medium py-3 px-8 rounded-md transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2 focus:ring-offset-lime-400"
-    >
-      Go Back
-    </button>
+<div class="min-h-screen bg-neutral-950 flex items-center justify-center p-6 relative overflow-hidden">
+  <!-- Emergency Ambient Glows -->
+  <div
+    class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full bg-error-600/5 rounded-full blur-[150px]">
+  </div>
+  <div class="absolute -top-24 -right-24 w-96 h-96 bg-error-500/10 rounded-full blur-[120px] animate-pulse"></div>
+
+  <div class="max-w-xl w-full relative z-10 text-center space-y-12">
+    <!-- 500 Error Identifier -->
+    <div class="space-y-4 animate-slideInUp">
+      <div
+        class="inline-flex items-center gap-3 px-4 py-2 bg-error-500/10 border border-error-500/20 rounded-full text-error-400">
+        <span class="w-1.5 h-1.5 rounded-full bg-error-500 animate-ping"></span>
+        <span class="text-[10px] font-black uppercase tracking-[0.3em]">Critical Core Failure</span>
+      </div>
+
+      <div class="relative">
+        <h1 class="text-9xl md:text-[12rem] font-black text-white leading-none tracking-tighter opacity-10 select-none">
+          500</h1>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <h2 class="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">System Malfunction</h2>
+        </div>
+      </div>
+    </div>
+
+    <!-- Error Logs Visualization (Aesthetic only) -->
+    <div
+      class="bg-white/5 backdrop-blur-3xl border border-white/10 rounded-2xl p-6 text-left font-mono space-y-2 animate-slideInUp"
+      style="animation-delay: 200ms;">
+      <div class="flex items-center gap-2 mb-4 border-b border-white/10 pb-4">
+        <div class="w-2.5 h-2.5 rounded-full bg-error-500"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-neutral-700"></div>
+        <div class="w-2.5 h-2.5 rounded-full bg-neutral-700"></div>
+        <span class="text-[9px] font-black text-neutral-500 uppercase tracking-widest ml-auto">Internal Log:
+          0x500_FAIL</span>
+      </div>
+      <p class="text-error-400/80 text-[10px] leading-relaxed">
+        [CRITICAL] Error: Synchronization failed in the central ledger.<br>
+        [TRACE] Rebuilding connection state... TIMEOUT.<br>
+        [RECOVERY] Attempting automated node restoration... FAILED.
+      </p>
+    </div>
+
+    <!-- Recovery Actions -->
+    <div class="space-y-6 pt-4 animate-slideInUp" style="animation-delay: 400ms;">
+      <p class="text-neutral-400 font-medium text-lg">
+        The internal synchronization engine encountered an unrecoverable state. Our engineers have been alerted.
+      </p>
+
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        <button (click)="goBack()"
+          class="btn btn-primary !bg-error-600 hover:!bg-error-700 !px-12 !py-4 shadow-2xl shadow-error-500/30 group">
+          <span class="font-black uppercase tracking-widest text-xs">Initiate Recovery</span>
+          <svg class="w-4 h-4 ml-2 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor"
+            viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Perspective Grid Effect (Background) -->
+  <div
+    class="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:40px_40px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] pointer-events-none">
   </div>
 </div>

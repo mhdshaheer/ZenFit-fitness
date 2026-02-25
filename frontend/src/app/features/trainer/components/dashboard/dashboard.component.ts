@@ -3,10 +3,7 @@ import { Component, OnInit, inject } from '@angular/core';
 import { NgApexchartsModule, ApexOptions } from 'ng-apexcharts';
 import { TrainerDashboardService } from '../../../../core/services/trainer-dashboard.service';
 import {
-  BookingDemandSeries,
   ClientLeaderboard,
-  RevenueTrendSeries,
-  SessionSeries,
   TrainerBookingFilter,
   TrainerDashboardSnapshot,
   TrainerKpiCard,

@@ -1,1 +1,4 @@
+@if (loadingService.isLoading()) {
+<app-shared-loader [text]="loadingService.loadingText()"></app-shared-loader>
+}
 <router-outlet></router-outlet>

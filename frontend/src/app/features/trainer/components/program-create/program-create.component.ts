@@ -41,7 +41,9 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
   currentTrainerId = '';
   categories: Category[] = [];
 
-  constructor(private readonly _fb: FormBuilder) {}
+  private readonly _fb = inject(FormBuilder);
+
+
 
   ngOnInit() {
     this.initializeForm();
@@ -127,7 +129,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
         .saveProgram(programData)
         .pipe(takeUntil(this._destroy$))
         .subscribe({
-          next: (res) => {
+          next: () => {
             this._toastService.success('Training Program saved successfully');
             this.isSubmitting = false;
             this.resetForm();
@@ -158,7 +160,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
       .saveProgramDraft(draftData)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
-        next: (res) => {
+        next: () => {
           this._toastService.success('Draft saved successfully');
           this.isSubmitting = false;
           this.resetForm();

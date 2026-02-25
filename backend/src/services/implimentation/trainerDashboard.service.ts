@@ -18,6 +18,7 @@ import { IProgramRepository } from '../../repositories/interface/program.reposit
 import { IPayment } from '../../models/payment.model';
 import { IBooking } from '../../models/booking.model';
 import { IProgram } from '../../models/program.model';
+import { IUser } from '../../interfaces/user.interface';
 
 interface TrainerSessionAggregate {
     day?: string;
@@ -76,7 +77,7 @@ export class TrainerDashboardService implements ITrainerDashboardService {
             bookingRecords
                 .map((booking) => booking.userId)
                 .filter(Boolean)
-                .map((user: any) => (typeof user === 'string' ? user : user._id?.toString()))
+                .map((user) => (typeof user === 'string' ? user : (user as unknown as IUser)._id?.toString()))
                 .filter(Boolean) as string[],
         ).size;
 
@@ -142,7 +143,7 @@ export class TrainerDashboardService implements ITrainerDashboardService {
         payments
             .filter((payment) => payment.paymentStatus === 'success')
             .forEach((payment) => {
-                const date = payment.createdAt ? new Date(payment.createdAt) : new Date();
+                const date = (payment.createdAt !== undefined && payment.createdAt !== null) ? new Date(payment.createdAt) : new Date();
                 const key = `${date.getFullYear()}-${date.getMonth()}`;
                 monthlyTotals.set(key, (monthlyTotals.get(key) ?? 0) + (payment.trainerEarning ?? 0));
             });
@@ -201,7 +202,7 @@ export class TrainerDashboardService implements ITrainerDashboardService {
         const weekGroups = [0, 0, 0, 0];
         const weekGroupsCompleted = [0, 0, 0, 0];
         bookingRecords.forEach((booking) => {
-            const date = booking.snapshot?.slotDate ? new Date(booking.snapshot.slotDate) : new Date();
+            const date = (booking.snapshot?.slotDate !== undefined && booking.snapshot?.slotDate !== null) ? new Date(booking.snapshot.slotDate) : new Date();
             const weekOfMonth = Math.min(3, Math.floor((date.getDate() - 1) / 7));
             weekGroups[weekOfMonth] += 1;
             weekGroupsCompleted[weekOfMonth] += booking.status === 'completed' ? 1 : 0;
@@ -267,7 +268,7 @@ export class TrainerDashboardService implements ITrainerDashboardService {
             for (let i = 2; i >= 0; i -= 1) {
                 const iterDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
                 const monthPayments = bookingRecords.filter((booking) => {
-                    const d = booking.snapshot?.slotDate ? new Date(booking.snapshot.slotDate) : new Date();
+                    const d = (booking.snapshot?.slotDate !== undefined && booking.snapshot?.slotDate !== null) ? new Date(booking.snapshot.slotDate) : new Date();
                     return d.getFullYear() === iterDate.getFullYear() && d.getMonth() === iterDate.getMonth();
                 });
                 categories.push(formatter.format(iterDate));
@@ -322,7 +323,7 @@ export class TrainerDashboardService implements ITrainerDashboardService {
         });
 
         payments.forEach((payment) => {
-            const programId = (payment.programId as any)?.toString?.() ?? payment.programId?.toString?.() ?? '';
+            const programId = payment.programId?.toString() ?? '';
             if (!programId) {
                 return;
             }
@@ -370,12 +371,15 @@ export class TrainerDashboardService implements ITrainerDashboardService {
         const clientMap = new Map<string, { name: string; sessions: number }>();
 
         bookingRecords.forEach((booking) => {
-            const user = booking.userId as any;
-            const id = typeof user === 'string' ? user : user?._id?.toString();
-            if (!id) {
-                return;
+            const user = booking.userId as unknown as IUser;
+            const id = user?._id?.toString() ?? (user as unknown as string);
+            if (!id || typeof user === 'string') {
+                // If it's a string, it wasn't populated properly or is just ID.
+                if (typeof user === 'string' && !id) { return; } // Should not happen if id set
             }
-            const name = typeof user === 'string' ? 'Client' : user.fullName ?? user.email ?? 'Client';
+            if (!id) { return; }
+
+            const name = (user !== undefined && user !== null && typeof user !== 'string') ? (user.fullName ?? user.email ?? 'Client') : 'Client';
             const entry = clientMap.get(id) ?? { name, sessions: 0 };
             entry.sessions += 1;
             clientMap.set(id, entry);
@@ -394,7 +398,7 @@ export class TrainerDashboardService implements ITrainerDashboardService {
         const goalCategories = ['W1', 'W2', 'W3', 'W4', 'W5', 'W6', 'W7', 'W8'];
         const goalData = goalCategories.map((_, index) => {
             const window = bookingRecords.filter((booking) => {
-                const date = booking.snapshot?.slotDate ? new Date(booking.snapshot.slotDate) : new Date();
+                const date = (booking.snapshot?.slotDate !== undefined && booking.snapshot?.slotDate !== null) ? new Date(booking.snapshot.slotDate) : new Date();
                 const now = new Date();
                 const diffWeeks = Math.floor((now.getTime() - date.getTime()) / (7 * 24 * 60 * 60 * 1000));
                 return diffWeeks === index;

@@ -1,5 +1,6 @@
 import { RequestHandler } from "express";
 import { HttpStatus } from "../const/statuscode.const";
+import { HttpResponse } from "../const/response_message.const";
 import { AuthenticatedRequest } from "../types/authenticated-request.type";
 
 export const allowRoles = (...roles: string[]): RequestHandler => {
@@ -8,7 +9,7 @@ export const allowRoles = (...roles: string[]): RequestHandler => {
         if (!role || !roles.includes(role)) {
             res.status(HttpStatus.FORBIDDEN).json({
                 success: false,
-                message: "Forbidden",
+                message: HttpResponse.FORBIDDEN,
             });
             return;
         }

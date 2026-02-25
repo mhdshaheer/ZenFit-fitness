@@ -9,6 +9,7 @@ import {
   ValidationErrors,
   Validators,
 } from '@angular/forms';
+import { Router } from '@angular/router';
 import { Subject, forkJoin, takeUntil } from 'rxjs';
 import { SlotService } from '../../../../core/services/slot.service';
 import { ToastService } from '../../../../core/services/toast.service';
@@ -32,7 +33,7 @@ type InstanceStatusFilter = 'ALL' | 'OPEN' | 'CLOSED' | 'CANCELLED';
 @Component({
   selector: 'app-trainer-slot-management',
   standalone: true,
-  imports: [CommonModule, FormsModule, ReactiveFormsModule, DatePipe],
+  imports: [CommonModule, FormsModule, ReactiveFormsModule],
   templateUrl: './create-slot.component.html',
 })
 export class CreateSlotComponent implements OnInit, OnDestroy {
@@ -40,6 +41,7 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
   private readonly _slotService = inject(SlotService);
   private readonly _toastService = inject(ToastService);
   private readonly _loggerService = inject(LoggerService);
+  private readonly _router = inject(Router);
   private readonly _destroy$ = new Subject<void>();
 
   templateForm: FormGroup;
@@ -78,7 +80,7 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
   });
 
   private readonly INSTANCES_PAGE_SIZE = 6;
-  private filterReloadHandle: any = null;
+  private filterReloadHandle: ReturnType<typeof setTimeout> | null = null;
 
   readonly recurrenceOptions: RecurrenceType[] = ['WEEKLY', 'DAILY'];
   readonly timezoneOptions = [
@@ -104,7 +106,9 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
     { name: 'Sun', value: 'Sun', selected: false },
   ];
 
-  constructor(private readonly _fb: FormBuilder) {
+  private readonly _fb = inject(FormBuilder);
+
+  constructor() {
     this.generateTimeOptions();
     this.filteredEndOptions = [...this.timeOptions];
 
@@ -134,6 +138,10 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
       .get('startTime')
       ?.valueChanges.pipe(takeUntil(this._destroy$))
       .subscribe((value: string) => this.updateEndOptions(value));
+  }
+
+  onNavigateToSessions(): void {
+    this._router.navigate(['/trainer/sessions']);
   }
 
   setInstanceTab(tab: 'upcoming' | 'past' | 'cancelled'): void {
@@ -378,6 +386,9 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
     this.applyDaySelection(
       template.recurrence.daysOfWeek ?? this.getSelectedDays()
     );
+
+    // UX: Scroll to form for immediate visibility
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
   cancelEdit(): void {

@@ -3,15 +3,22 @@ export enum HttpResponse {
   SERVER_ERROR = "Internal server error",
   PAGE_NOT_FOUND = "Route not found",
   UNAUTHORIZED = "Unauthorized access!",
+  USER_NOT_AUTHENTICATED = "User not authenticated",
+  TRAINER_NOT_AUTHENTICATED = "Trainer not authenticated",
   ACCESS_DENIED = "Access denied: User account is blocked",
   TOO_MANY_LOGIN_ATTEMPTS = "Too many login attempts, please try again later",
 
   UNEXPECTED_KEY_FOUND = "Unexpected key found",
+  SOMETHING_WENT_WRONG = "Something went wrong",
+  FORBIDDEN = "Forbidden",
   PROFILE_PICTURE_CHANGED = "Profile picture changed successfully",
   INVALID_ID = "Invalid ID format",
 
   // Authentication
   INVALID_CREDENTIALS = "Invalid credentials",
+  MISSING_REQUIRED_FIELDS = "Missing required fields",
+  EMAIL_AUTH_NOT_SUPPORTED = "Email authentication not supported",
+  GOOGLE_AUTH_NOT_SUPPORTED = "Google authentication not supported",
 
   USER_CREATION_FAILED = "User creation failed",
   USER_CREATION_SUCCESS = "User created successfully",
@@ -97,6 +104,10 @@ export enum HttpResponse {
   INVALID_NOTIFICATION_IDS = "Invalid notification IDs provided",
   NOTIFICATIONS_MARKED_AS_READ = "All notifications marked as read",
 
+  // Slots
+  SLOT_INSTANCE_NOT_FOUND = "Slot instance not found",
+
   // Payments
   TRANSACTION_HISTORY_FETCH_FAILED = "Failed to fetch transaction history",
+  INVALID_SIGNATURE = "Invalid signature",
 }

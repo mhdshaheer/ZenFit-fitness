@@ -1,0 +1,106 @@
+<footer class="bg-neutral-900 text-white pt-20 pb-10 relative overflow-hidden">
+    <!-- Background Accents -->
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary-500 via-secondary-400 to-primary-600">
+    </div>
+    <div class="absolute -top-40 -right-40 w-96 h-96 bg-primary-900/20 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-10 w-72 h-72 bg-secondary-900/10 rounded-full blur-3xl"></div>
+
+    <div class="container-custom relative z-10">
+        <div class="grid grid-cols-1 lg:grid-cols-4 gap-12 lg:gap-8 mb-16">
+            <!-- Brand Section -->
+            <div class="lg:col-span-1 space-y-6">
+                <a routerLink="/" class="flex items-center gap-3 group">
+                    <div
+                        class="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-105 transition-transform duration-300">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M13 10V3L4 14h7v7l9-11h-7z" />
+                        </svg>
+                    </div>
+                    <span
+                        class="text-2xl font-black tracking-tight text-white group-hover:text-primary-400 transition-colors">ZenFit</span>
+                </a>
+                <p class="text-neutral-400 leading-relaxed text-sm max-w-xs">
+                    Transform your body and mind with our premium fitness programs. Join the community of achievers
+                    today.
+                </p>
+                <div class="flex items-center gap-4 pt-2">
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-400 hover:bg-primary-600 hover:text-white transition-all transform hover:-translate-y-1">
+                        <i class="fab fa-twitter"></i>
+                    </a>
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-400 hover:bg-primary-600 hover:text-white transition-all transform hover:-translate-y-1">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#"
+                        class="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center text-neutral-400 hover:bg-primary-600 hover:text-white transition-all transform hover:-translate-y-1">
+                        <i class="fab fa-linkedin-in"></i>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="lg:col-span-1">
+                <h4 class="text-sm font-black uppercase tracking-widest text-primary-400 mb-6">Explore</h4>
+                <ul class="space-y-4">
+                    <li><a routerLink="/user/workouts"
+                            class="text-neutral-400 hover:text-white hover:pl-2 transition-all block text-sm font-medium">Programs</a>
+                    </li>
+                    <li><a routerLink="/user/trainers"
+                            class="text-neutral-400 hover:text-white hover:pl-2 transition-all block text-sm font-medium">Expert
+                            Trainers</a></li>
+                    <li><a routerLink="/user/success-stories"
+                            class="text-neutral-400 hover:text-white hover:pl-2 transition-all block text-sm font-medium">Success
+                            Stories</a></li>
+                    <li><a routerLink="/user/blog"
+                            class="text-neutral-400 hover:text-white hover:pl-2 transition-all block text-sm font-medium">Fitness
+                            Blog</a></li>
+                </ul>
+            </div>
+
+            <!-- Support -->
+            <div class="lg:col-span-1">
+                <h4 class="text-sm font-black uppercase tracking-widest text-primary-400 mb-6">Support</h4>
+                <ul class="space-y-4">
+                    <li><a routerLink="/user/faq"
+                            class="text-neutral-400 hover:text-white hover:pl-2 transition-all block text-sm font-medium">FAQ</a>
+                    </li>
+                    <li><a routerLink="/user/contact"
+                            class="text-neutral-400 hover:text-white hover:pl-2 transition-all block text-sm font-medium">Contact
+                            Us</a></li>
+                    <li><a routerLink="/user/terms"
+                            class="text-neutral-400 hover:text-white hover:pl-2 transition-all block text-sm font-medium">Terms
+                            of Service</a></li>
+                    <li><a routerLink="/user/privacy"
+                            class="text-neutral-400 hover:text-white hover:pl-2 transition-all block text-sm font-medium">Privacy
+                            Policy</a></li>
+                </ul>
+            </div>
+
+            <!-- Newsletter -->
+            <div class="lg:col-span-1">
+                <h4 class="text-sm font-black uppercase tracking-widest text-primary-400 mb-6">Stay Updated</h4>
+                <p class="text-neutral-400 text-xs mb-4 leading-relaxed">Subscribe to our newsletter for exclusive tips
+                    and early access to new programs.</p>
+                <div class="space-y-3">
+                    <input type="email" placeholder="Enter your email"
+                        class="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-sm text-white placeholder:text-neutral-600 focus:outline-none focus:border-primary-500 focus:bg-white/10 transition-all font-medium">
+                    <button
+                        class="w-full btn btn-primary py-3 text-sm rounded-xl font-black uppercase tracking-widest shadow-none">Subscribe</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p class="text-xs text-neutral-500 font-medium">
+                &copy; {{ currentYear }} ZenFit. All rights reserved. Made with <span
+                    class="text-error-500 animate-pulse">❤</span> for fitness.
+            </p>
+            <div class="flex items-center gap-6">
+                <span class="text-xs font-black text-neutral-600 uppercase tracking-widest">Premium Fitness</span>
+            </div>
+        </div>
+    </div>
+</footer>

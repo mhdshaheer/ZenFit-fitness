@@ -1,4 +1,5 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
 import { PaymentService } from '../../../../core/services/payment.service';
@@ -9,7 +10,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 @Component({
   selector: 'zenfit-transaction-history',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './transaction-history.component.html',
   styleUrl: './transaction-history.component.css'
 })
@@ -28,8 +29,8 @@ export class TransactionHistoryComponent implements OnInit, OnDestroy {
   totalPages = 1;
 
   // Filters
-  selectedStatus: string = 'all';
-  searchTerm: string = '';
+  selectedStatus = 'all';
+  searchTerm = '';
 
   ngOnInit(): void {
     this.loadTransactions();
@@ -53,7 +54,7 @@ export class TransactionHistoryComponent implements OnInit, OnDestroy {
   loadTransactions(): void {
     this.isLoading = true;
     this._paymentService.getUserTransactionHistory(
-      this.currentPage, 
+      this.currentPage,
       this.itemsPerPage,
       this.searchTerm,
       this.selectedStatus
@@ -128,7 +129,7 @@ export class TransactionHistoryComponent implements OnInit, OnDestroy {
     const pages: number[] = [];
     const maxVisiblePages = 5;
     let startPage = Math.max(1, this.currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
+    const endPage = Math.min(this.totalPages, startPage + maxVisiblePages - 1);
 
     if (endPage - startPage + 1 < maxVisiblePages) {
       startPage = Math.max(1, endPage - maxVisiblePages + 1);

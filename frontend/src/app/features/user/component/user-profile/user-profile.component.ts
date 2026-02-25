@@ -21,9 +21,9 @@ interface ProfileUser {
   fullName: string;
   username: string;
   dob: string;
-  gender: 'male' | 'female' | null;
+  gender: 'Male' | 'Female' | 'Other';
   email: string;
-  phone: string;
+  phone: string | null;
   role: string;
 }
 
@@ -188,7 +188,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         .changePassword(passwords)
         .pipe(takeUntil(this._destroy$))
         .subscribe({
-          next: (res) => {
+          next: (_res) => {
             this._toastService.success('Password changed successfully');
             this.resetPasswordForm();
             this.activeTab = 'personal';

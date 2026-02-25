@@ -12,17 +12,25 @@ import {
 } from "../../shared/utils/jwt.util";
 import { IAuthService } from "../../services/interface/auth.service.interface";
 import { AppError } from "../../shared/utils/appError.util";
+import { IUser } from "../../interfaces/user.interface";
 
 @injectable()
 export class AuthController implements IAuthController {
   constructor(
     @inject(TYPES.AuthService) private readonly _authService: IAuthService
-  ) {}
+  ) { }
 
   async signup(req: Request, res: Response): Promise<void> {
     const { username, email, password, dob, gender, role } = req.body;
 
-    if (!username || !email || !password || !dob || !gender || !role) {
+    if (
+      typeof username !== "string" || username === "" ||
+      typeof email !== "string" || email === "" ||
+      typeof password !== "string" || password === "" ||
+      typeof dob !== "string" || dob === "" ||
+      typeof gender !== "string" || gender === "" ||
+      typeof role !== "string" || role === ""
+    ) {
       throw new AppError(HttpResponse.FIELDS_REQUIRED, HttpStatus.BAD_REQUEST);
     }
 
@@ -30,12 +38,12 @@ export class AuthController implements IAuthController {
       username,
       email,
       password,
-      dob,
-      gender,
-      role,
+      dob: new Date(dob as string),
+      gender: gender as "male" | "female" | "other",
+      role: role as "admin" | "trainer" | "user",
     });
 
-    if (!user) {
+    if (user === null || user === undefined) {
       throw new AppError(
         HttpResponse.USER_CREATION_FAILED,
         HttpStatus.INTERNAL_SERVER_ERROR
@@ -61,7 +69,7 @@ export class AuthController implements IAuthController {
   async login(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
 
-    if (!email || !password) {
+    if (typeof email !== "string" || email === "" || typeof password !== "string" || password === "") {
       throw new AppError(HttpResponse.FIELDS_REQUIRED, HttpStatus.BAD_REQUEST);
     }
 
@@ -70,7 +78,7 @@ export class AuthController implements IAuthController {
       password
     );
 
-    if (!user) {
+    if (user === null || user === undefined) {
       throw new AppError(
         HttpResponse.INVALID_EMAIL_PASSWORD,
         HttpStatus.UNAUTHORIZED
@@ -104,7 +112,7 @@ export class AuthController implements IAuthController {
   async sendForgotPasswordOtp(req: Request, res: Response): Promise<void> {
     const { email } = req.body;
 
-    if (!email) {
+    if (typeof email !== "string" || email === "") {
       throw new AppError(HttpResponse.EMAIL_REQUIRED, HttpStatus.BAD_REQUEST);
     }
 
@@ -114,7 +122,7 @@ export class AuthController implements IAuthController {
   async verifyForgotOtp(req: Request, res: Response): Promise<void> {
     const { email, otp } = req.body;
 
-    if (!email || !otp) {
+    if (typeof email !== "string" || email === "" || typeof otp !== "string" || otp === "") {
       throw new AppError(
         HttpResponse.EMAIL_OTP_REQUIRED,
         HttpStatus.BAD_REQUEST
@@ -129,18 +137,18 @@ export class AuthController implements IAuthController {
   }
 
   async googleCallback(req: Request, res: Response): Promise<void> {
-    const user = req.user as any;
-    if (!user) {
+    const user = req.user as unknown as IUser;
+    if (user === null || user === undefined) {
       throw new AppError(
         HttpResponse.GOOGLE_AUTH_FAILED,
         HttpStatus.UNAUTHORIZED
       );
     }
 
-    const accessToken = generateAccessToken({ id: user._id, role: user.role });
+    const accessToken = generateAccessToken({ id: user._id! as unknown as string, role: user.role! });
     const refreshToken = generateRefreshToken({
-      id: user._id,
-      role: user.role,
+      id: user._id! as unknown as string,
+      role: user.role!,
     });
 
     res.cookie("accessToken", accessToken, {
@@ -165,7 +173,7 @@ export class AuthController implements IAuthController {
     res.status(HttpStatus.OK).json({ message: HttpResponse.LOGOUT_SUCCESS });
   }
 
-  async refreshAccessToken(req: Request, res: Response) {
+  async refreshAccessToken(req: Request, res: Response): Promise<void> {
     const { refreshToken } = req.cookies;
     await this._authService.handleRefreshToken(refreshToken, res);
   }
@@ -173,7 +181,10 @@ export class AuthController implements IAuthController {
     req: Request,
     res: Response
   ): Promise<Response<{ userId: string }>> {
-    const userId = (req as any).user.id;
-    return res.status(HttpStatus.OK).json({ userId });
+    const user = (req as any).user;
+    if (!user || !user.id) {
+      return res.status(HttpStatus.UNAUTHORIZED).json({ message: "User not authenticated" } as any);
+    }
+    return res.status(HttpStatus.OK).json({ userId: user.id });
   }
 }

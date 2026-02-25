@@ -7,6 +7,7 @@ import { HttpStatus } from "../../const/statuscode.const";
 import { TYPES } from "../../shared/types/inversify.types";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpResponse } from "../../const/response_message.const";
+import { AuthenticatedRequest } from "../../types/authenticated-request.type";
 
 @injectable()
 export class FileController implements IFileController {
@@ -18,11 +19,11 @@ export class FileController implements IFileController {
 
   async upload(req: Request, res: Response): Promise<void> {
     const { type } = req.body;
-    const { id, role } = (req as any).user;
+    const { id, role } = (req as AuthenticatedRequest).user!;
 
-    const file = req.file as Express.Multer.File;
+    const file = req.file as Express.Multer.File | undefined;
 
-    if (!file) {
+    if (file === undefined) {
       throw new AppError(HttpResponse.FILE_NOT_FOUND, HttpStatus.BAD_REQUEST);
     }
 
@@ -38,7 +39,7 @@ export class FileController implements IFileController {
   }
 
   async getFile(req: Request, res: Response): Promise<void> {
-    const userId = req.query.id || (req as any).user.id;
+    const userId = (req.query.id as string) || (req as AuthenticatedRequest).user?.id!;
     const { key } = req.query;
     const type = key?.toString().split("/")[1];
     const signedUrl = await this._fileService.getSignedUrl(userId, type!);
@@ -47,7 +48,7 @@ export class FileController implements IFileController {
 
   async deleteFile(req: Request, res: Response): Promise<void> {
     const { key } = req.params;
-    const userId = await (req as any).user.id;
+    const userId = (req as AuthenticatedRequest).user?.id!;
     const type = key?.toString().split("/")[1];
     await this._fileService.delete(key);
     if (type === "profile") {

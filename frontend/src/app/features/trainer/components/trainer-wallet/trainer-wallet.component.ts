@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { WalletComponent } from '../../../../shared/components/wallet/wallet.component';
 import { PaymentHistory } from '../../../../interface/payment.interface';
 import { PaymentService } from '../../../../core/services/payment.service';
@@ -10,7 +10,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
   templateUrl: './trainer-wallet.component.html',
   styleUrl: './trainer-wallet.component.css',
 })
-export class TrainerWalletComponent {
+export class TrainerWalletComponent implements OnInit {
   totalAmont = 0;
   private readonly _paymentService = inject(PaymentService);
   private _logger = inject(LoggerService)

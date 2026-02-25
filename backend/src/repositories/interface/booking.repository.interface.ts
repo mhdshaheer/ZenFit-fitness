@@ -12,7 +12,7 @@ export interface CreateBookingParams {
 export interface IBookingRepository {
   createBooking(params: CreateBookingParams): Promise<IBooking>;
   getMyBookings(userId: string, programId?: string): Promise<IBooking[]>;
-  getTrainerBookings(trainerId: string): Promise<any[]>;
+  getTrainerBookings(trainerId: string): Promise<Record<string, unknown>[]>;
   getTrainerBookingRecords(trainerId: string): Promise<IBooking[]>;
   getAllBookings(): Promise<IBooking[]>;
   getBookingsBySlotId(slotId: string): Promise<IBooking[]>;
