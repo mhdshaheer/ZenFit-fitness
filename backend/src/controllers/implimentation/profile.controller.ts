@@ -27,9 +27,9 @@ export class ProfileController implements IProfileController {
   }
   async getProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
     const requestedId = req.query.id as string | undefined;
-    const userId = requestedId || req.user?.id;
+    const userId = (requestedId !== undefined && requestedId !== "") ? requestedId : req.user?.id;
 
-    if (!userId) {
+    if (userId === undefined || userId === "") {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
 
@@ -39,7 +39,7 @@ export class ProfileController implements IProfileController {
 
   async updateProfile(req: AuthenticatedRequest, res: Response): Promise<void> {
     const userId = req.user?.id;
-    if (!userId) {
+    if (userId === undefined || userId === "") {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const profileData = req.body;
@@ -58,7 +58,7 @@ export class ProfileController implements IProfileController {
 
   async changePassword(req: AuthenticatedRequest, res: Response): Promise<void> {
     const userId = req.user?.id;
-    if (!userId) {
+    if (userId === undefined || userId === "") {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
     const passwords = req.body;
@@ -86,7 +86,7 @@ export class ProfileController implements IProfileController {
   ): Promise<Response<ILoggedUser>> {
     const user = req.user;
 
-    if (!user) {
+    if (user === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
 

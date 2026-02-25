@@ -1,209 +1,198 @@
-<!-- signup-user.component.html -->
-<div class="min-h-screen flex flex-col lg:flex-row">
+<!-- Modern Signup Page - Compact for single viewport -->
+<div class="h-screen flex flex-col lg:flex-row overflow-hidden">
   <!-- Left Side - Form Section -->
-  <div class="flex-1 flex items-center justify-center p-4 lg:p-8 bg-gray-50">
-    <div class="w-full max-w-md">
+  <div
+    class="flex-1 flex items-center justify-center p-4 lg:p-8 bg-gradient-to-br from-neutral-50 via-white to-primary-50/10">
+    <div class="w-full max-w-sm space-y-5 animate-slideInUp">
       <!-- Logo Section -->
-      <div class="text-center mb-8">
-        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl mb-4 floating"
-          style="background: linear-gradient(135deg, #2F3241, #1f2230);">
-          <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-          </svg>
+      <div class="text-center space-y-3">
+        <div class="inline-flex flex-col items-center gap-2">
+          <div class="relative">
+            <div class="absolute inset-0 bg-gradient-primary rounded-2xl blur-xl opacity-40"></div>
+            <div class="relative w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center shadow-xl">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z">
+                </path>
+              </svg>
+            </div>
+          </div>
+          <div class="space-y-0.5">
+            <h1 class="heading-4 gradient-text">ZenFit</h1>
+            <p class="text-[10px] text-neutral-400 font-bold uppercase tracking-[0.2em]">Start your journey today</p>
+          </div>
         </div>
-        <h1 class="text-3xl font-bold gradient-text mb-2">ZenFit</h1>
-        <p class="text-gray-600">Start your fitness journey today</p>
       </div>
 
       <!-- Signup Form -->
-      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-6" novalidate>
-        <!-- Role Selection Cards -->
-        <div>
-          <div class="grid grid-cols-2 gap-4">
-            <!-- User Card -->
-            <div
-              class="role-card card-hover cursor-pointer p-4 border-2 rounded-lg text-center transition-all duration-300"
-              [ngClass]="{
-                'border-[#2F3241] bg-[#2f32410d]': f['role'].value === 'user',
-                'border-gray-200 hover:border-gray-400': f['role'].value !== 'user'
-              }" (click)="selectRole('user')">
-              <div class="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
-                [ngClass]="f['role'].value === 'user' ? 'bg-[#2f324120]' : 'bg-gray-100'">
-                <svg class="w-6 h-6" [ngClass]="f['role'].value === 'user' ? 'text-[#2F3241]' : 'text-gray-500'"
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+      <form [formGroup]="signupForm" (ngSubmit)="onSubmit()" class="space-y-4" novalidate>
+        <!-- Role Selection -->
+        <div class="space-y-2">
+          <div class="grid grid-cols-2 gap-3">
+            <!-- User Role Card -->
+            <button type="button" (click)="selectRole('user')"
+              class="relative p-3 rounded-xl border-2 transition-all duration-300 group overflow-hidden"
+              [class.border-primary-600]="f['role'].value === 'user'"
+              [class.bg-primary-50/50]="f['role'].value === 'user'"
+              [class.border-neutral-200]="f['role'].value !== 'user'">
+              <div
+                class="w-8 h-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
+                [class.bg-primary-600]="f['role'].value === 'user'" [class.text-white]="f['role'].value === 'user'"
+                [class.bg-neutral-100]="f['role'].value !== 'user'"
+                [class.text-neutral-500]="f['role'].value !== 'user'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                     d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
                 </svg>
               </div>
-              <h3 class="font-medium text-gray-900">User</h3>
-              <p class="text-xs text-gray-500 mt-1">
-                Join as a fitness enthusiast
-              </p>
-            </div>
+              <p class="font-black uppercase tracking-widest text-[9px]"
+                [class.text-primary-900]="f['role'].value === 'user'"
+                [class.text-neutral-500]="f['role'].value !== 'user'">Enthusiast</p>
+              @if(f['role'].value === 'user') {
+              <div class="absolute top-1 right-1">
+                <div class="w-3 h-3 bg-primary-600 rounded-full flex items-center justify-center text-white">
+                  <svg class="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+              </div>
+              }
+            </button>
 
-            <!-- Trainer Card -->
-            <div
-              class="role-card card-hover cursor-pointer p-4 border-2 rounded-lg text-center transition-all duration-300"
-              [ngClass]="{
-                'border-[#2F3241] bg-[#2f32410d]': f['role'].value === 'trainer',
-                'border-gray-200 hover:border-gray-400': f['role'].value !== 'trainer'
-              }" (click)="selectRole('trainer')">
-              <div class="w-12 h-12 mx-auto mb-3 rounded-full flex items-center justify-center"
-                [ngClass]="f['role'].value === 'trainer' ? 'bg-[#2f324120]' : 'bg-gray-100'">
-                <svg class="w-6 h-6" [ngClass]="f['role'].value === 'trainer' ? 'text-[#2F3241]' : 'text-gray-500'"
-                  fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            <!-- Trainer Role Card -->
+            <button type="button" (click)="selectRole('trainer')"
+              class="relative p-3 rounded-xl border-2 transition-all duration-300 group overflow-hidden"
+              [class.border-primary-600]="f['role'].value === 'trainer'"
+              [class.bg-primary-50/50]="f['role'].value === 'trainer'"
+              [class.border-neutral-200]="f['role'].value !== 'trainer'">
+              <div
+                class="w-8 h-8 rounded-lg flex items-center justify-center transition-transform group-hover:scale-110"
+                [class.bg-primary-600]="f['role'].value === 'trainer'"
+                [class.text-white]="f['role'].value === 'trainer'"
+                [class.bg-neutral-100]="f['role'].value !== 'trainer'"
+                [class.text-neutral-500]="f['role'].value !== 'trainer'">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4">
                   </path>
                 </svg>
               </div>
-              <h3 class="font-medium text-gray-900">Trainer</h3>
-              <p class="text-xs text-gray-500 mt-1">Share your expertise</p>
-            </div>
+              <p class="font-black uppercase tracking-widest text-[9px]"
+                [class.text-primary-900]="f['role'].value === 'trainer'"
+                [class.text-neutral-500]="f['role'].value !== 'trainer'">Expert</p>
+              @if(f['role'].value === 'trainer') {
+              <div class="absolute top-1 right-1">
+                <div class="w-3 h-3 bg-primary-600 rounded-full flex items-center justify-center text-white">
+                  <svg class="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="4" d="M5 13l4 4L19 7"></path>
+                  </svg>
+                </div>
+              </div>
+              }
+            </button>
           </div>
           @if (f['role'].touched && f['role'].invalid) {
-          <div class="error-message text-red-500 text-xs mt-1 transition-all duration-300">
-            @if (f['role'].errors?.['required']) {
-            <span>Role is required</span>
-            }
+          <div class="form-error">
+            <span>Please select your role</span>
           </div>
           }
         </div>
-        <hr class="w-2/ mx-auto border-gray-400" />
 
-        <!-- Username -->
-        <div class="grid grid-cols-1 gap-4">
-          <div>
-            <app-shared-form [formGroup]="signupForm" [type]="'text'" [controlName]="'username'" [label]="'Username'"
-              [placeholder]="'Enter your username'">
-            </app-shared-form>
-            @if (f['username'].touched && f['username'].invalid) {
-            <div class="error-message text-red-500 text-xs mt-1 transition-all duration-300">
-              @if (f['username'].errors?.['required']) {
-              <span>Username is required</span>
-              }
-              @if (f['username'].errors?.['minlength']) {
-              <span>Username must be at least 4 characters long</span>
-              }
-              @if (f['username'].errors?.['maxlength']) {
-              <span>Username must not exceed 20 characters</span>
-              }
-              @if (f['username'].errors?.['pattern']) {
-              <span>Username can only contain letters, numbers, and
-                underscores</span>
-              }
-            </div>
-            }
+        <div class="grid grid-cols-1 gap-3">
+          <!-- Username Field -->
+          <app-shared-form [formGroup]="signupForm" [type]="'text'" [controlName]="'username'" [label]="'Handle'"
+            [placeholder]="'@username'"></app-shared-form>
+          @if (f['username'].touched && f['username'].invalid) {
+          <div class="form-error">
+            @if (f['username'].errors?.['required']) { <span>Username is required</span> }
+            @if (f['username'].errors?.['minlength']) { <span>Must be at least 3 characters</span> }
+            @if (f['username'].errors?.['maxlength']) { <span>Too long (max 20)</span> }
+            @if (f['username'].errors?.['pattern']) { <span>Only letters, numbers, and underscores</span> }
           </div>
-          <!-- Email -->
+          }
 
-          <div>
-            <app-shared-form [formGroup]="signupForm" [type]="'email'" [controlName]="'email'" [label]="'Email'"
-              [placeholder]="'Enter your email'">
-            </app-shared-form>
-
-            @if (f['email'].touched && f['email'].invalid) {
-            <div class="error-message text-red-500 text-xs mt-1 transition-all duration-300">
-              @if (f['email'].errors?.['required']) {
-              <span>Email is required</span>
-              }
-              @if (f['email'].errors?.['email']) {
-              <span>Please enter a valid email address</span>
-              }
-              @if (f['email'].errors?.['pattern']) {
-              <span>Email must be in valid format</span>
-              }
-            </div>
-            }
+          <!-- Email Field -->
+          <app-shared-form [formGroup]="signupForm" [type]="'email'" [controlName]="'email'" [label]="'Email'"
+            [placeholder]="'email@address.com'"></app-shared-form>
+          @if (f['email'].touched && f['email'].invalid) {
+          <div class="form-error">
+            @if (f['email'].errors?.['required']) { <span>Email is required</span> }
+            @else if (f['email'].errors?.['email'] || f['email'].errors?.['pattern']) { <span>Please enter a valid
+              email</span> }
           </div>
-          <div>
-            <!-- Password -->
-            <app-shared-form [formGroup]="signupForm" [type]="'password'" [controlName]="'password'"
-              [label]="'Password'" [placeholder]="'Create a password'">
-            </app-shared-form>
-            @if (f['password'].touched && f['password'].invalid) {
-            <div class="error-message text-red-500 text-xs mt-1 transition-all duration-300">
-              @if (f['password'].errors?.['required']) {
-              <span>Password is required</span>
-              }
-              @if (f['password'].errors?.['passwordStrength']; as strength) {
-              @if (!strength.hasUpperCase) {
-              <span>Must contain an uppercase letter<br /></span>
-              }
-              @if (!strength.hasLowerCase) {
-              <span>Must contain a lowercase letter<br /></span>
-              }
-              @if (!strength.hasNumber) {
-              <span>Must contain a number<br /></span>
-              }
-              @if (!strength.hasSpecialChar) {
-              <span>Must contain a special character<br /></span>
-              }
-              @if (!strength.isLongEnough) {
-              <span>Minimum length must be 8<br /></span>
-              }
+          }
+
+          <!-- Double Password Row -->
+          <div class="grid grid-cols-2 gap-3">
+            <div class="space-y-1">
+              <app-shared-form [formGroup]="signupForm" [type]="'password'" [controlName]="'password'"
+                [label]="'Password'" [placeholder]="'••••••••'"></app-shared-form>
+              @if (f['password'].touched && f['password'].invalid) {
+              <div class="form-error">
+                @if (f['password'].errors?.['required']) { <span>Password is required</span> }
+                @if (f['password'].errors?.['passwordStrength']) { <span>Too weak (8+ chars, mixed case, digit,
+                  special)</span> }
+              </div>
               }
             </div>
-            }
-          </div>
-
-          <!-- Confirm Password -->
-          <div>
-            <app-shared-form [formGroup]="signupForm" [type]="'password'" [controlName]="'confirmPassword'"
-              [label]="'Confirm Password'" [placeholder]="'Create a password'">
-            </app-shared-form>
-
-            @if (f['confirmPassword'].touched && (f['confirmPassword'].invalid || signupForm.errors?.['mismatch'])) {
-            <div class="error-message text-red-500 text-xs mt-1 transition-all duration-300">
-              @if (f['confirmPassword'].errors?.['required']) {
-              <span>Confirm Password is required</span>
-              }
-              @if (signupForm.errors?.['mismatch']) {
-              <span>Passwords do not match</span>
+            <div class="space-y-1">
+              <app-shared-form [formGroup]="signupForm" [type]="'password'" [controlName]="'confirmPassword'"
+                [label]="'Repeat'" [placeholder]="'••••••••'"></app-shared-form>
+              @if (f['confirmPassword'].touched && (f['confirmPassword'].invalid || signupForm.errors?.['mismatch'])) {
+              <div class="form-error">
+                @if (f['confirmPassword'].errors?.['required']) { <span>Please repeat password</span> }
+                @else if (signupForm.errors?.['mismatch']) { <span>Passwords do not match</span> }
+              </div>
               }
             </div>
-            }
           </div>
         </div>
-        <!-- Submit Button -->
-        <button type="submit" [disabled]="isLoading()"
-          class="w-full bg-gradient-to-r from-[#2F3241] to-[#1f2230] text-white py-3 px-4 rounded-lg hover:from-[#1f2230] hover:to-[#2F3241] focus:outline-none focus:ring-2 focus:ring-[#2F3241] transition-all duration-300 transform hover:scale-[1.02] font-medium disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none">
+
+        <!-- Global Signup Error -->
+        @if (error()) {
+        <div class="animate-fadeIn p-3 rounded-xl bg-error-50 border border-error-100 flex items-center gap-3">
+          <svg class="w-5 h-5 text-error-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          </svg>
+          <span class="text-[11px] font-bold text-error-700 uppercase tracking-wide">{{ error() }}</span>
+        </div>
+        }
+
+        <!-- Signup Button -->
+        <button type="submit" [disabled]="isLoading()" class="btn btn-primary w-full py-4 text-sm group">
           @if (!isLoading()) {
-          <span>Create Account</span>
+          <span class="font-black uppercase tracking-widest">Create Account</span>
           }
           @if (isLoading()) {
-          <span class="flex items-center justify-center">
-            <svg class="animate-spin h-5 w-5 text-white mr-2" fill="none" viewBox="0 0 24 24">
-              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-              <path class="opacity-75" fill="currentColor"
-                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
-              </path>
-            </svg>
-            Creating Account...
-          </span>
+          <svg class="animate-spin h-5 w-5 text-white" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z">
+            </path>
+          </svg>
           }
         </button>
 
         <!-- Divider -->
-        <div class="flex items-center">
-          <div class="flex-1 border-t border-gray-300"></div>
-          <span class="px-4 text-gray-500 text-sm">or</span>
-          <div class="flex-1 border-t border-gray-300"></div>
+        <div class="flex items-center gap-4 py-0.5">
+          <div class="flex-1 border-t border-neutral-200"></div>
+          <span class="text-[9px] text-neutral-400 font-black uppercase tracking-widest">or</span>
+          <div class="flex-1 border-t border-neutral-200"></div>
         </div>
 
-        <!-- Google Sign Up -->
-        <button type="button" (click)="loginWithGoogle()"
-          class="w-full bg-white border border-gray-300 text-gray-700 font-medium py-3 px-4 rounded-lg hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all duration-300 flex items-center justify-center space-x-3">
-          <img src="https://developers.google.com/identity/images/g-logo.png" alt="Google Logo" class="w-5 h-5" />
-          <span>Continue with Google</span>
+        <!-- Google Join Button -->
+        <button type="button" (click)="loginWithGoogle()" class="btn btn-secondary w-full py-3.5 text-xs group">
+          <img src="https://developers.google.com/identity/images/g-logo.png" alt="G" class="w-4 h-4 mr-2" />
+          <span class="font-black uppercase tracking-widest">Join with Google</span>
         </button>
 
         <!-- Login Link -->
-        <div class="text-center">
-          <p class="text-gray-600 text-sm">
-            Already have an account?
-            <a href="/auth/login" class="text-[#2F3241] hover:text-[#1f2230] font-medium transition-colors">
-              Sign in here
+        <div class="text-center pt-1">
+          <p class="text-[10px] text-neutral-500 font-bold uppercase tracking-wider">
+            Member?
+            <a routerLink="/auth/login"
+              class="font-black text-primary-600 hover:text-primary-700 transition-colors ml-1 underline decoration-primary-200 decoration-2 underline-offset-4">
+              Sign in
             </a>
           </p>
         </div>
@@ -211,12 +200,38 @@
     </div>
   </div>
 
-  <!-- Right Side - Info Section -->
-</div>
+  <!-- Right Side - Hero Section (Hidden on Mobile) -->
+  <div class="hidden lg:flex lg:w-1/2 relative overflow-hidden">
+    <div class="absolute inset-0">
+      <img src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800&h=1200&fit=crop" alt="Workout"
+        class="w-full h-full object-cover" />
+      <div class="absolute inset-0 bg-gradient-to-br from-primary-900/90 to-primary-700/80"></div>
+    </div>
 
-<!-- Footer for mobile -->
-<div class="bg-gray-50 lg:hidden">
-  <div class="text-center py-4 text-gray-500 text-xs">
-    © 2025 ZenFit. All rights reserved.
+    <div class="relative z-10 flex flex-col justify-center p-12 text-white space-y-6 text-center lg:text-left">
+      <div class="space-y-4 animate-slideInUp">
+        <span class="badge bg-white/20 text-white border-white/20 py-1 px-4">The Future</span>
+        <h2 class="text-5xl font-black leading-tight uppercase tracking-tighter">
+          UNLEASH<br />
+          YOUR<br />
+          <span class="text-secondary-400">POWER</span>
+        </h2>
+        <p class="body-base text-white/80 max-w-xs leading-relaxed font-medium">
+          Professional training, real-time analytics, and a community that pushes you higher.
+        </p>
+      </div>
+
+      <!-- Stats Grid -->
+      <div class="grid grid-cols-2 gap-8 pt-6 border-t border-white/10">
+        <div class="flex items-center gap-3">
+          <div class="w-2 h-2 rounded-full bg-success-500"></div>
+          <span class="text-[10px] font-black uppercase tracking-widest">Expert Coaching</span>
+        </div>
+        <div class="flex items-center gap-3">
+          <div class="w-2 h-2 rounded-full bg-success-500"></div>
+          <span class="text-[10px] font-black uppercase tracking-widest">Custom Plans</span>
+        </div>
+      </div>
+    </div>
   </div>
 </div>

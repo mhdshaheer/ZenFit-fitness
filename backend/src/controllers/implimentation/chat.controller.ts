@@ -16,14 +16,14 @@ export class ChatController implements IChatController {
   async initThread(req: AuthenticatedRequest, res: Response): Promise<void> {
     const userId = req.user?.id;
     const { programId } = req.params as { programId?: string };
-    if (!userId) {
+    if (userId === undefined) {
       res
         .status(HttpStatus.UNAUTHORIZED)
         .json({ success: false, message: "User not authenticated" });
       return;
     }
 
-    if (!programId) {
+    if (programId === undefined || programId === "") {
       res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: "Program id is required" });
@@ -36,7 +36,7 @@ export class ChatController implements IChatController {
 
   async getThreads(req: AuthenticatedRequest, res: Response): Promise<void> {
     const userId = req.user?.id;
-    if (!userId) {
+    if (userId === undefined) {
       res
         .status(HttpStatus.UNAUTHORIZED)
         .json({ success: false, message: "User not authenticated" });
@@ -52,7 +52,7 @@ export class ChatController implements IChatController {
   ): Promise<void> {
     const trainerId = req.user?.id;
 
-    if (!trainerId) {
+    if (trainerId === undefined) {
       res
         .status(HttpStatus.UNAUTHORIZED)
         .json({ success: false, message: "Trainer not authenticated" });
@@ -74,7 +74,7 @@ export class ChatController implements IChatController {
 
   async getMessages(req: AuthenticatedRequest, res: Response): Promise<void> {
     const { threadId } = req.params as { threadId?: string };
-    if (!threadId) {
+    if (threadId === undefined || threadId === "") {
       res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: "threadId is required" });
@@ -102,14 +102,14 @@ export class ChatController implements IChatController {
     const readerId = req.user?.id;
     const role = req.user?.role as "user" | "trainer" | undefined;
 
-    if (!readerId || !role) {
+    if (readerId === undefined || role === undefined) {
       res
         .status(HttpStatus.UNAUTHORIZED)
         .json({ success: false, message: "User not authenticated" });
       return;
     }
 
-    if (!threadId) {
+    if (threadId === undefined || threadId === "") {
       res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: "threadId is required" });
@@ -138,21 +138,21 @@ export class ChatController implements IChatController {
     const senderRole = req.user?.role as "user" | "trainer" | undefined;
     const { content } = (req.body ?? {}) as { content?: string };
 
-    if (!threadId) {
+    if (threadId === undefined || threadId === "") {
       res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: "threadId is required" });
       return;
     }
 
-    if (!senderId || !senderRole) {
+    if (senderId === undefined || senderRole === undefined) {
       res
         .status(HttpStatus.UNAUTHORIZED)
         .json({ success: false, message: "User not authenticated" });
       return;
     }
 
-    if (!content) {
+    if (content === undefined || content === "") {
       res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: "Message content is required" });
@@ -192,14 +192,14 @@ export class ChatController implements IChatController {
     const { messageId } = req.params as { messageId?: string };
     const deleterId = req.user?.id;
 
-    if (!messageId) {
+    if (messageId === undefined || messageId === "") {
       res
         .status(HttpStatus.BAD_REQUEST)
         .json({ success: false, message: "messageId is required" });
       return;
     }
 
-    if (!deleterId) {
+    if (deleterId === undefined) {
       res
         .status(HttpStatus.UNAUTHORIZED)
         .json({ success: false, message: "User not authenticated" });

@@ -5,10 +5,12 @@ export function getErrorMessages(form: AbstractControl, field: string): string {
   const control = form.get(field);
   if (control && control.errors) {
     const errors = control.errors;
-    const errorMessage = ErrorMessages[field];
-    for (const key in errors) {
-      if (errorMessage[key]) {
-        return errorMessage[key];
+    const errorMessage = ErrorMessages[field as keyof typeof ErrorMessages];
+    if (errorMessage) {
+      for (const key in errors) {
+        if (errorMessage[key as keyof typeof errorMessage]) {
+          return errorMessage[key as keyof typeof errorMessage];
+        }
       }
     }
   }

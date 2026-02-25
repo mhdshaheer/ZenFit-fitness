@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
 import { OtpAccessService } from '../../core/services/otp-access.service';
 
@@ -6,7 +6,9 @@ import { OtpAccessService } from '../../core/services/otp-access.service';
   providedIn: 'root',
 })
 export class OtpGuard implements CanActivate {
-  constructor(private otpService: OtpAccessService, private router: Router) {}
+  private otpService = inject(OtpAccessService);
+  private router = inject(Router);
+
 
   canActivate(): boolean {
     if (this.otpService.canAccess()) {

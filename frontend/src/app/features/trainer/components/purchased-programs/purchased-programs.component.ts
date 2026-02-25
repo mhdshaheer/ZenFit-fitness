@@ -35,7 +35,7 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   selectedProgram: TrainerPurchasedProgram | null = null;
   showDetailsModal = false;
   activeView: 'table' | 'cards' = 'table';
-  private searchTimeout: any;
+  private searchTimeout?: ReturnType<typeof setTimeout>;
 
   statusOptions = [
     { value: '', label: 'All Status' },
@@ -176,7 +176,7 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
     });
   }
 
-  formatCurrency(amount: number, currency: string = 'INR'): string {
+  formatCurrency(amount: number, currency = 'INR'): string {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: currency,

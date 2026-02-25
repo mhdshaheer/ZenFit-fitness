@@ -10,11 +10,13 @@
     </div>
     <div class="table-card__meta">
       <span class="meta-dot"></span>
-      <span>{{ totalItems }} total</span>
+      <span class="hidden sm:inline">{{ totalItems }} total</span>
+      <span class="sm:hidden">{{ totalItems }}</span>
     </div>
   </div>
 
-  <div class="table-card__table-wrapper">
+  <!-- Desktop Table View (hidden on mobile) -->
+  <div class="table-card__table-wrapper hidden md:block overflow-x-auto">
     <table class="zf-table">
       <thead>
         <tr>
@@ -49,44 +51,52 @@
           @for (column of columns; track column) {
           <td [ngClass]="getCellClass(column.type)">
             <div>
+              @if (customCell) {
+              <ng-container *ngTemplateOutlet="customCell; context: { $implicit: row, column: column }">
+              </ng-container>
+              } @else {
               @switch (column.type) {
               @case ('avatar') {
               <div class="avatar-cell">
                 <div class="avatar">
-                  @if (row[column.key]) {
-                  <img [src]="row[column.key]" [alt]="row.name || row.email" />
+                  @if (getCellValue(row, column.key)) {
+                  <img [src]="getCellValue(row, column.key)"
+                    [alt]="asTableData(row).name || asTableData(row).email || 'User'" />
                   } @else {
-                  <span>{{ row.name?.charAt(0) || '?' }}</span>
+                  <span>{{ asTableData(row).name?.charAt(0) || '?' }}</span>
                   }
                 </div>
                 <div>
                   <p class="avatar__name">
-                    {{ row.name || row.firstName + " " + row.lastName }}
+                    {{ asTableData(row).name || (asTableData(row).firstName && asTableData(row).lastName ?
+                    asTableData(row).firstName + " " + asTableData(row).lastName : 'Unknown')
+                    }}
                   </p>
-                  <p class="avatar__meta">{{ row.email }}</p>
+                  <p class="avatar__meta">{{ asTableData(row).email || '' }}</p>
                 </div>
               </div>
               }
               @case ('status') {
-              <span class="status-pill" [ngClass]="getStatusClass(row[column.key])">
-                {{ row[column.key] }}
+              <span class="status-pill" [ngClass]="getStatusClass(getCellValue(row, column.key))">
+                {{ getCellValue(row, column.key) }}
               </span>
               }
               @case ('date') {
-              <span class="date-text">{{ formatDate(row[column.key]) }}</span>
+              <span class="date-text">{{ formatDate(getCellValue(row, column.key)) }}</span>
               }
               @case ('email') {
-              <a [href]="'mailto:' + row[column.key]" class="email-link">
-                {{ row[column.key] }}
+              <a [href]="'mailto:' + getCellValue(row, column.key)" class="email-link">
+                {{ getCellValue(row, column.key) }}
               </a>
               }
               @case ('approval') {
-              <span class="approval-chip" [ngClass]="getApprovalClass(row.approvalStatus)">
-                {{ row.approvalStatus }}
+              <span class="approval-chip" [ngClass]="getApprovalClass(asTableData(row).approvalStatus || '')">
+                {{ asTableData(row).approvalStatus || 'Pending' }}
               </span>
               }
               @default {
-              <span>{{ row[column.key] }}</span>
+              <span>{{ getCellValue(row, column.key) }}</span>
+              }
               }
               }
             </div>
@@ -128,20 +138,118 @@
     </table>
   </div>
 
-  <div class="table-card__pagination">
-    <div class="summary">
-      Showing {{ startIndex + 1 }}-
-      {{ Math.min(startIndex + pageSize, totalItems) }} of {{ totalItems }}
-      results
+  <!-- Mobile Card View (visible on mobile only) -->
+  <div class="md:hidden space-y-3 px-2">
+    @if (data.length > 0) {
+    @for (row of data; track row; let i = $index) {
+    <div class="bg-white rounded-xl border border-neutral-200 p-4 shadow-sm hover:shadow-md transition-shadow">
+      @for (column of columns; track column) {
+      @if (column.type !== 'avatar') {
+      <div class="flex justify-between items-start py-2 border-b border-neutral-100 last:border-0">
+        <span class="text-[10px] font-black text-neutral-400 uppercase tracking-wider">{{ column.label }}</span>
+        <div class="text-right max-w-[60%]">
+          @if (customCell) {
+          <ng-container *ngTemplateOutlet="customCell; context: { $implicit: row, column: column }">
+          </ng-container>
+          } @else {
+          @switch (column.type) {
+          @case ('status') {
+          <span class="status-pill text-xs" [ngClass]="getStatusClass(getCellValue(row, column.key))">
+            {{ getCellValue(row, column.key) }}
+          </span>
+          }
+          @case ('date') {
+          <span class="text-sm text-neutral-900 font-medium">{{ formatDate(getCellValue(row, column.key)) }}</span>
+          }
+          @case ('email') {
+          <a [href]="'mailto:' + getCellValue(row, column.key)"
+            class="text-sm text-primary-600 font-medium truncate block">
+            {{ getCellValue(row, column.key) }}
+          </a>
+          }
+          @case ('approval') {
+          <span class="approval-chip text-xs" [ngClass]="getApprovalClass(asTableData(row).approvalStatus || '')">
+            {{ asTableData(row).approvalStatus || 'Pending' }}
+          </span>
+          }
+          @default {
+          <span class="text-sm text-neutral-900 font-medium">{{ getCellValue(row, column.key) }}</span>
+          }
+          }
+          }
+        </div>
+      </div>
+      } @else {
+      <div class="flex items-center gap-3 pb-3 mb-3 border-b border-neutral-200">
+        <div class="avatar w-12 h-12">
+          @if (getCellValue(row, column.key)) {
+          <img [src]="getCellValue(row, column.key)"
+            [alt]="asTableData(row).name || asTableData(row).email || 'User'" />
+          } @else {
+          <span class="text-sm">{{ asTableData(row).name?.charAt(0) || '?' }}</span>
+          }
+        </div>
+        <div class="flex-1 min-w-0">
+          <p class="avatar__name text-sm font-bold truncate">
+            {{ asTableData(row).name || (asTableData(row).firstName && asTableData(row).lastName ?
+            asTableData(row).firstName + " " + asTableData(row).lastName : 'Unknown') }}
+          </p>
+          <p class="avatar__meta text-xs truncate">{{ asTableData(row).email || '' }}</p>
+        </div>
+      </div>
+      }
+      }
+
+      <!-- Actions for mobile -->
+      @if (actions && actions.length > 0) {
+      <div class="flex gap-2 mt-3 pt-3 border-t border-neutral-100">
+        @for (action of getAvailableActions(row); track action) {
+        <button (click)="onAction(action.action, row, i)"
+          class="flex-1 btn btn-sm !py-2 text-xs font-bold uppercase tracking-wider"
+          [ngClass]="getActionClass(action.color)">
+          {{ action.label }}
+        </button>
+        }
+      </div>
+      }
+    </div>
+    }
+    } @else {
+    <div class="bg-white rounded-xl border border-neutral-200 p-8 text-center">
+      <div class="empty-state">
+        <div class="empty-state__icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4">
+            </path>
+          </svg>
+        </div>
+        <p class="text-sm font-bold">No {{ entityName.toLowerCase() }}s found</p>
+        <small class="text-xs">Try refining your search or filters</small>
+      </div>
+    </div>
+    }
+  </div>
+
+  <div class="table-card__pagination flex-col sm:flex-row gap-3 sm:gap-0">
+    <div class="summary text-xs sm:text-sm">
+      <span class="hidden sm:inline">Showing {{ startIndex + 1 }}-{{ Math.min(startIndex + pageSize, totalItems) }} of
+        {{ totalItems }} results</span>
+      <span class="sm:hidden">{{ startIndex + 1 }}-{{ Math.min(startIndex + pageSize, totalItems) }} of {{ totalItems
+        }}</span>
     </div>
     <div class="pager">
-      <button type="button" class="pager__btn" (click)="previousPage()" [disabled]="currentPage == 1">
-        Previous
+      <button type="button" class="pager__btn text-xs sm:text-sm" (click)="previousPage()"
+        [disabled]="currentPage === 1">
+        <span class="hidden sm:inline">Previous</span>
+        <span class="sm:hidden">Prev</span>
       </button>
-      <span class="pager__page active">{{ currentPage }}</span>
-      <button type="button" class="pager__btn" (click)="nextPage()" [disabled]="currentPage == totalPages">
+      <span class="pager__page active text-xs sm:text-sm">{{ currentPage }}</span>
+      <button type="button" class="pager__btn text-xs sm:text-sm" (click)="nextPage()"
+        [disabled]="currentPage === totalPages">
         Next
       </button>
     </div>
   </div>
 </div>
+```

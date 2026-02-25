@@ -37,11 +37,11 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
   isAudioEnabled = true;
   errorMessage = '';
   isInitializing = false;
-  remoteStreams: Map<string, MediaStream> = new Map();
+  remoteStreams = new Map<string, MediaStream>();
   currentUserId = ''; // Will be set during initialization
   currentUserName = 'Guest'; // Will be fetched from database
-  participantIds: Set<string> = new Set();
-  participantNames: Map<string, string> = new Map(); // Map userId to name
+  participantIds = new Set<string>();
+  participantNames = new Map<string, string>(); // Map userId to name
 
   // Confirmation dialog properties
   showLeaveConfirmation = false;
@@ -115,9 +115,9 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
 
   private setupMeetingSocketListeners(): void {
     // Listen for new participants joining
-    this._socketService.on('meeting:participant-joined').pipe(
+    this._socketService.on<{ userId: string; name?: string }>('meeting:participant-joined').pipe(
       takeUntil(this._destroy$)
-    ).subscribe(async (data: { userId: string; name?: string }) => {
+    ).subscribe(async (data) => {
       // Add to participant tracking
       this.participantIds.add(data.userId);
 
@@ -152,9 +152,9 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
     });
 
     // Listen for participants leaving
-    this._socketService.on('meeting:participant-left').pipe(
+    this._socketService.on<{ userId: string }>('meeting:participant-left').pipe(
       takeUntil(this._destroy$)
-    ).subscribe((data: { userId: string }) => {
+    ).subscribe((data) => {
       this.participantIds.delete(data.userId);
       this.participantNames.delete(data.userId); // Remove name mapping
       this._meetingService.removeParticipant(data.userId);
@@ -162,9 +162,9 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
     });
 
     // Listen for participant count updates
-    this._socketService.on('meeting:participant-count').pipe(
+    this._socketService.on<{ count: number }>('meeting:participant-count').pipe(
       takeUntil(this._destroy$)
-    ).subscribe((data: { count: number }) => {
+    ).subscribe((data) => {
       this.participantCount = data.count;
     });
 
@@ -190,9 +190,9 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
     };
 
     // Listen for WebRTC offer
-    this._socketService.on('webrtc:offer').pipe(
+    this._socketService.on<{ fromUserId: string; offer: RTCSessionDescriptionInit }>('webrtc:offer').pipe(
       takeUntil(this._destroy$)
-    ).subscribe(async (data: { fromUserId: string; offer: RTCSessionDescriptionInit }) => {
+    ).subscribe(async (data) => {
       try {
         const answer = await this._meetingService.handleOffer(data.fromUserId, data.offer);
         this._socketService.emit('webrtc:answer', {
@@ -207,9 +207,9 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
     });
 
     // Listen for WebRTC answer
-    this._socketService.on('webrtc:answer').pipe(
+    this._socketService.on<{ fromUserId: string; answer: RTCSessionDescriptionInit }>('webrtc:answer').pipe(
       takeUntil(this._destroy$)
-    ).subscribe(async (data: { fromUserId: string; answer: RTCSessionDescriptionInit }) => {
+    ).subscribe(async (data) => {
       try {
         await this._meetingService.handleAnswer(data.fromUserId, data.answer);
       } catch (error) {
@@ -218,9 +218,9 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
     });
 
     // Listen for ICE candidates
-    this._socketService.on('webrtc:ice-candidate').pipe(
+    this._socketService.on<{ fromUserId: string; candidate: RTCIceCandidateInit }>('webrtc:ice-candidate').pipe(
       takeUntil(this._destroy$)
-    ).subscribe(async (data: { fromUserId: string; candidate: RTCIceCandidateInit }) => {
+    ).subscribe(async (data) => {
       try {
         await this._meetingService.handleIceCandidate(data.fromUserId, data.candidate);
       } catch (error) {

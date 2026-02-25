@@ -1,5 +1,6 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { TableComponent } from '../../../../shared/components/table/table.component';
+import { ActionEvent, TableAction, TableColumn } from '../../../../interface/shared.interface';
 import {
   CategoryService,
   ICategory,
@@ -10,27 +11,7 @@ import { ConfirmDialogComponent } from '../../../../shared/components/confirm-di
 import { MatDialog } from '@angular/material/dialog';
 import { IParams } from '../../../../interface/category.interface';
 
-export interface TableColumn {
-  key: string;
-  label: string;
-  sortable?: boolean;
-  type?: 'text' | 'date' | 'status';
-  width?: string;
-}
 
-export interface TableAction {
-  label: string;
-  icon: string;
-  color: 'blue' | 'green' | 'red' | 'yellow' | 'purple' | 'gray';
-  action: string;
-  condition?: (row: ICategory) => boolean;
-}
-
-export interface ActionEvent {
-  action: string;
-  row: any;
-  index: number;
-}
 
 @Component({
   selector: 'app-category-list',
@@ -102,7 +83,7 @@ export class CategoryListComponent implements OnInit {
   }
 
   // Table Actions
-  categoryActions: TableAction[] = [
+  categoryActions: TableAction<ICategory>[] = [
     { label: 'Edit', icon: 'edit', color: 'blue', action: 'edit' },
     {
       label: 'Block',
@@ -120,12 +101,12 @@ export class CategoryListComponent implements OnInit {
     },
   ];
 
-  onCategoryAction(event: ActionEvent) {
+  onCategoryAction(event: ActionEvent<ICategory>) {
     if (event.action == 'edit') {
       this._router.navigate(['admin/category/', event.row._id]);
     } else if (event.action === 'block' || event.action === 'unblock') {
-      let id = event.row._id;
-      let isBlocked = event.action == 'block' ? true : false;
+      const id = event.row._id;
+      const isBlocked = event.action == 'block' ? true : false;
 
       // =================
       const dialogRef = this._dialog.open(ConfirmDialogComponent, {
@@ -145,9 +126,9 @@ export class CategoryListComponent implements OnInit {
               this.categories = this.categories.map((item) =>
                 item._id === id
                   ? {
-                      ...updatedCategory,
-                      status: updatedCategory.isBlocked ? 'blocked' : 'active',
-                    }
+                    ...updatedCategory,
+                    status: updatedCategory.isBlocked ? 'blocked' : 'active',
+                  }
                   : item
               );
               this.getCategories();

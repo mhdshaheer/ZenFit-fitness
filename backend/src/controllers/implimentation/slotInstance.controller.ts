@@ -4,11 +4,13 @@ import { ISlotInstanceController } from "../interface/slotInstance.controller.in
 import { TYPES } from "../../shared/types/inversify.types";
 import {
     ISlotInstanceService,
+    SlotInstancePaginatedResult,
     TrainerSlotInstanceFilters,
 } from "../../services/interface/slotInstance.service.interface";
 import { HttpStatus } from "../../const/statuscode.const";
 import { AuthenticatedRequest } from "../../types/authenticated-request.type";
 import { HttpResponse } from "../../const/response_message.const";
+import { ISlotInstance } from "../../models/slotInstance.model";
 
 @injectable()
 export class SlotInstanceController implements ISlotInstanceController {
@@ -18,9 +20,9 @@ export class SlotInstanceController implements ISlotInstanceController {
     async getInstances(
         req: AuthenticatedRequest,
         res: Response
-    ): Promise<Response<any>> {
+    ): Promise<Response<SlotInstancePaginatedResult>> {
         const trainerId = req.user?.id;
-        if (!trainerId) {
+        if (trainerId === undefined) {
             return res
                 .status(HttpStatus.UNAUTHORIZED)
                 .json({ message: HttpResponse.UNAUTHORIZED });
@@ -49,7 +51,7 @@ export class SlotInstanceController implements ISlotInstanceController {
             limit: typeof limit === "string" ? Number.parseInt(limit, 10) : undefined,
         };
 
-        if (programIds) {
+        if (programIds !== undefined && programIds !== null) {
             if (Array.isArray(programIds)) {
                 filters.programIds = programIds as string[];
             } else if (typeof programIds === "string") {
@@ -67,7 +69,7 @@ export class SlotInstanceController implements ISlotInstanceController {
     async generateForTemplate(
         req: Request,
         res: Response
-    ): Promise<Response<any>> {
+    ): Promise<Response<{ success: boolean }>> {
         const templateId = req.params.templateId;
         const daysAhead = req.body.daysAhead ?? 10;
 
@@ -82,19 +84,19 @@ export class SlotInstanceController implements ISlotInstanceController {
     async getInstancesForProgram(
         req: Request,
         res: Response
-    ): Promise<Response<any>> {
+    ): Promise<Response<SlotInstancePaginatedResult>> {
         const { programId, from, to, page, limit } = req.query;
 
-        if (!programId || typeof programId !== "string") {
+        if (typeof programId !== "string" || programId === "") {
             return res
                 .status(HttpStatus.BAD_REQUEST)
                 .json({ message: "programId is required" });
         }
 
-        const fromDate = from ? new Date(from as string) : undefined;
-        const toDate = to ? new Date(to as string) : undefined;
-        const pageNumber = page ? parseInt(page as string, 10) : undefined;
-        const limitNumber = limit ? parseInt(limit as string, 10) : undefined;
+        const fromDate = typeof from === "string" && from !== "" ? new Date(from) : undefined;
+        const toDate = typeof to === "string" && to !== "" ? new Date(to) : undefined;
+        const pageNumber = typeof page === "string" && page !== "" ? parseInt(page, 10) : undefined;
+        const limitNumber = typeof limit === "string" && limit !== "" ? parseInt(limit, 10) : undefined;
 
         const instances = await this._slotInstanceService.getInstancesForProgram(
             programId,
@@ -110,9 +112,9 @@ export class SlotInstanceController implements ISlotInstanceController {
     async cancelInstance(
         req: AuthenticatedRequest,
         res: Response
-    ): Promise<Response<any>> {
+    ): Promise<Response<ISlotInstance>> {
         const trainerId = req.user?.id;
-        if (!trainerId) {
+        if (trainerId === undefined) {
             return res
                 .status(HttpStatus.UNAUTHORIZED)
                 .json({ message: HttpResponse.UNAUTHORIZED });

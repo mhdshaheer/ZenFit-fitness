@@ -8,11 +8,15 @@ import {
 import { PaymentService } from '../../../../core/services/payment.service';
 import { FormsModule } from '@angular/forms';
 
+import { ActionEvent, TableAction, TableColumn } from '../../../../interface/shared.interface';
 import { Subject, takeUntil } from 'rxjs';
+
+import { CommonModule } from '@angular/common';
+import { TableComponent } from '../../../../shared/components/table/table.component';
 
 @Component({
   selector: 'zenfit-purchased-programs',
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule, TableComponent],
   templateUrl: './purchased-programs.component.html',
   styleUrl: './purchased-programs.component.css',
 })
@@ -42,6 +46,24 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   selectedProgram: PurchasedProgram | null = null;
   showDetailsModal = false;
 
+  purchasedProgramColumns: TableColumn[] = [
+    { key: 'purchaseDate', label: 'Purchase Date', type: 'date', sortable: true, width: '150px' },
+    { key: 'user', label: 'User Hub', sortable: true },
+    { key: 'program', label: 'Artifact', sortable: true },
+    { key: 'trainer', label: 'Orchestrator', sortable: true },
+    { key: 'amount', label: 'Capital flow', type: 'text', width: '150px' },
+    { key: 'status', label: 'Signal Status', type: 'text', width: '150px' },
+  ];
+
+  purchasedProgramActions: TableAction<PurchasedProgram>[] = [
+    {
+      label: 'Inspect Artifact',
+      action: 'view',
+      icon: 'view',
+      color: 'blue'
+    }
+  ];
+
   statusOptions = [
     { value: '', label: 'All Status' },
     { value: 'success', label: 'Success' },
@@ -56,6 +78,7 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   loadPurchasedPrograms(): void {
     this.loading = true;
     if (this.filters) {
+      this.filters.page = 1;
     }
     this._paymentService
       .getPurchasedProgramsOnAdmin(this.filters)
@@ -86,6 +109,12 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   onPageChange(page: number): void {
     this.filters.page = page;
     this.loadPurchasedPrograms();
+  }
+
+  onPurchaseAction(event: ActionEvent<PurchasedProgram>): void {
+    if (event.action === 'view') {
+      this.viewDetails(event.row);
+    }
   }
 
   viewDetails(program: PurchasedProgram): void {
@@ -132,7 +161,7 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
     });
   }
 
-  formatCurrency(amount: number, currency: string = 'INR'): string {
+  formatCurrency(amount: number, currency = 'INR'): string {
     return new Intl.NumberFormat('en-IN', {
       style: 'currency',
       currency: currency,

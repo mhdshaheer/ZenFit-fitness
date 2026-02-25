@@ -83,12 +83,17 @@ import { ISlotTemplateController } from "./controllers/interface/slotTemplate.co
 import { SlotTemplateController } from "./controllers/implimentation/slotTemplate.controller";
 import { ISlotInstanceController } from "./controllers/interface/slotInstance.controller.interface";
 import { SlotInstanceController } from "./controllers/implimentation/slotInstance.controller";
+import { IAuthStrategy } from "./services/interface/auth.strategy.interface";
+import { EmailAuthStrategy } from "./services/implimentation/strategies/email.auth.strategy";
+import { GoogleAuthStrategy } from "./services/implimentation/strategies/google.auth.strategy";
 
 const container = new Container();
 
 // Auth
 container.bind<IAuthService>(TYPES.AuthService).to(AuthService);
 container.bind<IAuthController>(TYPES.AuthController).to(AuthController);
+container.bind<IAuthStrategy>(TYPES.AuthStrategy).to(EmailAuthStrategy);
+container.bind<IAuthStrategy>(TYPES.AuthStrategy).to(GoogleAuthStrategy);
 
 // Admin
 container.bind<IAdminService>(TYPES.AdminService).to(AdminService);

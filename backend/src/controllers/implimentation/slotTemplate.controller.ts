@@ -15,9 +15,9 @@ export class SlotTemplateController implements ISlotTemplateController {
     async createTemplate(
         req: AuthenticatedRequest,
         res: Response
-    ): Promise<Response<any>> {
+    ): Promise<Response> {
         const trainerId = req.user?.id;
-        if (!trainerId) {
+        if (trainerId === undefined) {
             return res
                 .status(HttpStatus.UNAUTHORIZED)
                 .json({ message: HttpResponse.UNAUTHORIZED });
@@ -33,9 +33,9 @@ export class SlotTemplateController implements ISlotTemplateController {
     async updateTemplate(
         req: AuthenticatedRequest,
         res: Response
-    ): Promise<Response<any>> {
+    ): Promise<Response> {
         const trainerId = req.user?.id;
-        if (!trainerId) {
+        if (trainerId === undefined) {
             return res
                 .status(HttpStatus.UNAUTHORIZED)
                 .json({ message: HttpResponse.UNAUTHORIZED });
@@ -53,9 +53,9 @@ export class SlotTemplateController implements ISlotTemplateController {
     async getTemplates(
         req: AuthenticatedRequest,
         res: Response
-    ): Promise<Response<any>> {
+    ): Promise<Response> {
         const trainerId = req.user?.id;
-        if (!trainerId) {
+        if (trainerId === undefined) {
             return res
                 .status(HttpStatus.UNAUTHORIZED)
                 .json({ message: HttpResponse.UNAUTHORIZED });
@@ -69,9 +69,9 @@ export class SlotTemplateController implements ISlotTemplateController {
     async deleteTemplate(
         req: AuthenticatedRequest,
         res: Response
-    ): Promise<Response<any>> {
+    ): Promise<Response> {
         const trainerId = req.user?.id;
-        if (!trainerId) {
+        if (trainerId === undefined) {
             return res
                 .status(HttpStatus.UNAUTHORIZED)
                 .json({ message: HttpResponse.UNAUTHORIZED });

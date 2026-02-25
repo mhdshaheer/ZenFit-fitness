@@ -11,7 +11,7 @@ let io: Server;
 export const initializeSocket = (server: HttpServer): Server => {
   io = new Server(server, {
     cors: {
-      origin: env.frontend_urls?.length ? env.frontend_urls : env.frontend_url,
+      origin: (env.frontend_urls !== undefined && env.frontend_urls.length > 0) ? env.frontend_urls : env.frontend_url,
       methods: ["GET", "POST"],
       credentials: true,
     },
@@ -31,7 +31,7 @@ export const initializeSocket = (server: HttpServer): Server => {
       try {
         const chatService = container.get<IChatService>(TYPES.ChatService);
         const ok = await chatService.canAccessThread(data.threadId, data.userId, data.role);
-        if (!ok) {
+        if (ok === false) {
           logger.error('Access denied to thread:', data.threadId);
           return;
         }
@@ -55,11 +55,11 @@ export const initializeSocket = (server: HttpServer): Server => {
           );
           io.to(`thread-${data.threadId}`).emit("chat:newMessage", message);
           const participants = await chatService.getThreadParticipants(data.threadId);
-          if (participants.userId) { io.to(`user-${participants.userId}`).emit("chat:delivered", { threadId: data.threadId }); }
-          if (participants.trainerId) {
+          if (participants.userId !== undefined && participants.userId !== "") { io.to(`user-${participants.userId}`).emit("chat:delivered", { threadId: data.threadId }); }
+          if (participants.trainerId !== undefined && participants.trainerId !== "") {
             io
               .to(`trainer-${participants.trainerId}`)
-            .emit("chat:delivered", { threadId: data.threadId });
+              .emit("chat:delivered", { threadId: data.threadId });
           }
         } catch (e) {
           console.error("sendMessage error", e);
@@ -92,8 +92,8 @@ export const initializeSocket = (server: HttpServer): Server => {
 
         // Notify other participants
         socket.to(meetingRoom).emit("meeting:participant-joined", {
-          userId: data.userId || socket.id,
-          name: data.name || 'Guest',
+          userId: (data.userId !== undefined && data.userId !== "") ? data.userId : socket.id,
+          name: (data.name !== undefined && data.name !== "") ? data.name : 'Guest',
           isHost: data.isHost,
           socketId: socket.id
         });
@@ -115,7 +115,7 @@ export const initializeSocket = (server: HttpServer): Server => {
 
         // Notify other participants
         socket.to(meetingRoom).emit("meeting:participant-left", {
-          userId: data.userId || socket.id,
+          userId: (data.userId !== undefined && data.userId !== "") ? data.userId : socket.id,
           socketId: socket.id
         });
 
@@ -141,7 +141,7 @@ export const initializeSocket = (server: HttpServer): Server => {
     });
 
     // WebRTC signaling events
-    socket.on("webrtc:offer", (data: { meetingId: string; targetUserId: string; fromUserId: string; offer: any }) => {
+    socket.on("webrtc:offer", (data: { meetingId: string; targetUserId: string; fromUserId: string; offer: unknown }) => {
       try {
         const meetingRoom = `meeting-${data.meetingId}`;
 
@@ -155,7 +155,7 @@ export const initializeSocket = (server: HttpServer): Server => {
       }
     });
 
-    socket.on("webrtc:answer", (data: { meetingId: string; targetUserId: string; fromUserId: string; answer: any }) => {
+    socket.on("webrtc:answer", (data: { meetingId: string; targetUserId: string; fromUserId: string; answer: unknown }) => {
       try {
         const meetingRoom = `meeting-${data.meetingId}`;
         // Forward answer to target user
@@ -168,7 +168,7 @@ export const initializeSocket = (server: HttpServer): Server => {
       }
     });
 
-    socket.on("webrtc:ice-candidate", (data: { meetingId: string; targetUserId: string; fromUserId: string; candidate: any }) => {
+    socket.on("webrtc:ice-candidate", (data: { meetingId: string; targetUserId: string; fromUserId: string; candidate: unknown }) => {
       try {
         const meetingRoom = `meeting-${data.meetingId}`;
         // Forward ICE candidate to target user
@@ -181,11 +181,10 @@ export const initializeSocket = (server: HttpServer): Server => {
       }
     });
 
-    socket.on("disconnect", (reason) => {
+    socket.on("disconnect", (_reason) => {
       const rooms = Array.from(socket.rooms);
       rooms.forEach(room => {
         if (room.startsWith('meeting-')) {
-          const meetingId = room.replace('meeting-', '');
           // Notify other participants that someone left
           socket.to(room).emit("meeting:participant-left", {
             userId: socket.id, // Use socket.id as fallback
@@ -213,7 +212,7 @@ export const initializeSocket = (server: HttpServer): Server => {
 };
 
 export const getIO = (): Server => {
-  if (!io) {
+  if (io === undefined) {
     throw new Error("Socket.io not initialized!");
   }
   return io;

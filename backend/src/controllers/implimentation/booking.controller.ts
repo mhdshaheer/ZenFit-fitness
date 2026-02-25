@@ -3,6 +3,7 @@ import { IBooking } from "../../models/booking.model";
 import { IBookingController } from "../interface/booking.controller.interface";
 import { AppError } from "../../shared/utils/appError.util";
 import { HttpStatus } from "../../const/statuscode.const";
+import { HttpResponse } from "../../const/response_message.const";
 import { inject, injectable } from "inversify";
 import { TYPES } from "../../shared/types/inversify.types";
 import { IBookingService } from "../../services/interface/booking.service.interface";
@@ -31,8 +32,8 @@ export class BookingController implements IBookingController {
     const { slotInstanceId } = req.body;
     const userId = req.user?.id;
 
-    if (!slotInstanceId || !userId) {
-      throw new AppError("Missing required fields", HttpStatus.BAD_REQUEST);
+    if (typeof slotInstanceId !== "string" || slotInstanceId === "" || userId === undefined) {
+      throw new AppError(HttpResponse.MISSING_REQUIRED_FIELDS, HttpStatus.BAD_REQUEST);
     }
 
     const booking = await this._bookingService.createBooking(
@@ -41,8 +42,8 @@ export class BookingController implements IBookingController {
     );
 
     const slotInstance = await this._slotInstanceRepository.findById(slotInstanceId);
-    if (!slotInstance) {
-      throw new AppError("Slot instance not found", HttpStatus.NOT_FOUND);
+    if (slotInstance === null) {
+      throw new AppError(HttpResponse.SLOT_INSTANCE_NOT_FOUND, HttpStatus.NOT_FOUND);
     }
 
     await this._notificationService.createNotification(
@@ -69,8 +70,8 @@ export class BookingController implements IBookingController {
     const userId = req.user?.id;
     const { programId } = req.query as { programId?: string };
 
-    if (!userId) {
-      throw new AppError("User not authenticated", HttpStatus.UNAUTHORIZED);
+    if (userId === undefined) {
+      throw new AppError(HttpResponse.USER_NOT_AUTHENTICATED, HttpStatus.UNAUTHORIZED);
     }
 
     const bookings = await this._bookingService.getMyBookings(
@@ -86,8 +87,8 @@ export class BookingController implements IBookingController {
     res: Response
   ): Promise<Response> {
     const trainerId = req.user?.id;
-    if (!trainerId) {
-      throw new AppError("Trainer not authenticated", HttpStatus.UNAUTHORIZED);
+    if (trainerId === undefined) {
+      throw new AppError(HttpResponse.TRAINER_NOT_AUTHENTICATED, HttpStatus.UNAUTHORIZED);
     }
 
     const bookings = await this._bookingService.getTrainerBookings(trainerId);

@@ -1,4 +1,4 @@
-import mongoose, { Types } from "mongoose";
+import mongoose, { Types, PipelineStage } from "mongoose";
 import {
   ITopSellingCategory,
   ITopSellingPrograms,
@@ -87,17 +87,17 @@ export class PaymentRepository
     search?: string,
     status?: string
   ): Promise<PurchasedProgram[]> {
-    const matchStage: any = {
+    const matchStage: Record<string, unknown> = {
       userId: new mongoose.Types.ObjectId(userId),
       paymentStatus: "success",
     };
 
     // Add status filter if provided
-    if (status && status !== 'all') {
+    if (status !== undefined && status !== "" && status !== "all") {
       matchStage.paymentStatus = status;
     }
 
-    const pipeline: any[] = [
+    const pipeline: PipelineStage[] = [
       { $match: matchStage },
       // Sort early to optimize pagination
       { $sort: { createdAt: -1 } },
@@ -166,7 +166,7 @@ export class PaymentRepository
     ];
 
     // Add search filter if provided
-    if (search && search.trim()) {
+    if (search !== undefined && search.trim() !== "") {
       pipeline.push({
         $match: {
           $or: [
@@ -188,23 +188,23 @@ export class PaymentRepository
   }
 
   async countPurchasedPrograms(userId: string, search?: string, status?: string): Promise<number> {
-    const matchStage: any = {
+    const matchStage: Record<string, unknown> = {
       userId: new mongoose.Types.ObjectId(userId),
       paymentStatus: "success",
     };
 
     // Add status filter if provided
-    if (status && status !== 'all') {
+    if (status !== undefined && status !== "" && status !== "all") {
       matchStage.paymentStatus = status;
     }
 
     // If no search, use simple count for better performance
-    if (!search || !search.trim()) {
+    if (search === undefined || search.trim() === "") {
       return await this.model.countDocuments(matchStage);
     }
 
     // If search is provided, use optimized aggregation to count filtered results
-    const pipeline: any[] = [
+    const pipeline: PipelineStage[] = [
       { $match: matchStage },
       {
         $lookup: {
@@ -614,13 +614,13 @@ export class PaymentRepository
       limit = 20,
     } = filters;
 
-    const matchStage: any = {};
+    const matchStage: Record<string, unknown> = {};
 
-    if (paymentStatus) {
+    if (paymentStatus !== undefined && paymentStatus !== "") {
       matchStage.paymentStatus = paymentStatus;
     }
 
-    if (trainerId) {
+    if (trainerId !== undefined && trainerId !== "") {
       matchStage.trainerId = new Types.ObjectId(trainerId);
     }
 
@@ -631,7 +631,7 @@ export class PaymentRepository
       };
     }
 
-    const pipeline: any[] = [
+    const pipeline: PipelineStage[] = [
       { $match: matchStage },
 
       // Populate User
@@ -684,7 +684,7 @@ export class PaymentRepository
       },
     ];
 
-    if (categoryId) {
+    if (categoryId !== undefined && categoryId !== "") {
       pipeline.push({
         $match: {
           "category._id": new Types.ObjectId(categoryId),
@@ -692,7 +692,7 @@ export class PaymentRepository
       });
     }
 
-    if (search) {
+    if (search !== undefined && search !== "") {
       pipeline.push({
         $match: {
           $or: [
@@ -789,15 +789,15 @@ export class PaymentRepository
       limit = 10,
     } = filters;
 
-    const matchStage: any = {
+    const matchStage: Record<string, unknown> = {
       trainerId: new Types.ObjectId(trainerId),
     };
 
-    if (paymentStatus) {
+    if (paymentStatus !== undefined && paymentStatus !== "") {
       matchStage.paymentStatus = paymentStatus;
     }
 
-    if (programId) {
+    if (programId !== undefined && programId !== "") {
       matchStage.programId = new Types.ObjectId(programId);
     }
 
@@ -808,7 +808,7 @@ export class PaymentRepository
       };
     }
 
-    const pipeline: any[] = [
+    const pipeline: PipelineStage[] = [
       { $match: matchStage },
 
       // Populate User
@@ -851,7 +851,7 @@ export class PaymentRepository
     ];
 
     // Search filter
-    if (search) {
+    if (search !== undefined && search !== "") {
       pipeline.push({
         $match: {
           $or: [

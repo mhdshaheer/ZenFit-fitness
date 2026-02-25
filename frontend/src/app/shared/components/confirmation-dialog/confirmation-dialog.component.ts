@@ -15,7 +15,7 @@ export class ConfirmationDialogComponent {
   @Input() confirmText = 'Confirm';
   @Input() cancelText = 'Cancel';
   @Input() type: 'danger' | 'warning' | 'info' = 'warning';
-  
+
   @Output() confirmed = new EventEmitter<void>();
   @Output() cancelled = new EventEmitter<void>();
 
@@ -27,7 +27,7 @@ export class ConfirmationDialogComponent {
     this.cancelled.emit();
   }
 
-  onBackdropClick(event: MouseEvent) {
+  onBackdropClick(event: Event) {
     if (event.target === event.currentTarget) {
       this.onCancel();
     }

@@ -46,18 +46,18 @@ export class BookingService {
   private readonly _apiUrl = environment.apiUrl + BookingRoutes.BASE;
 
   createBooking(slotInstanceId: string) {
-    return this._http.post(this._apiUrl, { slotInstanceId });
+    return this._http.post(this._apiUrl, { slotInstanceId }, { withCredentials: true });
   }
 
   getMyBookings(programId?: string): Observable<BookedSlot[]> {
     const url = programId
       ? `${this._apiUrl}/my-bookings?programId=${programId}`
       : `${this._apiUrl}/my-bookings`;
-    return this._http.get<BookedSlot[]>(url);
+    return this._http.get<BookedSlot[]>(url, { withCredentials: true });
   }
 
   getTrainerSessions(): Observable<TrainerSession[]> {
     const url = `${this._apiUrl}/trainer-bookings`;
-    return this._http.get<TrainerSession[]>(url);
+    return this._http.get<TrainerSession[]>(url, { withCredentials: true });
   }
 }

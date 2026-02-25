@@ -13,11 +13,11 @@ export class BmiCalculatorComponent {
   height: number | null = null;
   age: number | null = null;
   bmi: number | null = null;
-  category: string = '';
-  mealPlan: string = '';
-  workoutSuggestion: string = '';
-  circleColor: string = '#111827';
-  progressPercentage: number = 0;
+  category = '';
+  mealPlan = '';
+  workoutSuggestion = '';
+  circleColor = '#111827';
+  progressPercentage = 0;
 
   onInputChange() {
     if (this.weight && this.height) {

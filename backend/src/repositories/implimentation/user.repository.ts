@@ -8,8 +8,7 @@ import { injectable } from "inversify";
 @injectable()
 export class UserRepository
   extends BaseRepository<IUser>
-  implements IUserRepository
-{
+  implements IUserRepository {
   constructor() {
     super(UserModel);
   }
@@ -87,11 +86,11 @@ export class UserRepository
     username: string;
     role: string;
     googleId?: string;
-  }) {
+  }): Promise<IUser> {
     const user = new this.model(userData);
     return await user.save();
   }
-  async findByGoogleId(googleId: string) {
+  async findByGoogleId(googleId: string): Promise<IUser | null> {
     return await this.model.findOne({ googleId });
   }
 }

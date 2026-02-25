@@ -1,11 +1,11 @@
-import { Schema, model, Document } from "mongoose";
+import { Schema, model, Document, Types } from "mongoose";
 
 export interface IMeeting extends Document {
   meetingId: string;
-  slotId: Schema.Types.ObjectId;
-  hostId: Schema.Types.ObjectId;
+  slotId: Types.ObjectId;
+  hostId: Types.ObjectId;
   participants: Array<{
-    userId: Schema.Types.ObjectId;
+    userId: Types.ObjectId;
     joinedAt: Date;
     leftAt?: Date;
   }>;

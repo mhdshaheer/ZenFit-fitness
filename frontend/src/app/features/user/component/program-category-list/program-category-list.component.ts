@@ -31,9 +31,9 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
   private readonly _destroy$ = new Subject<void>();
 
   categoryExtras: Record<string, { icon: string; color: string }> = {
-    'Goal-Based': { icon: '📊', color: 'blue' },
-    'Lifestyle & Wellness': { icon: '🕐', color: 'purple' },
-    Specialized: { icon: '📅', color: 'orange' },
+    'Goal-Based': { icon: '🎯', color: 'primary' },
+    'Lifestyle & Wellness': { icon: '🌿', color: 'success' },
+    'Specialized': { icon: '⚡', color: 'warning' },
   };
 
   ngOnInit() {
@@ -47,12 +47,13 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
         next: (res: ICategory[]) => {
           this.categories = res;
           this.categoryCards = res.map((item) => {
+            const extra = this.categoryExtras[item.name] || { icon: '📊', color: 'primary' };
             return {
               title: item.name,
               description: item.description,
               id: item._id,
-              color: this.categoryExtras[item.name]?.color || 'red',
-              icon: this.categoryExtras[item.name]?.icon || '📊',
+              color: extra.color,
+              icon: extra.icon,
             };
           });
         },
@@ -64,12 +65,11 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
 
   getIconBgClass(color: string): string {
     const colorMap: Record<string, string> = {
-      blue: 'bg-blue-100 text-blue-600',
-      purple: 'bg-purple-100 text-purple-600',
-      orange: 'bg-orange-100 text-orange-600',
-      green: 'bg-green-100 text-green-600',
+      primary: 'bg-primary-50 text-tertiary-600 border border-primary-100',
+      success: 'bg-success-50 text-success-600 border border-success-100',
+      warning: 'bg-warning-50 text-warning-600 border border-warning-100',
     };
-    return colorMap[color] || colorMap['blue'];
+    return colorMap[color] || colorMap['primary'];
   }
 
   onCardClick(card: CategoryCard): void {

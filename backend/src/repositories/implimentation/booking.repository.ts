@@ -1,4 +1,4 @@
-import { Types } from "mongoose";
+import { Types, PipelineStage } from "mongoose";
 import { BookingModel, IBooking } from "../../models/booking.model";
 import { BaseRepository } from "../base.repository";
 import {
@@ -38,15 +38,15 @@ export class BookingRepository
   }
 
   async getMyBookings(userId: string, programId?: string): Promise<IBooking[]> {
-    const matchStage: any = {
+    const matchStage: Record<string, unknown> = {
       userId: new Types.ObjectId(userId),
     };
 
-    if (programId) {
+    if (programId !== undefined && programId !== "") {
       matchStage["snapshot.programId"] = new Types.ObjectId(programId);
     }
 
-    const pipeline: any[] = [
+    const pipeline: PipelineStage[] = [
       { $match: matchStage },
       {
         $lookup: {
@@ -117,8 +117,8 @@ export class BookingRepository
     return this.model.find().populate('userId', 'fullName email').lean();
   }
 
-  async getTrainerBookings(trainerId: string): Promise<any[]> {
-    const pipeline: any[] = [
+  async getTrainerBookings(trainerId: string): Promise<Record<string, unknown>[]> {
+    const pipeline: PipelineStage[] = [
       {
         $match: {
           "snapshot.trainerId": new Types.ObjectId(trainerId),

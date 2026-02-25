@@ -186,16 +186,16 @@ export class SlotInstanceService implements ISlotInstanceService {
             }
         }
 
-        let programIds = filters.programIds?.filter((id) => typeof id === "string" && id.trim().length);
+        let programIds = filters.programIds?.filter((id) => typeof id === "string" && id.trim().length > 0);
 
-        if (filters.search && filters.search.trim().length) {
+        if (filters.search !== undefined && filters.search.trim().length > 0) {
             const searchRegex = new RegExp(filters.search.trim(), "i");
             const matchingPrograms = await this._programRepo.getProgramsFilter({
                 trainerId: new Types.ObjectId(trainerId),
                 title: { $regex: searchRegex },
             });
 
-            const searchedIds = matchingPrograms.map((program) => program._id.toString());
+            const searchedIds = matchingPrograms.map((program) => program._id?.toString() ?? '').filter(id => id !== '');
 
             if (programIds && programIds.length) {
                 programIds = programIds.filter((id) => searchedIds.includes(id));
@@ -372,7 +372,7 @@ export class SlotInstanceService implements ISlotInstanceService {
 
     private matchesRecurrence(template: ISlotTemplate, date: Date): boolean {
         const recurrence = template.recurrence;
-        if (!recurrence || !recurrence.type) {
+        if (recurrence === undefined || recurrence === null || recurrence.type === undefined || (recurrence.type as string) === "") {
             return false;
         }
 
@@ -382,7 +382,7 @@ export class SlotInstanceService implements ISlotInstanceService {
                 if (interval === 1) {
                     return true;
                 }
-                const templateCreated = template.createdAt
+                const templateCreated = (template.createdAt !== undefined && template.createdAt !== null)
                     ? this.startOfDay(new Date(template.createdAt))
                     : this.startOfDay(new Date());
                 const diffDays = Math.floor(

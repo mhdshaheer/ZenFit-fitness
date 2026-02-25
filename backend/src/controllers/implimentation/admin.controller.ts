@@ -11,7 +11,7 @@ import { HttpResponse } from "../../const/response_message.const";
 export class AdminController implements IAdminController {
   constructor(
     @inject(TYPES.AdminService) private readonly _adminService: IAdminService
-  ) {}
+  ) { }
 
   async getUsers(req: Request, res: Response): Promise<void> {
     const page = parseInt(req.query.page as string) || 1;
@@ -28,12 +28,7 @@ export class AdminController implements IAdminController {
       sortOrder,
     });
 
-    if (!result) {
-      throw new AppError(
-        HttpResponse.USER_FETCH_FAILED,
-        HttpStatus.INTERNAL_SERVER_ERROR
-      );
-    }
+    // result is not nullable based on service interface
     res.status(HttpStatus.OK).json(result);
   }
 

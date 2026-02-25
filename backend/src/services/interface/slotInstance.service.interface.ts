@@ -1,7 +1,6 @@
 import { ISlotInstance } from "../../models/slotInstance.model";
 import {
     SlotInstancePaginatedDto,
-    SlotInstancePaginationMeta,
 } from "../../dtos/slotInstance.dtos";
 
 export type SlotInstancePaginatedResult = SlotInstancePaginatedDto;

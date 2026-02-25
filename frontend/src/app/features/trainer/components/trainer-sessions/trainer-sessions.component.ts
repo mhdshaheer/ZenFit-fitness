@@ -39,7 +39,7 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
   showMeetingRoom = false;
   currentMeetingId: string | null = null;
   currentMeetingSlotId: string | null = null;
-  currentMeetingTitle: string = '';
+  currentMeetingTitle = '';
   isStartingMeeting = false;
 
   // Feedback modal state
@@ -92,8 +92,7 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
     sessions.forEach((session) => {
       const sessionDate = new Date(session.date);
       sessionDate.setHours(0, 0, 0, 0);
-      const rawStatus = (session as any).status;
-      const status = (rawStatus?.toUpperCase?.() as 'OPEN' | 'CLOSED' | 'CANCELLED' | undefined) ?? undefined;
+      const status = (session.status as string | undefined)?.toUpperCase() as 'OPEN' | 'CLOSED' | 'CANCELLED' | undefined;
 
       if (status === 'CANCELLED') {
         cancelled.push(session);

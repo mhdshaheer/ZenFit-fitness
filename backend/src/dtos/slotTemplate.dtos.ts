@@ -1,14 +1,14 @@
 import { Types } from "mongoose";
 import { ISlotTemplate } from "../models/slotTemplate.model";
 
-const toObjectIdString = (value: any): string => {
+const toObjectIdString = (value: unknown): string => {
     if (typeof value === "string") {
         return value;
     }
     if (value instanceof Types.ObjectId) {
         return value.toString();
     }
-    return value?.toString?.() ?? "";
+    return (value as { toString?: () => string })?.toString?.() ?? "";
 };
 
 export interface SlotTemplateRecurrenceDto {
@@ -50,7 +50,7 @@ export const toSlotTemplateDto = (template: ISlotTemplate): SlotTemplateDto => (
         type: template.recurrence?.type ?? "WEEKLY",
         daysOfWeek: template.recurrence?.daysOfWeek,
         intervalDays: template.recurrence?.intervalDays,
-        specificDates: normalizeSpecificDates(template.recurrence?.specificDates as any),
+        specificDates: normalizeSpecificDates(template.recurrence?.specificDates),
     },
     startTime: template.startTime,
     endTime: template.endTime,

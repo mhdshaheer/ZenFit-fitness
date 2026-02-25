@@ -1,4 +1,4 @@
-import { GetUsersParams, IUser } from "../../interfaces/user.interface";
+import { GetUsersParams } from "../../interfaces/user.interface";
 import { UserDto, UserStatusDto } from "../../dtos/user.dtos";
 
 export interface IAdminService {

@@ -18,23 +18,23 @@ import { FormsModule } from '@angular/forms';
   styleUrls: ['./otp.component.css'],
 })
 export class OtpComponent implements OnInit {
-  @Input() bgColor = ' from-green-950 via-emerald-950 to-teal-700';
-  @Input() buttonColor = 'text-green-600 font-semibold';
+  @Input() bgColor = ' from-primary-950 via-primary-900 to-primary-700';
+  @Input() buttonColor = 'text-primary-600 font-semibold';
   @Input() textColor =
-    'text-green-600 font-semibold underline hover:text-green-700';
+    'text-primary-600 font-semibold underline hover:text-primary-700';
   @Input() email = 'gmail';
   @Input() context: 'signup' | 'login' | 'reset' = 'signup';
-  @Output() onVerify = new EventEmitter<string>();
-  @Output() onResend = new EventEmitter<void>();
+  @Output() verify = new EventEmitter<string>();
+  @Output() resend = new EventEmitter<void>();
 
   otpDigits = new Array(6).fill('');
   timer = 30;
-  intervel: any;
+  intervalId?: ReturnType<typeof setInterval>;
 
   @ViewChildren('otpInput') otpInputs!: QueryList<ElementRef>;
 
-  onInput(event: any, index: number) {
-    const input = event.target;
+  onInput(event: Event, index: number) {
+    const input = event.target as HTMLInputElement;
     const value = input.value;
 
     // Allow only digits
@@ -68,10 +68,10 @@ export class OtpComponent implements OnInit {
 
   startTimer() {
     this.timer = 30;
-    this.intervel = setInterval(() => {
+    this.intervalId = setInterval(() => {
       this.timer--;
       if (this.timer == 0) {
-        clearInterval(this.intervel);
+        clearInterval(this.intervalId);
       }
     }, 1000);
   }
@@ -79,12 +79,12 @@ export class OtpComponent implements OnInit {
     this.startTimer();
   }
   resendOtp() {
-    this.onResend.emit();
+    this.resend.emit();
     this.startTimer();
   }
   onSubmit() {
     const otp = this.getOtp();
     if (otp.length !== 6) return alert('Enter full 6-digit OTP');
-    this.onVerify.emit(otp);
+    this.verify.emit(otp);
   }
 }

@@ -1,65 +1,59 @@
-<div
-  class="min-h-screen bg-gradient-to-br from-gray-900 to-black flex items-center justify-center p-4"
->
-  <div class="max-w-2xl mx-auto text-center space-y-8 relative z-10">
-    <!-- 404 Number -->
-    <div>
-      <h1 class="text-8xl md:text-9xl font-black text-white leading-none">
+<div class="min-h-screen bg-neutral-950 flex items-center justify-center p-6 relative overflow-hidden">
+  <!-- Dynamic Ambient Glows -->
+  <div class="absolute top-1/4 -left-20 w-96 h-96 bg-primary-600/10 rounded-full blur-[120px] animate-float"></div>
+  <div class="absolute bottom-1/4 -right-20 w-96 h-96 bg-secondary-400/10 rounded-full blur-[120px] animate-float"
+    style="animation-delay: -1.5s;"></div>
+
+  <div class="max-w-2xl w-full relative z-10 text-center space-y-12">
+    <!-- 404 Visual Artifact -->
+    <div class="relative inline-block animate-slideInUp">
+      <div class="absolute inset-0 bg-primary-600/20 blur-3xl rounded-full scale-150 opacity-50"></div>
+      <h1
+        class="text-[12rem] md:text-[18rem] font-black leading-none tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-neutral-400 to-neutral-800 opacity-20 select-none">
         404
       </h1>
+      <div class="absolute inset-0 flex items-center justify-center">
+        <div class="space-y-2">
+          <span class="caption text-primary-400 tracking-[0.5em] block animate-pulse">Lost in Orbit</span>
+          <h2 class="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">Artifact Missing</h2>
+        </div>
+      </div>
     </div>
 
-    <!-- Error Message -->
-    <div class="space-y-4">
-      <h2 class="text-3xl md:text-4xl font-bold text-gray-100">
-        Page Not Found
-      </h2>
-      <p class="text-gray-400 text-lg max-w-md mx-auto">
-        The page you're looking for doesn't exist or has been moved.
+    <!-- Contextual Explanation -->
+    <div class="space-y-6 max-w-lg mx-auto animate-slideInUp" style="animation-delay: 200ms;">
+      <p class="text-neutral-400 font-medium text-lg leading-relaxed">
+        The resource you are attempting to synchronize with has been moved or purged from the central ledger.
       </p>
+
+      <!-- Action Matrix -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center pt-8">
+        <button (click)="goHome()" class="btn btn-primary !px-10 !py-4 shadow-2xl shadow-primary-500/20 group">
+          <span class="font-black uppercase tracking-widest text-xs">Return to Nexus</span>
+          <svg class="w-4 h-4 ml-2 transition-transform group-hover:-translate-x-1 rotate-180" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        </button>
+
+        <button (click)="goBack()"
+          class="btn btn-secondary !bg-white/10 !backdrop-blur-xl border-white/10 !text-white hover:!bg-white/20 transition-all !px-10 !py-4 group">
+          <span class="font-black uppercase tracking-widest text-xs">Previous Node</span>
+          <svg class="w-4 h-4 ml-2 opacity-50 transition-opacity group-hover:opacity-100" fill="none"
+            stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+          </svg>
+        </button>
+      </div>
     </div>
 
-    <!-- Action Buttons -->
-    <div class="flex flex-col sm:flex-row gap-4 justify-center pt-4">
-      <button
-        (click)="goHome()"
-        class="bg-white hover:bg-gray-100 text-black px-8 py-3 rounded-lg font-semibold transition-all duration-300 flex items-center justify-center gap-2"
-      >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-          />
-        </svg>
-        Go Home
-      </button>
-
-      <button
-        (click)="goBack()"
-        class="bg-gray-800 hover:bg-gray-700 text-white px-8 py-3 rounded-lg font-semibold border border-gray-600 transition-all duration-300 flex items-center justify-center gap-2"
-      >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
-          />
-        </svg>
-        Go Back
-      </button>
+    <!-- Decorative Status Line -->
+    <div class="pt-20 opacity-20">
+      <div class="flex items-center justify-center gap-4">
+        <div class="h-px w-12 bg-gradient-to-r from-transparent to-white"></div>
+        <span class="text-[9px] font-black uppercase tracking-[0.4em] text-white">System Status: Operative</span>
+        <div class="h-px w-12 bg-gradient-to-l from-transparent to-white"></div>
+      </div>
     </div>
   </div>
 </div>

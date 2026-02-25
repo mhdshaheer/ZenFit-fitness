@@ -1,47 +1,57 @@
-<!-- ZenFit Landing Page -->
-<div class="min-h-screen bg-white">
+<!-- ZenFit Landing Page - Modern Premium Design -->
+<div class="min-h-screen bg-neutral-50 overflow-x-hidden">
+
+  <!-- Content Background Shapes -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="absolute -top-24 -right-24 w-96 h-96 bg-primary-100/50 rounded-full blur-[120px]"></div>
+    <div class="absolute top-1/2 -left-24 w-72 h-72 bg-secondary-100/30 rounded-full blur-[100px]"></div>
+  </div>
+
   <!-- Navigation -->
-  <nav class="relative z-50 bg-white/95 backdrop-blur-md border-b border-gray-200 sticky top-0 shadow-sm">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-      <div class="flex items-center justify-between">
+  <nav class="fixed top-0 left-0 right-0 z-50 glass border-b border-neutral-200/50">
+    <div class="container-custom">
+      <div class="flex items-center justify-between h-20">
         <!-- Logo -->
-        <div class="flex items-center space-x-3">
-          <div
-            class="w-10 h-10 bg-gradient-to-r from-slate-900 to-gray-800 rounded-xl flex items-center justify-center shadow-lg">
-            <span class="text-white font-bold text-lg">ZF</span>
+        <a routerLink="/" class="flex items-center gap-3 group">
+          <div class="relative">
+            <div
+              class="absolute inset-0 bg-primary-600 rounded-2xl blur-lg opacity-20 group-hover:opacity-40 transition-opacity">
+            </div>
+            <div
+              class="relative w-12 h-12 gradient-primary rounded-2xl flex items-center justify-center shadow-lg transform group-hover:scale-105 transition-transform">
+              <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z">
+                </path>
+              </svg>
+            </div>
           </div>
-          <span class="text-2xl font-bold" style="color: #2f3241;">ZENFIT</span>
+          <span class="text-2xl font-black tracking-tighter gradient-text">ZENFIT</span>
+        </a>
+
+        <!-- Desktop Navigation -->
+        <div class="hidden md:flex items-center gap-8 px-8 border-x border-neutral-100 mx-auto">
+          <a
+            class="text-xs font-black uppercase tracking-[0.2em] text-neutral-400 hover:text-primary-600 transition-colors">Programs</a>
+          <a
+            class="text-xs font-black uppercase tracking-[0.2em] text-neutral-400 hover:text-primary-600 transition-colors">Trainers</a>
+          <a
+            class="text-xs font-black uppercase tracking-[0.2em] text-neutral-400 hover:text-primary-600 transition-colors">Pricing</a>
         </div>
 
-        <!-- Auth Buttons / User Info -->
-        <div class="flex items-center space-x-3">
+        <!-- Auth Buttons -->
+        <div class="flex items-center gap-4">
           @if (isLoggedIn) {
-          <!-- Logged in user info -->
-          <div class="flex items-center space-x-3">
-            <div class="flex items-center space-x-2">
-              <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background-color: #424758;">
-                <span class="text-white text-sm font-semibold">{{ currentUserName.charAt(0).toUpperCase() }}</span>
-              </div>
-              <span class="text-sm font-medium" style="color: #424758;">{{ currentUserName }}</span>
-            </div>
-            <button (click)="logout()"
-              class="px-4 py-2 text-sm font-medium border rounded-lg transition-all duration-300 hover:shadow-md"
-              style="color: #424758; border-color: #424758;">
-              Logout
-            </button>
-          </div>
+          <button (click)="logout()" class="btn btn-ghost px-4">
+            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+            </svg>
+            Logout
+          </button>
           } @else {
-          <!-- Login/Signup buttons for non-logged in users -->
           <button (click)="toLogin()"
-            class="px-6 py-2.5 text-sm font-medium border rounded-lg transition-all duration-300 hover:shadow-md"
-            style="color: #424758; border-color: #424758;">
-            Log in
-          </button>
-          <button (click)="toSignup()"
-            class="px-6 py-2.5 text-sm font-medium text-white rounded-lg transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-[1.02]"
-            style="background-color: #424758;">
-            Register Now
-          </button>
+            class="text-xs font-black uppercase tracking-[0.2em] text-neutral-600 hover:text-primary-600 transition-colors mr-2">Login</button>
+          <button (click)="toSignup()" class="btn btn-primary btn-sm px-6">Get Started</button>
           }
         </div>
       </div>
@@ -49,276 +59,162 @@
   </nav>
 
   <!-- Hero Section -->
-  <section class="relative px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 overflow-hidden bg-white">
-    <div class="max-w-7xl mx-auto">
-      <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+  <section class="relative pt-32 pb-20 lg:pt-48 lg:pb-32">
+    <div class="container-custom relative z-10">
+      <div class="grid lg:grid-cols-12 gap-16 items-center">
         <!-- Left Content -->
-        <div class="space-y-8 lg:space-y-10">
+        <div class="lg:col-span-7 space-y-10 animate-slideInUp">
           <div class="space-y-6">
-            <h1 class="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight" style="color: #424758;">
-              Strength,
-              <br />
-              Endurance,
-              <br />
-              <span style="color: #424758;">
-                Transformation
-              </span>
+            <div class="badge badge-primary py-2 px-5">
+              <span class="w-2 h-2 rounded-full bg-primary-600 mr-3 animate-pulse"></span>
+              Join the elite league
+            </div>
+            <h1 class="heading-1 text-neutral-900">
+              STRENGTH,<br />
+              ENDURANCE,<br />
+              <span class="gradient-text">TRANSFORM</span>
             </h1>
-            <p class="text-xl sm:text-2xl max-w-lg leading-relaxed font-light" style="color: #424758; opacity: 0.8;">
-              Join us to achieve your fitness goals with expert guidance and state-of-the-art facilities.
+            <p class="body-large text-neutral-500 max-w-xl">
+              Elevate your fitness with personalized coaching, expert guidance, and a community dedicated to peak
+              performance.
             </p>
           </div>
 
-          <!-- CTA Buttons -->
-          <div class="flex flex-col sm:flex-row gap-4">
-            @if (!isLoggedIn) {
-            <button (click)="toSignup()"
-              class="px-8 py-4 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-center"
-              style="background-color: #424758;">
-              Register Now
+          <div class="flex flex-col sm:flex-row gap-5">
+            <button (click)="toSignup()" class="btn btn-primary btn-lg group">
+              <span>Start Your Journey</span>
+              <svg class="w-6 h-6 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+              </svg>
             </button>
-            <button (click)="toLogin()"
-              class="px-8 py-4 rounded-lg font-semibold transition-all duration-300 text-center border-2 hover:shadow-md"
-              style="color: #424758; border-color: #424758; background-color: white;">
-              Login to Continue
+            <button (click)="toLogin()" class="btn btn-secondary btn-lg">
+              Sign In
             </button>
-            } @else {
-            <button (click)="navigateToWorkouts()"
-              class="px-8 py-4 text-white rounded-lg font-semibold transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-[1.02] text-center"
-              style="background-color: #424758;">
-              Explore Programs
-            </button>
-            <button (click)="navigateToHome()"
-              class="px-8 py-4 rounded-lg font-semibold transition-all duration-300 text-center border-2 hover:shadow-md"
-              style="color: #424758; border-color: #424758; background-color: white;">
-              Go to Dashboard
-            </button>
-            }
           </div>
-        </div>
 
-        <!-- Right Content - Hero Image -->
-        <div class="relative mt-8 lg:mt-0">
-          <div class="relative z-10">
-            <div class="aspect-[4/5] sm:aspect-[3/4] lg:aspect-[4/5] overflow-hidden rounded-2xl shadow-2xl"
-              style="background-color: #F2F2F2;">
-              <img src="/landing_page/man-weight-bar.jpg" alt="Fitness Training" class="w-full h-full object-cover" />
+          <!-- Quick Stats -->
+          <div class="flex flex-wrap gap-12 pt-10 border-t border-neutral-200">
+            <div class="space-y-1">
+              <p class="text-3xl font-black text-neutral-900 tracking-tighter">10K+</p>
+              <p class="caption text-neutral-400">Athletes</p>
+            </div>
+            <div class="space-y-1">
+              <p class="text-3xl font-black text-neutral-900 tracking-tighter">500+</p>
+              <p class="caption text-neutral-400">Programs</p>
+            </div>
+            <div class="space-y-1">
+              <p class="text-3xl font-black text-neutral-900 tracking-tighter">98%</p>
+              <p class="caption text-neutral-400">Success Rate</p>
             </div>
           </div>
-          <!-- Decorative elements -->
-          <div class="absolute -top-4 -right-4 w-16 h-16 sm:w-20 sm:h-20 rounded-full opacity-10 animate-pulse"
-            style="background: linear-gradient(to right, #424758, #424758);"></div>
-          <div class="absolute -bottom-4 -left-4 w-20 h-20 sm:w-24 sm:h-24 rounded-full opacity-5"
-            style="background: linear-gradient(to right, #424758, #424758);"></div>
         </div>
-      </div>
-    </div>
-  </section>
 
-  <!-- Features Section -->
-  <section class="px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 bg-white">
-    <div class="max-w-7xl mx-auto">
-      <div class="grid lg:grid-cols-2 gap-8 lg:gap-12 items-center">
-        <div class="space-y-6 lg:space-y-8">
-          <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold" style="color: #424758;">
-            Why Choose ZenFit?
-          </h2>
-          <p class="text-lg sm:text-xl leading-relaxed" style="color: #424758; opacity: 0.8;">
-            We provide everything you need to achieve your fitness goals with personalized training and expert support.
-          </p>
+        <!-- Right Image -->
+        <div class="lg:col-span-5 relative animate-fadeIn" style="animation-delay: 300ms;">
+          <div class="relative group">
+            <div
+              class="absolute -inset-4 bg-gradient-to-r from-primary-600/20 to-secondary-600/20 rounded-[3rem] blur-2xl group-hover:opacity-40 transition-opacity">
+            </div>
+            <div class="relative aspect-[4/5] rounded-[3rem] overflow-hidden border-8 border-white shadow-2xl">
+              <img src="/landing_page/man-weight-bar.jpg"
+                class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-700"
+                alt="Training">
+              <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent"></div>
+            </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            @for (feature of features; track feature) {
-            <div class="flex items-center space-x-3 p-3 rounded-xl border shadow-sm"
-              style="background-color: #F2F2F2; border-color: #F2F2F2;">
-              <div class="flex-shrink-0 w-8 h-8 rounded-lg flex items-center justify-center"
-                style="background-color: #424758;">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                </svg>
+            <!-- Floating Dashboard Element -->
+            <div
+              class="absolute -bottom-8 -left-8 glass p-6 rounded-[2rem] shadow-2xl animate-float border border-white/50">
+              <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-success-500 rounded-2xl flex items-center justify-center text-white shadow-lg">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <div>
+                  <p class="text-[10px] font-black uppercase text-neutral-400 tracking-widest">Active Goals</p>
+                  <p class="text-lg font-black text-neutral-900 tracking-tight">Transformation On</p>
+                </div>
               </div>
-              <span class="font-medium text-sm sm:text-base" style="color: #424758;">{{ feature }}</span>
             </div>
-            }
           </div>
-        </div>
-
-        <div class="relative mt-8 lg:mt-0">
-          <div class="aspect-[4/3] overflow-hidden rounded-2xl shadow-2xl" style="background-color: #F2F2F2;">
-            <img src="https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&h=400&fit=crop"
-              alt="Gym Equipment" class="w-full h-full object-cover" />
-          </div>
-          <div class="absolute -bottom-4 -right-4 w-16 h-16 sm:w-20 sm:h-20 rounded-full opacity-10"
-            style="background: linear-gradient(to right, #424758, #424758);"></div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Explore Programs Section -->
-  <section class="px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20" style="background-color: #F2F2F2;">
-    <div class="max-w-7xl mx-auto">
-      <div class="text-center mb-12 lg:mb-16">
-        <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4" style="color: #424758;">
-          Explore Programs
-        </h2>
-        <p class="text-lg sm:text-xl max-w-2xl mx-auto" style="color: #424758; opacity: 0.8;">
-          Discover our comprehensive fitness programs designed to help you achieve your goals
-        </p>
+  <!-- Features -->
+  <section class="section-padding bg-white relative">
+    <div class="container-custom">
+      <div class="text-center max-w-3xl mx-auto mb-20 space-y-4">
+        <span class="caption text-primary-600 font-black">Performance First</span>
+        <h2 class="heading-2 text-neutral-900">Built for champions,<br />designed for you</h2>
       </div>
 
-      <!-- Loading State -->
-      @if (isLoading) {
-      <div class="text-center py-12">
-        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2" style="border-color: #424758;"></div>
-        <p class="mt-4" style="color: #424758; opacity: 0.8;">Loading programs...</p>
-      </div>
-      }
-
-      <!-- Programs Grid -->
-      @if (!isLoading && programs.length > 0) {
-      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-        @for (program of programs; track $index) {
-        <div
-          class="bg-white p-6 lg:p-8 rounded-2xl shadow-lg border border-gray-200 hover:shadow-xl transition-all duration-300">
-          <div class="w-12 h-12 rounded-lg mb-4 flex items-center justify-center" style="background-color: #424758;">
-            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z">
-              </path>
+      <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+        @for (feature of features; track feature) {
+        <div class="card p-10 hover:border-primary-500 group">
+          <div
+            class="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center text-white mb-8 shadow-lg group-hover:scale-110 transition-transform">
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
             </svg>
           </div>
-          <h3 class="text-xl font-bold mb-2" style="color: #424758;">{{ program.title }}</h3>
-          <p class="mb-4 leading-relaxed" style="color: #424758; opacity: 0.8;">{{ program.description }}</p>
-          <div class="flex items-center justify-between">
-            <span class="text-sm font-medium" style="color: #424758; opacity: 0.7;">Duration: {{ program.duration
-              }}</span>
-            <span class="text-lg font-bold" style="color: #424758;">₹{{ program.price }}</span>
-          </div>
+          <h3 class="heading-5 text-neutral-900 mb-4">{{ feature }}</h3>
+          <p class="body-base text-neutral-500">Expertly crafted solutions to push your limits and achieve sustainable
+            results.</p>
         </div>
         }
       </div>
-
-      <!-- Single Explore Programs Button -->
-      <div class="text-center mt-12">
-        <button (click)="navigateToWorkouts()"
-          class="px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:shadow-lg transform hover:scale-[1.02]"
-          style="background-color: #424758; color: white;">
-          Explore Programs
-        </button>
-      </div>
-      }
-
-      <!-- No Programs State -->
-      @if (!isLoading && programs.length === 0) {
-      <div class="text-center py-12">
-        <p class="text-lg" style="color: #424758; opacity: 0.8;">No programs available at the moment.</p>
-        <p class="text-sm mt-2" style="color: #424758; opacity: 0.6;">Check back soon for new fitness programs!</p>
-      </div>
-      }
     </div>
   </section>
 
   <!-- CTA Section -->
-  <section class="px-4 sm:px-6 lg:px-8 py-12 sm:py-16 lg:py-20 bg-white">
-    <div class="max-w-4xl mx-auto text-center">
-      @if (!isLoggedIn) {
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 lg:mb-6" style="color: #424758;">
-        Ready to Start Your Transformation?
-      </h2>
-      <p class="text-lg sm:text-xl mb-8 lg:mb-10 max-w-2xl mx-auto leading-relaxed"
-        style="color: #424758; opacity: 0.8;">
-        Join thousands of members who have achieved their fitness goals with ZenFit's personalized training programs.
-      </p>
-      <button (click)="toSignup()"
-        class="px-8 lg:px-12 py-4 lg:py-5 text-white rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
-        style="background-color: #424758;">
-        Register Now
-      </button>
-      } @else {
-      <h2 class="text-3xl sm:text-4xl lg:text-5xl font-bold mb-4 lg:mb-6" style="color: #424758;">
-        Welcome Back, {{ currentUserName }}!
-      </h2>
-      <p class="text-lg sm:text-xl mb-8 lg:mb-10 max-w-2xl mx-auto leading-relaxed"
-        style="color: #424758; opacity: 0.8;">
-        Continue your fitness journey with our comprehensive programs and personalized training.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-4 justify-center">
-        <button (click)="navigateToWorkouts()"
-          class="px-8 lg:px-12 py-4 lg:py-5 text-white rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl hover:shadow-2xl"
-          style="background-color: #424758;">
-          Explore Programs
-        </button>
-        <button (click)="navigateToHome()"
-          class="px-8 lg:px-12 py-4 lg:py-5 rounded-lg font-bold text-lg transition-all duration-300 transform hover:scale-105 border-2 hover:shadow-lg"
-          style="color: #424758; border-color: #424758; background-color: white;">
-          Go to Dashboard
-        </button>
+  <section class="section-padding">
+    <div class="container-custom">
+      <div class="relative rounded-[3rem] gradient-primary py-20 px-8 md:px-20 text-center overflow-hidden shadow-2xl">
+        <!-- Decor -->
+        <div class="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-[80px] -mr-32 -mt-32"></div>
+        <div class="absolute bottom-0 left-0 w-64 h-64 bg-black/10 rounded-full blur-[60px] -ml-24 -mb-24"></div>
+
+        <div class="relative z-10 space-y-8 max-w-4xl mx-auto">
+          <h2 class="heading-1 text-white">IGNITE YOUR<br />PERFORMANCE</h2>
+          <p class="body-large text-white/80 max-w-2xl mx-auto">Ready to rewrite your story? Join ZenFit today and start
+            your journey towards greatness.</p>
+          <div class="flex flex-col sm:flex-row gap-5 justify-center pt-4">
+            <button (click)="toSignup()"
+              class="btn px-12 py-5 bg-white text-primary-700 hover:bg-neutral-50 rounded-[2rem] shadow-xl text-xl">Get
+              Started Now</button>
+            <button (click)="toLogin()"
+              class="btn px-12 py-5 bg-primary-700 text-white hover:bg-primary-800 rounded-[2rem] border border-white/20 text-xl">View
+              Plans</button>
+          </div>
+        </div>
       </div>
-      }
     </div>
   </section>
 
-  <!-- Footer -->
-  <footer class="px-4 sm:px-6 lg:px-8 py-12 lg:py-16" style="background-color: #424758;">
-    <div class="max-w-7xl mx-auto">
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
-        <div class="lg:col-span-2">
-          <div class="flex items-center space-x-3 mb-6">
-            <div
-              class="w-10 h-10 bg-gradient-to-r from-slate-900 to-gray-800 rounded-xl flex items-center justify-center">
-              <span class="text-white font-bold text-lg">ZF</span>
-            </div>
-            <span class="text-2xl font-bold text-white">ZENFIT</span>
+  <!-- Minimal Footer -->
+  <footer class="py-12 border-t border-neutral-200 bg-white">
+    <div class="container-custom">
+      <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+        <div class="flex items-center gap-4">
+          <div class="w-10 h-10 gradient-primary rounded-xl flex items-center justify-center text-white shadow-md">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
           </div>
-          <p class="text-white/80 leading-relaxed max-w-md">
-            Transform your fitness journey with personalized training programs, expert guidance, and a supportive
-            community dedicated to your success.
-          </p>
+          <span class="text-xl font-black tracking-tighter text-neutral-900">ZENFIT</span>
         </div>
 
-        <div>
-          <h3 class="font-semibold text-white mb-6">Contact Info</h3>
-          <ul class="space-y-3 text-white/70">
-            <li class="flex items-center space-x-2">
-              <span>📍</span>
-              <span>123 Fitness Street, City</span>
-            </li>
-            <li class="flex items-center space-x-2">
-              <span>📞</span>
-              <span>(555) 123-4567</span>
-            </li>
-            <li class="flex items-center space-x-2">
-              <span>✉️</span>
-              <span>info&#64;zenfit.com</span>
-            </li>
-            <li class="flex items-center space-x-2">
-              <span>🕒</span>
-              <span>Mon-Fri: 6AM-10PM</span>
-            </li>
-          </ul>
+        <div class="flex gap-8">
+          <a class="caption text-neutral-400 hover:text-primary-600 transition-colors">Privacy</a>
+          <a class="caption text-neutral-400 hover:text-primary-600 transition-colors">Terms</a>
+          <a class="caption text-neutral-400 hover:text-primary-600 transition-colors">Cookies</a>
         </div>
 
-        <div>
-          <h3 class="font-semibold text-white mb-6">Follow Us</h3>
-          <div class="flex space-x-4">
-            <div
-              class="w-10 h-10 bg-white/20 hover:bg-white rounded-lg flex items-center justify-center transition-colors cursor-pointer group">
-              <span class="text-white group-hover:text-gray-800 text-sm">f</span>
-            </div>
-            <div
-              class="w-10 h-10 bg-white/20 hover:bg-white rounded-lg flex items-center justify-center transition-colors cursor-pointer group">
-              <span class="text-white group-hover:text-gray-800 text-sm">t</span>
-            </div>
-            <div
-              class="w-10 h-10 bg-white/20 hover:bg-white rounded-lg flex items-center justify-center transition-colors cursor-pointer group">
-              <span class="text-white group-hover:text-gray-800 text-sm">i</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="border-t border-white/20 mt-12 pt-8 text-center">
-        <p class="text-white/70">&copy; 2024 ZenFit. All rights reserved.</p>
+        <p class="caption text-neutral-400 uppercase tracking-[0.2em]">© 2025 ZENFIT ELITE. ALL RIGHTS RESERVED.</p>
       </div>
     </div>
   </footer>

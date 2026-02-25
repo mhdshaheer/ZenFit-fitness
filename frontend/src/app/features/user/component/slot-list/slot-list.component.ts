@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component, computed, inject, OnDestroy, signal } from '@angular/core';
+import { Component, computed, inject, OnDestroy, signal, OnInit } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterModule } from '@angular/router';
 import {
   ISlotInstancePaginatedResponse,
   ISlotInstancePaginationMeta,
@@ -62,13 +62,14 @@ interface ZonedDateInfo {
   offsetMinutes: number;
 }
 
+
 @Component({
   selector: 'zenfit-slot-list',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, RouterModule],
   templateUrl: './slot-list.component.html',
   styleUrl: './slot-list.component.css',
 })
-export class SlotListComponent implements OnDestroy {
+export class SlotListComponent implements OnDestroy, OnInit {
   private readonly _authService = inject(AuthService);
   private readonly _slotService = inject(SlotService);
   private readonly _programService = inject(ProgramService);
@@ -155,16 +156,30 @@ export class SlotListComponent implements OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (res) => {
-          const category = JSON.parse(res.category);
+          let categoryName = 'General';
+          try {
+            if (typeof res.category === 'string') {
+              const parsed = JSON.parse(res.category);
+              categoryName = parsed.name || res.category;
+            } else if (res.category && (res.category as any).name) {
+              categoryName = (res.category as any).name;
+            }
+          } catch (e) {
+            categoryName = res.category || 'General';
+          }
+
           const mockProgram: Program = {
             _id: programId,
             name: res.title,
             description: res.description,
-            category: category.name,
+            category: categoryName,
             price: res.price,
           };
           this.program.set(mockProgram);
         },
+        error: (err) => {
+          this._loggerService.error('Failed to load program details:', err);
+        }
       });
   }
 

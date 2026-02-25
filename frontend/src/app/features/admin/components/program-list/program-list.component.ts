@@ -1,23 +1,20 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { ProgramService } from '../../../../core/services/program.service';
 import { LoggerService } from '../../../../core/services/logger.service';
-import {
-  TableAction,
-  TableColumn,
-} from '../../../../interface/shared.interface';
+import { ActionEvent, TableAction, TableColumn } from '../../../../interface/shared.interface';
 import { TableComponent } from '../../../../shared/components/table/table.component';
+import { SharedSkeletonComponent } from '../../../../shared/components/shared-skeleton/shared-skeleton.component';
 import { IProgramTable } from '../../../../interface/program.interface';
 import { Program } from '../../../trainer/store/trainer.model';
 import { ApprovalStatusColorPipe } from '../../../../shared/pipes/approval-status-color.pipe';
-import { NgClass } from '@angular/common';
+import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
-import { ActionEvent } from '../user-manage/user-manage.component';
 
 type ApprovalTabValue = 'Pending' | 'Approved' | 'Rejected';
 
 @Component({
   selector: 'zenfit-program-list',
-  imports: [TableComponent, ApprovalStatusColorPipe, NgClass],
+  imports: [TableComponent, ApprovalStatusColorPipe, CommonModule, SharedSkeletonComponent],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
@@ -28,14 +25,14 @@ export class ProgramListComponent implements OnInit {
   private _allPrograms: IProgramTable[] = [];
 
   programsColumn: TableColumn[] = [
-    { key: 'name', label: 'Program Name', sortable: true, width: '200px' },
+    { key: 'name', label: 'Program Name', sortable: true },
     {
       key: 'approvalStatus',
       label: 'Approval Status',
-      width: '150px',
+      width: '180px',
       type: 'approval',
     },
-    { key: 'price', label: 'Price', width: '150px' },
+    { key: 'price', label: 'Price', width: '120px' },
     {
       key: 'status',
       label: 'Status',
@@ -48,7 +45,7 @@ export class ProgramListComponent implements OnInit {
       label: 'Created At',
       type: 'date',
       sortable: true,
-      width: '150px',
+      width: '160px',
     },
   ];
   programs: IProgramTable[] = [];
@@ -59,33 +56,15 @@ export class ProgramListComponent implements OnInit {
   };
   isLoading = false;
 
-  approvalTabs: { label: string; value: ApprovalTabValue; helper: string }[] = [
-    { label: 'Pending', value: 'Pending', helper: 'Awaiting review' },
-    { label: 'Approved', value: 'Approved', helper: 'Live programs' },
-    { label: 'Rejected', value: 'Rejected', helper: 'Needs updates' },
+  approvalTabs: { label: string; value: ApprovalTabValue; helper: string; icon: string }[] = [
+    { label: 'Pending', value: 'Pending', helper: 'Review Queue', icon: 'fas fa-clock' },
+    { label: 'Approved', value: 'Approved', helper: 'Live Inventory', icon: 'fas fa-check-circle' },
+    { label: 'Rejected', value: 'Rejected', helper: 'Correction List', icon: 'fas fa-exclamation-triangle' },
   ];
-
-  tabStyles: Record<ApprovalTabValue, { active: string; inactive: string }> = {
-    Pending: {
-      active:
-        'bg-yellow-500 border-yellow-500 text-white shadow-sm hover:bg-yellow-500',
-      inactive: 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50',
-    },
-    Approved: {
-      active:
-        'bg-green-600 border-green-600 text-white shadow-sm hover:bg-green-600',
-      inactive: 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50',
-    },
-    Rejected: {
-      active:
-        'bg-red-600 border-red-600 text-white shadow-sm hover:bg-red-600',
-      inactive: 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50',
-    },
-  };
 
   activeApprovalTab: ApprovalTabValue = 'Pending';
 
-  programAction: TableAction[] = [
+  programAction: TableAction<IProgramTable>[] = [
     { label: 'View', icon: 'view', color: 'blue', action: 'view' },
   ];
 
@@ -131,24 +110,6 @@ export class ProgramListComponent implements OnInit {
     this.applyApprovalFilter();
   }
 
-  getTabButtonClasses(tabValue: ApprovalTabValue): string {
-    const baseClasses =
-      'w-full text-left border rounded-lg px-4 py-3 text-sm font-semibold transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2';
-    const styles = this.tabStyles[tabValue];
-    const isActive = this.activeApprovalTab === tabValue;
-
-    return isActive
-      ? `${baseClasses} ${styles.active}`
-      : `${baseClasses} ${styles.inactive}`;
-  }
-
-  getTabHelperClasses(tabValue: ApprovalTabValue): string {
-    const isActive = this.activeApprovalTab === tabValue;
-    if (isActive) {
-      return 'text-sm text-white/80';
-    }
-    return 'text-sm text-gray-500';
-  }
 
   private applyApprovalFilter() {
     this.programs = this._allPrograms.filter(
@@ -178,7 +139,7 @@ export class ProgramListComponent implements OnInit {
     return 'Pending';
   }
 
-  onViewProgram(event: ActionEvent) {
+  onViewProgram(event: ActionEvent<IProgramTable>) {
     if (event.action == 'view') {
       this._logger.info('view action is clicked :', event.row.id);
       this._router.navigate(['admin/programs', event.row.id]);

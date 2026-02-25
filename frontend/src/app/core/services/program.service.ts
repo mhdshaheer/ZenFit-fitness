@@ -18,10 +18,10 @@ export class ProgramService {
     return this._http.post<{ message: string }>(`${this._apiUrl}`, data);
   }
   getAllPrograms(): Observable<Program[]> {
-    return this._http.get<Program[]>(`${this._apiUrl}`);
+    return this._http.get<Program[]>(`${this._apiUrl}`, { withCredentials: true });
   }
   getProgramByProgramId(programId: string) {
-    return this._http.get<Program>(`${this._apiUrl}/${programId}`);
+    return this._http.get<Program>(`${this._apiUrl}/${programId}`, { withCredentials: true });
   }
 
   updateProgram(programId: string, program: Program) {
@@ -39,7 +39,8 @@ export class ProgramService {
 
   getProgramsForSlotCreate(): Observable<IProgramsSlotCreate[]> {
     return this._http.get<IProgramsSlotCreate[]>(
-      `${this._apiUrl}/create-slots`
+      `${this._apiUrl}/create-slots`,
+      { withCredentials: true }
     );
   }
   getPrograms(): Observable<{ programs: Program[] }> {
@@ -49,14 +50,16 @@ export class ProgramService {
   }
   getProgramCategory() {
     return this._http.get<{ programs: ProgramCategory[] }>(
-      `${this._apiUrl}${ProgramRoutes.CATEGORY}`
+      `${this._apiUrl}${ProgramRoutes.CATEGORY}`,
+      { withCredentials: true }
     );
   }
   getProgramsByParantId(
     categoryId: string
   ): Observable<{ programs: Program[] }> {
     return this._http.get<{ programs: Program[] }>(
-      `${this._apiUrl}${ProgramRoutes.CATEGORY_BY_ID(categoryId)}`
+      `${this._apiUrl}${ProgramRoutes.CATEGORY_BY_ID(categoryId)}`,
+      { withCredentials: true }
     );
   }
 

@@ -56,7 +56,7 @@ export class FileService implements IFileService {
       return this.s3Service.getFileUrl(user.profileImage, 3600);
     } else if (type === "resumes") {
       const res = await this.s3Service.getFileDetails(user.resume!);
-      const obj = JSON.parse(res);
+      const obj = JSON.parse(res) as Record<string, unknown>;
       obj.url = await this.s3Service.getFileUrl(user.resume!, 3600);
       return JSON.stringify(obj);
     }

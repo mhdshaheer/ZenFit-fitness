@@ -12,6 +12,7 @@ import {
   ActionEvent,
   TableAction,
   TableColumn,
+  TableData,
 } from '../../../interface/shared.interface';
 
 @Component({
@@ -20,13 +21,13 @@ import {
   templateUrl: './table.component.html',
   styleUrl: './table.component.css',
 })
-export class TableComponent {
+export class TableComponent<T extends object = object> {
   @Input() title = 'Data Table';
   @Input() subtitle = 'Manage your data';
   @Input() entityName = 'Item';
   @Input() columns: TableColumn[] = [];
-  @Input() data: any[] = [];
-  @Input() actions: TableAction[] = [];
+  @Input() data: T[] = [];
+  @Input() actions: TableAction<T>[] = [];
   @Input() showAddButton = true;
   @Input() customCell?: TemplateRef<any>;
 
@@ -36,7 +37,7 @@ export class TableComponent {
   @Input() currentPage = 1;
   @Output() pageChanged = new EventEmitter<number>();
 
-  @Output() actionClicked = new EventEmitter<ActionEvent>();
+  @Output() actionClicked = new EventEmitter<ActionEvent<T>>();
   @Output() addNewClicked = new EventEmitter<void>();
 
   // Search
@@ -74,7 +75,7 @@ export class TableComponent {
     });
   }
 
-  onAction(action: string, row: any, index: number) {
+  onAction(action: string, row: T, index: number) {
     this.actionClicked.emit({ action, row, index });
   }
 
@@ -82,7 +83,7 @@ export class TableComponent {
     this.addNewClicked.emit();
   }
 
-  getAvailableActions(row: any): TableAction[] {
+  getAvailableActions(row: T): TableAction<T>[] {
     return this.actions.filter(
       (action) => !action.condition || action.condition(row)
     );
@@ -131,8 +132,17 @@ export class TableComponent {
     }
   }
 
-  getStatusClass(status: string): string {
-    switch (status?.toLowerCase()) {
+  getCellValue(row: T, key: string): unknown {
+    return (row as Record<string, unknown>)[key];
+  }
+
+  asTableData(row: T): TableData {
+    return row as unknown as TableData;
+  }
+
+  getStatusClass(status: unknown): string {
+    const statusStr = typeof status === 'string' ? status.toLowerCase() : '';
+    switch (statusStr) {
       case 'active':
       case 'available':
         return 'status-pill--success';
@@ -148,8 +158,9 @@ export class TableComponent {
     }
   }
 
-  getApprovalClass(status: string): string {
-    switch (status?.toLowerCase()) {
+  getApprovalClass(status: unknown): string {
+    const statusStr = typeof status === 'string' ? status.toLowerCase() : '';
+    switch (statusStr) {
       case 'approved':
         return 'approval-chip--approved';
       case 'rejected':
@@ -196,9 +207,12 @@ export class TableComponent {
     }
   }
 
-  formatDate(date: string | Date): string {
+  formatDate(date: unknown): string {
     if (!date) return '';
-    return new Date(date).toLocaleDateString('en-US', {
+    const dateObj = date instanceof Date ? date : new Date(date as string | number);
+    if (isNaN(dateObj.getTime())) return '';
+
+    return dateObj.toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'short',
       day: 'numeric',

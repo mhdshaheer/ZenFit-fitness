@@ -7,14 +7,13 @@ import { firstValueFrom, forkJoin, Subject } from 'rxjs';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { FormsModule } from '@angular/forms';
-import { NgClass } from '@angular/common';
 
 export interface FitnessProgram {
   id?: string;
   _id?: string;
   title: string;
   duration: string;
-  category: string;
+  category: string | { _id?: string; id?: string; name?: string; description?: string; parantId?: string | null };
   categoryId?: string; // Add categoryId for filtering
   description: string;
   image?: string;
@@ -23,11 +22,12 @@ export interface FitnessProgram {
   rating?: number;
   price: number;
   status?: string;
+  approvalStatus?: 'Pending' | 'Approved' | 'Rejected';
 }
 
 type ApprovalTabValue = 'Pending' | 'Approved' | 'Rejected';
 
-type ApprovalTabStyle = {
+interface ApprovalTabStyle {
   activeBg: string;
   activeBorder: string;
   activeText: string;
@@ -37,7 +37,7 @@ type ApprovalTabStyle = {
   helperInactive: string;
   badgeBg: string;
   badgeText: string;
-};
+}
 
 export interface ProgramFilters {
   page: number;
@@ -58,7 +58,7 @@ export interface PaginationResult {
 
 @Component({
   selector: 'app-program-list',
-  imports: [ProgramCardComponent, FormsModule, NgClass],
+  imports: [ProgramCardComponent, FormsModule],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
@@ -74,7 +74,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
   loading = false;
   defaultImage = '/trainer/fitness_program.jpg';
   private readonly _destroy$ = new Subject<void>();
-  private searchTimeout: any;
+  private searchTimeout?: ReturnType<typeof setTimeout>;
 
   filters: ProgramFilters = {
     page: 1,
@@ -144,10 +144,10 @@ export class ProgramListComponent implements OnInit, OnDestroy {
     this.getPrograms();
   }
 
-  extractCategoriesFromPrograms(programs: any[]): void {
+  extractCategoriesFromPrograms(programs: FitnessProgram[]): void {
     const categoryMap = new Map();
 
-    programs.forEach((program: any) => {
+    programs.forEach((program: FitnessProgram) => {
       if (typeof program.category === 'string') {
         try {
           const parsed = JSON.parse(program.category);
@@ -183,16 +183,16 @@ export class ProgramListComponent implements OnInit, OnDestroy {
     this.categories = [];
   }
 
-  async enrichProgramsWithEnrollmentCount(programs: any[]): Promise<FitnessProgram[]> {
+  async enrichProgramsWithEnrollmentCount(programs: FitnessProgram[]): Promise<FitnessProgram[]> {
     if (programs.length === 0) return [];
 
     try {
-      const programObservables = programs.map((item: any) => {
+      const programObservables = programs.map((item: FitnessProgram) => {
         return this._paymentService.getEntrolledUsers(item.id!);
       });
       const counts = await firstValueFrom(forkJoin(programObservables));
 
-      return programs.map((item: any, index: number) => {
+      return programs.map((item: FitnessProgram, index: number) => {
         let categoryName: string;
         let categoryId: string;
 
@@ -213,7 +213,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
             categoryName = 'Unknown Category';
             categoryId = '';
           }
-        } catch (error) {
+        } catch {
           categoryName = 'Unknown Category';
           categoryId = '';
         }
@@ -222,11 +222,11 @@ export class ProgramListComponent implements OnInit, OnDestroy {
           ...item,
           category: categoryName,
           categoryId: categoryId, // Add separate categoryId for filtering
-          enrolledCount: (counts as any)[index].count,
+          enrolledCount: (counts as { count: number }[])[index].count,
         };
       });
-    } catch (err) {
-      return programs.map((item: any) => {
+    } catch {
+      return programs.map((item: FitnessProgram) => {
         let categoryName: string;
         let categoryId: string;
 
@@ -247,7 +247,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
             categoryName = 'Unknown Category';
             categoryId = '';
           }
-        } catch (error) {
+        } catch {
           categoryName = 'Unknown Category';
           categoryId = '';
         }
@@ -266,7 +266,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
     this.loading = true;
     try {
       // Try to use the new paginated method first, fallback to old method if not available
-      let res: any;
+      let res: { programs: FitnessProgram[]; pagination?: { total: number; page: number; limit: number; totalPages: number } };
       try {
         res = await firstValueFrom(this._programService.getTrainerPrograms(this.filters));
         // If backend supports pagination, use it directly
@@ -275,7 +275,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
           this.fitnessPrograms = await this.enrichProgramsWithEnrollmentCount(res.programs);
           return;
         }
-      } catch (backendError) {
+      } catch {
         // Fallback to client-side filtering if backend doesn't support it yet
         res = await firstValueFrom(this._programService.getPrograms());
       }
@@ -288,14 +288,14 @@ export class ProgramListComponent implements OnInit, OnDestroy {
       // Apply client-side filtering (temporary until backend supports it)
       if (this.filters.search) {
         const searchTerm = this.filters.search.toLowerCase();
-        filteredPrograms = filteredPrograms.filter((program: any) =>
+        filteredPrograms = filteredPrograms.filter((program: FitnessProgram) =>
           program.title.toLowerCase().includes(searchTerm) ||
           program.description.toLowerCase().includes(searchTerm)
         );
       }
 
       if (this.filters.category) {
-        filteredPrograms = filteredPrograms.filter((program: any) => {
+        filteredPrograms = filteredPrograms.filter((program: FitnessProgram) => {
           let categoryId = '';
 
           if (typeof program.category === 'string') {
@@ -314,19 +314,19 @@ export class ProgramListComponent implements OnInit, OnDestroy {
       }
 
       if (this.filters.difficultyLevel) {
-        filteredPrograms = filteredPrograms.filter((program: any) =>
+        filteredPrograms = filteredPrograms.filter((program: FitnessProgram) =>
           program.difficultyLevel === this.filters.difficultyLevel
         );
       }
 
       if (this.filters.status) {
-        filteredPrograms = filteredPrograms.filter((program: any) =>
+        filteredPrograms = filteredPrograms.filter((program: FitnessProgram) =>
           program.status === this.filters.status
         );
       }
 
       if (this.filters.approvalStatus) {
-        filteredPrograms = filteredPrograms.filter((program: any) =>
+        filteredPrograms = filteredPrograms.filter((program: FitnessProgram) =>
           program.approvalStatus === this.filters.approvalStatus
         );
       }
@@ -346,7 +346,7 @@ export class ProgramListComponent implements OnInit, OnDestroy {
 
       // Get enrolled counts for paginated programs
       this.fitnessPrograms = await this.enrichProgramsWithEnrollmentCount(paginatedPrograms);
-    } catch (err) {
+    } catch {
       this.fitnessPrograms = [];
       this.pagination = {
         total: 0,
@@ -357,6 +357,10 @@ export class ProgramListComponent implements OnInit, OnDestroy {
     } finally {
       this.loading = false;
     }
+  }
+
+  onNavigateToSales(): void {
+    this._router.navigate(['/trainer/purchased-programs']);
   }
 
   onViewProgram(programId: string): void {

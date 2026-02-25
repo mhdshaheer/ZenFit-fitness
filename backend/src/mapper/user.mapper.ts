@@ -3,7 +3,7 @@ import { UserDto, UserStatusDto } from "../dtos/user.dtos";
 
 export const mapToUserDto = (user: IUser): UserDto => {
   return {
-    id: user._id?.toString() || "",
+    id: user._id?.toString() ?? "",
     username: user.username!,
     email: user.email,
     dob: user.dob,
@@ -25,7 +25,7 @@ export function mapToUserStatusDto(
   return {
     message: `User status updated to ${status}`,
     user: {
-      _id: user._id?.toString() || "",
+      _id: user._id?.toString() ?? "",
       username: user.username!,
       email: user.email,
       status: user.status as "active" | "blocked",

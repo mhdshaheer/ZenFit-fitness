@@ -2,6 +2,7 @@ export const TYPES = {
   // Auth
   AuthService: Symbol.for("authService"),
   AuthController: Symbol.for("authController"),
+  AuthStrategy: Symbol.for("AuthStrategy"),
 
   // Admin
   AdminService: Symbol.for("adminService"),

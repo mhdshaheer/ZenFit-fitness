@@ -8,9 +8,10 @@ import { LoggerService } from './logger.service';
 export class SocketService {
   private _socket!: Socket;
   private _logger = inject(LoggerService);
-  private _meetingEvents: Map<string, Subject<any>> = new Map();
+  private readonly _meetingEvents = new Map<string, Subject<unknown>>();
+  private readonly _zone = inject(NgZone);
 
-  constructor(private zone: NgZone) {
+  constructor() {
     this._socket = io(environment.socketUrl, {
       reconnection: true,
       withCredentials: true,
@@ -34,7 +35,7 @@ export class SocketService {
   /**
    * Emit a socket event
    */
-  emit(event: string, data: any): void {
+  emit<T = unknown>(event: string, data: T): void {
     this._logger.info('Emitting event:', event, data);
     this._socket.emit(event, data);
   }
@@ -42,18 +43,18 @@ export class SocketService {
   /**
    * Listen to a socket event
    */
-  on(event: string): Observable<any> {
+  on<T = unknown>(event: string): Observable<T> {
     if (!this._meetingEvents.has(event)) {
-      const subject = new Subject<any>();
-      this._meetingEvents.set(event, subject);
+      const subject = new Subject<T>();
+      this._meetingEvents.set(event, subject as Subject<unknown>);
 
-      this._socket.on(event, (data) => {
+      this._socket.on(event, (data: T) => {
         this._logger.info('Received event:', event, data);
-        this.zone.run(() => subject.next(data));
+        this._zone.run(() => subject.next(data));
       });
     }
 
-    return this._meetingEvents.get(event)!.asObservable();
+    return (this._meetingEvents.get(event) as Subject<T>)!.asObservable();
   }
 
   /**

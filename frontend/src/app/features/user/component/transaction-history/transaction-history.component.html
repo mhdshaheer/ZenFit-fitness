@@ -1,144 +1,165 @@
-<div class="transaction-history-container">
-  <!-- Header -->
-  <div class="header">
-    <h1 class="page-title">Transaction History</h1>
-    <p class="page-subtitle">View your program purchase history and payment details</p>
-  </div>
-
-  <div class="content-wrapper">
-    <div class="main-content">
-      <!-- Filters -->
-      <div class="filters-section">
-    <div class="search-box">
-      <i class="fas fa-search search-icon"></i>
-      <input 
-        type="text" 
-        placeholder="Search by program name..." 
-        class="search-input"
-        [value]="searchTerm"
-        (input)="onSearchChange($event)">
-    </div>
-    
-    <div class="status-filter">
-      <label for="status-select" class="filter-label">Status:</label>
-      <select 
-        id="status-select" 
-        class="status-select"
-        [value]="selectedStatus"
-        (change)="onStatusFilterChange($event)">
-        <option value="all">All Transactions</option>
-        <option value="success">Successful</option>
-        <option value="pending">Pending</option>
-        <option value="failed">Failed</option>
-      </select>
-    </div>
-  </div>
-
-  <!-- Loading State -->
-  <div *ngIf="isLoading" class="loading-container">
-    <div class="loading-spinner">
-      <i class="fas fa-spinner fa-spin"></i>
-    </div>
-    <p class="loading-text">Loading transactions...</p>
-  </div>
-
-  <!-- Transactions Table -->
-  <div *ngIf="!isLoading" class="transactions-section">
-    <div *ngIf="transactions.length === 0" class="empty-state">
-      <i class="fas fa-receipt empty-icon"></i>
-      <h3 class="empty-title">No Transactions Found</h3>
-      <p class="empty-message">You haven't made any program purchases yet.</p>
-    </div>
-
-    <div *ngIf="transactions.length > 0" class="transactions-table-container">
-      <table class="transactions-table">
-        <thead>
-          <tr>
-            <th>Program</th>
-            <th>Trainer</th>
-            <th>Amount</th>
-            <th>Payment Method</th>
-            <th>Status</th>
-            <th>Date</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr *ngFor="let transaction of transactions" class="transaction-row">
-            <td class="program-cell">
-              <div class="program-info">
-                <h4 class="program-title">{{ transaction.title }}</h4>
-                <p class="program-details">
-                  <span class="difficulty">{{ transaction.difficultyLevel }}</span>
-                </p>
-              </div>
-            </td>
-            
-            <td class="trainer-cell">
-              <div class="trainer-info">
-                <span class="trainer-name">{{ getTrainerDisplayName(transaction) }}</span>
-              </div>
-            </td>
-            
-            <td class="amount-cell">
-              <span class="amount">{{ formatCurrency(transaction.amountPaid) }}</span>
-            </td>
-            
-            <td class="payment-method-cell">
-              <div class="payment-method">
-                <i class="fas fa-credit-card payment-icon"></i>
-                <span>{{ transaction.paymentMethod | titlecase }}</span>
-              </div>
-            </td>
-            
-            <td class="status-cell">
-              <span class="status-badge" [ngClass]="getStatusClass('success')">
-                <i class="fas fa-check-circle status-icon"></i>
-                Success
-              </span>
-            </td>
-            
-            <td class="date-cell">
-              <span class="date">{{ formatDate(transaction.purchasedAt) }}</span>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    </div>
-
-    <!-- Pagination -->
-    <div *ngIf="totalItems > 0" class="pagination-container">
-      <div class="pagination-info">
-        <span>Showing {{ (currentPage - 1) * itemsPerPage + 1 }} to {{ getDisplayedItemsEnd() }} of {{ totalItems }} transactions</span>
-      </div>
-      
-      <div class="pagination">
-        <button 
-          class="pagination-btn prev-btn"
-          [disabled]="currentPage === 1"
-          (click)="onPageChange(currentPage - 1)">
-          <i class="fas fa-chevron-left"></i>
-          Previous
-        </button>
-        
-        <div class="page-numbers">
-          <button 
-            *ngFor="let page of getPageNumbers()"
-            class="page-btn"
-            [class.active]="page === currentPage"
-            (click)="onPageChange(page)">
-            {{ page }}
-          </button>
+<div class="min-h-screen bg-gradient-to-br from-neutral-50 via-primary-50/5 to-neutral-50 py-12 animate-fadeIn">
+  <div class="container-custom">
+    <!-- Header -->
+    <div class="mb-10 animate-slideInDown">
+      <div class="flex items-center gap-4 mb-3">
+        <div class="w-14 h-14 gradient-primary rounded-2xl flex items-center justify-center text-white shadow-lg">
+          <i class="fas fa-file-invoice-dollar text-xl"></i>
         </div>
-        
-        <button 
-          class="pagination-btn next-btn"
-          [disabled]="currentPage === totalPages"
-          (click)="onPageChange(currentPage + 1)">
-          Next
-          <i class="fas fa-chevron-right"></i>
-        </button>
+        <div>
+          <h1 class="heading-3 text-neutral-900 mb-1">Transactions</h1>
+          <p class="body-small text-neutral-500">History of program investments and payments</p>
+        </div>
       </div>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="card p-4 mb-6 border-none shadow-sm animate-slideInUp">
+      <div class="flex flex-col md:flex-row gap-4 items-stretch md:items-center">
+        <!-- Search -->
+        <div class="relative flex-1 group">
+          <div
+            class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-300 group-focus-within:text-primary-500 transition-colors">
+            <i class="fas fa-search text-xs"></i>
+          </div>
+          <input type="text" placeholder="Search transactions..."
+            class="form-input !py-3 !pl-10 !text-xs !bg-neutral-50" [value]="searchTerm"
+            (input)="onSearchChange($event)">
+        </div>
+
+        <!-- Status Filter -->
+        <div class="flex items-center gap-3">
+          <label for="status-select"
+            class="text-[9px] font-black text-neutral-400 uppercase tracking-widest whitespace-nowrap">Filter
+            Status</label>
+          <select id="status-select" class="form-input !py-3 !px-4 !text-xs !bg-neutral-50 !w-auto min-w-[160px]"
+            [value]="selectedStatus" (change)="onStatusFilterChange($event)">
+            <option value="all">All Status</option>
+            <option value="success">Successful</option>
+            <option value="pending">Pending</option>
+            <option value="failed">Failed</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div class="animate-slideInUp" style="animation-delay: 200ms;">
+      <!-- Loading State -->
+      @if (isLoading) {
+      <div class="card p-16 flex flex-col items-center justify-center border-none shadow-sm">
+        <div class="animate-spin rounded-full h-8 w-8 border-4 border-primary-100 border-t-primary-600 mb-4"></div>
+        <p class="text-xs font-black text-neutral-300 uppercase tracking-widest">Updating Ledger...</p>
+      </div>
+      }
+
+      <!-- Content -->
+      @if (!isLoading) {
+      @if (transactions.length === 0) {
+      <div class="card p-16 text-center border-dashed border-2 flex flex-col items-center animate-fadeIn">
+        <div class="w-16 h-16 bg-neutral-50 rounded-full flex items-center justify-center text-neutral-200 mb-4">
+          <i class="fas fa-receipt text-2xl"></i>
+        </div>
+        <h3 class="text-sm font-black text-neutral-400 uppercase tracking-widest">No transaction history found</h3>
+      </div>
+      } @else {
+      <!-- Transactions Table Card -->
+      <div class="card overflow-hidden border-none shadow-sm">
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse">
+            <thead>
+              <tr class="bg-neutral-50 border-b border-neutral-100">
+                <th class="px-6 py-4 text-[9px] font-black text-neutral-400 uppercase tracking-widest">Program Details
+                </th>
+                <th
+                  class="px-6 py-4 text-[9px] font-black text-neutral-400 uppercase tracking-widest hidden md:table-cell">
+                  Trainer</th>
+                <th class="px-6 py-4 text-[9px] font-black text-neutral-400 uppercase tracking-widest">Investment</th>
+                <th
+                  class="px-6 py-4 text-[9px] font-black text-neutral-400 uppercase tracking-widest hidden sm:table-cell">
+                  Method</th>
+                <th class="px-6 py-4 text-[9px] font-black text-neutral-400 uppercase tracking-widest">Status</th>
+                <th class="px-6 py-4 text-[9px] font-black text-neutral-400 uppercase tracking-widest">Date</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-neutral-50">
+              @for (transaction of transactions; track $index) {
+              <tr class="hover:bg-neutral-50/50 transition-colors duration-200 group">
+                <td class="px-6 py-4">
+                  <div class="space-y-1">
+                    <div class="text-sm font-black text-neutral-800 group-hover:text-primary-700 transition-colors">{{
+                      transaction.title }}</div>
+                    <div class="text-[8px] font-black uppercase text-neutral-400 tracking-widest">{{
+                      transaction.difficultyLevel }}</div>
+                  </div>
+                </td>
+
+                <td class="px-6 py-4 hidden md:table-cell">
+                  <div class="flex items-center gap-2">
+                    <div
+                      class="w-6 h-6 rounded-lg bg-neutral-100 flex items-center justify-center text-[10px] font-black text-neutral-500 uppercase">
+                      {{ (getTrainerDisplayName(transaction) || 'T').charAt(0) }}
+                    </div>
+                    <span class="text-xs font-bold text-neutral-600">{{ getTrainerDisplayName(transaction) }}</span>
+                  </div>
+                </td>
+
+                <td class="px-6 py-4">
+                  <span class="text-sm font-black text-neutral-900">{{ formatCurrency(transaction.amountPaid) }}</span>
+                </td>
+
+                <td class="px-6 py-4 hidden sm:table-cell">
+                  <div class="flex items-center gap-2 text-neutral-400">
+                    <i class="fas fa-shield-alt text-[10px]"></i>
+                    <span class="text-[9px] font-black uppercase tracking-widest">{{ transaction.paymentMethod }}</span>
+                  </div>
+                </td>
+
+                <td class="px-6 py-4">
+                  <span
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-success-50 text-success-700 text-[8px] font-black uppercase tracking-widest">
+                    <div class="w-1 h-1 rounded-full bg-success-500"></div>
+                    Success
+                  </span>
+                </td>
+
+                <td class="px-6 py-4">
+                  <div class="text-[10px] font-bold text-neutral-400 uppercase">{{ formatDate(transaction.purchasedAt)
+                    }}</div>
+                </td>
+              </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Pagination -->
+        @if (totalItems > 0) {
+        <div class="px-6 py-4 bg-neutral-50/30 border-t border-neutral-100">
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-[9px] font-black text-neutral-400 uppercase tracking-widest">
+              Records <span class="text-neutral-900">{{ (currentPage - 1) * itemsPerPage + 1 }}</span>- <span
+                class="text-neutral-900">{{ getDisplayedItemsEnd() }}</span> of <span class="text-neutral-900">{{
+                totalItems }}</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+              <button (click)="onPageChange(currentPage - 1)" [disabled]="currentPage === 1"
+                class="w-8 h-8 rounded-lg bg-white border border-neutral-100 flex items-center justify-center text-neutral-400 hover:text-primary-600 disabled:opacity-30 transition-all">
+                <i class="fas fa-chevron-left text-[10px]"></i>
+              </button>
+
+              <button (click)="onPageChange(currentPage + 1)" [disabled]="currentPage === totalPages"
+                class="w-8 h-8 rounded-lg bg-white border border-neutral-100 flex items-center justify-center text-neutral-400 hover:text-primary-600 disabled:opacity-30 transition-all">
+                <i class="fas fa-chevron-right text-[10px]"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        }
+      </div>
+      }
+      }
     </div>
   </div>
 </div>

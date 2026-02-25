@@ -7,13 +7,13 @@ export class ApprovalStatusColorPipe implements PipeTransform {
   transform(status: string): string {
     switch (status) {
       case 'Approved':
-        return 'text-green-700 font-semibold';
+        return 'text-success-700 font-bold uppercase tracking-wider';
       case 'Rejected':
-        return 'text-red-700 font-semibold';
+        return 'text-error-700 font-bold uppercase tracking-wider';
       case 'Pending':
-        return 'text-orange-700 font-semibold';
+        return 'text-warning-700 font-bold uppercase tracking-wider';
       default:
-        return 'text-gray-500';
+        return 'text-neutral-500';
     }
   }
 }

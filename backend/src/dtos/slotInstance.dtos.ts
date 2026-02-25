@@ -1,14 +1,14 @@
 import { Types } from "mongoose";
 import { ISlotInstance } from "../models/slotInstance.model";
 
-const toObjectIdString = (value: any): string => {
+const toObjectIdString = (value: unknown): string => {
     if (typeof value === "string") {
         return value;
     }
     if (value instanceof Types.ObjectId) {
         return value.toString();
     }
-    return value?.toString?.() ?? "";
+    return (value as { toString?: () => string })?.toString?.() ?? "";
 };
 
 export interface SlotInstanceDto {

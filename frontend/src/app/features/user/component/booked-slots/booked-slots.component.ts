@@ -1,11 +1,11 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil, forkJoin, switchMap, filter } from 'rxjs';
 import { BookingService, BookedSlot } from '../../../../core/services/booking.service';
 import { MeetingService } from '../../../../core/services/meeting.service';
 import { MeetingRoomComponent } from '../../../../shared/components/meeting-room/meeting-room.component';
 import { ToastService } from '../../../../core/services/toast.service';
-import { Router } from '@angular/router';
 import { ProgramService } from '../../../../core/services/program.service';
 import { Program } from '../../../trainer/store/trainer.model';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -17,14 +17,29 @@ interface SlotWithProgram extends BookedSlot {
   programName?: string;
   programDuration?: string;
   programDifficulty?: string;
+  programCategory?: string;
   isUpcoming?: boolean;
+}
+
+interface SlotSnapshot {
+  timezone?: string;
+  slotDate?: Date | string;
+  startTime?: string;
+  endTime?: string;
+  programId?: string | { toString(): string };
+}
+
+interface ExtendedBookedSlot extends BookedSlot {
+  snapshot?: SlotSnapshot;
+  timezone?: string;
+  programId: string;
 }
 
 type ProgramIdentifier = string | { toString(): string } | null | undefined;
 
 @Component({
   selector: 'zenfit-booked-slots',
-  imports: [CommonModule, MeetingRoomComponent],
+  imports: [CommonModule, MeetingRoomComponent, RouterModule],
   templateUrl: './booked-slots.component.html',
   styleUrl: './booked-slots.component.css'
 })
@@ -51,7 +66,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
   showMeetingRoom = false;
   currentMeetingId: string | null = null;
   currentMeetingSlotId: string | null = null;
-  currentMeetingTitle: string = '';
+  currentMeetingTitle = '';
   isJoiningMeeting = false;
   joiningSlotId: string | null = null;
   private notificationListenerInitialized = false;
@@ -111,9 +126,10 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
   }
 
   private normalizeSlot(slot: BookedSlot): BookedSlot {
-    const snapshot = (slot as any)?.snapshot ?? {};
-    const normalizedProgramId = this.resolveProgramId(slot, snapshot);
-    const timezone = this.resolveTimezone(snapshot?.timezone, (slot as any)?.timezone);
+    const extendedSlot = slot as ExtendedBookedSlot;
+    const snapshot = extendedSlot.snapshot ?? {};
+    const normalizedProgramId = this.resolveProgramId(extendedSlot, snapshot);
+    const timezone = this.resolveTimezone(snapshot?.timezone, extendedSlot.timezone);
     const slotDate = snapshot?.slotDate ?? slot.date;
     const normalizedStart = snapshot?.startTime ?? slot.startTime;
     const normalizedEnd = snapshot?.endTime ?? slot.endTime;
@@ -135,8 +151,8 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     } as BookedSlot;
   }
 
-  private resolveProgramId(slot: BookedSlot, snapshot: any): string | null {
-    const rawProgramId: ProgramIdentifier = (slot as any)?.programId ?? snapshot?.programId;
+  private resolveProgramId(slot: ExtendedBookedSlot, snapshot: SlotSnapshot): string | null {
+    const rawProgramId: ProgramIdentifier = slot.programId ?? snapshot?.programId;
     if (!rawProgramId) return null;
 
     if (typeof rawProgramId === 'string') {
@@ -151,7 +167,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     return null;
   }
 
-  private resolveTimezone(...timezones: Array<string | undefined | null>): string {
+  private resolveTimezone(...timezones: (string | undefined | null)[]): string {
     for (const zone of timezones) {
       if (zone && zone.trim().length) {
         return zone;
@@ -261,7 +277,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
       });
   }
 
-  private processSlots(slots: BookedSlot[], programMap: Map<string, Program> = new Map()): void {
+  private processSlots(slots: BookedSlot[], programMap = new Map<string, Program>()): void {
     const now = new Date();
     const upcoming: SlotWithProgram[] = [];
     const past: SlotWithProgram[] = [];
@@ -270,11 +286,35 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     slots.forEach(slot => {
       const slotDateTime = new Date(slot.date);
       const program = slot.programId ? programMap.get(slot.programId) : undefined;
+
+      // Helper to extract category name safely from diverse backend formats
+      let categoryOutput = 'Training';
+      try {
+        const categoryData = program?.category;
+        if (categoryData) {
+          if (typeof categoryData === 'object') {
+            const catObj = categoryData as any;
+            categoryOutput = catObj.name || catObj.NAME || catObj.title || catObj.TITLE || 'Training';
+          } else if (typeof categoryData === 'string') {
+            const trimmed = categoryData.trim();
+            if (trimmed.startsWith('{')) {
+              const parsed = JSON.parse(trimmed);
+              categoryOutput = parsed.name || parsed.NAME || parsed.title || parsed.TITLE || 'Training';
+            } else {
+              categoryOutput = trimmed;
+            }
+          }
+        }
+      } catch (e) {
+        categoryOutput = 'Training';
+      }
+
       const slotWithProgram: SlotWithProgram = {
         ...slot,
         programName: program?.title || 'Fitness Program',
-        programDuration: program?.duration || 'N/A',
+        programDuration: String(program?.duration || 'N/A'),
         programDifficulty: program?.difficultyLevel || 'Beginner',
+        programCategory: categoryOutput,
         isUpcoming: slotDateTime >= now
       };
 
@@ -341,9 +381,9 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
           this._logger.info('Joined meeting:', validation.meetingId);
         }
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       this._logger.error('Error joining meeting:', error);
-      const message = error?.error?.message || 'Failed to join meeting. Please try again or contact the trainer.';
+      const message = (error as { error?: { message?: string } })?.error?.message || 'Failed to join meeting. Please try again or contact the trainer.';
       this._toastService.error(message);
     } finally {
       this.isJoiningMeeting = false;
@@ -396,7 +436,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     }
   }
 
-  getDifficultyColor(difficulty?: string, muted: boolean = false): string {
+  getDifficultyColor(difficulty?: string, muted = false): string {
     if (muted) {
       // Muted colors for past sessions
       switch (difficulty) {

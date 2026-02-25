@@ -1,7 +1,8 @@
-import { inject, injectable } from "inversify";
+import { inject, injectable, multiInject } from "inversify";
+import { IAuthStrategy } from "../interface/auth.strategy.interface";
 import { HttpResponse } from "../../const/response_message.const";
 import { HttpStatus } from "../../const/statuscode.const";
-import { IUser } from "../../interfaces/user.interface";
+import { IUser, IGoogleProfile } from "../../interfaces/user.interface";
 import { comparePassword, hashedPassword } from "../../shared/utils/hash.util";
 import logger from "../../shared/services/logger.service";
 import { generateOtp } from "../../shared/utils/otp.util";
@@ -31,6 +32,8 @@ export class AuthService implements IAuthService {
   private readonly _tempRepository!: ITempUserRepository;
   @inject(TYPES.NotificationService)
   private readonly _notificationService!: INotificationService;
+  @multiInject(TYPES.AuthStrategy)
+  private readonly _strategies!: IAuthStrategy[];
   // ======================================
 
   async signup(userData: IUser): Promise<IUser> {
@@ -55,7 +58,6 @@ export class AuthService implements IAuthService {
     const { username, email, password, role } = req.body;
 
     const otp = generateOtp();
-    console.log("Otp is : ", otp);
     logger.info("otp is :", otp);
     const hashPassword = await hashedPassword(password);
 
@@ -180,7 +182,6 @@ export class AuthService implements IAuthService {
     await this._tempRepository.updateOtp(email, newOtp);
     try {
       await sendOtpMail(email, newOtp);
-      console.log("resent otp : ", newOtp);
       logger.info("Resend otp is :", newOtp);
       res
         .status(HttpStatus.OK)
@@ -199,15 +200,13 @@ export class AuthService implements IAuthService {
     email: string,
     password: string
   ): Promise<{ user: IUser; accessToken: string; refreshToken: string }> {
-    const user = await this._userRepository.findByEmail(email);
-    if (!user) {
-      throw new Error("Invalid credentials");
+    const strategy = this._strategies.find((s) => s.name === "email");
+    if (!strategy) {
+      throw new Error(HttpResponse.EMAIL_AUTH_NOT_SUPPORTED);
     }
 
-    const isPasswordValid = await comparePassword(password, user.password!);
-    if (!isPasswordValid) {
-      throw new Error("Invalid credentials");
-    }
+    const user = await strategy.authenticate({ email, password });
+
     const accessToken = generateAccessToken({
       id: user._id!.toString(),
       role: user.role!,
@@ -228,7 +227,6 @@ export class AuthService implements IAuthService {
     }
 
     const otp = generateOtp();
-    console.log("forgot password otp is[console] : ", otp);
     logger.info(`forgot password otp is : ${otp}`);
     await this._tempRepository.saveTempUser(email, otp, {});
 
@@ -296,17 +294,12 @@ export class AuthService implements IAuthService {
     return;
   }
 
-  async handleGoogleLogin(profile: any): Promise<IUser> {
-    let user = await this._userRepository.findByGoogleId(profile.id);
-    if (!user) {
-      user = await this._userRepository.createGoogleUser({
-        googleId: profile.id,
-        email: profile.emails[0].value,
-        username: profile.displayName,
-        role: "user",
-      });
+  async handleGoogleLogin(profile: IGoogleProfile): Promise<IUser> {
+    const strategy = this._strategies.find((s) => s.name === "google");
+    if (!strategy) {
+      throw new Error(HttpResponse.GOOGLE_AUTH_NOT_SUPPORTED);
     }
-    return user;
+    return strategy.authenticate(profile);
   }
   // ================================================
 
