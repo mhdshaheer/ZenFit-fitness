@@ -7,6 +7,8 @@ import {
   OnInit,
   HostListener,
   inject,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
 } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
@@ -24,6 +26,7 @@ export interface MenuItem {
   imports: [RouterModule, CommonModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent implements OnInit {
   @Input() menuItems: MenuItem[] = [];
@@ -41,6 +44,7 @@ export class SidebarComponent implements OnInit {
   isLargeScreen = window.innerWidth >= 1024;
 
   private _logger = inject(LoggerService)
+  private _cdr = inject(ChangeDetectorRef);
 
   ngOnInit(): void {
     this.loadSidebarState();
@@ -55,12 +59,14 @@ export class SidebarComponent implements OnInit {
     } else {
       document.body.style.overflow = '';
     }
+    this._cdr.markForCheck();
   }
 
   toggleDesktop(): void {
     this.isDesktopOpen = !this.isDesktopOpen;
     localStorage.setItem('sidebarOpen', JSON.stringify(this.isDesktopOpen));
     this.desktopToggle.emit(this.isDesktopOpen);
+    this._cdr.markForCheck();
   }
 
   onMenuItemClick(item: MenuItem): void {
@@ -71,12 +77,14 @@ export class SidebarComponent implements OnInit {
       this.mobileToggle.emit(false);
       document.body.style.overflow = '';
     }
+    this._cdr.markForCheck();
   }
 
   @HostListener('window:resize', ['$event'])
   onResize(_event: Event): void {
     this.isLargeScreen = window.innerWidth >= 1024;
     this.handleScreenSize();
+    this._cdr.markForCheck();
   }
 
   @HostListener('document:keydown.escape', ['$event'])
@@ -94,6 +102,7 @@ export class SidebarComponent implements OnInit {
       this.mobileToggle.emit(false);
       document.body.style.overflow = '';
     }
+    this._cdr.markForCheck();
   }
 
   private loadSidebarState(): void {

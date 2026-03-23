@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 
@@ -7,7 +7,8 @@ import { RouterModule } from '@angular/router';
     standalone: true,
     imports: [CommonModule, RouterModule],
     templateUrl: './footer.component.html',
-    styleUrl: './footer.component.css'
+    styleUrl: './footer.component.css',
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FooterComponent {
     currentYear = new Date().getFullYear();
