@@ -153,19 +153,21 @@ export class AuthController implements IAuthController {
 
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
-      secure: false,
+      secure: false, // Set to true if using HTTPS
       sameSite: "lax",
       maxAge: 15 * 60 * 1000,
+      path: "/",
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: false,
+      secure: false, // Set to true if using HTTPS
       sameSite: "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
+      path: "/",
     });
 
     res.redirect(
-      `${env.frontend_url}/user/dashboard?accessToken=${accessToken}&refreshToken=${refreshToken}`
+      `${env.frontend_url}/auth/google-callback?accessToken=${accessToken}&refreshToken=${refreshToken}&role=${user.role}`
     );
   }
   async logOut(_req: Request, res: Response): Promise<void> {
