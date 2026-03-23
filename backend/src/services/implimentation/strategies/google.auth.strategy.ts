@@ -21,6 +21,7 @@ export class GoogleAuthStrategy implements IAuthStrategy {
                 googleId: profile.id,
                 email: profile.emails[0].value,
                 username: profile.displayName,
+                fullName: profile.displayName,
                 role: "user",
             });
         }

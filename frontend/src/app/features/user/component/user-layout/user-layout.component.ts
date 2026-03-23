@@ -102,7 +102,7 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
               userData.avatar = fileRes.url;
             });
         }
-        userData.name = res.fullName;
+        userData.name = res.fullName || res.username || 'User';
         userData.email = res.email;
         userData.role = res.role;
         this.currentUser = userData;
