@@ -2,11 +2,12 @@ import passport, { Profile } from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import { UserModel } from "../models/user.model";
 import { env } from "./env.config";
-import { AuthService } from "../services/implimentation/auth.service";
-
+import { container } from "../inversify.config";
+import { TYPES } from "../shared/types/inversify.types";
+import { IAuthService } from "../services/interface/auth.service.interface";
 import { IUser, IGoogleProfile } from "../interfaces/user.interface";
 
-const authService = new AuthService();
+const authService = container.get<IAuthService>(TYPES.AuthService);
 
 passport.use(
   new GoogleStrategy(

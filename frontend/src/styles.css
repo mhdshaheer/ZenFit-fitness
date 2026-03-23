@@ -347,9 +347,9 @@ body {
 
 .premium-toast-popup {
   background: rgba(20, 20, 20, 0.98) !important;
-  backdrop-filter: blur(40px) saturate(250%) !important;
-  -webkit-backdrop-filter: blur(40px) saturate(250%) !important;
-  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
   border-left: 4px solid #6366f1 !important;
   border-radius: 0.75rem !important;
   box-shadow: 0 15px 35px -12px rgba(0, 0, 0, 0.95) !important;
@@ -432,7 +432,7 @@ body {
 }
 
 .swal2-backdrop-show {
-  backdrop-filter: blur(8px) !important;
+  backdrop-filter: none !important;
 }
 
 .swal2-title {

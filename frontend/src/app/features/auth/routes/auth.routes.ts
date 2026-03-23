@@ -31,4 +31,11 @@ export const AUTH_ROUTES: Routes = [
         (m) => m.ForgotPasswordComponent
       ),
   },
+  {
+    path: 'google-callback',
+    loadComponent: () =>
+      import('../components/google-callback/google-callback.component').then(
+        (m) => m.GoogleCallbackComponent
+      ),
+  },
 ];
