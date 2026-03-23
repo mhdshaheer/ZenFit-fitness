@@ -86,6 +86,7 @@ export class UserRepository
     username: string;
     role: string;
     googleId?: string;
+    fullName?: string;
   }): Promise<IUser> {
     const user = new this.model(userData);
     return await user.save();

@@ -22,6 +22,7 @@ export interface IUserRepository {
     username: string;
     role: string;
     googleId?: string;
+    fullName?: string;
   }): Promise<IUser>;
   findByGoogleId(googleId: string): Promise<IUser | null>;
 }

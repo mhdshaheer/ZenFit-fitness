@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { AuthService } from '../../../../core/services/auth.service';
 import { LoggerService } from '../../../../core/services/logger.service';
 import { Router, RouterModule } from '@angular/router';
@@ -29,6 +29,7 @@ interface ActivityLogItem {
   imports: [RouterModule, HeaderComponent, FooterComponent],
   templateUrl: './user-layout.component.html',
   styleUrl: './user-layout.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UserLayoutComponent implements OnDestroy, OnInit {
   isMobileMenuOpen = false;
@@ -36,6 +37,7 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
   private readonly _logger = inject(LoggerService);
   private readonly _router = inject(Router);
   private readonly _profileService = inject(ProfileService);
+  private readonly _cdr = inject(ChangeDetectorRef);
 
   private readonly _destroy$ = new Subject<void>();
 
@@ -48,10 +50,12 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
 
   toggleMobileMenu() {
     this.isMobileMenuOpen = !this.isMobileMenuOpen;
+    this._cdr.markForCheck();
   }
 
   onMobileToggle(isOpen: boolean) {
     this.isMobileMenuOpen = isOpen;
+    this._cdr.markForCheck();
   }
 
   onMenuItemClicked(item: MenuItem) {
@@ -84,28 +88,30 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
     avatar: '',
   };
   getUserProfile() {
-    const userData = {
-      name: '',
-      email: '',
-      role: '',
-      avatar: '',
-    };
     this._profileService
       .getProfile()
       .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
+        const userData = {
+          name: res.fullName || res.username || 'User',
+          email: res.email,
+          role: res.role,
+          avatar: '',
+        };
+
         if (res.profileImage) {
           this._profileService
             .getFile(res.profileImage)
             .pipe(takeUntil(this._destroy$))
             .subscribe((fileRes) => {
               userData.avatar = fileRes.url;
+              this.currentUser = { ...userData };
+              this._cdr.markForCheck();
             });
         }
-        userData.name = res.fullName;
-        userData.email = res.email;
-        userData.role = res.role;
+        
         this.currentUser = userData;
+        this._cdr.markForCheck();
       });
   }
 
