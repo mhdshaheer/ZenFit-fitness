@@ -42,14 +42,14 @@
             </button>
           </th>
           }
-          <th class="cell--right">Actions</th>
+          <th class="cell--right" style="width: 151px;">Actions</th>
         </tr>
       </thead>
       <tbody>
         @for (row of data; track row; let i = $index) {
         <tr>
           @for (column of columns; track column) {
-          <td [ngClass]="getCellClass(column.type)">
+          <td [ngClass]="getCellClass(column.type)" [style.width]="column.width">
             <div>
               @if (customCell) {
               <ng-container *ngTemplateOutlet="customCell; context: { $implicit: row, column: column }">
@@ -95,7 +95,7 @@
               </span>
               }
               @default {
-              <span>{{ getCellValue(row, column.key) }}</span>
+              <span class="truncate block">{{ getCellValue(row, column.key) }}</span>
               }
               }
               }
