@@ -1,11 +1,11 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import {
   FormBuilder,
   FormGroup,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { RouterModule } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { selectAuthError, selectAuthLoading } from '../../store/auth.selectors';
 import { login } from '../../store/auth.actions';
@@ -15,6 +15,7 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { environment } from '../../../../../environments/environment';
 import { passwordStrengthValidator } from '../../../../shared/validators/password.validator';
 import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
+import { ToastService } from '../../../../core/services/toast.service';
 
 @Component({
   selector: 'app-login',
@@ -23,10 +24,14 @@ import { FORM_CONSTANTS } from '../../../../shared/constants/form.constants';
   templateUrl: './login.component.html',
   styleUrl: './login.component.css',
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   private readonly _fb = inject(FormBuilder);
   private readonly _store = inject(Store);
   private readonly _logger = inject(LoggerService);
+  private readonly _route = inject(ActivatedRoute);
+  private readonly _router = inject(Router);
+  private readonly _toastService = inject(ToastService);
+
   loginForm!: FormGroup;
   submitted = signal(false);
   showPassword = signal(false);
@@ -47,6 +52,19 @@ export class LoginComponent {
       ],
       password: ['', [Validators.required, passwordStrengthValidator]],
     });
+  }
+
+  ngOnInit(): void {
+    const errorParam = this._route.snapshot.queryParamMap.get('error');
+    if (errorParam) {
+      this._toastService.error(errorParam);
+      // Clean query params from URL
+      this._router.navigate([], {
+        relativeTo: this._route,
+        queryParams: { error: null },
+        queryParamsHandling: 'merge',
+      });
+    }
   }
 
   get f() {

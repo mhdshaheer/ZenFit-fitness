@@ -17,6 +17,12 @@ export class GoogleAuthStrategy implements IAuthStrategy {
         let user = await this._userRepository.findByGoogleId(profile.id);
 
         if (!user) {
+            const existingUser = await this._userRepository.findByEmail(profile.emails[0].value);
+            if (existingUser) {
+                // If a user exists with this email but no googleId, it's a traditional account
+                throw new Error("This email is already registered with a password. Please log in using your credentials.");
+            }
+
             user = await this._userRepository.createGoogleUser({
                 googleId: profile.id,
                 email: profile.emails[0].value,
