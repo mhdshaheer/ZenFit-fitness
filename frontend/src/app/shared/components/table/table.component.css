@@ -245,6 +245,36 @@
   border: 1px solid #fee2e2;
 }
 
+.status-pill--beginner {
+  background: #ecfeff;
+  color: #0891b2;
+  border: 1px solid #cffafe;
+}
+
+.status-pill--intermediate {
+  background: #fffbeb;
+  color: #d97706;
+  border: 1px solid #fef3c7;
+}
+
+.status-pill--advanced {
+  background: #f5f3ff;
+  color: #7c3aed;
+  border: 1px solid #ede9fe;
+}
+
+.status-pill--expert {
+  background: #fdf2f8;
+  color: #db2777;
+  border: 1px solid #fce7f3;
+}
+
+.status-pill--muted {
+  background: #f8fafc;
+  color: #64748b;
+  border: 1px solid #f1f5f9;
+}
+
 .status-pill--warning {
   background: #fffbeb;
   color: #92400e;
