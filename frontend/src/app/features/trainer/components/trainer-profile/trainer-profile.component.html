@@ -144,9 +144,12 @@
           </div>
 
           <div class="flex justify-end pt-8 border-t border-neutral-100">
-            <button type="submit" [disabled]="!profileForm.dirty || profileForm.invalid"
-              class="btn btn-primary px-10 py-3.5 rounded-2xl shadow-xl disabled:opacity-30 disabled:grayscale transition-all hover:px-12">
-              <span class="text-[10px] font-black uppercase tracking-[0.3em]">Save Changes</span>
+            <button type="submit" [disabled]="!profileForm.dirty || profileForm.invalid || isSavingProfile"
+              class="btn btn-primary px-10 py-3.5 rounded-2xl shadow-xl disabled:opacity-30 disabled:grayscale transition-all hover:px-12 flex items-center gap-3">
+              @if (isSavingProfile) {
+              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              }
+              <span class="text-[10px] font-black uppercase tracking-[0.3em]">{{ isSavingProfile ? 'Saving...' : 'Save Changes' }}</span>
             </button>
           </div>
         </form>
@@ -215,9 +218,12 @@
                 placeholder="Repeat new password" />
             </div>
           </div>
-          <button type="submit" [disabled]="passwordForm.invalid"
-            class="btn btn-primary w-full py-4 rounded-xl shadow-xl hover:bg-neutral-800 hover:text-white transition-all">
-            <span class="text-[10px] font-black uppercase tracking-[0.3em]">Update Password</span>
+          <button type="submit" [disabled]="passwordForm.invalid || isChangingPassword"
+            class="btn btn-primary w-full py-4 rounded-xl shadow-xl hover:bg-neutral-800 hover:text-white transition-all flex items-center justify-center gap-3">
+            @if (isChangingPassword) {
+            <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            }
+            <span class="text-[10px] font-black uppercase tracking-[0.3em]">{{ isChangingPassword ? 'Updating...' : 'Update Password' }}</span>
           </button>
         </form>
       </div>
@@ -243,7 +249,26 @@
             <p class="body-base text-neutral-500 font-medium">Upload your resume or ID to verify your status as a trainer on ZenFit.</p>
           </div>
 
-          @if (!uploadedFile) {
+          @if (isCvUploading) {
+          <!-- Upload Progress State -->
+          <div class="p-8 border-2 border-primary-200 bg-primary-50/40 rounded-3xl flex flex-col items-center gap-6 animate-fadeIn">
+            <div class="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary-500">
+              <svg class="w-8 h-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            </div>
+            <div class="w-full space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-black text-primary-700 uppercase tracking-widest truncate max-w-[220px]">{{ selectedFileName }}</span>
+                <span class="text-[10px] font-black text-primary-600 uppercase tracking-widest">{{ uploadProgress }}%</span>
+              </div>
+              <div class="w-full h-2 bg-primary-100 rounded-full overflow-hidden">
+                <div class="h-full bg-primary-600 rounded-full transition-all duration-300" [style.width.%]="uploadProgress"></div>
+              </div>
+              <p class="text-[9px] font-black text-neutral-400 uppercase tracking-widest text-center">Uploading document, please wait...</p>
+            </div>
+          </div>
+          } @else if (!uploadedFile) {
           <div class="relative group cursor-pointer" (click)="fileInput.click()">
             <input #fileInput type="file" class="hidden" accept=".pdf" (change)="onCvFileSelected($event)" />
             <div
@@ -260,8 +285,16 @@
           }
 
           @if(uploadedFile) {
-          <div class="card p-6 bg-success-50 border border-success-100 rounded-2xl shadow-lg animate-fadeIn flex flex-col gap-4">
-            
+          <div class="card p-6 bg-success-50 border border-success-100 rounded-2xl shadow-lg animate-fadeIn flex flex-col gap-4 relative overflow-hidden">
+
+            <!-- Deleting overlay -->
+            @if (isDeleting) {
+            <div class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center gap-3 rounded-2xl">
+              <div class="w-10 h-10 border-4 border-error-100 border-t-error-600 rounded-full animate-spin"></div>
+              <p class="text-[10px] font-black text-error-600 uppercase tracking-widest">Deleting document...</p>
+            </div>
+            }
+
             <!-- File info + action buttons -->
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-6">
@@ -278,16 +311,16 @@
                 </div>
               </div>
               <div class="flex gap-4">
-                <button (click)="previewFile(); $event.stopPropagation()"
-                  class="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center text-neutral-400 hover:text-primary-600 transition-all">
+                <button (click)="previewFile(); $event.stopPropagation()" [disabled]="isDeleting"
+                  class="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center text-neutral-400 hover:text-primary-600 transition-all disabled:opacity-40">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                     <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                   </svg>
                 </button>
-                <button (click)="requestDeleteFile(); $event.stopPropagation()"
-                  class="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center text-neutral-400 hover:text-error-600 transition-all">
+                <button (click)="requestDeleteFile(); $event.stopPropagation()" [disabled]="isDeleting"
+                  class="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center text-neutral-400 hover:text-error-600 transition-all disabled:opacity-40">
                   <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
@@ -312,8 +345,11 @@
                   class="px-4 py-2 text-[9px] font-black uppercase tracking-wider bg-white border border-neutral-200 text-neutral-600 rounded-lg hover:bg-neutral-50 transition-all">
                   Cancel
                 </button>
-                <button (click)="deleteFile(); $event.stopPropagation()"
-                  class="px-4 py-2 text-[9px] font-black uppercase tracking-wider bg-error-600 text-white rounded-lg hover:bg-error-700 transition-all shadow-sm">
+                <button (click)="deleteFile(); $event.stopPropagation()" [disabled]="isDeleting"
+                  class="px-4 py-2 text-[9px] font-black uppercase tracking-wider bg-error-600 text-white rounded-lg hover:bg-error-700 transition-all shadow-sm flex items-center gap-2 disabled:opacity-60">
+                  @if (isDeleting) {
+                  <div class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  }
                   {{ isDeleting ? 'Deleting...' : 'Yes, Delete' }}
                 </button>
               </div>

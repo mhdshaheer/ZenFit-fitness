@@ -75,6 +75,8 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
   // ==============
   profileForm!: FormGroup;
   profileData!: ProfileUser;
+  isSavingProfile = false;
+  isChangingPassword = false;
   private readonly _fb = inject(FormBuilder);
   // ==============
 
@@ -191,6 +193,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
 
   saveProfile() {
     if (this.profileForm.valid) {
+      this.isSavingProfile = true;
       this._profileService
         .updateProfile(this.profileForm.value)
         .pipe(takeUntil(this._destroy$))
@@ -200,10 +203,12 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
             this._toastService.success('Profile updated Successfully.');
             this.profileData = res;
             this.isEditMode = false;
+            this.isSavingProfile = false;
           },
           error: (err) => {
             this._loggerService.error('Failed to saved profile ', err);
             this._toastService.error('Failed to update profile.');
+            this.isSavingProfile = false;
           },
         });
     } else {
@@ -409,6 +414,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
 
   onPasswordSubmit(): void {
     if (this.passwordForm.valid) {
+      this.isChangingPassword = true;
       const passwords = {
         currentPassword: this.passwordForm.get('currentPassword')?.value,
         newPassword: this.passwordForm.get('newPassword')?.value,
@@ -422,10 +428,12 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
             this._toastService.success('Password changed successfully');
             this.resetPasswordForm();
             this.activeTab = 'personal';
+            this.isChangingPassword = false;
           },
           error: (err) => {
             this._loggerService.error(err);
             this._toastService.error('Failed to change password');
+            this.isChangingPassword = false;
           },
         });
     }
