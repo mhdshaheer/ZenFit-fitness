@@ -69,6 +69,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
   maxFileSize = 5 * 1024 * 1024;
   resumeKey!: string;
   isDeleting = false;
+  showDeleteConfirm = false;
   // ========= *CV UPLOAD ========
 
   // ==============
@@ -347,7 +348,16 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
     this.uploadedFile = null;
   }
 
+  requestDeleteFile(): void {
+    this.showDeleteConfirm = true;
+  }
+
+  cancelDelete(): void {
+    this.showDeleteConfirm = false;
+  }
+
   deleteFile() {
+    this.showDeleteConfirm = false;
     if (this.uploadedFile) {
       this.isDeleting = true;
       this._loggerService.info('Uploaded file is : ', this.uploadedFile);
