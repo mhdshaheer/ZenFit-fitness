@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
@@ -14,7 +15,7 @@ import {
 } from '../../../../core/services/category.service';
 import { ProfileService } from '../../../../core/services/profile.service';
 import { ILoggedUser, IUserResponse } from '../../../../interface/user.interface';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
 
@@ -25,7 +26,7 @@ export interface Category {
 
 @Component({
   selector: 'app-program-create',
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './program-create.component.html',
   styleUrl: './program-create.component.css',
 })
