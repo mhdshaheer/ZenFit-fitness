@@ -4,10 +4,15 @@ import { env } from "../../config/env.config";
 /**
  * Cookie configuration constants
  */
-const COOKIE_CONFIG = {
+const isProduction = process.env.NODE_ENV === "production" || env.node === "production";
+
+/**
+ * Cookie configuration constants
+ */
+const COOKIE_CONFIG: any = {
   httpOnly: true,
-  secure: false,
-  sameSite: "lax" as const,
+  secure: isProduction,
+  sameSite: isProduction ? "none" : "lax",
   path: "/",
 };
 
