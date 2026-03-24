@@ -5,13 +5,12 @@
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 animate-slideInUp">
         <div class="space-y-1">
           <div class="flex items-center gap-2 mb-1.5">
-            <span class="badge badge-primary !py-0.5 !px-2 !text-[9px]">Trainer Identity</span>
+            <span class="badge badge-primary !py-0.5 !px-2 !text-[9px]">Trainer Profile</span>
             <span class="w-1 h-1 rounded-full bg-neutral-300"></span>
-            <span class="caption text-neutral-400 !text-[9px]">Vault Verified</span>
+            <span class="caption text-neutral-400 !text-[9px]">Verified Account</span>
           </div>
-          <h1 class="heading-4 md:heading-3 text-neutral-900">Professional Profile</h1>
-          <p class="body-base text-neutral-500 max-w-2xl font-medium">Managing your professional digital signature and
-            architectural credentials.</p>
+          <h1 class="heading-4 md:heading-3 text-neutral-900">My Profile</h1>
+          <p class="body-base text-neutral-500 max-w-2xl font-medium">Manage your personal details and account settings.</p>
         </div>
       </div>
     </div>
@@ -28,7 +27,7 @@
         <div class="relative group">
           <div
             class="w-28 h-28 md:w-32 md:h-32 bg-neutral-100 rounded-[2rem] overflow-hidden shadow-xl border-4 border-white ring-1 ring-neutral-200 transition-transform group-hover:scale-[1.02]">
-            <img [src]="profileImageUrl ? profileImageUrl : displayImage" alt="Entity Display"
+            <img [src]="profileImageUrl ? profileImageUrl : displayImage" alt="Profile Image"
               class="w-full h-full object-cover" />
           </div>
 
@@ -58,11 +57,11 @@
           <div class="space-y-1.5">
             <div class="flex flex-wrap justify-center md:justify-start gap-2.5 mb-3">
               <span
-                class="badge badge-primary px-3 py-1 shadow-sm font-black italic uppercase tracking-widest text-[8px]">certified
-                provider</span>
+                class="badge badge-primary px-3 py-1 shadow-sm font-black italic uppercase tracking-widest text-[8px]">Verified
+                Trainer</span>
               <span
-                class="badge !bg-neutral-900 !text-white px-3 py-1 shadow-sm font-black italic uppercase tracking-widest text-[8px]">Elite
-                Tier</span>
+                class="badge !bg-neutral-900 !text-white px-3 py-1 shadow-sm font-black italic uppercase tracking-widest text-[8px]">Active
+                Member</span>
             </div>
             <h2 class="text-2xl md:text-3xl font-black text-neutral-900 tracking-tight">{{ profileData.username }}
             </h2>
@@ -106,14 +105,12 @@
 
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 relative z-10">
           <div class="space-y-1">
-            <span class="text-[10px] font-black text-primary-600 uppercase tracking-widest block mb-2">Core
-              Parameters</span>
-            <h3 class="text-base text-neutral-900 uppercase tracking-tight font-black">Entity Portfolio</h3>
+            <span class="text-[10px] font-black text-primary-600 uppercase tracking-widest block mb-2">Account Details</span>
+            <h3 class="text-base text-neutral-900 uppercase tracking-tight font-black">Personal Details</h3>
           </div>
           <button (click)="editToggle()"
             class="btn btn-primary px-8 py-3 rounded-xl shadow-lg hover:scale-[1.02] transition-all">
-            <span class="text-[10px] font-black uppercase tracking-widest">{{ isEditMode ? 'Abort Logic' : 'Calibrate
-              Profile'
+            <span class="text-[10px] font-black uppercase tracking-widest">{{ isEditMode ? 'Cancel' : 'Edit Profile'
               }}</span>
             <svg *ngIf="!isEditMode" class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path
@@ -127,32 +124,32 @@
         <form [formGroup]="profileForm" (ngSubmit)="saveProfile()" class="space-y-10 relative z-10 animate-fadeIn">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="space-y-2">
-              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Full Identity
-                Alias</label>
+              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Full Name</label>
               <input formControlName="fullName" class="form-input !py-2.5 !text-xs" placeholder="Enter Full Name" />
             </div>
             <div class="space-y-2">
-              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Network
-                Username</label>
+              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Username</label>
               <input formControlName="username" class="form-input !py-2.5 !text-xs" placeholder="Enter Username" />
             </div>
             <div class="space-y-2">
-              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Verified Endpoint
+              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Email Address
                 (Read Only)</label>
               <input readonly formControlName="email"
                 class="form-input !py-2.5 !text-xs bg-neutral-50 grayscale cursor-not-allowed border-neutral-100" />
             </div>
             <div class="space-y-2">
-              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Contact
-                Frequency</label>
+              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Phone Number</label>
               <input formControlName="phone" class="form-input !py-2.5 !text-xs" placeholder="Enter Contact Number" />
             </div>
           </div>
 
           <div class="flex justify-end pt-8 border-t border-neutral-100">
-            <button type="submit" [disabled]="!profileForm.dirty || profileForm.invalid"
-              class="btn btn-primary px-10 py-3.5 rounded-2xl shadow-xl disabled:opacity-30 disabled:grayscale transition-all hover:px-12">
-              <span class="text-[10px] font-black uppercase tracking-[0.3em]">Save Parameters</span>
+            <button type="submit" [disabled]="!profileForm.dirty || profileForm.invalid || isSavingProfile"
+              class="btn btn-primary px-10 py-3.5 rounded-2xl shadow-xl disabled:opacity-30 disabled:grayscale transition-all hover:px-12 flex items-center gap-3">
+              @if (isSavingProfile) {
+              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              }
+              <span class="text-[10px] font-black uppercase tracking-[0.3em]">{{ isSavingProfile ? 'Saving...' : 'Save Changes' }}</span>
             </button>
           </div>
         </form>
@@ -161,29 +158,25 @@
           <div
             class="bg-neutral-50/50 p-6 rounded-2xl border border-neutral-100 hover:bg-white hover:shadow-xl transition-all group">
             <span
-              class="text-[9px] font-black text-neutral-400/50 uppercase tracking-widest block mb-2 group-hover:text-primary-600 transition-colors">Identity
-              Alias</span>
-            <p class="text-xs font-black text-neutral-900">{{ profileData.fullName || "Not shared" }}</p>
+              class="text-[9px] font-black text-neutral-400/50 uppercase tracking-widest block mb-2 group-hover:text-primary-600 transition-colors">Full Name</span>
+            <p class="text-xs font-black" [ngClass]="profileData.fullName ? 'text-neutral-900' : 'text-error-500'">{{ profileData.fullName || "Not shared" }}</p>
           </div>
           <div
             class="bg-neutral-50/50 p-6 rounded-2xl border border-neutral-100 hover:bg-white hover:shadow-xl transition-all group">
             <span
-              class="text-[9px] font-black text-neutral-400/50 uppercase tracking-widest block mb-2 group-hover:text-primary-600 transition-colors">Public
-              Identifier</span>
-            <p class="text-xs font-black text-neutral-900">{{ profileData.username }}</p>
+              class="text-[9px] font-black text-neutral-400/50 uppercase tracking-widest block mb-2 group-hover:text-primary-600 transition-colors">Username</span>
+            <p class="text-xs font-black" [ngClass]="profileData.username ? 'text-neutral-900' : 'text-error-500'">{{ profileData.username || "Not shared" }}</p>
           </div>
           <div
             class="bg-neutral-50/50 p-6 rounded-2xl border border-neutral-100 hover:bg-white hover:shadow-xl transition-all group">
             <span
-              class="text-[9px] font-black text-neutral-400/50 uppercase tracking-widest block mb-2 group-hover:text-primary-600 transition-colors">Contact
-              Matrix</span>
-            <p class="text-xs font-black text-neutral-900">{{ profileData.phone || "No contact linked" }}</p>
+              class="text-[9px] font-black text-neutral-400/50 uppercase tracking-widest block mb-2 group-hover:text-primary-600 transition-colors">Phone Number</span>
+            <p class="text-xs font-black" [ngClass]="profileData.phone ? 'text-neutral-900' : 'text-error-500'">{{ profileData.phone || "No contact linked" }}</p>
           </div>
           <div
             class="bg-neutral-950 p-6 rounded-2xl border-none shadow-xl lg:col-span-3 hover:scale-[0.99] transition-all group overflow-hidden relative">
             <div class="absolute top-0 right-0 w-24 h-24 gradient-primary opacity-20 rounded-bl-[4rem]"></div>
-            <span class="text-[9px] font-black text-primary-400 uppercase tracking-widest block mb-2">Secured Endpoint
-              Authorization</span>
+            <span class="text-[9px] font-black text-primary-400 uppercase tracking-widest block mb-2">Email Address</span>
             <p class="text-lg font-black text-white tracking-widest">{{ profileData.email }}</p>
           </div>
         </div>
@@ -202,36 +195,35 @@
             </svg>
           </div>
           <div class="space-y-1">
-            <span class="text-[9px] font-black text-error-600 uppercase tracking-widest block">Access
-              Authorization</span>
-            <h3 class="text-base text-neutral-900 font-black uppercase tracking-tight">Vault Encryption</h3>
+            <span class="text-[9px] font-black text-error-600 uppercase tracking-widest block">Password Settings</span>
+            <h3 class="text-base text-neutral-900 font-black uppercase tracking-tight">Change Password</h3>
           </div>
         </div>
 
         <form [formGroup]="passwordForm" (ngSubmit)="onPasswordSubmit()" class="space-y-8">
           <div class="space-y-6">
             <div class="space-y-2">
-              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Current
-                Sequence</label>
+              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Current Password</label>
               <input type="password" formControlName="currentPassword" class="form-input !py-2.5 !text-xs"
                 placeholder="••••••••" />
             </div>
             <div class="space-y-2">
-              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">New Security
-                Fragment</label>
+              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">New Password</label>
               <input type="password" formControlName="newPassword" class="form-input !py-2.5 !text-xs"
                 placeholder="Minimum 8 characters" />
             </div>
             <div class="space-y-2">
-              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Confirm
-                Fragment</label>
+              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Confirm Password</label>
               <input type="password" formControlName="confirmPassword" class="form-input !py-2.5 !text-xs"
-                placeholder="Repeat fragment" />
+                placeholder="Repeat new password" />
             </div>
           </div>
-          <button type="submit" [disabled]="passwordForm.invalid"
-            class="btn btn-primary w-full py-4 rounded-xl shadow-xl hover:bg-neutral-800 hover:text-white transition-all">
-            <span class="text-[10px] font-black uppercase tracking-[0.3em]">Rotate Access Key</span>
+          <button type="submit" [disabled]="passwordForm.invalid || isChangingPassword"
+            class="btn btn-primary w-full py-4 rounded-xl shadow-xl hover:bg-neutral-800 hover:text-white transition-all flex items-center justify-center gap-3">
+            @if (isChangingPassword) {
+            <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            }
+            <span class="text-[10px] font-black uppercase tracking-[0.3em]">{{ isChangingPassword ? 'Updating...' : 'Update Password' }}</span>
           </button>
         </form>
       </div>
@@ -253,59 +245,120 @@
           </div>
 
           <div class="space-y-3">
-            <h2 class="text-xl font-black text-neutral-900 uppercase tracking-tight">Architectural Verification</h2>
-            <p class="body-base text-neutral-500 font-medium">Upload your provider credentials and certifications to
-              authorize your professional status on the ZenFit network.</p>
+            <h2 class="text-xl font-black text-neutral-900 uppercase tracking-tight">Identity Verification</h2>
+            <p class="body-base text-neutral-500 font-medium">Upload your resume or ID to verify your status as a trainer on ZenFit.</p>
           </div>
 
+          @if (isCvUploading) {
+          <!-- Upload Progress State -->
+          <div class="p-8 border-2 border-primary-200 bg-primary-50/40 rounded-3xl flex flex-col items-center gap-6 animate-fadeIn">
+            <div class="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary-500">
+              <svg class="w-8 h-8 animate-pulse" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+              </svg>
+            </div>
+            <div class="w-full space-y-2">
+              <div class="flex justify-between items-center">
+                <span class="text-[10px] font-black text-primary-700 uppercase tracking-widest truncate max-w-[220px]">{{ selectedFileName }}</span>
+                <span class="text-[10px] font-black text-primary-600 uppercase tracking-widest">{{ uploadProgress }}%</span>
+              </div>
+              <div class="w-full h-2 bg-primary-100 rounded-full overflow-hidden">
+                <div class="h-full bg-primary-600 rounded-full transition-all duration-300" [style.width.%]="uploadProgress"></div>
+              </div>
+              <p class="text-[9px] font-black text-neutral-400 uppercase tracking-widest text-center">Uploading document, please wait...</p>
+            </div>
+          </div>
+          } @else if (!uploadedFile) {
           <div class="relative group cursor-pointer" (click)="fileInput.click()">
             <input #fileInput type="file" class="hidden" accept=".pdf" (change)="onCvFileSelected($event)" />
             <div
-              class="p-12 border-2 border-dashed border-neutral-100 rounded-3xl group-hover:border-primary-400 group-hover:bg-primary-50/20 transition-all">
-              <span
-                class="text-[10px] font-black text-neutral-300 uppercase tracking-[0.4em] group-hover:text-primary-700 transition-colors">Select
-                PDF Vault Asset</span>
-            </div>
-          </div>
-
-          @if(uploadedFile) {
-          <div
-            class="card p-6 bg-success-50 border border-success-100 rounded-2xl flex items-center justify-between shadow-lg animate-fadeIn">
-            <div class="flex items-center gap-6">
-              <div class="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-success-600">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04M12 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+              class="p-12 border-2 border-dashed border-primary-300 bg-primary-50/40 rounded-3xl group-hover:border-primary-500 group-hover:bg-primary-100/50 transition-all flex flex-col items-center justify-center gap-4">
+              <div class="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary-500 group-hover:text-primary-600 transition-colors group-hover:scale-110 duration-300">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
                 </svg>
               </div>
-              <div class="text-left">
-                <span class="text-[9px] font-black text-success-700 uppercase tracking-widest block mb-1">Authenticated
-                  Asset</span>
-                <p class="text-sm font-black text-success-950 truncate max-w-[200px] md:max-w-md">{{ uploadedFile.name
-                  }}</p>
-              </div>
-            </div>
-            <div class="flex gap-4">
-              <button (click)="previewFile(); $event.stopPropagation()"
-                class="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center text-neutral-400 hover:text-primary-600 transition-all"><svg
-                  class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2" stroke-linecap="round"
-                    stroke-linejoin="round" />
-                  <path
-                    d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg></button>
-              <button (click)="deleteFile(); $event.stopPropagation()"
-                class="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center text-neutral-400 hover:text-error-600 transition-all"><svg
-                  class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                </svg></button>
+              <span
+                class="text-xs font-black text-primary-700 uppercase tracking-[0.2em] group-hover:text-primary-800 transition-colors">Browse or Drag PDF Document</span>
             </div>
           </div>
           }
+
+          @if(uploadedFile) {
+          <div class="card p-6 bg-success-50 border border-success-100 rounded-2xl shadow-lg animate-fadeIn flex flex-col gap-4 relative overflow-hidden">
+
+            <!-- Deleting overlay -->
+            @if (isDeleting) {
+            <div class="absolute inset-0 bg-white/80 backdrop-blur-sm z-10 flex flex-col items-center justify-center gap-3 rounded-2xl">
+              <div class="w-10 h-10 border-4 border-error-100 border-t-error-600 rounded-full animate-spin"></div>
+              <p class="text-[10px] font-black text-error-600 uppercase tracking-widest">Deleting document...</p>
+            </div>
+            }
+
+            <!-- File info + action buttons -->
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-6">
+                <div class="w-12 h-12 rounded-xl bg-white shadow-sm flex items-center justify-center text-success-600">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path
+                      d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04M12 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </div>
+                <div class="text-left">
+                  <span class="text-[9px] font-black text-success-700 uppercase tracking-widest block mb-1">Uploaded Document</span>
+                  <p class="text-sm font-black text-success-950 truncate max-w-[200px] md:max-w-md">{{ uploadedFile.name }}</p>
+                </div>
+              </div>
+              <div class="flex gap-4">
+                <button (click)="previewFile(); $event.stopPropagation()" [disabled]="isDeleting"
+                  class="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center text-neutral-400 hover:text-primary-600 transition-all disabled:opacity-40">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    <path d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+                <button (click)="requestDeleteFile(); $event.stopPropagation()" [disabled]="isDeleting"
+                  class="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center text-neutral-400 hover:text-error-600 transition-all disabled:opacity-40">
+                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Inline confirmation row -->
+            @if (showDeleteConfirm) {
+            <div class="flex items-center justify-between bg-error-50 border border-error-100 rounded-xl px-5 py-3 animate-fadeIn">
+              <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded-lg bg-error-100 flex items-center justify-center text-error-600 shrink-0">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                  </svg>
+                </div>
+                <p class="text-[10px] font-black text-error-700 uppercase tracking-wide">Are you sure you want to delete this document?</p>
+              </div>
+              <div class="flex gap-3 ml-4">
+                <button (click)="cancelDelete(); $event.stopPropagation()"
+                  class="px-4 py-2 text-[9px] font-black uppercase tracking-wider bg-white border border-neutral-200 text-neutral-600 rounded-lg hover:bg-neutral-50 transition-all">
+                  Cancel
+                </button>
+                <button (click)="deleteFile(); $event.stopPropagation()" [disabled]="isDeleting"
+                  class="px-4 py-2 text-[9px] font-black uppercase tracking-wider bg-error-600 text-white rounded-lg hover:bg-error-700 transition-all shadow-sm flex items-center gap-2 disabled:opacity-60">
+                  @if (isDeleting) {
+                  <div class="w-3 h-3 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  }
+                  {{ isDeleting ? 'Deleting...' : 'Yes, Delete' }}
+                </button>
+              </div>
+            </div>
+            }
+
+          </div>
+          }
+
         </div>
       </div>
       }

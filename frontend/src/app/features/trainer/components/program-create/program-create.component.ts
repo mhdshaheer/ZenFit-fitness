@@ -1,4 +1,5 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
   FormGroup,
@@ -12,7 +13,9 @@ import {
   CategoryService,
   ICategory,
 } from '../../../../core/services/category.service';
-import { Router } from '@angular/router';
+import { ProfileService } from '../../../../core/services/profile.service';
+import { ILoggedUser, IUserResponse } from '../../../../interface/user.interface';
+import { Router, RouterLink } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { LoggerService } from '../../../../core/services/logger.service';
 
@@ -23,7 +26,7 @@ export interface Category {
 
 @Component({
   selector: 'app-program-create',
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink],
   templateUrl: './program-create.component.html',
   styleUrl: './program-create.component.css',
 })
@@ -32,6 +35,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
   private readonly _toastService = inject(ToastService);
   private readonly _router = inject(Router);
   private readonly _categoryService = inject(CategoryService);
+  private readonly _profileService = inject(ProfileService);
   private readonly _destroy$ = new Subject<void>();
   private _logger = inject(LoggerService)
 
@@ -40,6 +44,7 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
   isSubmitting = false;
   currentTrainerId = '';
   categories: Category[] = [];
+  isTrainerVerified = true;
 
   private readonly _fb = inject(FormBuilder);
 
@@ -49,11 +54,35 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
     this.initializeForm();
     this.generateProgramId();
     this.getSubCategories();
+    this.checkTrainerVerification();
   }
 
   ngOnDestroy() {
     this._destroy$.next();
     this._destroy$.complete();
+  }
+
+  checkTrainerVerification() {
+    this._profileService.getCurrentUserId()
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (user: ILoggedUser) => {
+          this.currentTrainerId = user.id;
+          this._profileService.getProfile(user.id)
+            .pipe(takeUntil(this._destroy$))
+            .subscribe({
+              next: (profile: IUserResponse) => {
+                this.isTrainerVerified = profile.resumeVerified || false;
+                if (!this.isTrainerVerified) {
+                  this._logger.info('Trainer is not verified. Program execution blocked.');
+                  this._toastService.info('Please note: You must be verified to submit programs. You can still arrange drafts.');
+                }
+              },
+              error: (err: Error) => this._logger.error('Failed to fetch profile status:', err)
+            });
+        },
+        error: (err: Error) => this._logger.error('Failed to fetch user context:', err)
+      });
   }
 
   getSubCategories() {
@@ -116,6 +145,11 @@ export class ProgramCreateComponent implements OnInit, OnDestroy {
   }
 
   onSubmit() {
+    if (!this.isTrainerVerified) {
+      this._toastService.error('Your profile must be verified by an admin before you can create programs.');
+      return;
+    }
+
     if (this.programForm.valid) {
       this.isSubmitting = true;
 

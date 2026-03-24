@@ -16,8 +16,21 @@
       </div>
     </div>
   </div>
-
   <div class="container-custom">
+    @if (!isTrainerVerified) {
+    <div class="mb-8 p-4 bg-warning-50 border border-warning-200 rounded-2xl flex items-start gap-4 animate-fadeIn">
+      <div class="text-warning-600 mt-0.5">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <div>
+        <h4 class="text-sm font-black text-warning-800 uppercase tracking-widest mb-1">Verification Required</h4>
+        <p class="text-sm text-warning-700 font-medium">Your profile is currently under review or pending verification. You can save your programs as drafts, but they cannot be submitted for approval until your profile is verified by an admin.</p>
+      </div>
+    </div>
+    }
+
     <form [formGroup]="programForm" (ngSubmit)="onSubmit()" class="animate-slideInUp" style="animation-delay: 200ms;">
       <!-- Elegant Architecture Card -->
       <div class="card bg-white border-none shadow-2xl overflow-hidden p-0 max-w-4xl mx-auto">
@@ -36,142 +49,174 @@
           </div>
         </div>
 
-        <!-- System Logical Inputs -->
-        <div class="p-8 md:p-12 space-y-10">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <div class="space-y-2">
-              <label for="programId" class="caption text-neutral-400 ml-1">Universal Identifier (UID)</label>
-              <input id="programId" type="text" formControlName="programId" placeholder="e.g. CORE-2025-ALPHA"
-                class="form-input !py-4"
-                [class.border-error-500]="programForm.get('programId')?.invalid && programForm.get('programId')?.touched" />
-              @if(programForm.get('programId')?.invalid && programForm.get('programId')?.touched){
-              <span class="text-[10px] font-black text-error-600 uppercase tracking-widest ml-1">UID Required</span>
-              }
-            </div>
-
-            <div class="space-y-2">
-              <label for="programTitle" class="caption text-neutral-400 ml-1">Marketing Alias / Title</label>
-              <input id="programTitle" type="text" formControlName="title" placeholder="e.g. Precision Strength Module"
-                class="form-input !py-4"
-                [class.border-error-500]="programForm.get('title')?.invalid && programForm.get('title')?.touched" />
-              @if(programForm.get('title')?.invalid && programForm.get('title')?.touched){
-              <span class="text-[10px] font-black text-error-600 uppercase tracking-widest ml-1">Title Required</span>
-              }
-            </div>
-          </div>
-
-          <div class="space-y-2">
-            <label for="description" class="caption text-neutral-400 ml-1">Functional Description</label>
-            <textarea id="description" rows="4" formControlName="description"
-              placeholder="Outline the logical flow and performance expectations of this curriculum..."
-              class="form-input !py-4 resize-none" (input)="updateCharacterCount()"></textarea>
-            <div class="flex justify-between items-center px-1">
-              <span class="text-[9px] font-black text-neutral-300 uppercase tracking-widest italic">Markdown Logic
-                Supported</span>
-              <span class="text-[10px] font-black text-primary-600 uppercase tracking-widest">{{ characterCount }} / 500
-                CC</span>
-            </div>
-          </div>
-
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="space-y-2">
-              <label for="category" class="caption text-neutral-400 ml-1">Vertical Categorization</label>
-              <select id="category" formControlName="category"
-                class="form-input !py-4 appearance-none hover:cursor-pointer">
-                <option value="">System Selection</option>
-                @for (category of categories; track category) {
-                <option [value]="category.value">{{ category.label }}</option>
-                }
-              </select>
-            </div>
-
-            <div class="space-y-2">
-              <label for="duration" class="caption text-neutral-400 ml-1">Temporal Lifecycle</label>
-              <select id="duration" formControlName="duration"
-                class="form-input !py-4 appearance-none hover:cursor-pointer">
-                <option value="">Lifecycle Duration</option>
-                <option value="4 weeks">4 Week Cycle</option>
-                <option value="6 weeks">6 Week Cycle</option>
-                <option value="8 weeks">8 Week Cycle</option>
-                <option value="12 weeks">12 Week Cycle</option>
-                <option value="ongoing">Infinite Loop</option>
-              </select>
-            </div>
-
-            <div class="space-y-2">
-              <label for="price" class="caption text-neutral-400 ml-1">Value Proposition (Credits)</label>
-              <div class="relative group">
-                <div
-                  class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-400 group-focus-within:text-primary-600 transition-colors">
-                  <span class="text-sm font-black">₹</span>
+        <!-- System Logical Inputs and Actions Wrapper -->
+        <div class="relative rounded-b-2xl overflow-hidden">
+          
+          <!-- Blurred content wrapper (Inputs + Buttons) -->
+          <div class="transition-all duration-300" 
+               [ngClass]="{'blur-md pointer-events-none select-none opacity-40': !isTrainerVerified}">
+            
+            <div class="p-8 md:p-12 space-y-10">
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <div class="space-y-2">
+                  <label for="programId" class="caption text-neutral-400 ml-1">Universal Identifier (UID)</label>
+                  <input id="programId" type="text" formControlName="programId" placeholder="e.g. CORE-2025-ALPHA"
+                    class="form-input !py-4"
+                    [class.border-error-500]="programForm.get('programId')?.invalid && programForm.get('programId')?.touched" />
+                  @if(programForm.get('programId')?.invalid && programForm.get('programId')?.touched){
+                  <span class="text-[10px] font-black text-error-600 uppercase tracking-widest ml-1">UID Required</span>
+                  }
                 </div>
-                <input id="price" type="number" formControlName="price" placeholder="0.00"
-                  class="form-input !py-4 !pl-10"
-                  [class.border-error-500]="programForm.get('price')?.invalid && programForm.get('price')?.touched" />
+
+                <div class="space-y-2">
+                  <label for="programTitle" class="caption text-neutral-400 ml-1">Marketing Alias / Title</label>
+                  <input id="programTitle" type="text" formControlName="title" placeholder="e.g. Precision Strength Module"
+                    class="form-input !py-4"
+                    [class.border-error-500]="programForm.get('title')?.invalid && programForm.get('title')?.touched" />
+                  @if(programForm.get('title')?.invalid && programForm.get('title')?.touched){
+                  <span class="text-[10px] font-black text-error-600 uppercase tracking-widest ml-1">Title Required</span>
+                  }
+                </div>
+              </div>
+
+              <div class="space-y-2">
+                <label for="description" class="caption text-neutral-400 ml-1">Functional Description</label>
+                <textarea id="description" rows="4" formControlName="description"
+                  placeholder="Outline the logical flow and performance expectations of this curriculum..."
+                  class="form-input !py-4 resize-none" (input)="updateCharacterCount()"></textarea>
+                <div class="flex justify-between items-center px-1">
+                  <span class="text-[9px] font-black text-neutral-300 uppercase tracking-widest italic">Markdown Logic
+                    Supported</span>
+                  <span class="text-[10px] font-black text-primary-600 uppercase tracking-widest">{{ characterCount }} / 500
+                    CC</span>
+                </div>
+              </div>
+
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="space-y-2">
+                  <label for="category" class="caption text-neutral-400 ml-1">Vertical Categorization</label>
+                  <select id="category" formControlName="category"
+                    class="form-input !py-4 appearance-none hover:cursor-pointer">
+                    <option value="">System Selection</option>
+                    @for (category of categories; track category) {
+                    <option [value]="category.value">{{ category.label }}</option>
+                    }
+                  </select>
+                </div>
+
+                <div class="space-y-2">
+                  <label for="duration" class="caption text-neutral-400 ml-1">Temporal Lifecycle</label>
+                  <select id="duration" formControlName="duration"
+                    class="form-input !py-4 appearance-none hover:cursor-pointer">
+                    <option value="">Lifecycle Duration</option>
+                    <option value="4 weeks">4 Week Cycle</option>
+                    <option value="6 weeks">6 Week Cycle</option>
+                    <option value="8 weeks">8 Week Cycle</option>
+                    <option value="12 weeks">12 Week Cycle</option>
+                    <option value="ongoing">Infinite Loop</option>
+                  </select>
+                </div>
+
+                <div class="space-y-2">
+                  <label for="price" class="caption text-neutral-400 ml-1">Value Proposition (Credits)</label>
+                  <div class="relative group">
+                    <div
+                      class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-400 group-focus-within:text-primary-600 transition-colors">
+                      <span class="text-sm font-black">₹</span>
+                    </div>
+                    <input id="price" type="number" formControlName="price" placeholder="0.00"
+                      class="form-input !py-4 !pl-10"
+                      [class.border-error-500]="programForm.get('price')?.invalid && programForm.get('price')?.touched" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="space-y-4">
+                <label class="caption text-neutral-400 ml-1">Operational Complexity Level</label>
+                <div class="grid grid-cols-3 gap-6">
+                  <label class="relative cursor-pointer group">
+                    <input type="radio" formControlName="difficultyLevel" value="Beginner" class="sr-only peer" />
+                    <div
+                      class="p-5 text-center border-2 border-neutral-100 rounded-2xl transition-all peer-checked:border-primary-600 peer-checked:bg-primary-50/30 group-hover:border-neutral-200">
+                      <span
+                        class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Standard</span>
+                      <div class="w-full h-1 bg-neutral-100 rounded-full overflow-hidden mb-2">
+                        <div class="w-1/3 h-full bg-primary-600 rounded-full"></div>
+                      </div>
+                      <p class="text-[9px] font-bold text-neutral-400 uppercase">Beginner Logic</p>
+                    </div>
+                  </label>
+
+                  <label class="relative cursor-pointer group">
+                    <input type="radio" formControlName="difficultyLevel" value="Intermediate" class="sr-only peer" />
+                    <div
+                      class="p-5 text-center border-2 border-neutral-100 rounded-2xl transition-all peer-checked:border-primary-600 peer-checked:bg-primary-50/30 group-hover:border-neutral-200">
+                      <span
+                        class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Enhanced</span>
+                      <div class="w-full h-1 bg-neutral-100 rounded-full overflow-hidden mb-2">
+                        <div class="w-2/3 h-full bg-primary-600 rounded-full"></div>
+                      </div>
+                      <p class="text-[9px] font-bold text-neutral-400 uppercase">Intermediate Flux</p>
+                    </div>
+                  </label>
+
+                  <label class="relative cursor-pointer group">
+                    <input type="radio" formControlName="difficultyLevel" value="Advanced" class="sr-only peer" />
+                    <div
+                      class="p-5 text-center border-2 border-neutral-100 rounded-2xl transition-all peer-checked:border-primary-600 peer-checked:bg-primary-50/30 group-hover:border-neutral-200">
+                      <span
+                        class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Maximum</span>
+                      <div class="w-full h-1 bg-neutral-100 rounded-full overflow-hidden mb-2">
+                        <div class="w-full h-full bg-primary-600 rounded-full"></div>
+                      </div>
+                      <p class="text-[9px] font-bold text-neutral-400 uppercase">Expert Gradient</p>
+                    </div>
+                  </label>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div class="space-y-4">
-            <label class="caption text-neutral-400 ml-1">Operational Complexity Level</label>
-            <div class="grid grid-cols-3 gap-6">
-              <label class="relative cursor-pointer group">
-                <input type="radio" formControlName="difficultyLevel" value="Beginner" class="sr-only peer" />
-                <div
-                  class="p-5 text-center border-2 border-neutral-100 rounded-2xl transition-all peer-checked:border-primary-600 peer-checked:bg-primary-50/30 group-hover:border-neutral-200">
-                  <span
-                    class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Standard</span>
-                  <div class="w-full h-1 bg-neutral-100 rounded-full overflow-hidden mb-2">
-                    <div class="w-1/3 h-full bg-primary-600 rounded-full"></div>
-                  </div>
-                  <p class="text-[9px] font-bold text-neutral-400 uppercase">Beginner Logic</p>
-                </div>
-              </label>
-
-              <label class="relative cursor-pointer group">
-                <input type="radio" formControlName="difficultyLevel" value="Intermediate" class="sr-only peer" />
-                <div
-                  class="p-5 text-center border-2 border-neutral-100 rounded-2xl transition-all peer-checked:border-primary-600 peer-checked:bg-primary-50/30 group-hover:border-neutral-200">
-                  <span
-                    class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Enhanced</span>
-                  <div class="w-full h-1 bg-neutral-100 rounded-full overflow-hidden mb-2">
-                    <div class="w-2/3 h-full bg-primary-600 rounded-full"></div>
-                  </div>
-                  <p class="text-[9px] font-bold text-neutral-400 uppercase">Intermediate Flux</p>
-                </div>
-              </label>
-
-              <label class="relative cursor-pointer group">
-                <input type="radio" formControlName="difficultyLevel" value="Advanced" class="sr-only peer" />
-                <div
-                  class="p-5 text-center border-2 border-neutral-100 rounded-2xl transition-all peer-checked:border-primary-600 peer-checked:bg-primary-50/30 group-hover:border-neutral-200">
-                  <span
-                    class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Maximum</span>
-                  <div class="w-full h-1 bg-neutral-100 rounded-full overflow-hidden mb-2">
-                    <div class="w-full h-full bg-primary-600 rounded-full"></div>
-                  </div>
-                  <p class="text-[9px] font-bold text-neutral-400 uppercase">Expert Gradient</p>
-                </div>
-              </label>
+            
+            <!-- Terminal Actions -->
+            <div
+              class="p-8 border-t border-neutral-100 bg-neutral-50/40 flex flex-col sm:flex-row items-center justify-end gap-6">
+              <button type="button" (click)="saveDraft()"
+                class="btn btn-ghost ring-1 ring-neutral-200 w-full sm:w-auto px-10" [disabled]="isSubmitting || !isTrainerVerified">
+                {{ isSubmitting ? "Syncing..." : "Stash Draft" }}
+              </button>
+              <button type="submit" class="btn btn-primary w-full sm:w-auto px-12 shadow-xl shadow-primary-200 group"
+                [disabled]="programForm.invalid || isSubmitting || !isTrainerVerified">
+                <svg class="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24">
+                  <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                </svg>
+                {{ isSubmitting ? "Deploying..." : "Execute Deployment" }}
+              </button>
             </div>
           </div>
-        </div>
-
-        <!-- Terminal Actions -->
-        <div
-          class="p-8 border-t border-neutral-100 bg-neutral-50/40 flex flex-col sm:flex-row items-center justify-end gap-6">
-          <button type="button" (click)="saveDraft()"
-            class="btn btn-ghost ring-1 ring-neutral-200 w-full sm:w-auto px-10" [disabled]="isSubmitting">
-            {{ isSubmitting ? "Syncing..." : "Stash Draft" }}
-          </button>
-          <button type="submit" class="btn btn-primary w-full sm:w-auto px-12 shadow-xl shadow-primary-200 group"
-            [disabled]="programForm.invalid || isSubmitting">
-            <svg class="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor"
-              viewBox="0 0 24 24">
-              <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            </svg>
-            {{ isSubmitting ? "Deploying..." : "Execute Deployment" }}
-          </button>
+          
+          <!-- Locked Overlay Content -->
+          @if (!isTrainerVerified) {
+          <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-white/10 backdrop-blur-[1px]">
+            <div class="w-20 h-20 bg-white/90 shadow-2xl rounded-full flex items-center justify-center mb-6 text-warning-500 border-2 border-warning-100 animate-bounce" style="animation-duration: 3s;">
+              <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+              </svg>
+            </div>
+            <div class="bg-white/90 px-8 py-5 rounded-3xl shadow-lg border border-neutral-100 text-center flex flex-col items-center gap-4">
+               <div>
+                 <h3 class="text-lg font-black text-neutral-900 uppercase tracking-widest leading-tight">Access Locked</h3>
+                 <p class="text-[11px] font-bold text-neutral-500 uppercase tracking-wide">Admin Verification Pending</p>
+               </div>
+               
+               <a routerLink="/trainer/profile" class="btn btn-primary w-full shadow-lg shadow-primary-200/50 mt-2 hover:scale-105 transition-transform duration-300">
+                 Complete Profile Verification
+                 <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+                 </svg>
+               </a>
+            </div>
+          </div>
+          }
         </div>
       </div>
     </form>
