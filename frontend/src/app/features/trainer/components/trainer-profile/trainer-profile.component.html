@@ -246,10 +246,14 @@
           <div class="relative group cursor-pointer" (click)="fileInput.click()">
             <input #fileInput type="file" class="hidden" accept=".pdf" (change)="onCvFileSelected($event)" />
             <div
-              class="p-12 border-2 border-dashed border-neutral-100 rounded-3xl group-hover:border-primary-400 group-hover:bg-primary-50/20 transition-all">
+              class="p-12 border-2 border-dashed border-primary-300 bg-primary-50/40 rounded-3xl group-hover:border-primary-500 group-hover:bg-primary-100/50 transition-all flex flex-col items-center justify-center gap-4">
+              <div class="w-16 h-16 rounded-2xl bg-white shadow-sm flex items-center justify-center text-primary-500 group-hover:text-primary-600 transition-colors group-hover:scale-110 duration-300">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                </svg>
+              </div>
               <span
-                class="text-[10px] font-black text-neutral-300 uppercase tracking-[0.4em] group-hover:text-primary-700 transition-colors">Select
-                PDF Document</span>
+                class="text-xs font-black text-primary-700 uppercase tracking-[0.2em] group-hover:text-primary-800 transition-colors">Browse or Drag PDF Document</span>
             </div>
           </div>
 

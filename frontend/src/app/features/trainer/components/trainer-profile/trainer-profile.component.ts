@@ -264,8 +264,6 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
     this.uploadProgress = 0;
     this.selectedFileName = file.name;
 
-    this.simulateUpload(file);
-
     this._profileService
       .uploadfile(file, 'resume')
       .pipe(takeUntil(this._destroy$))
@@ -275,51 +273,30 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
             this.uploadProgress = Math.round(
               (100 * event.loaded) / event.total
             );
-          } else if (event instanceof HttpResponse) {
+          } else if (event.type === HttpEventType.Response) {
+            const key = (event as any).body?.key || '';
+            this.resumeKey = key; // Update the resume key so deletion works!
+            
             this.uploadedFile = {
               name: file.name,
               size: file.size,
               type: file.type,
               file: file,
               uploadedAt: new Date(),
-              id: event.body?.key,
+              id: key,
             };
             this.isCvUploading = false;
-            this.uploadProgress = 0;
+            this.uploadProgress = 100;
+            this._toastService.success('PDF uploaded successfully');
           }
         },
         error: () => {
           this.errorMessage = 'PDF upload failed';
           this.isCvUploading = false;
           this.uploadProgress = 0;
+          this._toastService.error('PDF upload failed');
         },
       });
-  }
-  private simulateUpload(file: File): void {
-    const uploadInterval = setInterval(() => {
-      this.uploadProgress += Math.random() * 20 + 5;
-
-      if (this.uploadProgress >= 100) {
-        this.uploadProgress = 100;
-        clearInterval(uploadInterval);
-
-        this.uploadedFile = {
-          name: file.name,
-          size: file.size,
-          type: file.type,
-          file: file,
-          uploadedAt: new Date(),
-          id: this.generateFileId(),
-        };
-
-        this.isUploading = false;
-        this.uploadProgress = 0;
-        this.selectedFileName = '';
-      }
-    }, 300);
-  }
-  private generateFileId(): string {
-    return Date.now().toString() + Math.random().toString(36).substr(2, 9);
   }
   onCvFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
