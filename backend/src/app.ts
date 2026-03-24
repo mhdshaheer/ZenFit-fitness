@@ -69,6 +69,11 @@ const loginLimiter = rateLimit({
   legacyHeaders: false,
 });
 
+// Health Check
+app.get("/api/v1/health", (req, res) => {
+  res.status(200).json({ status: "ok", timestamp: new Date().toISOString() });
+});
+
 // Routes
 app.use(API_ROUTES.AUTH.LOGIN, loginLimiter);
 app.use(API_ROUTES.AUTH.BASE, authRouter);
