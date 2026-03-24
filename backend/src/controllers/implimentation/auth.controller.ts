@@ -13,6 +13,7 @@ import {
 import { IAuthService } from "../../services/interface/auth.service.interface";
 import { AppError } from "../../shared/utils/appError.util";
 import { IUser } from "../../interfaces/user.interface";
+import { setAuthCookies } from "../../shared/utils/cookie.util";
 
 @injectable()
 export class AuthController implements IAuthController {
@@ -85,22 +86,8 @@ export class AuthController implements IAuthController {
       );
     }
 
-    // Set cookies
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 15 * 60 * 1000,
-      path: "/",
-    });
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false,
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: "/",
-    });
+    // Set cookies using utility
+    setAuthCookies(res, accessToken, refreshToken);
 
     res.status(HttpStatus.OK).json({
       message: HttpResponse.LOGIN_SUCCESS,
@@ -151,20 +138,8 @@ export class AuthController implements IAuthController {
       role: user.role!,
     });
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: false, // Set to true if using HTTPS
-      sameSite: "lax",
-      maxAge: 15 * 60 * 1000,
-      path: "/",
-    });
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: false, // Set to true if using HTTPS
-      sameSite: "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-      path: "/",
-    });
+    // Set cookies using utility
+    setAuthCookies(res, accessToken, refreshToken);
 
     res.redirect(
       `${env.frontend_url}/auth/google-callback?accessToken=${accessToken}&refreshToken=${refreshToken}&role=${user.role}`
