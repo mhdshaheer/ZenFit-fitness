@@ -243,6 +243,7 @@
             <p class="body-base text-neutral-500 font-medium">Upload your resume or ID to verify your status as a trainer on ZenFit.</p>
           </div>
 
+          @if (!uploadedFile) {
           <div class="relative group cursor-pointer" (click)="fileInput.click()">
             <input #fileInput type="file" class="hidden" accept=".pdf" (change)="onCvFileSelected($event)" />
             <div
@@ -256,6 +257,7 @@
                 class="text-xs font-black text-primary-700 uppercase tracking-[0.2em] group-hover:text-primary-800 transition-colors">Browse or Drag PDF Document</span>
             </div>
           </div>
+          }
 
           @if(uploadedFile) {
           <div class="card p-6 bg-success-50 border border-success-100 rounded-2xl shadow-lg animate-fadeIn flex flex-col gap-4">
