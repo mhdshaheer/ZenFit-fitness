@@ -23,11 +23,11 @@ export class FileService implements IFileService {
       throw new Error("User not found");
     }
 
-    if (user.profileImage !== undefined && type === "profile") {
-      await this.s3Service.deleteFile(user.profileImage);
+    if (!!user.profileImage && type === "profile") {
+      await this.s3Service.deleteFile(user.profileImage).catch((e) => console.log('S3 delete Warning (profile):', e.message));
     }
-    if (user.resume !== undefined && type === "resume") {
-      await this.s3Service.deleteFile(user.resume);
+    if (!!user.resume && type === "resume") {
+      await this.s3Service.deleteFile(user.resume).catch((e) => console.log('S3 delete Warning (resume):', e.message));
     }
 
     const folderMap: Record<string, string> = {
@@ -49,15 +49,22 @@ export class FileService implements IFileService {
     type: string | undefined
   ): Promise<string> {
     const user = await this._userRepository.findById(userId);
-    if (!user || user.profileImage === undefined) {
-      throw new Error("Profile image not found");
+    if (!user) {
+      throw new Error("User not found");
     }
+
     if (type === "profile") {
+      if (!user.profileImage) {
+        throw new Error("Profile image not found");
+      }
       return this.s3Service.getFileUrl(user.profileImage, 3600);
-    } else if (type === "resumes") {
-      const res = await this.s3Service.getFileDetails(user.resume!);
+    } else if (type === "resumes" || type === "resume") {
+      if (!user.resume) {
+        throw new Error("Resume not found");
+      }
+      const res = await this.s3Service.getFileDetails(user.resume);
       const obj = JSON.parse(res) as Record<string, unknown>;
-      obj.url = await this.s3Service.getFileUrl(user.resume!, 3600);
+      obj.url = await this.s3Service.getFileUrl(user.resume, 3600);
       return JSON.stringify(obj);
     }
     return "";
