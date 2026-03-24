@@ -1,5 +1,6 @@
 import { Router } from "express";
 import passport from "passport";
+import { env } from "../config/env.config";
 import authMiddleware from "../middlewares/verifyToken.middleware";
 import { container } from "../inversify.config";
 import { TYPES } from "../shared/types/inversify.types";
@@ -33,8 +34,23 @@ authRouter.get(
 
 authRouter.get(
   "/google/callback",
-  passport.authenticate("google", { session: false }),
-  controller.googleCallback
+  (req, res, next) => {
+    passport.authenticate("google", { session: false }, (err: any, user: any, info: any) => {
+      if (err) {
+        // Here we handle the specific error from handleGoogleLogin
+        const errorMessage = encodeURIComponent(err.message || "Google authentication failed");
+        return res.redirect(`${env.frontend_url}/auth/login?error=${errorMessage}`);
+      }
+      if (!user) {
+        const infoMessage = info ? encodeURIComponent(info.message || "User not found") : "Authentication failed";
+        return res.redirect(`${env.frontend_url}/auth/login?error=${infoMessage}`);
+      }
+      // If successful, we attach the user to req and proceed to the controller
+      req.user = user;
+      next();
+    })(req, res, next);
+  },
+  controller.googleCallback.bind(controller)
 );
 
 // Private Routes

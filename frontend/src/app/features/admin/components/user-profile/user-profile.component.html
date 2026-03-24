@@ -1,296 +1,216 @@
-<div class="bg-white rounded-lg shadow-md overflow-hidden">
-  <!-- Header -->
-  <div class="bg-gradient-to-r from-green-800 to-green-700 px-6 py-4">
-    <h2 class="text-xl font-semibold text-white">Trainer Profile</h2>
+<div class="min-h-screen bg-neutral-50/50 pb-20 animate-fadeIn">
+  <!-- Dynamic Header Section -->
+  <div class="bg-white border-b border-neutral-200/50 mb-8">
+    <div class="max-w-[1200px] mx-auto py-8 px-6 md:px-10">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6 animate-slideInUp">
+        <div class="space-y-1">
+          <div class="flex items-center gap-2 mb-1.5">
+            <div class="w-8 h-1 grad-indigo rounded-full"></div>
+            <span class="text-[10px] font-black text-primary-600 uppercase tracking-[0.3em]">User Oracle</span>
+          </div>
+          <h1 class="text-3xl font-black text-neutral-900 tracking-tighter">Member Identity</h1>
+          <p class="text-sm text-neutral-400 font-medium">Verify and manage detailed profile information and system permissions.</p>
+        </div>
+
+        <div class="flex gap-3">
+          @if (!isUserBlocked) {
+          <button (click)="toggleUserStatus()"
+            class="px-6 py-3 bg-error-50 text-error-600 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-error-600 hover:text-white transition-all shadow-sm">
+            Block User Account
+          </button>
+          } @else {
+          <button (click)="toggleUserStatus()"
+            class="px-6 py-3 bg-success-50 text-success-600 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-success-600 hover:text-white transition-all shadow-sm">
+            Restore User Access
+          </button>
+          }
+        </div>
+      </div>
+    </div>
   </div>
 
-  <!-- Profile Content -->
-  <div class="p-6">
-    <!-- Basic Information -->
-    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 mb-6">
-      <h3 class="text-lg font-semibold text-gray-900 mb-6 flex items-center">
-        <svg class="w-5 h-5 text-green-900 mr-2" fill="currentColor" viewBox="0 0 20 20">
-          <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"></path>
-        </svg>
-        Personal Information
-      </h3>
-
-      <div class="flex flex-col lg:flex-row gap-8">
-        <!-- Profile Image Section -->
-        <div class="flex flex-col items-center lg:items-start">
-          <div class="relative group">
-            <div class="w-36 h-36 rounded-2xl overflow-hidden ring-4 ring-gray-100 shadow-md">
-              <img [src]="profileImage" alt="profile-image"
-                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+  <div class="max-w-[1200px] mx-auto px-6 md:px-10">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+      
+      <!-- Left Column: Identity Snapshot -->
+      <div class="lg:col-span-4 space-y-8 animate-slideInUp" style="animation-delay: 100ms;">
+        <div class="card p-8 bg-white border-none shadow-xl text-center relative overflow-hidden group">
+          <div class="absolute top-0 right-0 w-32 h-32 grad-indigo opacity-5 rounded-bl-[4rem]"></div>
+          
+          <div class="relative inline-block mb-6">
+            <div class="w-32 h-32 rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white ring-1 ring-neutral-100 group-hover:scale-[1.02] transition-transform duration-500">
+              <img [src]="profileImage || 'https://via.placeholder.com/150x150/f1f5f9/94a3b8?text=No+Image'" (error)="onImageError($event)"
+                   class="w-full h-full object-cover" alt="Profile" />
             </div>
-            <div
-              class="absolute -bottom-2 -right-2 w-8 h-8 bg-green-500 rounded-full border-4 border-white shadow-sm flex items-center justify-center">
-              <div class="w-2 h-2 bg-white rounded-full"></div>
+            <div class="absolute -bottom-2 -right-2 w-10 h-10 rounded-2xl bg-white shadow-xl flex items-center justify-center p-2 border border-neutral-100">
+               <div class="w-full h-full rounded-lg" [ngClass]="isUserBlocked ? 'bg-error-500' : 'bg-success-500'"></div>
             </div>
           </div>
-          <div class="mt-4 text-center lg:text-left">
-            <h4 class="text-xl font-bold text-gray-900">{{ trainer?.name }}</h4>
-            <p class="text-sm text-gray-500 mt-1">Fitness Trainer</p>
+
+          <div class="space-y-4">
+            <div class="space-y-1">
+              <h2 class="text-xl font-black text-neutral-900 tracking-tight">{{ trainer?.name }}</h2>
+              <span class="text-[10px] font-black text-neutral-400 uppercase tracking-widest">{{ trainer?.role }} Account</span>
+            </div>
+
+            <div class="flex flex-wrap justify-center gap-2 pt-2">
+              <span class="px-3 py-1 bg-neutral-100 rounded-lg text-[9px] font-black uppercase tracking-widest text-neutral-500">
+                Member ID: {{ trainer?.id?.substring(0,8) }}
+              </span>
+              <span [ngClass]="isUserBlocked ? 'bg-error-50 text-error-600' : 'bg-success-50 text-success-600'" 
+                    class="px-3 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest">
+                {{ isUserBlocked ? 'Blocked' : 'Active' }}
+              </span>
+            </div>
           </div>
         </div>
 
-        <!-- Personal Details Grid -->
-        <div class="flex-1">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Full Name -->
-            <div class="space-y-2">
-              <label for="fullName" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Full
-                Name</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
-                      clip-rule="evenodd"></path>
-                  </svg>
-                </div>
-                <input id="fullName" type="text" value="Shaheer" placeholder="Not Updated" readonly
-                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm font-medium text-gray-900 focus:outline-none" />
+        <!-- Verification Metrics -->
+        @if (trainer?.role === 'trainer') {
+        <div class="card p-6 bg-white border-none shadow-xl space-y-6">
+          <div class="flex items-center gap-3">
+             <div class="w-10 h-10 rounded-xl bg-primary-50 flex items-center justify-center text-primary-600">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04M12 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+             </div>
+             <div class="space-y-0.5">
+                <span class="label-oracle !mb-0">Profile Status</span>
+                <span class="text-xs font-black text-neutral-900 uppercase">Verification Hub</span>
+             </div>
+          </div>
+
+          <div class="p-4 rounded-2xl transition-all border" 
+               [ngClass]="trainer?.isVerified ? 'bg-success-50 border-success-100' : 'bg-warning-50 border-warning-100'">
+            <div class="flex items-center gap-3 mb-4">
+              <div class="w-8 h-8 rounded-lg flex items-center justify-center" 
+                   [ngClass]="trainer?.isVerified ? 'bg-success-100 text-success-600' : 'bg-warning-100 text-warning-600'">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                        [attr.d]="trainer?.isVerified ? 'M5 13l4 4L19 7' : 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'"></path>
+                </svg>
               </div>
+              <span class="text-[10px] font-black uppercase tracking-widest" 
+                    [ngClass]="trainer?.isVerified ? 'text-success-700' : 'text-warning-700'">
+                {{ trainer?.isVerified ? 'Resume Verified' : 'Awaiting Review' }}
+              </span>
+            </div>
+
+            <button (click)="verifyResume()" 
+                    class="w-full py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-sm"
+                    [ngClass]="trainer?.isVerified ? 'bg-white text-error-600 hover:bg-error-600 hover:text-white' : 'bg-success-600 text-white hover:bg-success-700'">
+              {{ trainer?.isVerified ? 'Unverify Resume' : 'Approve Trainer' }}
+            </button>
+          </div>
+        </div>
+        }
+      </div>
+
+      <!-- Right Column: Personal Information Ledger -->
+      <div class="lg:col-span-8 space-y-8 animate-slideInUp" style="animation-delay: 200ms;">
+        <div class="card p-8 bg-white border-none shadow-xl space-y-10">
+          <div class="flex items-center gap-4 border-b border-neutral-100 pb-6">
+            <div class="w-2 h-6 grad-indigo rounded-full"></div>
+            <h3 class="text-sm font-black text-neutral-900 uppercase tracking-[0.2em]">Personal Information</h3>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-10">
+            <!-- Full Name -->
+            <div class="space-y-2 text-center">
+              <label class="label-oracle">Full Name</label>
+              <input type="text" [value]="trainer?.name" readonly class="form-input-readonly" />
             </div>
 
             <!-- Email -->
-            <div class="space-y-2">
-              <label for="emailAddress" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Email
-                Address</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                  </svg>
-                </div>
-                <input id="emailAddress" type="text" value="{{ trainer?.email }}" placeholder="Not Updated" readonly
-                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none" />
-              </div>
+            <div class="space-y-2 text-center">
+              <label class="label-oracle">Email Address</label>
+              <input type="text" [value]="trainer?.email" readonly class="form-input-readonly" />
             </div>
 
             <!-- Phone -->
-            <div class="space-y-2">
-              <label for="phoneNumber" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Phone
-                Number</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path
-                      d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z">
-                    </path>
-                  </svg>
-                </div>
-                <input id="phoneNumber" type="text" value="{{ trainer?.phone }}" placeholder="Not Updated" readonly
-                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none" />
-              </div>
+            <div class="space-y-2 text-center">
+              <label class="label-oracle">Phone Number</label>
+              <input type="text" [value]="trainer?.phone || 'Not Shared'" readonly class="form-input-readonly" />
             </div>
 
             <!-- Gender -->
-            <div class="space-y-2">
-              <label for="gender" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Gender</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                      d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zM8 6a2 2 0 114 0v1H8V6z"
-                      clip-rule="evenodd"></path>
-                  </svg>
-                </div>
-                <input id="gender" type="text" value="{{ trainer?.gender }}" readonly
-                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none capitalize" />
-              </div>
+            <div class="space-y-2 text-center">
+              <label class="label-oracle">Gender</label>
+              <input type="text" [value]="trainer?.gender || 'Prefer not to say'" readonly class="form-input-readonly capitalize" />
             </div>
 
             <!-- Date of Birth -->
-            <div class="space-y-2">
-              <label for="dob" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Date of Birth</label>
-              <div class="relative">
-                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <svg class="w-4 h-4 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-                    <path fill-rule="evenodd"
-                      d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                      clip-rule="evenodd"></path>
-                  </svg>
-                </div>
-                <input id="dob" type="text" [value]="
-                    trainer?.dob ? (trainer?.dob | date : 'dd/MM/yyyy') : 'none'
-                  " readonly
-                  class="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm text-gray-900 focus:outline-none" />
-              </div>
+            <div class="space-y-2 text-center">
+              <label class="label-oracle">Date of Birth</label>
+              <input type="text" [value]="trainer?.dob ? (trainer?.dob | date : 'MMM d, y') : 'None'" readonly class="form-input-readonly" />
             </div>
 
             <!-- Languages -->
-            <div class="space-y-2">
-              <div id="languagesLabel" class="text-xs font-semibold text-gray-500 uppercase tracking-wide">Languages
-              </div>
-              <div aria-labelledby="languagesLabel" class="p-3 bg-gray-50 border border-gray-200 rounded-lg">
-                <div class="flex flex-wrap gap-2">
-                  @if(trainer?.languages?.length){
-                  <!--itration for languages  -->
-                  @for (language of trainer?.languages; track language) {
-
-                  <span
-                    class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-medium rounded-full shadow-sm">
-                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clip-rule="evenodd"></path>
-                    </svg>
-                    {{ language }}
-                  </span>
-                  } }@else {
-                  <span
-                    class="inline-flex items-center px-3 py-1.5 bg-gradient-to-r from-green-500 to-green-600 text-white text-xs font-medium rounded-full shadow-sm">
-                    <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
-                      <path fill-rule="evenodd"
-                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                        clip-rule="evenodd"></path>
-                    </svg>
-                    Not Updated
-                  </span>
+            <div class="space-y-2 text-center">
+              <label class="label-oracle">Languages</label>
+              <div class="p-3 bg-neutral-50/50 border border-neutral-100 rounded-2xl min-h-[50px] flex items-center justify-center">
+                <div class="flex flex-wrap gap-2 justify-center">
+                  @if (trainer?.languages?.length) {
+                    @for (language of trainer?.languages; track language) {
+                    <span class="px-3 py-1 bg-white border border-neutral-200 text-neutral-600 text-[10px] font-black uppercase tracking-widest rounded-lg shadow-sm">
+                      {{ language }}
+                    </span>
+                    }
+                  } @else {
+                    <span class="px-3 py-1 bg-neutral-200/50 text-neutral-400 text-[9px] font-black uppercase tracking-widest rounded-lg">
+                      None
+                    </span>
                   }
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Resume Section -->
-    @if(uploadedFile?.file){
+          <!-- Document Ledger -->
+          @if (uploadedFile?.file) {
+          <div class="pt-10 border-t border-neutral-100 space-y-6">
+            <h4 class="text-[10px] font-black text-neutral-900 uppercase tracking-widest">Document Artifacts</h4>
+            
+            <div class="p-5 bg-neutral-50/50 border border-neutral-100 rounded-[2rem] flex items-center justify-between group hover:bg-white hover:shadow-xl transition-all duration-300">
+               <div class="flex items-center gap-6">
+                  <div class="w-14 h-14 rounded-2xl bg-white shadow-lg flex items-center justify-center text-error-500 group-hover:scale-110 transition-transform">
+                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                     </svg>
+                  </div>
+                  <div>
+                    <span class="label-oracle !mb-0 text-error-400">PDF Application</span>
+                    <p class="text-sm font-black text-neutral-900 truncate max-w-[200px] md:max-w-md">{{ uploadedFile?.name }}</p>
+                    <p class="text-[9px] font-black text-neutral-400 uppercase tracking-widest">{{ formatFileSize(uploadedFile?.size!) }} • {{ formatUploadTime(uploadedFile?.uploadedAt!) }}</p>
+                  </div>
+               </div>
 
-    <div class="space-y-3">
-      <h4 class="text-sm font-medium text-gray-700">Resume Document</h4>
-
-      <div class="grid gap-3">
-        <!-- Resume File -->
-        <div class="flex items-center justify-between p-3 bg-gray-50 rounded-lg border">
-          <!-- File Info -->
-          <div class="flex items-center space-x-3 min-w-0 flex-1">
-            <!-- PDF Icon -->
-            <div class="flex-shrink-0">
-              <div class="w-8 h-8 bg-red-100 rounded flex items-center justify-center">
-                <svg class="w-4 h-4 text-red-600" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M4 18h12V6l-4-4H4v16zm8-10v1h3l-3-3v2z" />
-                </svg>
-              </div>
+               <div class="flex gap-3">
+                  <button (click)="previewFile()" class="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center text-neutral-400 hover:text-primary-600 transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                    </svg>
+                  </button>
+                  <button (click)="downloadFile()" class="w-12 h-12 rounded-2xl bg-white shadow-xl flex items-center justify-center text-neutral-400 hover:text-success-600 transition-all">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                    </svg>
+                  </button>
+               </div>
             </div>
-
-            <!-- File Details -->
-            <div class="min-w-0 flex-1">
-              <p class="text-sm font-medium text-gray-900 truncate">
-                {{ uploadedFile?.name! || "" }}
-              </p>
-              <p class="text-xs text-gray-500">
-                {{ formatFileSize(uploadedFile?.size!) }} • Uploaded
-                {{ formatUploadTime(uploadedFile?.uploadedAt!) }}
-              </p>
+          </div>
+          } @else if (trainer?.role === 'trainer') {
+            <div class="pt-10 border-t border-neutral-100 text-center py-12">
+               <div class="w-16 h-16 bg-neutral-100 rounded-3xl flex items-center justify-center text-neutral-300 mx-auto mb-4">
+                  <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+               </div>
+               <p class="text-[10px] font-black text-neutral-400 uppercase tracking-widest">No documentation artifacts linked</p>
             </div>
-          </div>
-
-          <!-- File Actions -->
-          <div class="flex items-center space-x-2 ml-3">
-            <!-- Preview Button -->
-            <button (click)="previewFile()" class="p-1 text-gray-400 hover:text-orange-600 transition-colors"
-              title="Preview">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z">
-                </path>
-              </svg>
-            </button>
-
-            <!-- Download Button -->
-            <button (click)="downloadFile()" class="p-1 text-gray-400 hover:text-green-600 transition-colors"
-              title="Download">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                  d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-                </path>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Verification Status -->
-        <div class="flex items-center justify-between p-3 rounded-lg border" [ngClass]="{
-            'bg-green-50 border-green-200': trainer?.isVerified,
-            'bg-yellow-50 border-yellow-200': !trainer?.isVerified
-          }">
-          <div class="flex items-center">
-            @if (trainer?.isVerified) {
-            <svg class="w-5 h-5 text-green-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                clip-rule="evenodd"></path>
-            </svg>
-            }
-
-            @if (!trainer?.isVerified) {
-            <svg class="w-5 h-5 text-orange-600 mr-2" fill="currentColor" viewBox="0 0 20 20">
-              <path fill-rule="evenodd"
-                d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z"
-                clip-rule="evenodd"></path>
-            </svg>
-            }
-
-            <span class="text-sm font-medium" [ngClass]="{
-                'text-green-700': trainer?.isVerified,
-                'text-orange-700': !trainer?.isVerified
-              }">
-              {{
-              trainer?.isVerified ? "Resume Verified" : "Verification Pending"
-              }}
-            </span>
-          </div>
-
-          @if (!trainer?.isVerified) {
-          <button (click)="verifyResume()"
-            class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors">
-            Verify Resume
-          </button>
-          }
-
-          @if (trainer?.isVerified) {
-          <button (click)="verifyResume()"
-            class="px-4 py-2 bg-orange-600 text-white text-sm font-medium rounded-md hover:bg-orange-700 transition-colors">
-            Mark as Unverified
-          </button>
           }
         </div>
       </div>
-    </div>
-    }
-
-    <!-- No Resume Message -->
-    @if(!uploadedFile?.file && trainer?.role==='trainer'){
-
-    <div class="text-center py-8">
-      <svg class="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
-          d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
-        </path>
-      </svg>
-      <p class="text-gray-500 text-sm">No resume uploaded yet</p>
-    </div>
-    }
-    <!-- Action Buttons -->
-    <div class="flex justify-end space-x-3 mt-6 pt-6 border-t border-gray-200">
-      @if (!isUserBlocked) {
-      <button (click)="toggleUserStatus()"
-        class="px-4 py-2 bg-red-600 text-white text-sm font-medium rounded-md hover:bg-red-700 transition-colors">
-        Block User
-      </button>
-      } @else {
-      <button (click)="toggleUserStatus()"
-        class="px-4 py-2 bg-green-600 text-white text-sm font-medium rounded-md hover:bg-green-700 transition-colors">
-        Unblock User
-      </button>
-      }
     </div>
   </div>
-</div>
+</div>

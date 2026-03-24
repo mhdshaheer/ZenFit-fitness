@@ -153,6 +153,14 @@ export class TableComponent<T extends object = object> {
         return 'status-pill--warning';
       case 'busy':
         return 'status-pill--info';
+      case 'beginner':
+        return 'status-pill--beginner';
+      case 'intermediate':
+        return 'status-pill--intermediate';
+      case 'advanced':
+        return 'status-pill--advanced';
+      case 'expert':
+        return 'status-pill--expert';
       default:
         return 'status-pill--muted';
     }

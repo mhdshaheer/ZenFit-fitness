@@ -1,0 +1,30 @@
+.grad-indigo {
+  background: linear-gradient(135deg, #6366f1 0%, #a855f7 100%);
+}
+
+.form-input-readonly {
+  width: 100%;
+  border: 1px solid #f1f5f9;
+  background-color: rgba(248, 250, 252, 0.5);
+  border-radius: 1rem; /* rounded-2xl */
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  padding-right: 1.25rem;
+  padding-left: 1.25rem; /* Balanced horizontal padding for true centering */
+  text-align: center;
+  font-size: 0.75rem; /* text-xs */
+  font-weight: 900; /* font-black */
+  color: #0f172a; /* text-neutral-900 */
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.label-oracle {
+  font-size: 9px;
+  font-weight: 900;
+  color: #94a3b8;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  margin-bottom: 0.5rem;
+  display: block;
+}
