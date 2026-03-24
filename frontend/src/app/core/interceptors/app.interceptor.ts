@@ -81,8 +81,8 @@ export const AppInterceptor: HttpInterceptorFn = (req, next) => {
         return throwError(() => error);
       }
 
-      // 400 or 404 : not found page
-      if (error.status === 400 || error.status === 404) {
+      // 400 or 404 : not found page (skip for public/auth endpoints so components can handle their own errors)
+      if ((error.status === 400 || error.status === 404) && !isPublicEndpoint) {
         toastservice.error('Page not found or invalid request.');
         router.navigate(['/not-found']);
         return throwError(() => error);
