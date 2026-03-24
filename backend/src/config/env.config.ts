@@ -88,4 +88,7 @@ export const env = {
   get refreshTokenMaxAge(): string | undefined {
     return process.env.REFRESH_TOKEN_MAX_AGE;
   },
+  get resend_api_key(): string | undefined {
+    return process.env.RESEND_API_KEY;
+  },
 };
