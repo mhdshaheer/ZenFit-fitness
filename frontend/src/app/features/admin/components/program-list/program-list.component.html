@@ -20,7 +20,8 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
       @for (tab of approvalTabs; track tab.value) {
       <button type="button" (click)="setApprovalTab(tab.value)"
-        class="group relative bg-white rounded-2xl p-5 border border-neutral-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:translate-y-[-2px] overflow-hidden select-none"
+        class="group relative rounded-2xl p-5 border border-neutral-100 shadow-sm hover:shadow-xl transition-all duration-300 hover:translate-y-[-2px] overflow-hidden select-none"
+        [class.bg-white]="activeApprovalTab !== tab.value"
         [class.ring-2]="activeApprovalTab === tab.value" [class.ring-primary-600]="activeApprovalTab === tab.value"
         [class.bg-neutral-900]="activeApprovalTab === tab.value">
 
@@ -35,14 +36,14 @@
               [class.bg-primary-600]="activeApprovalTab === tab.value"
               [class.text-white]="activeApprovalTab === tab.value"
               [class.bg-neutral-50]="activeApprovalTab !== tab.value"
-              [class.text-neutral-400]="activeApprovalTab !== tab.value">
+              [class.text-neutral-500]="activeApprovalTab !== tab.value">
               <i [class]="tab.icon" class="text-lg"></i>
             </div>
 
             <div class="text-left">
               <p class="text-[10px] font-black uppercase tracking-[0.3em] mb-0.5"
-                [class.text-neutral-400]="activeApprovalTab !== tab.value"
-                [class.text-primary-100]="activeApprovalTab === tab.value">
+                [class.text-neutral-500]="activeApprovalTab !== tab.value"
+                [class.text-white]="activeApprovalTab === tab.value">
                 {{ tab.label }}
               </p>
               <h3 class="text-xl font-black tracking-tighter leading-none"
@@ -73,22 +74,11 @@
     <div class="card p-12 bg-white border-none shadow-2xl rounded-[2.5rem]">
       <app-shared-skeleton type="list" [count]="6"></app-shared-skeleton>
     </div>
-    } @else if (programs.length === 0) {
-    <div class="card py-32 text-center bg-white border-none shadow-2xl rounded-[2.5rem] animate-fadeIn">
-      <div
-        class="w-24 h-24 bg-neutral-100 rounded-[2.5rem] flex items-center justify-center text-neutral-300 mx-auto mb-8 shadow-inner border border-neutral-200/50">
-        <i class="fas fa-database text-4xl opacity-50"></i>
-      </div>
-      <h3 class="text-xl font-black text-neutral-900 uppercase tracking-[0.2em] mb-2">Registry Silent</h3>
-      <p class="text-sm text-neutral-400 font-medium max-w-md mx-auto leading-relaxed"> No artifacts detected within the
-        <span class="text-indigo-600 font-black">{{ activeApprovalTab }}</span> synchronization tier.
-      </p>
-    </div>
     } @else {
     <div class="animate-slideInUp">
       <app-table [title]="'Program Inventory'" [subtitle]="activeApprovalTab + ' programs tier'"
         [entityName]="'Program'" [data]="programs" [columns]="programsColumn" [actions]="programAction"
-        [customCell]="customCell" (actionClicked)="onViewProgram($event)">
+        [customCell]="customCell" (actionClicked)="onViewProgram($event)" (searchChanged)="onSearch($event)">
         <ng-template #customCell let-row let-column="column">
           @if (column.key === 'approvalStatus') {
           <span class="badge" [ngClass]="row.approvalStatus | approvalStatusColor">
