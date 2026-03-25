@@ -44,6 +44,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
   defaultImage = 'landing_page/user.png';
   isUploading = false;
   isEditMode = false;
+  isInitialLoading = true;
 
   // ==============
   profileForm!: FormGroup;
@@ -96,45 +97,52 @@ export class UserProfileComponent implements OnInit, OnDestroy {
     this._profileService
       .getProfile()
       .pipe(takeUntil(this._destroy$))
-      .subscribe((res) => {
-        this.profileData = { ...res };
+      .subscribe({
+        next: (res) => {
+          this.profileData = { ...res };
+          this.isInitialLoading = false;
 
-        if (res.profileImage) {
-          this._profileService
-            .getFile(res.profileImage)
-            .pipe(takeUntil(this._destroy$))
-            .subscribe((fileRes) => {
-              this.profileImageUrl = fileRes.url;
-            });
+          if (res.profileImage) {
+            this._profileService
+              .getFile(res.profileImage)
+              .pipe(takeUntil(this._destroy$))
+              .subscribe((fileRes) => {
+                this.profileImageUrl = fileRes.url;
+              });
+          }
+
+          this.profileForm = this._fb.group({
+            fullName: [
+              res.fullName,
+              [
+                Validators.minLength(FORM_CONSTANTS.FULLNAME.MIN_LENGTH),
+                Validators.maxLength(FORM_CONSTANTS.FULLNAME.MAX_LENGTH),
+                Validators.pattern(FORM_CONSTANTS.FULLNAME.PATTERN),
+              ],
+            ],
+            username: [
+              res.username,
+              [
+                Validators.required,
+                Validators.minLength(FORM_CONSTANTS.USERNAME.MIN_LENGTH),
+                Validators.maxLength(FORM_CONSTANTS.USERNAME.MAX_LENGTH),
+                Validators.pattern(FORM_CONSTANTS.USERNAME.PATTERN),
+              ],
+            ],
+            dob: [
+              res.dob ? res.dob.split('T')[0] : '',
+              [CustomValidators.dateOfBirth(), CustomValidators.minimumAge(13)],
+            ],
+            gender: [res.gender],
+            email: [res.email, [CustomValidators.email()]],
+            phone: [res.phone, optionalPhoneValidator],
+            role: [res.role, Validators.required],
+          });
+        },
+        error: (err) => {
+          this._logger.error('Failed to load profile', err);
+          this.isInitialLoading = false;
         }
-
-        this.profileForm = this._fb.group({
-          fullName: [
-            res.fullName,
-            [
-              Validators.minLength(FORM_CONSTANTS.FULLNAME.MIN_LENGTH),
-              Validators.maxLength(FORM_CONSTANTS.FULLNAME.MAX_LENGTH),
-              Validators.pattern(FORM_CONSTANTS.FULLNAME.PATTERN),
-            ],
-          ],
-          username: [
-            res.username,
-            [
-              Validators.required,
-              Validators.minLength(FORM_CONSTANTS.USERNAME.MIN_LENGTH),
-              Validators.maxLength(FORM_CONSTANTS.USERNAME.MAX_LENGTH),
-              Validators.pattern(FORM_CONSTANTS.USERNAME.PATTERN),
-            ],
-          ],
-          dob: [
-            res.dob ? res.dob.split('T')[0] : '',
-            [CustomValidators.dateOfBirth(), CustomValidators.minimumAge(13)],
-          ],
-          gender: [res.gender],
-          email: [res.email, [CustomValidators.email()]],
-          phone: [res.phone, optionalPhoneValidator],
-          role: [res.role, Validators.required],
-        });
       });
   }
 
