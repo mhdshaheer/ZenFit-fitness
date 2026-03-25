@@ -1,9 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, HostListener } from '@angular/core';
 import { ProfileService } from '../../../../core/services/profile.service';
 import {
   FormBuilder,
   FormGroup,
+  FormsModule,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -33,6 +34,7 @@ interface ProfileUser {
   gender: 'Male' | 'Female' | 'Other' | null;
   email: string;
   phone: string | null;
+  languages: string[];
   role: string;
 }
 type TabKey = 'personal' | 'security' | 'upload';
@@ -43,7 +45,7 @@ interface Tab {
 }
 @Component({
   selector: 'app-trainer-profile',
-  imports: [CommonModule, ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule, FormsModule],
   templateUrl: './trainer-profile.component.html',
   styleUrl: './trainer-profile.component.css',
 })
@@ -78,7 +80,53 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
   isSavingProfile = false;
   isChangingPassword = false;
   private readonly _fb = inject(FormBuilder);
+
+  // Language selection logic
+  availableLanguages = [
+    'English', 'Spanish', 'French', 'German', 'Chinese', 'Japanese', 
+    'Korean', 'Hindi', 'Arabic', 'Portuguese', 'Russian', 'Italian', 
+    'Malayalam', 'Tamil', 'Telugu', 'Kannada', 'Bengali', 'Marathi'
+  ];
+  languageSearch = '';
+  showLanguageDropdown = false;
+
+  get filteredLanguages() {
+    return this.availableLanguages.filter(lang => 
+      lang.toLowerCase().includes(this.languageSearch.toLowerCase()) && 
+      !this.selectedLanguages.includes(lang)
+    );
+  }
+
+  get selectedLanguages(): string[] {
+    return this.profileForm?.get('languages')?.value || [];
+  }
+
+  toggleLanguage(lang: string) {
+    const current = [...this.selectedLanguages];
+    const index = current.indexOf(lang);
+    if (index === -1) {
+      current.push(lang);
+    } else {
+      current.splice(index, 1);
+    }
+    this.profileForm.get('languages')?.setValue(current);
+    this.profileForm.get('languages')?.markAsDirty();
+  }
+
+  removeLanguage(lang: string) {
+    const current = this.selectedLanguages.filter(l => l !== lang);
+    this.profileForm.get('languages')?.setValue(current);
+    this.profileForm.get('languages')?.markAsDirty();
+  }
   // ==============
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const target = event.target as HTMLElement;
+    if (!target.closest('.relative')) {
+      this.showLanguageDropdown = false;
+    }
+  }
 
   onFileSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
@@ -127,7 +175,10 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
       .getProfile()
       .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
-        this.profileData = res;
+        this.profileData = {
+          ...res,
+          languages: res.languages || []
+        };
 
         if (res.profileImage) {
           this._profileService
@@ -184,6 +235,7 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
             [CustomValidators.dateOfBirth(), CustomValidators.minimumAge(13)],
           ],
           gender: [res.gender],
+          languages: [res.languages || []],
           email: [res.email, [CustomValidators.email()]],
           phone: [res.phone, optionalPhoneValidator],
           role: [res.role, Validators.required],
@@ -201,7 +253,10 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
           next: (res) => {
             this._loggerService.info('response from the backend :', res);
             this._toastService.success('Profile updated Successfully.');
-            this.profileData = res;
+            this.profileData = {
+              ...res,
+              languages: res.languages || []
+            };
             this.isEditMode = false;
             this.isSavingProfile = false;
           },

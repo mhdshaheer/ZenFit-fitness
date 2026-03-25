@@ -141,6 +141,57 @@
               <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Phone Number</label>
               <input formControlName="phone" class="form-input !py-2.5 !text-xs" placeholder="Enter Contact Number" />
             </div>
+            
+            <!-- Date of Birth -->
+            <div class="space-y-2">
+               <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Date of Birth</label>
+               <input type="date" formControlName="dob" class="form-input !py-2.5 !text-xs" />
+               <div *ngIf="getError('dob')" class="text-[10px] text-error-500 font-bold mt-1 uppercase tracking-tighter">{{ getError('dob') }}</div>
+            </div>
+
+            <!-- Gender Selection -->
+            <div class="space-y-2">
+              <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Gender</label>
+              <select formControlName="gender" class="form-input !py-2.5 !text-xs">
+                 <option [value]="null">Select Gender</option>
+                 <option value="Male">Male</option>
+                 <option value="Female">Female</option>
+                 <option value="Other">Other</option>
+              </select>
+            </div>
+
+            <!-- Language Multi-Select -->
+            <div class="space-y-2 md:col-span-2">
+               <label class="text-[9px] font-black text-neutral-400 uppercase tracking-[0.2em] block">Languages</label>
+               <div class="relative">
+                  <div class="form-input !py-2 !text-xs min-h-[44px] flex flex-wrap gap-2 items-center">
+                     @for (lang of selectedLanguages; track lang) {
+                        <span class="px-2 py-1 bg-primary-50 text-primary-700 rounded-lg text-[10px] font-black flex items-center gap-1.5 border border-primary-100 shadow-sm">
+                           {{ lang }}
+                           <button type="button" (click)="removeLanguage(lang)" class="hover:text-error-600">
+                              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M6 18L18 6M6 6l12 12" stroke-width="3" stroke-linecap="round"/></svg>
+                           </button>
+                        </span>
+                     }
+                     <input type="text" [(ngModel)]="languageSearch" [ngModelOptions]="{standalone: true}"
+                            (focus)="showLanguageDropdown = true"
+                            placeholder="Search & Add Languages..." 
+                            class="bg-transparent border-none outline-none flex-1 min-w-[120px]" />
+                  </div>
+
+                  @if (showLanguageDropdown && filteredLanguages.length > 0) {
+                     <div class="absolute z-[100] w-full mt-2 bg-white border border-neutral-200 rounded-2xl shadow-2xl max-h-48 overflow-y-auto animate-fadeIn p-2 space-y-1">
+                        @for (lang of filteredLanguages; track lang) {
+                           <button type="button" (click)="toggleLanguage(lang); showLanguageDropdown = false"
+                                   class="w-full text-left px-4 py-2 hover:bg-neutral-50 rounded-xl text-xs font-black text-neutral-700 transition-colors flex items-center justify-between group">
+                              {{ lang }}
+                              <svg class="w-4 h-4 text-primary-500 opacity-0 group-hover:opacity-100" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4" stroke-width="3" stroke-linecap="round"/></svg>
+                           </button>
+                        }
+                     </div>
+                  }
+               </div>
+            </div>
           </div>
 
           <div class="flex justify-end pt-8 border-t border-neutral-100">
@@ -172,6 +223,32 @@
             <span
               class="text-[9px] font-black text-neutral-400/50 uppercase tracking-widest block mb-2 group-hover:text-primary-600 transition-colors">Phone Number</span>
             <p class="text-xs font-black" [ngClass]="profileData.phone ? 'text-neutral-900' : 'text-error-500'">{{ profileData.phone || "No contact linked" }}</p>
+          </div>
+          <div
+            class="bg-neutral-50/50 p-6 rounded-2xl border border-neutral-100 hover:bg-white hover:shadow-xl transition-all group">
+            <span
+              class="text-[9px] font-black text-neutral-400/50 uppercase tracking-widest block mb-2 group-hover:text-primary-600 transition-colors">Date of Birth</span>
+            <p class="text-xs font-black text-neutral-900">{{ (profileData.dob | date:'mediumDate') || "Not set" }}</p>
+          </div>
+          <div
+            class="bg-neutral-50/50 p-6 rounded-2xl border border-neutral-100 hover:bg-white hover:shadow-xl transition-all group">
+            <span
+              class="text-[9px] font-black text-neutral-400/50 uppercase tracking-widest block mb-2 group-hover:text-primary-600 transition-colors">Gender</span>
+            <p class="text-xs font-black text-neutral-900 capitalize">{{ profileData.gender || "Not set" }}</p>
+          </div>
+          <div
+            class="bg-neutral-50/50 p-6 rounded-2xl border border-neutral-100 hover:bg-white hover:shadow-xl transition-all group md:col-span-2 lg:col-span-1">
+            <span
+              class="text-[9px] font-black text-neutral-400/50 uppercase tracking-widest block mb-2 group-hover:text-primary-600 transition-colors">Languages</span>
+            <div class="flex flex-wrap gap-1.5">
+               @if (profileData.languages && profileData.languages.length > 0) {
+                  @for (lang of profileData.languages; track lang) {
+                     <span class="px-2 py-0.5 bg-neutral-100 text-neutral-600 rounded-md text-[9px] font-black uppercase tracking-widest">{{ lang }}</span>
+                  }
+               } @else {
+                  <p class="text-xs font-black text-error-500">None added</p>
+               }
+            </div>
           </div>
           <div
             class="bg-neutral-950 p-6 rounded-2xl border-none shadow-xl lg:col-span-3 hover:scale-[0.99] transition-all group overflow-hidden relative">

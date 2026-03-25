@@ -8,9 +8,10 @@ export interface IUser {
   password?: string;
   phone?: string;
   dob?: Date;
-  gender?: "male" | "female" | "other";
+  gender?: string;
   role?: "admin" | "trainer" | "user";
   status?: string;
+  languages?: string[];
   profileImage?: string;
   resume?: string;
   resumeVerified?: boolean;

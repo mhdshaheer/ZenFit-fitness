@@ -12,6 +12,7 @@ export interface UserDto {
   profileImage?: string;
   resume?: string;
   resumeVerified?: boolean;
+  languages?: string[];
   createdAt?: Date;
 }
 

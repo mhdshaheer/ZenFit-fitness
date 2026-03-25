@@ -21,7 +21,7 @@ interface ProfileUser {
   fullName: string;
   username: string;
   dob: string;
-  gender: 'Male' | 'Female' | 'Other';
+  gender: 'Male' | 'Female' | 'Other' | null;
   email: string;
   phone: string | null;
   role: string;
@@ -96,7 +96,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
       .getProfile()
       .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
-        this.profileData = res;
+        this.profileData = { ...res };
 
         if (res.profileImage) {
           this._profileService
@@ -149,7 +149,7 @@ export class UserProfileComponent implements OnInit, OnDestroy {
         .subscribe({
           next: (res) => {
             this._toastService.success('Profile data is updated Successfully');
-            this.profileData = res;
+            this.profileData = { ...res };
             this.isEditMode = false;
           },
           error: (err) => {

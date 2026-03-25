@@ -15,7 +15,7 @@ interface TrainerProfile {
   email: string;
   phone: string | null;
   languages: string[];
-  gender: string;
+  gender: string | null;
   role?: string;
   dob: string;
   isVerified?: boolean;
