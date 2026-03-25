@@ -1,6 +1,7 @@
 import { inject, injectable } from "inversify";
 import { IPassword, IUser } from "../../interfaces/user.interface";
 import { IProfileService } from "../interface/profile.service.interface";
+import { INotificationService } from "../interface/notification.service.interface";
 import { mapToUserDto } from "../../mapper/user.mapper";
 import { UserDto } from "../../dtos/user.dtos";
 import { comparePassword, hashedPassword } from "../../shared/utils/hash.util";
@@ -14,6 +15,9 @@ import { HttpStatus } from "../../const/statuscode.const";
 export class ProfileService implements IProfileService {
   @inject(TYPES.UserRepository)
   private readonly _userRepository!: IUserRepository;
+
+  @inject(TYPES.NotificationService)
+  private readonly _notificationService!: INotificationService;
 
   async getProfile(userId: string): Promise<UserDto> {
     const user = await this._userRepository.findById(userId);
@@ -64,6 +68,22 @@ export class ProfileService implements IProfileService {
     const updated = await this._userRepository.updateById(userId, {
       resumeVerified: !(user.resumeVerified ?? false),
     });
+
+    if (updated) {
+      const isVerified = updated.resumeVerified;
+      const title = isVerified ? "Account Verified" : "Verification Update";
+      const message = isVerified
+        ? "Your trainer profile has been verified! You can now access all trainer features."
+        : "Your profile verification has been revoked by the admin.";
+
+      await this._notificationService.createNotification(
+        userId,
+        "trainer",
+        title,
+        message
+      );
+    }
+
     return updated?.resumeVerified!;
   }
   async changePassword(userId: string, passwords: IPassword): Promise<boolean> {

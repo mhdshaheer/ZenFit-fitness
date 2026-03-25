@@ -11,6 +11,7 @@ export const loadUsers = createAction(
     search?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
+    role?: string;
   }>()
 );
 // ====================

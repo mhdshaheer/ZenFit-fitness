@@ -5,13 +5,12 @@
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-8">
         <div class="space-y-1 animate-slideInUp">
           <div class="flex items-center gap-3 mb-2">
-            <span class="badge badge-primary">Curriculum Engine</span>
+            <span class="badge badge-primary">Program Creator</span>
             <span class="w-1.5 h-1.5 rounded-full bg-neutral-300"></span>
-            <span class="caption text-neutral-400">Architecture Mode Active</span>
+            <span class="caption text-neutral-400">Creator Mode</span>
           </div>
-          <h1 class="heading-3 md:heading-2 text-neutral-900">Blueprint a New Program</h1>
-          <p class="body-large text-neutral-500 max-w-2xl font-medium">Engineer professional fitness protocols with
-            precision parameters and student-centric logic.</p>
+          <h1 class="heading-3 md:heading-2 text-neutral-900">Create a New Program</h1>
+          <p class="body-large text-neutral-500 max-w-2xl font-medium">Design your fitness programs for your students with easy steps.</p>
         </div>
       </div>
     </div>
@@ -44,8 +43,8 @@
             </svg>
           </div>
           <div>
-            <h3 class="text-sm font-black text-neutral-900 uppercase tracking-widest">Protocol Attributes</h3>
-            <p class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Mandatory System Fields</p>
+            <h3 class="text-sm font-black text-neutral-900 uppercase tracking-widest">Program Details</h3>
+            <p class="text-[10px] font-bold text-neutral-400 uppercase tracking-widest">Required Information</p>
           </div>
         </div>
 
@@ -59,18 +58,18 @@
             <div class="p-8 md:p-12 space-y-10">
               <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                 <div class="space-y-2">
-                  <label for="programId" class="caption text-neutral-400 ml-1">Universal Identifier (UID)</label>
-                  <input id="programId" type="text" formControlName="programId" placeholder="e.g. CORE-2025-ALPHA"
+                  <label for="programId" class="caption text-neutral-400 ml-1">Program ID</label>
+                  <input id="programId" type="text" formControlName="programId" placeholder="e.g. CORE-WF-01"
                     class="form-input !py-4"
                     [class.border-error-500]="programForm.get('programId')?.invalid && programForm.get('programId')?.touched" />
                   @if(programForm.get('programId')?.invalid && programForm.get('programId')?.touched){
-                  <span class="text-[10px] font-black text-error-600 uppercase tracking-widest ml-1">UID Required</span>
+                  <span class="text-[10px] font-black text-error-600 uppercase tracking-widest ml-1">ID Required</span>
                   }
                 </div>
 
                 <div class="space-y-2">
-                  <label for="programTitle" class="caption text-neutral-400 ml-1">Marketing Alias / Title</label>
-                  <input id="programTitle" type="text" formControlName="title" placeholder="e.g. Precision Strength Module"
+                  <label for="programTitle" class="caption text-neutral-400 ml-1">Program Title</label>
+                  <input id="programTitle" type="text" formControlName="title" placeholder="e.g. Full Body Strength"
                     class="form-input !py-4"
                     [class.border-error-500]="programForm.get('title')?.invalid && programForm.get('title')?.touched" />
                   @if(programForm.get('title')?.invalid && programForm.get('title')?.touched){
@@ -80,9 +79,9 @@
               </div>
 
               <div class="space-y-2">
-                <label for="description" class="caption text-neutral-400 ml-1">Functional Description</label>
+                <label for="description" class="caption text-neutral-400 ml-1">Description</label>
                 <textarea id="description" rows="4" formControlName="description"
-                  placeholder="Outline the logical flow and performance expectations of this curriculum..."
+                  placeholder="Write about your program here..."
                   class="form-input !py-4 resize-none" (input)="updateCharacterCount()"></textarea>
                 <div class="flex justify-between items-center px-1">
                   <span class="text-[9px] font-black text-neutral-300 uppercase tracking-widest italic">Markdown Logic
@@ -94,10 +93,10 @@
 
               <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="space-y-2">
-                  <label for="category" class="caption text-neutral-400 ml-1">Vertical Categorization</label>
+                  <label for="category" class="caption text-neutral-400 ml-1">Category</label>
                   <select id="category" formControlName="category"
                     class="form-input !py-4 appearance-none hover:cursor-pointer">
-                    <option value="">System Selection</option>
+                    <option value="">Select Category</option>
                     @for (category of categories; track category) {
                     <option [value]="category.value">{{ category.label }}</option>
                     }
@@ -105,10 +104,10 @@
                 </div>
 
                 <div class="space-y-2">
-                  <label for="duration" class="caption text-neutral-400 ml-1">Temporal Lifecycle</label>
+                  <label for="duration" class="caption text-neutral-400 ml-1">Duration</label>
                   <select id="duration" formControlName="duration"
                     class="form-input !py-4 appearance-none hover:cursor-pointer">
-                    <option value="">Lifecycle Duration</option>
+                    <option value="">Select Duration</option>
                     <option value="4 weeks">4 Week Cycle</option>
                     <option value="6 weeks">6 Week Cycle</option>
                     <option value="8 weeks">8 Week Cycle</option>
@@ -118,7 +117,7 @@
                 </div>
 
                 <div class="space-y-2">
-                  <label for="price" class="caption text-neutral-400 ml-1">Value Proposition (Credits)</label>
+                  <label for="price" class="caption text-neutral-400 ml-1">Price (Rupees)</label>
                   <div class="relative group">
                     <div
                       class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-neutral-400 group-focus-within:text-primary-600 transition-colors">
@@ -132,18 +131,18 @@
               </div>
 
               <div class="space-y-4">
-                <label class="caption text-neutral-400 ml-1">Operational Complexity Level</label>
+                <label class="caption text-neutral-400 ml-1">Difficulty Level</label>
                 <div class="grid grid-cols-3 gap-6">
                   <label class="relative cursor-pointer group">
                     <input type="radio" formControlName="difficultyLevel" value="Beginner" class="sr-only peer" />
                     <div
                       class="p-5 text-center border-2 border-neutral-100 rounded-2xl transition-all peer-checked:border-primary-600 peer-checked:bg-primary-50/30 group-hover:border-neutral-200">
                       <span
-                        class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Standard</span>
+                        class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Easy</span>
                       <div class="w-full h-1 bg-neutral-100 rounded-full overflow-hidden mb-2">
                         <div class="w-1/3 h-full bg-primary-600 rounded-full"></div>
                       </div>
-                      <p class="text-[9px] font-bold text-neutral-400 uppercase">Beginner Logic</p>
+                      <p class="text-[9px] font-bold text-neutral-400 uppercase">For Beginners</p>
                     </div>
                   </label>
 
@@ -152,11 +151,11 @@
                     <div
                       class="p-5 text-center border-2 border-neutral-100 rounded-2xl transition-all peer-checked:border-primary-600 peer-checked:bg-primary-50/30 group-hover:border-neutral-200">
                       <span
-                        class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Enhanced</span>
+                        class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Medium</span>
                       <div class="w-full h-1 bg-neutral-100 rounded-full overflow-hidden mb-2">
                         <div class="w-2/3 h-full bg-primary-600 rounded-full"></div>
                       </div>
-                      <p class="text-[9px] font-bold text-neutral-400 uppercase">Intermediate Flux</p>
+                      <p class="text-[9px] font-bold text-neutral-400 uppercase">For Intermediate</p>
                     </div>
                   </label>
 
@@ -165,11 +164,11 @@
                     <div
                       class="p-5 text-center border-2 border-neutral-100 rounded-2xl transition-all peer-checked:border-primary-600 peer-checked:bg-primary-50/30 group-hover:border-neutral-200">
                       <span
-                        class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Maximum</span>
+                        class="text-[10px] font-black text-neutral-900 uppercase tracking-widest block mb-1">Hard</span>
                       <div class="w-full h-1 bg-neutral-100 rounded-full overflow-hidden mb-2">
                         <div class="w-full h-full bg-primary-600 rounded-full"></div>
                       </div>
-                      <p class="text-[9px] font-bold text-neutral-400 uppercase">Expert Gradient</p>
+                      <p class="text-[9px] font-bold text-neutral-400 uppercase">For Experts</p>
                     </div>
                   </label>
                 </div>
@@ -181,15 +180,15 @@
               class="p-8 border-t border-neutral-100 bg-neutral-50/40 flex flex-col sm:flex-row items-center justify-end gap-6">
               <button type="button" (click)="saveDraft()"
                 class="btn btn-ghost ring-1 ring-neutral-200 w-full sm:w-auto px-10" [disabled]="isSubmitting || !isTrainerVerified">
-                {{ isSubmitting ? "Syncing..." : "Stash Draft" }}
+                {{ isSubmitting ? "Saving..." : "Save as Draft" }}
               </button>
               <button type="submit" class="btn btn-primary w-full sm:w-auto px-12 shadow-xl shadow-primary-200 group"
                 [disabled]="programForm.invalid || isSubmitting || !isTrainerVerified">
                 <svg class="w-4 h-4 mr-2 group-hover:rotate-90 transition-transform" fill="none" stroke="currentColor"
-                  viewBox="0 0 24 24">
+                   viewBox="0 0 24 24">
                   <path d="M12 6v6m0 0v6m0-6h6m-6 0H6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
                 </svg>
-                {{ isSubmitting ? "Deploying..." : "Execute Deployment" }}
+                {{ isSubmitting ? "Creating..." : "Create Program" }}
               </button>
             </div>
           </div>

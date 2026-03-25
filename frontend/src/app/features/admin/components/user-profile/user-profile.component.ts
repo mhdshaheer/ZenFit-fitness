@@ -15,7 +15,7 @@ interface TrainerProfile {
   email: string;
   phone: string | null;
   languages: string[];
-  gender: string;
+  gender: string | null;
   role?: string;
   dob: string;
   isVerified?: boolean;
@@ -118,15 +118,41 @@ export class UserProfileComponent implements OnDestroy, OnInit {
     }
   }
 
+  get isTrainerDataComplete(): boolean {
+    if (!this.trainer) return false;
+    return !!(
+      this.trainer.dob &&
+      this.trainer.gender &&
+      this.trainer.languages?.length > 0 &&
+      this.trainer.phone &&
+      this.uploadedFile
+    );
+  }
+
   verifyResume() {
-    if (this.uploadedFile && this.trainer) {
-      this._profileService
-        .verifyResume(this.trainer.id)
-        .pipe(takeUntil(this._destroy$))
-        .subscribe((res) => {
-          this.trainer!.isVerified = res.isVerified;
-        });
+    if (!this.trainer) return;
+
+    if (!this.trainer.isVerified && !this.isTrainerDataComplete) {
+      this._toastService.error('Cannot approve: Trainer has not provided all required profile details or resume');
+      return;
     }
+
+    this._profileService
+      .verifyResume(this.trainer.id)
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (res) => {
+          this.trainer!.isVerified = res.isVerified;
+          this._toastService.success(
+            res.isVerified
+              ? 'Trainer approved successfully'
+              : 'Trainer verification revoked'
+          );
+        },
+        error: () => {
+          this._toastService.error('Failed to update verification status');
+        },
+      });
   }
 
 
@@ -223,7 +249,7 @@ export class UserProfileComponent implements OnDestroy, OnInit {
           email: res.email,
           dob: res.dob,
           gender: res.gender,
-          languages: [],
+          languages: res.languages || [],
           role: res.role,
           phone: res.phone,
           isVerified: res.resumeVerified,

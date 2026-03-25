@@ -38,6 +38,7 @@ export class UserManageComponent implements OnInit {
   pageSize = 5;
   totalUsers = 0;
   search = '';
+  role = '';
   sortBy = 'createdAt';
   sortOrder: 'asc' | 'desc' = 'asc';
 
@@ -58,8 +59,15 @@ export class UserManageComponent implements OnInit {
         search: this.search,
         sortBy: this.sortBy,
         sortOrder: this.sortOrder,
+        role: this.role,
       })
     );
+  }
+
+  onRoleChanged(role: string) {
+    this.role = role;
+    this.page = 1;
+    this.loadUsersFromBackend();
   }
 
   onSearchChanged(search: string) {
@@ -94,7 +102,20 @@ export class UserManageComponent implements OnInit {
       sortable: true,
       width: '220px',
     },
-    { key: 'role', label: 'Role', sortable: true, width: '100px' },
+    {
+      key: 'role',
+      label: 'Role',
+      type: 'status',
+      sortable: true,
+      width: '100px',
+    },
+    {
+      key: 'createdAt',
+      label: 'Joined Date',
+      type: 'date',
+      sortable: true,
+      width: '151px',
+    },
     {
       key: 'status',
       label: 'Status',

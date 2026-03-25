@@ -12,9 +12,9 @@ export class AdminEffects {
   loadUsers$ = createEffect(() =>
     this.actions$.pipe(
       ofType(AdminActions.loadUsers),
-      switchMap(({ page, pageSize, search, sortBy, sortOrder }) =>
+      switchMap(({ page, pageSize, search, sortBy, sortOrder, role }) =>
         this.adminService
-          .getUsers({ page, pageSize, search, sortBy, sortOrder })
+          .getUsers({ page, pageSize, search, sortBy, sortOrder, role })
           .pipe(
             map((response) => {
               return AdminActions.loadUsersSuccess({

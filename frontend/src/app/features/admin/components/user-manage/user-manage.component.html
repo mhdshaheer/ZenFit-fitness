@@ -19,9 +19,27 @@
   <main class="max-w-[1500px] mx-auto px-6 md:px-10 py-10 animate-slideInUp">
     <!-- User Ledger Container -->
     <div class="space-y-8">
-      <div class="flex items-center gap-4">
-        <div class="w-2 h-8 grad-indigo rounded-full"></div>
-        <h2 class="text-sm font-black text-neutral-900 uppercase tracking-[0.2em]">Transaction Ledger</h2>
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div class="flex items-center gap-4">
+          <div class="w-2 h-8 grad-indigo rounded-full"></div>
+          <h2 class="text-sm font-black text-neutral-900 uppercase tracking-[0.2em]">Transaction Ledger</h2>
+        </div>
+
+        <!-- Filter Tabs -->
+        <div class="flex p-1 bg-neutral-100 rounded-xl w-fit">
+          <button (click)="onRoleChanged('')" [class]="role === '' ? 'bg-white text-primary-600 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'"
+            class="px-6 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all duration-200">
+            All
+          </button>
+          <button (click)="onRoleChanged('trainer')" [class]="role === 'trainer' ? 'bg-white text-primary-600 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'"
+            class="px-6 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all duration-200">
+            Trainers
+          </button>
+          <button (click)="onRoleChanged('user')" [class]="role === 'user' ? 'bg-white text-primary-600 shadow-sm' : 'text-neutral-500 hover:text-neutral-700'"
+            class="px-6 py-2 text-xs font-bold uppercase tracking-widest rounded-lg transition-all duration-200">
+            Users
+          </button>
+        </div>
       </div>
 
       <app-table [title]="'User Management'" [subtitle]="'Manage system users and their permissions'"

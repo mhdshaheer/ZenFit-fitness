@@ -4,13 +4,14 @@ export interface IUserResponse {
   username: string;
   email: string;
   dob: string;
-  gender: 'Male' | 'Female' | 'Other';
+  gender: 'Male' | 'Female' | 'Other' | null;
   phone: string | null;
   profileImage: string;
   resume: string;
   resumeVerified: boolean;
   role: 'trainer';
   status: 'active' | 'inactive' | 'blocked';
+  languages: string[];
 }
 
 export interface ILoggedUser {
