@@ -118,11 +118,22 @@ export class UserProfileComponent implements OnDestroy, OnInit {
     }
   }
 
+  get isTrainerDataComplete(): boolean {
+    if (!this.trainer) return false;
+    return !!(
+      this.trainer.dob &&
+      this.trainer.gender &&
+      this.trainer.languages?.length > 0 &&
+      this.trainer.phone &&
+      this.uploadedFile
+    );
+  }
+
   verifyResume() {
     if (!this.trainer) return;
 
-    if (!this.trainer.isVerified && !this.uploadedFile) {
-      this._toastService.error('Cannot approve trainer: No documentation artifacts linked');
+    if (!this.trainer.isVerified && !this.isTrainerDataComplete) {
+      this._toastService.error('Cannot approve: Trainer has not provided all required profile details or resume');
       return;
     }
 
@@ -238,7 +249,7 @@ export class UserProfileComponent implements OnDestroy, OnInit {
           email: res.email,
           dob: res.dob,
           gender: res.gender,
-          languages: [],
+          languages: res.languages || [],
           role: res.role,
           phone: res.phone,
           isVerified: res.resumeVerified,
