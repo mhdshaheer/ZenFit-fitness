@@ -43,7 +43,10 @@ export class CategoryListComponent implements OnInit {
     search: '',
     sortBy: 'createdAt',
     sortOrder: 'asc',
+    type: 'category'
   };
+
+  activeTab: 'category' | 'subcategory' = 'category';
 
   ngOnInit() {
     this.getCategories();
@@ -62,12 +65,20 @@ export class CategoryListComponent implements OnInit {
     { key: 'createdAt', label: 'Created At', type: 'date', sortable: true },
   ];
 
+  setTab(tab: 'category' | 'subcategory') {
+    if (this.activeTab === tab) return;
+    this.activeTab = tab;
+    this.page = 1;
+    this.getCategories();
+  }
+
   getCategories() {
     this.params.page = this.page;
     this.params.pageSize = this.pageSize;
     this.params.search = this.searchTerm;
     this.params.sortBy = this.sortBy || 'createdAt';
     this.params.sortOrder = this.sortOrder;
+    this.params.type = this.activeTab;
     this._categoryService.getCategoryTable(this.params).subscribe({
       next: (res: { total: number; data: ICategory[] }) => {
         this.totalCategories = res.total;
@@ -113,8 +124,8 @@ export class CategoryListComponent implements OnInit {
         width: '350px',
         data: {
           title:
-            event.action === 'block' ? 'Block Category' : 'Unblock Category',
-          message: `Are you sure you want to ${event.action} this category?`,
+            event.action === 'block' ? 'Block ' + (this.activeTab === 'category' ? 'Category' : 'Subcategory') : 'Unblock ' + (this.activeTab === 'category' ? 'Category' : 'Subcategory'),
+          message: `Are you sure you want to ${event.action} this ${this.activeTab === 'category' ? 'category' : 'subcategory'}?`,
         },
       });
 

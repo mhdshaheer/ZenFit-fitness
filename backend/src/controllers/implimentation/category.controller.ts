@@ -107,6 +107,14 @@ export class CategoryController implements ICategoryController {
     const search = req.query.search as string;
     const sortBy = req.query.sortBy as string;
     const sortOrder = (req.query.sortOrder as string) === "desc" ? -1 : 1;
+    const type = req.query.type as string;
+
+    let filter: Record<string, unknown> | undefined = undefined;
+    if (type === "category") {
+      filter = { parantId: null };
+    } else if (type === "subcategory") {
+      filter = { parantId: { $ne: null } };
+    }
 
     const result = await this._categoryService.getTableCategories({
       page,
@@ -114,9 +122,8 @@ export class CategoryController implements ICategoryController {
       search,
       sortBy,
       sortOrder,
+      filter,
     });
-
-    // result is not nullable based on service interface
     return res.status(HttpStatus.OK).json(result);
     return res.status(HttpStatus.OK).json(result);
   }

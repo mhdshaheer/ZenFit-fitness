@@ -31,8 +31,35 @@
         <h2 class="text-sm font-black text-neutral-900 uppercase tracking-[0.2em]">Transaction Ledger</h2>
       </div>
 
-      <app-table [title]="'Category Management'" [subtitle]="'Manage categories and subcategories'"
-        [entityName]="'Category'" [columns]="categoryColumns" [data]="categories" [actions]="categoryActions"
+      <!-- Tabs -->
+      <div class="flex gap-4 border-b border-neutral-200">
+        <button type="button" 
+          (click)="setTab('category')"
+          class="px-6 py-3 font-bold text-sm uppercase tracking-widest transition-all border-b-2"
+          [class.border-primary-600]="activeTab === 'category'" 
+          [class.text-primary-600]="activeTab === 'category'"
+          [class.border-transparent]="activeTab !== 'category'"
+          [class.text-neutral-500]="activeTab !== 'category'"
+          [class.hover:text-neutral-700]="activeTab !== 'category'">
+          Main Categories
+        </button>
+        <button type="button" 
+          (click)="setTab('subcategory')"
+          class="px-6 py-3 font-bold text-sm uppercase tracking-widest transition-all border-b-2"
+          [class.border-primary-600]="activeTab === 'subcategory'" 
+          [class.text-primary-600]="activeTab === 'subcategory'"
+          [class.border-transparent]="activeTab !== 'subcategory'"
+          [class.text-neutral-500]="activeTab !== 'subcategory'"
+          [class.hover:text-neutral-700]="activeTab !== 'subcategory'">
+          Sub-Categories
+        </button>
+      </div>
+
+      <app-table 
+        [title]="activeTab === 'category' ? 'Category Management' : 'Sub-Category Management'" 
+        [subtitle]="activeTab === 'category' ? 'Manage main categories' : 'Manage sub-categories'"
+        [entityName]="activeTab === 'category' ? 'Category' : 'Sub-Category'" 
+        [columns]="categoryColumns" [data]="categories" [actions]="categoryActions"
         (actionClicked)="onCategoryAction($event)" [currentPage]="page" [pageSize]="pageSize"
         [totalItems]="totalCategories" (pageChanged)="onPageChanged($event)" (searchChanged)="onSearchChanged($event)"
         (sortChanged)="onSortChanged($event)"></app-table>

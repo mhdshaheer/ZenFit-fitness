@@ -13,6 +13,7 @@ export interface IParams {
   search?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  type?: 'category' | 'subcategory';
 }
 
 export interface ISubCategory {

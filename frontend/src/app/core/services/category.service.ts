@@ -45,6 +45,9 @@ export class CategoryService {
     if (params.search) {
       httpParams = httpParams.set('search', params.search);
     }
+    if (params.type) {
+      httpParams = httpParams.set('type', params.type);
+    }
     return this._http.get<{ total: number; data: ICategory[] }>(
       this._api + CategoryRoutes.TABLE,
       {
