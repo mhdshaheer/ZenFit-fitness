@@ -15,6 +15,7 @@ export interface IParams {
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
   type?: 'category' | 'subcategory';
+  parantId?: string;
 }
 
 export interface ISubCategory {

@@ -9,13 +9,14 @@ import { LoggerService } from '../../../../core/services/logger.service';
 import { Router } from '@angular/router';
 import { ConfirmDialogComponent } from '../../../../shared/components/confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { CommonModule } from '@angular/common';
 import { IParams } from '../../../../interface/category.interface';
 
 
 
 @Component({
   selector: 'app-category-list',
-  imports: [TableComponent],
+  imports: [TableComponent, CommonModule],
   templateUrl: './category-list.component.html',
   styleUrl: './category-list.component.css',
 })
@@ -47,9 +48,23 @@ export class CategoryListComponent implements OnInit {
   };
 
   activeTab: 'category' | 'subcategory' = 'category';
+  mainCategories: ICategory[] = [];
+  selectedParentId: string = '';
 
   ngOnInit() {
     this.getCategories();
+    this.getMainCategories();
+  }
+
+  getMainCategories() {
+    this._categoryService.getCategories().subscribe({
+      next: (res) => {
+        this.mainCategories = res;
+      },
+      error: (err) => {
+        this._logger.error('Failed to fetch main categories for select', err);
+      }
+    });
   }
 
   get dynamicColumns(): TableColumn[] {
@@ -83,6 +98,13 @@ export class CategoryListComponent implements OnInit {
   setTab(tab: 'category' | 'subcategory') {
     if (this.activeTab === tab) return;
     this.activeTab = tab;
+    this.selectedParentId = '';
+    this.page = 1;
+    this.getCategories();
+  }
+
+  onParentFilterChange(event: any) {
+    this.selectedParentId = event.target.value;
     this.page = 1;
     this.getCategories();
   }
@@ -94,6 +116,7 @@ export class CategoryListComponent implements OnInit {
     this.params.sortBy = this.sortBy || 'createdAt';
     this.params.sortOrder = this.sortOrder;
     this.params.type = this.activeTab;
+    this.params.parantId = this.selectedParentId ? this.selectedParentId : undefined;
     this._categoryService.getCategoryTable(this.params).subscribe({
       next: (res: { total: number; data: ICategory[] }) => {
         this.totalCategories = res.total;

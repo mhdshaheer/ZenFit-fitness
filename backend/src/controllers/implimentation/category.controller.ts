@@ -108,12 +108,13 @@ export class CategoryController implements ICategoryController {
     const sortBy = req.query.sortBy as string;
     const sortOrder = (req.query.sortOrder as string) === "desc" ? -1 : 1;
     const type = req.query.type as string;
+    const parantId = req.query.parantId as string;
 
     let filter: Record<string, unknown> | undefined = undefined;
     if (type === "category") {
       filter = { parantId: null };
     } else if (type === "subcategory") {
-      filter = { parantId: { $ne: null } };
+      filter = parantId ? { parantId } : { parantId: { $ne: null } };
     }
 
     const result = await this._categoryService.getTableCategories({

@@ -55,9 +55,39 @@
         </button>
       </div>
 
+      <!-- Parent Category Filter (only for subcategory tab) -->
+      @if (activeTab === 'subcategory') {
+      <div class="flex items-center gap-3 animate-fadeIn">
+        <div class="flex items-center gap-2 text-neutral-500">
+          <i class="fas fa-filter text-xs"></i>
+          <span class="text-xs font-black uppercase tracking-widest">Filter by Parent</span>
+        </div>
+        <div class="relative">
+          <select
+            class="appearance-none bg-white border border-neutral-200 rounded-xl pl-4 pr-10 py-2.5 text-sm font-bold text-neutral-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer shadow-sm min-w-[200px]"
+            [value]="selectedParentId"
+            (change)="onParentFilterChange($event)">
+            <option value="">All Parent Categories</option>
+            @for (cat of mainCategories; track cat._id) {
+            <option [value]="cat._id">{{ cat.name }}</option>
+            }
+          </select>
+          <i class="fas fa-chevron-down absolute right-3 top-1/2 -translate-y-1/2 text-neutral-400 pointer-events-none text-xs"></i>
+        </div>
+        @if (selectedParentId) {
+        <button type="button"
+          class="text-xs font-bold text-primary-600 hover:text-primary-700 flex items-center gap-1.5 transition-colors"
+          (click)="onParentFilterChange({target: {value: ''}})">
+          <i class="fas fa-times-circle"></i>
+          Clear
+        </button>
+        }
+      </div>
+      }
+
       <app-table 
         [title]="activeTab === 'category' ? 'Category Management' : 'Sub-Category Management'" 
-        [subtitle]="activeTab === 'category' ? 'Manage main categories' : 'Manage sub-categories'"
+        [subtitle]="activeTab === 'category' ? 'Manage main categories' : (selectedParentId ? 'Filtered by parent category' : 'Manage sub-categories')"
         [entityName]="activeTab === 'category' ? 'Category' : 'Sub-Category'" 
         [columns]="dynamicColumns" [data]="categories" [actions]="categoryActions"
         (actionClicked)="onCategoryAction($event)" [currentPage]="page" [pageSize]="pageSize"
