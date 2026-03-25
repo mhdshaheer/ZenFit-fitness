@@ -77,7 +77,7 @@
               </div>
               }
               @case ('status') {
-              <span class="status-pill" [ngClass]="getStatusClass(getCellValue(row, column.key))">
+              <span class="status-pill" [ngClass]="getStatusClass(getCellValue(row, column.key), row)">
                 {{ getCellValue(row, column.key) }}
               </span>
               }
@@ -154,7 +154,7 @@
           } @else {
           @switch (column.type) {
           @case ('status') {
-          <span class="status-pill text-xs" [ngClass]="getStatusClass(getCellValue(row, column.key))">
+          <span class="status-pill text-xs" [ngClass]="getStatusClass(getCellValue(row, column.key), row)">
             {{ getCellValue(row, column.key) }}
           </span>
           }

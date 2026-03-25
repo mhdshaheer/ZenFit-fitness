@@ -140,8 +140,19 @@ export class TableComponent<T extends object = object> {
     return row as unknown as TableData;
   }
 
-  getStatusClass(status: unknown): string {
+  getStatusClass(status: unknown, row?: T): string {
     const statusStr = typeof status === 'string' ? status.toLowerCase() : '';
+
+    if (statusStr === 'trainer' && row) {
+      return (row as any).resumeVerified
+        ? 'status-pill--success'
+        : 'status-pill--danger';
+    }
+
+    if (statusStr === 'user') {
+      return 'status-pill--success';
+    }
+
     switch (statusStr) {
       case 'active':
       case 'available':

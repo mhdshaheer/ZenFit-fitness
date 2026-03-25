@@ -8,5 +8,6 @@ export interface User {
   status: string;
   role: string;
   createdAt: string | Date;
+  resumeVerified?: boolean;
   totalUsers?: number;
 }
