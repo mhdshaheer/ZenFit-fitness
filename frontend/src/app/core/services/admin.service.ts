@@ -26,12 +26,17 @@ export class AdminService {
     search?: string;
     sortBy?: string;
     sortOrder?: 'asc' | 'desc';
+    role?: string;
   }): Observable<{ data: User[]; total: number }> {
     let httpParams = new HttpParams()
       .set('page', params.page.toString())
       .set('pageSize', params.pageSize.toString())
       .set('sortBy', params.sortBy || 'createdAt')
       .set('sortOrder', params.sortOrder || 'asc');
+
+    if (params.role) {
+      httpParams = httpParams.set('role', params.role);
+    }
 
     if (params.search) {
       httpParams = httpParams.set('search', params.search);

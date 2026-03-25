@@ -25,9 +25,9 @@
               [class.ring-2]="isFilterMenuOpen" [class.ring-primary-500]="isFilterMenuOpen">
               <i class="fas fa-filter text-xs"></i>
               <span>{{ selectedFilter }}</span>
-              @if (activeFiltersCount > 0) {
+              @if (activeFiltersCount() > 0) {
               <span class="px-2 py-0.5 rounded-full bg-primary-600 text-white text-[8px] font-black">{{
-                activeFiltersCount
+                activeFiltersCount()
                 }}</span>
               }
             </button>
@@ -38,7 +38,7 @@
               <div class="px-6 py-5 border-b border-neutral-100 bg-neutral-50">
                 <div class="flex items-center justify-between">
                   <h3 class="text-[9px] font-black text-neutral-900 uppercase tracking-widest">Filter Programs</h3>
-                  @if (activeFiltersCount > 0) {
+                  @if (activeFiltersCount() > 0) {
                   <button (click)="clearAllFilters()"
                     class="text-[9px] font-black text-primary-600 hover:text-primary-700 uppercase tracking-widest underline decoration-2 underline-offset-4">Clear
                     All</button>
@@ -50,7 +50,7 @@
                   <div class="text-[9px] font-black text-neutral-400 uppercase tracking-widest mb-4">Program Categories
                   </div>
                   <div class="space-y-2">
-                    @for (type of programTypes; track type) {
+                    @for (type of programTypes(); track type) {
                     <label
                       class="flex items-center gap-4 p-3 hover:bg-neutral-50 rounded-2xl cursor-pointer transition-all group">
                       <div class="relative flex items-center">
@@ -105,7 +105,7 @@
 
     <!-- Programs Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-      @for(program of programs; track program.id; let i = $index) {
+      @for(program of filteredPrograms(); track program.id; let i = $index) {
       <app-program-card class="animate-slideInUp" [style.animation-delay]="(i * 100) + 'ms'" [program]="program"
         (editProgram)="onSubscribeProgram($event)" (viewProgram)="onViewProgram($event)" [button2Labal]="btn2Label"
         [btn2Class]="btn2Class" [btn2Icon]="btn2Icon">
@@ -114,7 +114,7 @@
     </div>
 
     <!-- Empty State -->
-    @if (programs.length === 0) {
+    @if (filteredPrograms().length === 0) {
     <div class="text-center py-24 bg-white rounded-[3rem] border border-neutral-100 shadow-sm animate-fadeIn">
       <div
         class="w-24 h-24 mx-auto rounded-[2rem] bg-neutral-50 flex items-center justify-center text-neutral-200 mb-8">

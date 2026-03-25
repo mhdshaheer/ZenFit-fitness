@@ -96,8 +96,12 @@ export const TRAINER_ROUTES: Routes = [
             (m) => m.TrainerSessionsComponent
           );
         },
-      }
-
+      },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
     ],
   },
 ];

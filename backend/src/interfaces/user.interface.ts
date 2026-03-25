@@ -8,12 +8,15 @@ export interface IUser {
   password?: string;
   phone?: string;
   dob?: Date;
-  gender?: "male" | "female" | "other";
+  gender?: string;
   role?: "admin" | "trainer" | "user";
   status?: string;
+  languages?: string[];
   profileImage?: string;
   resume?: string;
   resumeVerified?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IPassword {
@@ -28,6 +31,7 @@ export interface GetUsersParams {
   search?: string;
   sortBy?: string;
   sortOrder?: 1 | -1;
+  role?: string;
 }
 
 export interface ILoggedUser {
