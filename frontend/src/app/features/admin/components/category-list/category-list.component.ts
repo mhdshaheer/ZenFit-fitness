@@ -52,18 +52,33 @@ export class CategoryListComponent implements OnInit {
     this.getCategories();
   }
 
-  categoryColumns: TableColumn[] = [
-    { key: 'name', label: 'Category Name', sortable: true, width: '200px' },
-    { key: 'description', label: 'Description', width: '300px' },
-    {
-      key: 'status',
-      label: 'Status',
-      type: 'status',
-      sortable: true,
-      width: '120px',
-    },
-    { key: 'createdAt', label: 'Created At', type: 'date', sortable: true },
-  ];
+  get dynamicColumns(): TableColumn[] {
+    const baseColumns: TableColumn[] = [
+      { key: 'name', label: this.activeTab === 'category' ? 'Category Name' : 'Sub-Category Name', sortable: true, width: '200px' },
+    ];
+
+    if (this.activeTab === 'subcategory') {
+      baseColumns.push({
+        key: 'parentName',
+        label: 'Parent Category',
+        width: '200px',
+      });
+    }
+
+    baseColumns.push(
+      { key: 'description', label: 'Description', width: '300px' },
+      {
+        key: 'status',
+        label: 'Status',
+        type: 'status',
+        sortable: true,
+        width: '120px',
+      },
+      { key: 'createdAt', label: 'Created At', type: 'date', sortable: true }
+    );
+
+    return baseColumns;
+  }
 
   setTab(tab: 'category' | 'subcategory') {
     if (this.activeTab === tab) return;

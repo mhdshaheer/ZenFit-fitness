@@ -3,6 +3,7 @@ export interface ICategory {
   name: string;
   description: string;
   parantId: string | null;
+  parentName?: string;
   isBlocked?: boolean;
   createdAt?: Date | string;
   status?: 'active' | 'blocked';

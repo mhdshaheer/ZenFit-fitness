@@ -62,9 +62,10 @@ export class CategoryRepository
     }
     const total = await this.model.countDocuments(filter);
 
-    // Fetch users with filter, sort, pagination
+    // Fetch categories with filter, sort, pagination
     const categories = await this.model
       .find(filter)
+      .populate("parantId", "name")
       .sort({ [sortBy]: sortOrder })
       .skip((page - 1) * pageSize)
       .limit(pageSize);

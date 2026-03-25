@@ -59,7 +59,7 @@
         [title]="activeTab === 'category' ? 'Category Management' : 'Sub-Category Management'" 
         [subtitle]="activeTab === 'category' ? 'Manage main categories' : 'Manage sub-categories'"
         [entityName]="activeTab === 'category' ? 'Category' : 'Sub-Category'" 
-        [columns]="categoryColumns" [data]="categories" [actions]="categoryActions"
+        [columns]="dynamicColumns" [data]="categories" [actions]="categoryActions"
         (actionClicked)="onCategoryAction($event)" [currentPage]="page" [pageSize]="pageSize"
         [totalItems]="totalCategories" (pageChanged)="onPageChanged($event)" (searchChanged)="onSearchChanged($event)"
         (sortChanged)="onSortChanged($event)"></app-table>
