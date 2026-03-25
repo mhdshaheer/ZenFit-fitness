@@ -104,6 +104,13 @@ export class UserManageComponent implements OnInit {
     },
     { key: 'role', label: 'Role', sortable: true, width: '100px' },
     {
+      key: 'createdAt',
+      label: 'Joined Date',
+      type: 'date',
+      sortable: true,
+      width: '151px',
+    },
+    {
       key: 'status',
       label: 'Status',
       type: 'status',

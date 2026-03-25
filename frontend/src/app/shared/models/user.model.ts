@@ -7,5 +7,6 @@ export interface User {
   gender: string;
   status: string;
   role: string;
+  createdAt: string | Date;
   totalUsers?: number;
 }

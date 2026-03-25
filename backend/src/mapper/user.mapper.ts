@@ -15,6 +15,7 @@ export const mapToUserDto = (user: IUser): UserDto => {
     fullName: user.fullName,
     resume: user.resume,
     resumeVerified: user.resumeVerified,
+    createdAt: user.createdAt,
   };
 };
 

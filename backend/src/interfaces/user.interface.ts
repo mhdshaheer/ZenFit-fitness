@@ -14,6 +14,8 @@ export interface IUser {
   profileImage?: string;
   resume?: string;
   resumeVerified?: boolean;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface IPassword {
