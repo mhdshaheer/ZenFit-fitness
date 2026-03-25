@@ -119,14 +119,29 @@ export class UserProfileComponent implements OnDestroy, OnInit {
   }
 
   verifyResume() {
-    if (this.uploadedFile && this.trainer) {
-      this._profileService
-        .verifyResume(this.trainer.id)
-        .pipe(takeUntil(this._destroy$))
-        .subscribe((res) => {
-          this.trainer!.isVerified = res.isVerified;
-        });
+    if (!this.trainer) return;
+
+    if (!this.trainer.isVerified && !this.uploadedFile) {
+      this._toastService.error('Cannot approve trainer: No documentation artifacts linked');
+      return;
     }
+
+    this._profileService
+      .verifyResume(this.trainer.id)
+      .pipe(takeUntil(this._destroy$))
+      .subscribe({
+        next: (res) => {
+          this.trainer!.isVerified = res.isVerified;
+          this._toastService.success(
+            res.isVerified
+              ? 'Trainer approved successfully'
+              : 'Trainer verification revoked'
+          );
+        },
+        error: () => {
+          this._toastService.error('Failed to update verification status');
+        },
+      });
   }
 
 

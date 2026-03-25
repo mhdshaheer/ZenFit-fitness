@@ -98,7 +98,7 @@
 
             <button (click)="verifyResume()" 
                     class="w-full py-2.5 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all shadow-sm"
-                    [ngClass]="trainer?.isVerified ? 'bg-white text-error-600 hover:bg-error-600 hover:text-white' : 'bg-success-600 text-white hover:bg-success-700'">
+                    [ngClass]="trainer?.isVerified ? 'bg-white text-error-600 hover:bg-error-600 hover:text-white' : (uploadedFile ? 'bg-success-600 text-white hover:bg-success-700' : 'bg-neutral-300 text-neutral-500 cursor-not-allowed')">
               {{ trainer?.isVerified ? 'Unverify Resume' : 'Approve Trainer' }}
             </button>
           </div>
