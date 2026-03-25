@@ -1,9 +1,11 @@
 import { Routes } from '@angular/router';
 import { OtpGuard } from '../../../core/guards/otp.guard';
+import { LoggedInRedirectGuard } from '../../../core/guards/logged-in-redirect.guard';
 
 export const AUTH_ROUTES: Routes = [
   {
     path: 'signup',
+    canActivate: [LoggedInRedirectGuard],
     loadComponent: () =>
       import('../components/signup-user/signup-user.component').then(
         (m) => m.SignupUserComponent
@@ -19,6 +21,7 @@ export const AUTH_ROUTES: Routes = [
   },
   {
     path: 'login',
+    canActivate: [LoggedInRedirectGuard],
     loadComponent: () =>
       import('../components/login/login.component').then(
         (m) => m.LoginComponent
@@ -26,6 +29,7 @@ export const AUTH_ROUTES: Routes = [
   },
   {
     path: 'forgot-password',
+    canActivate: [LoggedInRedirectGuard],
     loadComponent: () =>
       import('../components/forgot-password/forgot-password.component').then(
         (m) => m.ForgotPasswordComponent

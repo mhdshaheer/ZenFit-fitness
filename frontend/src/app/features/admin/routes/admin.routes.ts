@@ -87,6 +87,11 @@ export const ADMIN_ROUTES: Routes = [
           ).then((m) => m.PurchasedProgramsComponent);
         },
       },
+      {
+        path: '',
+        redirectTo: 'dashboard',
+        pathMatch: 'full',
+      },
     ],
   },
 ];
