@@ -14,6 +14,7 @@ export interface UserDto {
   resumeVerified?: boolean;
   languages?: string[];
   createdAt?: Date;
+  googleId?: string;
 }
 
 export interface UserStatusDto {

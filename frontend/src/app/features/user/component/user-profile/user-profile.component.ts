@@ -25,6 +25,7 @@ interface ProfileUser {
   email: string;
   phone: string | null;
   role: string;
+  googleId?: string | null;
 }
 
 @Component({

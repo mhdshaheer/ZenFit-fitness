@@ -12,6 +12,7 @@ export interface IUserResponse {
   role: 'trainer';
   status: 'active' | 'inactive' | 'blocked';
   languages: string[];
+  googleId?: string;
 }
 
 export interface ILoggedUser {
