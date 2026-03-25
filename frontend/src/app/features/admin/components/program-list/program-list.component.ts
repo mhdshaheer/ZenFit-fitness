@@ -23,6 +23,7 @@ export class ProgramListComponent implements OnInit {
   private readonly _logger = inject(LoggerService);
   private readonly _router = inject(Router);
   private _allPrograms: IProgramTable[] = [];
+  searchTerm = '';
 
   programsColumn: TableColumn[] = [
     { key: 'name', label: 'Program Name', sortable: true },
@@ -110,11 +111,20 @@ export class ProgramListComponent implements OnInit {
     this.applyApprovalFilter();
   }
 
+  onSearch(term: string) {
+    this.searchTerm = term.toLowerCase();
+    this.applyApprovalFilter();
+  }
+
 
   private applyApprovalFilter() {
-    this.programs = this._allPrograms.filter(
-      (program) => this.normalizeApprovalStatus(program.approvalStatus) === this.activeApprovalTab
-    );
+    this.programs = this._allPrograms.filter((program) => {
+      const matchesTab = this.normalizeApprovalStatus(program.approvalStatus) === this.activeApprovalTab;
+      const matchesSearch = !this.searchTerm || 
+        program.name?.toLowerCase().includes(this.searchTerm);
+      
+      return matchesTab && matchesSearch;
+    });
   }
 
   private updateProgramCounts() {
