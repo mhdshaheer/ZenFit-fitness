@@ -3,6 +3,7 @@ export interface ICategory {
   name: string;
   description: string;
   parantId: string | null;
+  parentName?: string;
   isBlocked?: boolean;
   createdAt?: Date | string;
   status?: 'active' | 'blocked';
@@ -13,6 +14,8 @@ export interface IParams {
   search?: string;
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
+  type?: 'category' | 'subcategory';
+  parantId?: string;
 }
 
 export interface ISubCategory {

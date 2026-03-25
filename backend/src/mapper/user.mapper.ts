@@ -17,6 +17,7 @@ export const mapToUserDto = (user: IUser): UserDto => {
     resumeVerified: user.resumeVerified,
     languages: user.languages || [],
     createdAt: user.createdAt,
+    googleId: user.googleId,
   };
 };
 

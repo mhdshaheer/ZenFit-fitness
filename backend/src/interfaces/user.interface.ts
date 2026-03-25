@@ -17,6 +17,7 @@ export interface IUser {
   resumeVerified?: boolean;
   createdAt?: Date;
   updatedAt?: Date;
+  googleId?: string;
 }
 
 export interface IPassword {
