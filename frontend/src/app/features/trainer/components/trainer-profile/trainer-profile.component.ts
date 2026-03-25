@@ -118,6 +118,40 @@ export class TrainerProfileComponent implements OnInit, OnDestroy {
     this.profileForm.get('languages')?.setValue(current);
     this.profileForm.get('languages')?.markAsDirty();
   }
+  get isProfileComplete(): boolean {
+    if (!this.profileData) return false;
+    return !!(
+      this.profileData.fullName &&
+      this.profileData.phone &&
+      this.profileData.dob &&
+      this.profileData.gender &&
+      this.profileData.languages?.length > 0
+    );
+  }
+
+  get isDocumentUploaded(): boolean {
+    return !!(this.uploadedFile || this.resumeKey);
+  }
+
+  get verificationSteps() {
+    return [
+      {
+        label: 'Personal Details',
+        isDone: this.isProfileComplete,
+        description: 'Complete your profile',
+      },
+      {
+        label: 'Upload Resume',
+        isDone: this.isDocumentUploaded,
+        description: 'Add your PDF file',
+      },
+      {
+        label: 'Admin Review',
+        isDone: !!this.resumeVerified,
+        description: 'Profile status audit',
+      },
+    ];
+  }
   // ==============
 
   @HostListener('document:click', ['$event'])

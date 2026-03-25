@@ -17,6 +17,58 @@
   </div>
 
   <div class="container-custom">
+    <!-- Verification Status Banner -->
+    <div *ngIf="!isProfileComplete || !isDocumentUploaded" class="mb-8 animate-slideInUp">
+      <div class="p-6 bg-warning-50 border-2 border-warning-100 rounded-[2rem] flex flex-col md:flex-row items-center gap-6 shadow-xl relative overflow-hidden group">
+        <div class="absolute top-0 right-0 w-32 h-32 bg-warning-500 opacity-5 rounded-bl-[4rem] group-hover:scale-110 transition-transform"></div>
+        <div class="w-16 h-16 bg-white rounded-3xl flex items-center justify-center text-warning-500 shadow-xl shrink-0 group-hover:rotate-12 transition-transform">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div>
+          <h3 class="text-xs font-black text-warning-950 uppercase tracking-widest mb-1">Action Required: Get Verified</h3>
+          <p class="text-[10px] font-bold text-warning-700/80 max-w-2xl leading-relaxed uppercase tracking-tighter">Please fill in your personal details (DOB, Gender, Languages) and upload your resume to get verified by our team.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Verification Timeline Logic -->
+    <div class="mb-12 overflow-hidden animate-slideInUp" style="animation-delay: 100ms;">
+      <div class="bg-white p-8 md:p-12 rounded-[3.5rem] border border-neutral-100 shadow-2xl relative">
+         <div class="absolute inset-x-0 bottom-0 h-1 bg-neutral-100/50"></div>
+         
+         <div class="flex flex-col md:flex-row justify-between items-center gap-12 relative z-10 w-full">
+            @for (step of verificationSteps; track $index) {
+               <div class="flex-1 w-full relative group">
+                  <div class="flex flex-col items-center text-center space-y-6">
+                     <!-- Step Circle -->
+                     <div class="w-14 h-14 rounded-2xl flex items-center justify-center transition-all duration-500 shadow-lg relative z-20"
+                          [ngClass]="step.isDone ? 'bg-success-500 text-white rotate-[360deg]' : 'bg-neutral-50 text-neutral-300 border-2 border-neutral-100'">
+                        @if (step.isDone) {
+                          <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M5 13l4 4L19 7" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        } @else {
+                          <span class="text-base font-black">{{ $index + 1 }}</span>
+                        }
+                     </div>
+                     
+                     <!-- Step Label -->
+                     <div class="space-y-1.5">
+                        <h4 class="text-[10px] font-black uppercase tracking-[0.2em] transition-colors"
+                            [ngClass]="step.isDone ? 'text-neutral-900 font-black' : 'text-neutral-400 font-bold'">{{ step.label }}</h4>
+                        <p class="text-[9px] font-black uppercase tracking-widest opacity-60"
+                           [ngClass]="step.isDone ? 'text-success-600' : 'text-neutral-300'">{{ step.description }}</p>
+                     </div>
+                  </div>
+
+                  <!-- Explicit Connector Line -->
+                  @if ($index < verificationSteps.length - 1) {
+                     <div class="hidden md:block absolute top-7 left-1/2 w-full h-[3px] -z-10"
+                          [ngClass]="step.isDone ? 'bg-success-500/20' : 'bg-neutral-100'"></div>
+                  }
+               </div>
+            }
+         </div>
+      </div>
+    </div>
     <!-- Profile Overview Matrix -->
     <div class="card p-6 md:p-8 mb-8 border-none shadow-xl bg-white animate-slideInUp overflow-hidden relative"
       style="animation-delay: 100ms;">
