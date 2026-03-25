@@ -33,12 +33,17 @@ export class AdminService implements IAdminService {
   async getUsers(
     params: GetUsersParams
   ): Promise<{ data: UserDto[]; total: number }> {
-    const filter = {
+    const filter: Record<string, any> = {
       role: { $ne: "admin" },
     };
+
+    if (params.role) {
+      filter.role = params.role;
+    }
+
     const { total, data } = await this._userRepository.getAllForTable({
-      filter,
       ...params,
+      filter,
     });
     const userDtos = data.map(mapToUserDto);
     return { data: userDtos, total };

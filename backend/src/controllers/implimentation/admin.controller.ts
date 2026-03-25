@@ -26,6 +26,7 @@ export class AdminController implements IAdminController {
       search,
       sortBy,
       sortOrder,
+      role: (req.query.role as string) || "",
     });
 
     // result is not nullable based on service interface

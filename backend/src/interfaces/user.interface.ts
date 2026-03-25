@@ -28,6 +28,7 @@ export interface GetUsersParams {
   search?: string;
   sortBy?: string;
   sortOrder?: 1 | -1;
+  role?: string;
 }
 
 export interface ILoggedUser {
