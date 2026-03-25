@@ -81,12 +81,7 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
   }
 
   // =================================================
-  currentUser: UserProfile = {
-    name: '',
-    email: '',
-    role: '',
-    avatar: '',
-  };
+  currentUser?: UserProfile;
   getUserProfile() {
     this._profileService
       .getProfile()

@@ -1,5 +1,6 @@
 import { Types, PipelineStage } from "mongoose";
 import { BookingModel, IBooking } from "../../models/booking.model";
+import { SlotInstanceModel } from "../../models/slotInstance.model";
 import { BaseRepository } from "../base.repository";
 import {
   CreateBookingParams,
@@ -119,82 +120,99 @@ export class BookingRepository
 
   async getTrainerBookings(trainerId: string): Promise<Record<string, unknown>[]> {
     const pipeline: PipelineStage[] = [
+      // 1. Start from SlotInstances for this trainer
       {
         $match: {
-          "snapshot.trainerId": new Types.ObjectId(trainerId),
+          trainerId: new Types.ObjectId(trainerId),
         },
       },
+      // 2. Look up program details to get the program name & difficulty
       {
         $lookup: {
-          from: "users",
-          localField: "userId",
+          from: "programs",
+          localField: "programId",
           foreignField: "_id",
-          as: "userDetails",
-        },
-      },
-      { $unwind: "$userDetails" },
-      {
-        $lookup: {
-          from: "slotinstances",
-          localField: "slotId",
-          foreignField: "_id",
-          as: "slotInstance",
+          as: "programDetails",
         },
       },
       {
         $unwind: {
-          path: "$slotInstance",
+          path: "$programDetails",
           preserveNullAndEmptyArrays: true,
         },
       },
+      // 3. Left join bookings for this slot (only count non-cancelled)
       {
-        $group: {
-          _id: {
-            slotId: "$slotId",
-            slotDate: "$snapshot.slotDate",
-          },
-          slotId: { $first: "$slotId" },
-          day: { $first: "$day" },
-          date: { $first: "$snapshot.slotDate" },
-          startTime: { $first: "$snapshot.startTime" },
-          endTime: { $first: "$snapshot.endTime" },
-          capacity: { $first: "$snapshot.capacity" },
-          programName: { $first: "$snapshot.programTitle" },
-          duration: { $first: "$snapshot.programDuration" },
-          difficultyLevel: { $first: "$snapshot.programDifficulty" },
-          bookedCount: { $sum: 1 },
-          slotStatus: { $first: "$slotInstance.status" },
-          students: {
-            $push: {
-              name: "$userDetails.fullName",
-              email: "$userDetails.email",
-              bookingId: "$_id",
-              status: "$status",
+        $lookup: {
+          from: "bookings",
+          let: { slotId: "$_id" },
+          pipeline: [
+            {
+              $match: {
+                $expr: {
+                  $and: [
+                    { $eq: ["$slotId", "$$slotId"] },
+                    { $ne: ["$status", "cancelled"] },
+                  ],
+                },
+              },
             },
-          },
+            // Join user details
+            {
+              $lookup: {
+                from: "users",
+                localField: "userId",
+                foreignField: "_id",
+                as: "userDetails",
+              },
+            },
+            {
+              $unwind: {
+                path: "$userDetails",
+                preserveNullAndEmptyArrays: true,
+              },
+            },
+            {
+              $project: {
+                name: "$userDetails.fullName",
+                email: "$userDetails.email",
+                bookingId: "$_id",
+                status: "$status",
+              },
+            },
+          ],
+          as: "students",
         },
       },
+      // 4. Project final shape
       {
         $project: {
           _id: 0,
-          slotId: 1,
-          day: 1,
-          date: 1,
-          startTime: 1,
-          endTime: 1,
-          capacity: 1,
-          programName: 1,
-          duration: 1,
-          difficultyLevel: 1,
-          bookedCount: 1,
-          status: "$slotStatus",
-          students: 1,
+          slotId: "$_id",
+          day: {
+            $let: {
+              vars: {
+                days: ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
+              },
+              in: { $arrayElemAt: ["$$days", { $dayOfWeek: "$date" }] },
+            },
+          },
+          date: "$date",
+          startTime: "$startTime",
+          endTime: "$endTime",
+          capacity: "$capacity",
+          programName: { $ifNull: ["$programDetails.title", "Unknown Program"] },
+          duration: { $ifNull: ["$programDetails.duration", 0] },
+          difficultyLevel: { $ifNull: ["$programDetails.difficultyLevel", ""] },
+          bookedCount: { $size: "$students" },
+          status: "$status",
+          students: "$students",
         },
       },
       { $sort: { date: -1, startTime: 1 } },
     ];
 
-    return this.model.aggregate(pipeline);
+    return SlotInstanceModel.aggregate(pipeline);
   }
 
   async getBookingsBySlotId(slotId: string): Promise<IBooking[]> {

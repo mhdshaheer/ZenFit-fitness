@@ -7,6 +7,7 @@
     <!-- Main Content -->
     <div class="flex-1 p-4 sm:p-6 lg:p-8 w-full">
       <div class="max-w-6xl mx-auto">
+        @if (!isInitialLoading) {
         <!-- Page Header -->
         <div class="mb-10 animate-slideInUp">
           <div class="flex items-center gap-4">
@@ -104,6 +105,7 @@
                 </div>
               </button>
 
+              @if (profileData && !profileData.googleId) {
               <button
                 class="border-b-2 py-5 px-1 body-base font-semibold whitespace-nowrap transition-all duration-300 hover:text-neutral-900 hover:border-neutral-300"
                 [class.border-primary-600]="activeTab === 'security'"
@@ -119,6 +121,7 @@
                   <span>Security</span>
                 </div>
               </button>
+              }
             </nav>
           </div>
 
@@ -301,7 +304,7 @@
           }
 
           <!-- Security Tab Content -->
-          @if(activeTab === 'security'){
+          @if(activeTab === 'security' && profileData && !profileData.googleId){
           <div class="p-6 sm:p-8 animate-fadeIn">
             <div class="max-w-2xl">
               <!-- Change Password Section -->
@@ -471,6 +474,25 @@
           </div>
           }
         </div>
+        } @else {
+        <!-- Skeleton Loader -->
+        <div class="animate-pulse space-y-8">
+          <div class="flex items-center gap-4">
+            <div class="w-14 h-14 bg-neutral-200 rounded-2xl"></div>
+            <div class="space-y-2">
+              <div class="h-6 w-48 bg-neutral-200 rounded-lg"></div>
+              <div class="h-4 w-32 bg-neutral-200 rounded-lg"></div>
+            </div>
+          </div>
+          <div class="card h-40 bg-white"></div>
+          <div class="card h-20 bg-white"></div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div class="card h-32 bg-white"></div>
+            <div class="card h-32 bg-white"></div>
+            <div class="card h-32 bg-white"></div>
+          </div>
+        </div>
+        }
       </div>
     </div>
   </div>

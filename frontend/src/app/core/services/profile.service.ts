@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { HttpClient, HttpEvent, HttpRequest } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, shareReplay, tap } from 'rxjs';
 import { environment } from '../../../environments/environment';
 import { ILoggedUser, IUserResponse } from '../../interface/user.interface';
 import { ProfileRouter } from '../constants/api-routes.const';
@@ -11,6 +11,7 @@ import { ProfileRouter } from '../constants/api-routes.const';
 export class ProfileService {
   private readonly _apiUrl = environment.apiUrl;
   private readonly _http = inject(HttpClient);
+  private _profileCache$?: Observable<IUserResponse>;
 
   uploadfile(
     file: File,
@@ -57,16 +58,35 @@ export class ProfileService {
       `${this._apiUrl}${ProfileRouter.USER_BASE}/${userId}`
     );
   }
-  getProfile(id = ''): Observable<IUserResponse> {
-    return this._http.get<IUserResponse>(
+
+  clearCache() {
+    this._profileCache$ = undefined;
+  }
+
+  getProfile(id = '', force = false): Observable<IUserResponse> {
+    if (id === '' && this._profileCache$ && !force) {
+      return this._profileCache$;
+    }
+
+    const request$ = this._http.get<IUserResponse>(
       `${this._apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PROFILE}?id=${id}`
+    ).pipe(
+      shareReplay(1)
     );
+
+    if (id === '') {
+      this._profileCache$ = request$;
+    }
+
+    return request$;
   }
 
   updateProfile(data: Partial<IUserResponse>): Observable<IUserResponse> {
     return this._http.put<IUserResponse>(
       `${this._apiUrl}${ProfileRouter.USER_BASE}${ProfileRouter.PROFILE}`,
       data
+    ).pipe(
+      tap(() => this.clearCache())
     );
   }
 
