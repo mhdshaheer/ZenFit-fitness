@@ -25,9 +25,14 @@ export class ProgramRepositoy
     return this.model.find({ trainerId: id }).populate("category");
   }
   async getProgramsFilter(
-    condition: FilterQuery<IProgram>
+    condition: FilterQuery<IProgram>,
+    options?: { sort?: any }
   ): Promise<IProgram[]> {
-    return this.model.find(condition).populate("category");
+    const query = this.model.find(condition).populate("category");
+    if (options?.sort) {
+      query.sort(options.sort);
+    }
+    return query.exec();
   }
   async findProgramById(programId: string): Promise<IProgram | null> {
     return this.model.findById(programId).populate("category").exec();

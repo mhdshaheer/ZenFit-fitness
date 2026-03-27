@@ -23,6 +23,8 @@ export interface FitnessProgram {
   price: number;
   status?: string;
   approvalStatus?: 'Pending' | 'Approved' | 'Rejected';
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
 }
 
 type ApprovalTabValue = 'Pending' | 'Approved' | 'Rejected';

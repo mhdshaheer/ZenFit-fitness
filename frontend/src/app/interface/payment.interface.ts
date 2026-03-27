@@ -89,7 +89,7 @@ export interface PaymentDetails {
   receiptUrl?: string;
 }
 
-export interface PurchasedProgram {
+export interface IPurchasedProgramItem {
   _id: string;
   purchaseDate: Date;
   updatedAt: Date;
@@ -108,7 +108,7 @@ export interface PaginationResult {
 
 export interface PurchasedProgramsResponse {
   success: boolean;
-  data: PurchasedProgram[];
+  data: IPurchasedProgramItem[];
   pagination: PaginationResult;
 }
 // ===purchased program ==========

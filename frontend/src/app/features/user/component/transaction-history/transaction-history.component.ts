@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil, debounceTime, distinctUntilChanged } from 'rxjs';
@@ -19,7 +19,8 @@ export class TransactionHistoryComponent implements OnInit, OnDestroy {
   private readonly _toastService = inject(ToastService);
   private readonly _destroy$ = new Subject<void>();
   private readonly _searchSubject$ = new Subject<string>();
-  private _logger = inject(LoggerService)
+  private readonly _logger = inject(LoggerService)
+  private readonly _cdr = inject(ChangeDetectorRef)
 
   transactions: PurchasedProgram[] = [];
   isLoading = true;
@@ -67,11 +68,13 @@ export class TransactionHistoryComponent implements OnInit, OnDestroy {
           this.totalPages = response.totalPages;
           this.currentPage = response.page;
           this.isLoading = false;
+          this._cdr.detectChanges();
         },
         error: (error) => {
           this._logger.error('Error loading transactions:', error);
           this._toastService.error('Failed to load transaction history');
           this.isLoading = false;
+          this._cdr.detectChanges();
         }
       });
   }

@@ -46,6 +46,13 @@ export const USER_ROUTES: Routes = [
           ),
       },
       {
+        path: 'view-program/:id',
+        loadComponent: () =>
+          import('../component/program-view/program-view.component').then(
+            (m) => m.ProgramViewComponent
+          ),
+      },
+      {
         path: 'payment/:id',
         loadComponent: () => {
           return import('../component/payment/payment.component').then(

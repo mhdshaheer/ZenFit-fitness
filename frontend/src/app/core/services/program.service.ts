@@ -55,11 +55,12 @@ export class ProgramService {
     );
   }
   getProgramsByParantId(
-    categoryId: string
+    categoryId: string,
+    params?: any
   ): Observable<{ programs: Program[] }> {
     return this._http.get<{ programs: Program[] }>(
       `${this._apiUrl}${ProgramRoutes.CATEGORY_BY_ID(categoryId)}`,
-      { withCredentials: true }
+      { withCredentials: true, params }
     );
   }
 

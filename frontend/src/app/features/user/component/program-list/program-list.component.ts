@@ -1,4 +1,5 @@
 import { Component, inject, OnDestroy, OnInit, signal, computed, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
 import { FitnessProgram } from '../../../trainer/components/program-list/program-list.component';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -17,7 +18,7 @@ interface IProgramType {
 
 @Component({
   selector: 'app-program-list',
-  imports: [ProgramCardComponent, FormsModule, SearchBarComponent],
+  imports: [CommonModule, ProgramCardComponent, FormsModule, SearchBarComponent],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
@@ -31,13 +32,14 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   selectedFilter = 'All Programs';
   isFilterMenuOpen = false;
   isSortMenuOpen = false;
-  selectedSort = 'Latest';
+  selectedSort = signal('Latest');
 
   private readonly _programService = inject(ProgramService);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _route = inject(Router);
   private readonly _logger = inject(LoggerService);
   private readonly _cdr = inject(ChangeDetectorRef);
+  private readonly _location = inject(Location);
 
   private readonly _destroy$ = new Subject<void>();
 
@@ -46,28 +48,13 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   btn2Icon = 'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z';
   btn2Class = 'px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2';
 
-  // Derived State (Computed) - This handles BOTH initial view and filtered views
+  // Derived State (Computed) - This is now directly the backend data
   filteredPrograms = computed(() => {
-    const list = [...this.allProgramsData()];
-    const query = this.searchTerm().toLowerCase().trim();
-    const selectedLabels = this.programTypes().filter(t => t.selected).map(t => t.label.trim().toLowerCase());
-
-    return list.filter(p => {
-      // 1. Search Filter
-      const matchesSearch = !query || 
-        p.title?.toLowerCase().includes(query) || 
-        (typeof p.category === 'string' && p.category.toLowerCase().includes(query)) ||
-        p.description?.toLowerCase().includes(query);
-      
-      // 2. Category Filter
-      const currentCat = typeof p.category === 'string' ? p.category.trim().toLowerCase() : '';
-      const matchesCategory = selectedLabels.length === 0 || selectedLabels.includes(currentCat);
-
-      return matchesSearch && matchesCategory;
-    });
+    return [...this.allProgramsData()];
   });
 
   activeFiltersCount = computed(() => this.programTypes().filter(t => t.selected).length);
+  activeSelectedFilters = computed(() => this.programTypes().filter(t => t.selected));
 
   ngOnInit() {
     // 1. Initial load from snapshot to ensure immediate fetch
@@ -91,11 +78,11 @@ export class ProgramListComponent implements OnDestroy, OnInit {
       });
   }
 
-  async getSubCategory(id: string) {
-    this._logger.info('GET SUB CATEGORY START for ID:', id);
+  async getSubCategory(id: string, filters?: any) {
+    this._logger.info('GET SUB CATEGORY START for ID:', id, 'Filters:', filters);
     try {
       const res = await lastValueFrom(
-        this._programService.getProgramsByParantId(id).pipe(takeUntil(this._destroy$))
+        this._programService.getProgramsByParantId(id, filters).pipe(takeUntil(this._destroy$))
       );
 
       if (res && res.programs && res.programs.length > 0) {
@@ -123,14 +110,17 @@ export class ProgramListComponent implements OnDestroy, OnInit {
           } as FitnessProgram;
         });
 
-        // Atomic update to signals
+        // Only update local programTypes if they're empty (e.g., initial load)
+        if (this.programTypes().length === 0) {
+          this.programTypes.set(Array.from(uniqueSubCats.entries()).map(([cid, name]) => ({
+            label: name,
+            value: cid,
+            selected: false
+          })));
+        }
+
+        // Atomic update to signal
         this.allProgramsData.set(mapped);
-        this.programTypes.set(Array.from(uniqueSubCats.entries()).map(([id, name]) => ({
-          label: name,
-          value: id,
-          selected: false
-        })));
-        
         this._cdr.detectChanges();
         this._logger.info('Signal allProgramsData updated with count:', mapped.length);
       } else {
@@ -143,8 +133,24 @@ export class ProgramListComponent implements OnDestroy, OnInit {
     }
   }
 
+  private refreshData() {
+    const id = this._activatedRoute.snapshot.paramMap.get('id');
+    const search = this.searchTerm();
+    const sort = this.selectedSort();
+    const selectedSubCats = this.programTypes().filter(t => t.selected).map(t => t.value);
+    
+    if (id) {
+      this.getSubCategory(id, { search, sort, subCategory: selectedSubCats });
+    }
+  }
+
+  getBack() {
+    this._location.back();
+  }
+
   onViewProgram(programId: string): void {
     this._logger.info('Viewing Program ID:', programId);
+    this._route.navigate(['/user/view-program', programId]);
   }
 
   onSubscribeProgram(programId: string): void {
@@ -161,10 +167,12 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   onSearch(text: string) {
     this._logger.info('Search event emitted:', text);
     this.searchTerm.set(text || '');
+    this.refreshData();
   }
 
   clearSearch() {
     this.searchTerm.set('');
+    this.refreshData();
   }
 
   toggleFilterMenu() {
@@ -175,6 +183,11 @@ export class ProgramListComponent implements OnDestroy, OnInit {
     this.programTypes.update(types => types.map(t => 
       t.value === option.value ? { ...t, selected: !t.selected } : t
     ));
+    this.refreshData();
+  }
+
+  removeFilter(option: IProgramType) {
+    this.onFilterChange(option);
   }
 
   clearAllFilters() {
@@ -182,9 +195,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
     this.searchTerm.set('');
     this.programTypes.update(types => types.map(t => ({ ...t, selected: false })));
     this.isFilterMenuOpen = false;
-    // We can also re-trigger the fetch if we want to be paranoid
-    const id = this._activatedRoute.snapshot.paramMap.get('id');
-    if (id) this.getSubCategory(id);
+    this.refreshData();
   }
 
   toggleSortMenu() {
@@ -192,8 +203,9 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   }
 
   onSortChange(option: any) {
-    this.selectedSort = option.label;
+    this.selectedSort.set(option.label);
     this.isSortMenuOpen = false;
+    this.refreshData();
   }
 
   ngOnDestroy(): void {

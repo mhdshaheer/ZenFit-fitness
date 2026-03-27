@@ -21,6 +21,7 @@ export const PaymentRoutes = {
   REVENUE_CHART_TRAINER: '/revenue-chart/trainer',
 
   ENTROLLED: (programId: string) => `/entrolled/${programId}`,
+  VERIFY: (sessionId: string) => `/verify/${sessionId}`,
 };
 
 export const AuthRoutes = {

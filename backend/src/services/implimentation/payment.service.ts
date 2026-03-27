@@ -85,7 +85,7 @@ export class PaymentService implements IPaymentService {
         },
       ],
       mode: "payment",
-      success_url: `${env.frontend_url}/user/payment-success`,
+      success_url: `${env.frontend_url}/user/payment-success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${env.frontend_url}/user/payment-failed`,
       metadata: {
         programId: data.courseId,
@@ -298,5 +298,31 @@ export class PaymentService implements IPaymentService {
       data: result.data,
       pagination: result.pagination,
     };
+  }
+
+  async verifyPayment(sessionId: string): Promise<boolean> {
+    try {
+      const session = await stripe.checkout.sessions.retrieve(sessionId);
+      const orderId = session.metadata?.orderDbId;
+
+      if (!orderId) {
+        logger.error(`Checkout session ${sessionId} has no orderDbId in metadata`);
+        return false;
+      }
+
+      if (session.payment_status === "paid") {
+        await this._paymentRepository.updatePaymentStatus(orderId, {
+          paymentStatus: "success",
+          paymentIntentId: session.payment_intent as string,
+        });
+        logger.info(`Payment verified and updated for order: ${orderId}`);
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      logger.error("Error verifying payment:", error);
+      return false;
+    }
   }
 }

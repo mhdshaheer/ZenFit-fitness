@@ -58,13 +58,6 @@ export class LandingPageComponent implements OnInit, OnDestroy {
 
   private async checkAuthStatus() {
     try {
-      // First check if there's an access token before making API calls
-      const token = this._authService.getAccessToken();
-      if (!token) {
-        this.isLoggedIn = false;
-        return;
-      }
-
       this.isLoggedIn = await this._authService.isLoggedIn();
       if (this.isLoggedIn) {
         this.getCurrentUserName();
