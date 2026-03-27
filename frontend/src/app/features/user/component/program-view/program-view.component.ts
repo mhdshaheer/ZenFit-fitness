@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, Location } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
 import { ProgramService } from '../../../../core/services/program.service';
@@ -20,6 +20,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   private readonly _logger = inject(LoggerService);
   private readonly _cdr = inject(ChangeDetectorRef);
   private readonly _destroy$ = new Subject<void>();
+  private readonly _location = inject(Location)
 
   programId = '';
   program: FitnessProgram | null = null;
@@ -77,7 +78,9 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
       this._router.navigate(['/user/payment', this.programId]);
     }
   }
-
+  getBack() {
+    this._location.back()
+  }
   getDifficultyColor(level: string): string {
     switch (level?.toLowerCase()) {
       case 'beginner':
