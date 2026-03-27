@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import {
   CategoryService,
   ICategory,
@@ -24,9 +24,12 @@ interface CategoryCard {
 export class ProgramCategoryListComponent implements OnInit, OnDestroy {
   categories: ICategory[] = [];
   categoryCards: CategoryCard[] = [];
+  isLoading = true;
+
   private readonly _router = inject(Router);
   private readonly _categoryService = inject(CategoryService);
-  private _logger = inject(LoggerService)
+  private readonly _logger = inject(LoggerService);
+  private readonly _cdr = inject(ChangeDetectorRef);
 
   private readonly _destroy$ = new Subject<void>();
 
@@ -40,6 +43,7 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
     this.getCategories();
   }
   getCategories() {
+    this.isLoading = true;
     this._categoryService
       .getCategories()
       .pipe(takeUntil(this._destroy$))
@@ -56,9 +60,13 @@ export class ProgramCategoryListComponent implements OnInit, OnDestroy {
               icon: extra.icon,
             };
           });
+          this.isLoading = false;
+          this._cdr.detectChanges();
         },
         error: (error) => {
           this._logger.error('error in category fetching', error);
+          this.isLoading = false;
+          this._cdr.detectChanges();
         },
       });
   }
