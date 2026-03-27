@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, OnDestroy } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 import { Subject, takeUntil } from 'rxjs';
@@ -18,6 +18,7 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   readonly _router = inject(Router);
   private readonly _programService = inject(ProgramService);
   private readonly _logger = inject(LoggerService);
+  private readonly _cdr = inject(ChangeDetectorRef);
   private readonly _destroy$ = new Subject<void>();
 
   programId = '';
@@ -25,15 +26,24 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
   isLoading = true;
 
   ngOnInit(): void {
-    this.programId = this._route.snapshot.paramMap.get('id') || '';
-    if (this.programId) {
-      this.loadProgram();
-    }
+    this._route.paramMap
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((paramMap) => {
+        const id = paramMap.get('id');
+        this._logger.info('Program View Page Load ID:', id);
+        if (id) {
+          this.programId = id;
+          this.loadProgram(id);
+        } else {
+          this.isLoading = false;
+          this._cdr.detectChanges();
+        }
+      });
   }
 
-  loadProgram(): void {
+  loadProgram(id: string): void {
     this.isLoading = true;
-    this._programService.getProgramByProgramId(this.programId)
+    this._programService.getProgramByProgramId(id)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
         next: (data: any) => {
@@ -45,16 +55,19 @@ export class ProgramViewComponent implements OnInit, OnDestroy {
             }
           } catch (e) {
             this._logger.warn('Non-JSON category for program:', data.title);
+            if (typeof data.category === 'string') subCatName = data.category;
           }
           this.program = {
             ...data,
             category: subCatName
           } as unknown as FitnessProgram;
           this.isLoading = false;
+          this._cdr.detectChanges();
         },
         error: (err) => {
           this._logger.error('Error fetching program details:', err);
           this.isLoading = false;
+          this._cdr.detectChanges();
         }
       });
   }
