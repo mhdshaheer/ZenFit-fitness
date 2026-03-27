@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil, forkJoin, switchMap, filter } from 'rxjs';
@@ -53,6 +53,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
   private readonly _profileService = inject(ProfileService);
   private readonly _destroy$ = new Subject<void>();
   private _logger = inject(LoggerService)
+  private readonly _cdr = inject(ChangeDetectorRef)
   private readonly _defaultTimezone =
     Intl.DateTimeFormat().resolvedOptions().timeZone ?? 'UTC';
 
@@ -229,6 +230,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
             this.upcomingSlots = [];
             this.pastSlots = [];
             this.isLoading = false;
+            this._cdr.detectChanges();
             return;
           }
 
@@ -236,6 +238,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
             this.upcomingSlots = [];
             this.pastSlots = [];
             this.isLoading = false;
+            this._cdr.detectChanges();
             return;
           }
 
@@ -273,6 +276,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
         error: (error) => {
           this._logger.error('Error loading booked slots:', error);
           this.isLoading = false;
+          this._cdr.detectChanges();
         }
       });
   }
@@ -346,6 +350,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     );
 
     this.isLoading = false;
+    this._cdr.detectChanges();
   }
 
   switchTab(tab: 'upcoming' | 'past' | 'cancelled'): void {
