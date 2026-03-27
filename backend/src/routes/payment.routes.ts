@@ -77,4 +77,10 @@ paymentRouter.get(
   adaptHandler(controller.getEntrolledUsers.bind(controller))
 );
 
+paymentRouter.get(
+  "/verify/:sessionId",
+  authMiddleware,
+  adaptHandler(controller.verifyPayment.bind(controller))
+);
+
 export default paymentRouter;

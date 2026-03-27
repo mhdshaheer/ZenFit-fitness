@@ -40,4 +40,5 @@ export interface IPaymentController {
 
   getPurchasedPrograms(req: Request, res: Response): Promise<void>;
   getTrainerPurchasedPrograms(req: AuthenticatedRequest, res: Response): Promise<void>;
+  verifyPayment(req: Request, res: Response): Promise<void>;
 }

@@ -87,13 +87,12 @@ export class PaymentRepository
     search?: string,
     status?: string
   ): Promise<PurchasedProgram[]> {
-    const matchStage: Record<string, unknown> = {
+    const matchStage: Record<string, any> = {
       userId: new mongoose.Types.ObjectId(userId),
-      paymentStatus: "success",
     };
 
     // Add status filter if provided
-    if (status !== undefined && status !== "" && status !== "all") {
+    if (status && status !== "" && status !== "all") {
       matchStage.paymentStatus = status;
     }
 
@@ -188,13 +187,12 @@ export class PaymentRepository
   }
 
   async countPurchasedPrograms(userId: string, search?: string, status?: string): Promise<number> {
-    const matchStage: Record<string, unknown> = {
+    const matchStage: Record<string, any> = {
       userId: new mongoose.Types.ObjectId(userId),
-      paymentStatus: "success",
     };
 
     // Add status filter if provided
-    if (status !== undefined && status !== "" && status !== "all") {
+    if (status && status !== "" && status !== "all") {
       matchStage.paymentStatus = status;
     }
 
