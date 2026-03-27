@@ -60,7 +60,12 @@ export class ProgramService implements IProgramService {
 
   async getProgramsByParentId(
     catgoryParantId: string,
-    userId: string
+    userId: string,
+    filters?: {
+      search?: string;
+      sort?: string;
+      subCategory?: string;
+    }
   ): Promise<ProgramDto[]> {
     const subCategories = await this._categoryRepository.findAllCategory({
       parantId: catgoryParantId,
@@ -74,10 +79,50 @@ export class ProgramService implements IProgramService {
       await this._paymentRepository.getPurchasedProgramIds(userId);
     const purchasedProgramIds = purchasedPrograms.map((p) => p.programId);
 
-    const programs = await this._programRepository.getProgramsFilter({
-      category: { $in: subCategoryIds },
+    const selectedSubCats = filters?.subCategory;
+    let categoryCondition: any;
+    if (selectedSubCats) {
+      const subCatArray = Array.isArray(selectedSubCats) ? selectedSubCats : [selectedSubCats];
+      categoryCondition = { $in: subCatArray };
+    } else {
+      categoryCondition = { $in: subCategoryIds };
+    }
+
+    const condition: any = {
+      category: categoryCondition,
       _id: { $nin: purchasedProgramIds },
       approvalStatus: "Approved",
+    };
+
+    if (filters?.search) {
+      condition.$or = [
+        { title: { $regex: filters.search, $options: "i" } },
+        { description: { $regex: filters.search, $options: "i" } },
+      ];
+    }
+
+    let sort: any = { createdAt: -1 };
+    if (filters?.sort) {
+      switch (filters.sort) {
+        case "Name (A-Z)":
+          sort = { title: 1 };
+          break;
+        case "Name (Z-A)":
+          sort = { title: -1 };
+          break;
+        case "Duration":
+          // Note: durations like "4 weeks" will sort lexicographically
+          sort = { duration: 1 };
+          break;
+        case "Latest":
+        default:
+          sort = { createdAt: -1 };
+          break;
+      }
+    }
+
+    const programs = await this._programRepository.getProgramsFilter(condition, {
+      sort,
     });
     const mappedResult = programs.map(mapToProgramDto);
 
