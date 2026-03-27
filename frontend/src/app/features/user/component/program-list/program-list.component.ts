@@ -1,4 +1,5 @@
 import { Component, inject, OnDestroy, OnInit, signal, computed, ChangeDetectorRef } from '@angular/core';
+import { CommonModule, Location } from '@angular/common';
 import { FitnessProgram } from '../../../trainer/components/program-list/program-list.component';
 import { ProgramCardComponent } from '../../../../shared/components/program-card/program-card.component';
 import { ActivatedRoute, Router } from '@angular/router';
@@ -8,7 +9,6 @@ import { ISubCategory } from '../../../../interface/category.interface';
 import { FormsModule } from '@angular/forms';
 import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
 import { LoggerService } from '../../../../core/services/logger.service';
-import { Location } from '@angular/common';
 
 interface IProgramType {
   label: string;
@@ -18,7 +18,7 @@ interface IProgramType {
 
 @Component({
   selector: 'app-program-list',
-  imports: [ProgramCardComponent, FormsModule, SearchBarComponent],
+  imports: [CommonModule, ProgramCardComponent, FormsModule, SearchBarComponent],
   templateUrl: './program-list.component.html',
   styleUrl: './program-list.component.css',
 })
@@ -32,7 +32,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   selectedFilter = 'All Programs';
   isFilterMenuOpen = false;
   isSortMenuOpen = false;
-  selectedSort = 'Latest';
+  selectedSort = signal('Latest');
 
   private readonly _programService = inject(ProgramService);
   private readonly _activatedRoute = inject(ActivatedRoute);
@@ -48,28 +48,58 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   btn2Icon = 'M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z';
   btn2Class = 'px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-900 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-700 focus:ring-offset-2';
 
-  // Derived State (Computed) - This handles BOTH initial view and filtered views
+  // Derived State (Computed) - This handles BOTH initial view, filtering AND sorting
   filteredPrograms = computed(() => {
-    const list = [...this.allProgramsData()];
+    let list = [...this.allProgramsData()];
     const query = this.searchTerm().toLowerCase().trim();
     const selectedLabels = this.programTypes().filter(t => t.selected).map(t => t.label.trim().toLowerCase());
+    const sortLabel = this.selectedSort();
 
-    return list.filter(p => {
-      // 1. Search Filter
+    // 1. Filtering Logic
+    list = list.filter(p => {
       const matchesSearch = !query || 
         p.title?.toLowerCase().includes(query) || 
         (typeof p.category === 'string' && p.category.toLowerCase().includes(query)) ||
         p.description?.toLowerCase().includes(query);
       
-      // 2. Category Filter
       const currentCat = typeof p.category === 'string' ? p.category.trim().toLowerCase() : '';
       const matchesCategory = selectedLabels.length === 0 || selectedLabels.includes(currentCat);
 
       return matchesSearch && matchesCategory;
     });
+
+    // 2. Sorting Logic
+    switch (sortLabel) {
+      case 'Name (A-Z)':
+        list.sort((a, b) => (a.title || '').localeCompare(b.title || ''));
+        break;
+      case 'Name (Z-A)':
+        list.sort((a, b) => (b.title || '').localeCompare(a.title || ''));
+        break;
+      case 'Duration':
+        list.sort((a, b) => {
+          const durA = parseInt(a.duration) || 0;
+          const durB = parseInt(b.duration) || 0;
+          return durA - durB;
+        });
+        break;
+      case 'Latest':
+      default:
+        // Assuming latest means descending order of some date or ID if no explicit date
+        // If there's a createdAt field, use it.
+        list.sort((a, b) => {
+          const dateA = (a as any).createdAt ? new Date((a as any).createdAt).getTime() : 0;
+          const dateB = (b as any).createdAt ? new Date((b as any).createdAt).getTime() : 0;
+          return dateB - dateA;
+        });
+        break;
+    }
+
+    return list;
   });
 
   activeFiltersCount = computed(() => this.programTypes().filter(t => t.selected).length);
+  activeSelectedFilters = computed(() => this.programTypes().filter(t => t.selected));
 
   ngOnInit() {
     // 1. Initial load from snapshot to ensure immediate fetch
@@ -184,6 +214,10 @@ export class ProgramListComponent implements OnDestroy, OnInit {
     ));
   }
 
+  removeFilter(option: IProgramType) {
+    this.onFilterChange(option);
+  }
+
   clearAllFilters() {
     this._logger.info('CLEAR ALL FILTERS button clicked');
     this.searchTerm.set('');
@@ -199,7 +233,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   }
 
   onSortChange(option: any) {
-    this.selectedSort = option.label;
+    this.selectedSort.set(option.label);
     this.isSortMenuOpen = false;
   }
 
