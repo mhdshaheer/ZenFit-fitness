@@ -145,6 +145,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
 
   onViewProgram(programId: string): void {
     this._logger.info('Viewing Program ID:', programId);
+    this._route.navigate(['/user/view-program', programId]);
   }
 
   onSubscribeProgram(programId: string): void {
