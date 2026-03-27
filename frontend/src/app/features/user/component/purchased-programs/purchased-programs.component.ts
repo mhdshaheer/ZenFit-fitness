@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { PurchasedProgram } from '../../../../interface/payment.interface';
 import { CommonModule } from '@angular/common';
@@ -20,11 +20,16 @@ interface Course {
 export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   private readonly _paymentService = inject(PaymentService);
   private readonly _destroy$ = new Subject<void>();
+  private readonly _cdr = inject(ChangeDetectorRef);
   private _router = inject(Router);
+
+  isLoading = true;
+
   ngOnInit() {
     this.getPurchasedPrograms();
   }
   getPurchasedPrograms() {
+    this.isLoading = true;
     this._paymentService
       .getPurchasedPrograms()
       .pipe(takeUntil(this._destroy$))
@@ -38,9 +43,13 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
               difficultyLevel: item.difficultyLevel || 'Beginner',
               purchasedAt: item.purchasedAt,
             };
-          }).filter(course => course.id !== ''); // Filter out courses without valid IDs
+          }).filter(course => course.id !== '');
+          this.isLoading = false;
+          this._cdr.detectChanges();
         },
         error: () => {
+          this.isLoading = false;
+          this._cdr.detectChanges();
         }
       });
   }

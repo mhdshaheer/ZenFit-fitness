@@ -3,12 +3,13 @@ import { inject, Injectable } from '@angular/core';
 import { environment } from '../../../environments/environment';
 import {
   IPaymentCourse,
+  IPurchasedProgramItem,
   IRevenueData,
   IRevenueFilter,
   PaymentHistory,
   PurchasedProgram,
   PurchasedProgramFilters,
-  PurchasedProgramsResponse,
+  PaginationResult,
   TrainerPurchasedProgramFilters,
   TrainerPurchasedProgramsResponse,
 } from '../../interface/payment.interface';
@@ -63,6 +64,11 @@ export class PaymentService {
       this._api + PaymentRoutes.PURCHASED
     );
   }
+  verifyPayment(sessionId: string): Observable<{ success: boolean; message: string }> {
+    return this._http.get<{ success: boolean; message: string }>(
+      this._api + PaymentRoutes.VERIFY(sessionId)
+    );
+  }
   getEntrolledUsers(programId: string): Observable<{ count: number }> {
     return this._http.get<{ count: number }>(
       this._api + PaymentRoutes.ENTROLLED(programId)
@@ -89,7 +95,7 @@ export class PaymentService {
 
   getPurchasedProgramsOnAdmin(
     filters: PurchasedProgramFilters
-  ): Observable<PurchasedProgramsResponse> {
+  ): Observable<{ success: boolean; data: IPurchasedProgramItem[]; pagination: PaginationResult }> {
     let params = new HttpParams();
 
     if (filters.page) params = params.set('page', filters.page.toString());
@@ -103,7 +109,7 @@ export class PaymentService {
     if (filters.categoryId)
       params = params.set('categoryId', filters.categoryId);
 
-    return this._http.get<PurchasedProgramsResponse>(
+    return this._http.get<{ success: boolean; data: IPurchasedProgramItem[]; pagination: PaginationResult }>(
       `${this._api}/purchased-programs`,
       { params }
     );

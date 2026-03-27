@@ -154,9 +154,11 @@ export class ProgramController implements IProgramController {
     if (userId === undefined) {
       throw new AppError(HttpResponse.UNAUTHORIZED, HttpStatus.UNAUTHORIZED);
     }
+    const { search, sort, subCategory } = req.query as any;
     const programs = await this._programService.getProgramsByParentId(
       parantCategoryId,
-      userId
+      userId,
+      { search, sort, subCategory }
     );
 
     res.status(HttpStatus.OK).json({ programs });

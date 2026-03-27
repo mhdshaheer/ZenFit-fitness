@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectorRef, Component, inject, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Subject, takeUntil, forkJoin } from 'rxjs';
@@ -22,6 +22,7 @@ export class ProgramDetailsComponent implements OnInit, OnDestroy {
   private readonly _paymentService = inject(PaymentService);
   private readonly _destroy$ = new Subject<void>();
   private _logger = inject(LoggerService)
+  private readonly _cdr = inject(ChangeDetectorRef)
 
   programId = '';
   program: PurchasedProgram | null = null;
@@ -46,10 +47,12 @@ export class ProgramDetailsComponent implements OnInit, OnDestroy {
           this.program = result.programs.find(p => p.programId === this.programId) || null;
           this.bookedSlots = result.bookings;
           this.isLoading = false;
+          this._cdr.detectChanges();
         },
         error: (error) => {
           this._logger.error('Error loading program details:', error);
           this.isLoading = false;
+          this._cdr.detectChanges();
         }
       });
   }

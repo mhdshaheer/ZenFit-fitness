@@ -1,5 +1,18 @@
 <div class="animate-fadeIn py-8 md:py-12">
   <div class="container-custom">
+    <!-- Breadcrumb / Back button -->
+    <div class="mb-8">
+      <button (click)="getBack()"
+        class="group flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-neutral-500 hover:text-primary-600 transition-all">
+        <div class="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center border border-neutral-100 group-hover:shadow-md transition-all">
+          <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+          </svg>
+        </div>
+        <span>Back</span>
+      </button>
+    </div>
+
     <!-- Header Section -->
     <div class="mb-12">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
@@ -79,7 +92,7 @@
             <button (click)="toggleSortMenu()"
               class="btn btn-secondary w-full sm:w-auto py-3 text-[9px] uppercase font-black tracking-widest flex items-center justify-center gap-2">
               <i class="fas fa-sort-amount-down text-xs"></i>
-              <span>{{ selectedSort }}</span>
+              <span>{{ selectedSort() }}</span>
             </button>
 
             @if (isSortMenuOpen) {
@@ -88,10 +101,10 @@
               @for (option of sortOptions; track option) {
               <button (click)="onSortChange(option)"
                 class="flex items-center justify-between w-full px-5 py-3 text-[11px] font-bold text-neutral-600 hover:bg-neutral-50 hover:text-primary-700 transition-all"
-                [class.text-primary-700]="selectedSort === option.label"
-                [class.bg-primary-50]="selectedSort === option.label">
+                [class.text-primary-700]="selectedSort() === option.label"
+                [class.bg-primary-50]="selectedSort() === option.label">
                 <span>{{ option.label }}</span>
-                @if (selectedSort === option.label) {
+                @if (selectedSort() === option.label) {
                 <i class="fas fa-check text-primary-600 text-[9px]"></i>
                 }
               </button>
@@ -102,6 +115,38 @@
         </div>
       </div>
     </div>
+
+    <!-- Applied Filters -->
+    @if (activeFiltersCount() > 0 || searchTerm()) {
+    <div class="flex flex-wrap items-center gap-3 mb-8 p-4 bg-neutral-100/30 rounded-[2rem] border border-neutral-100">
+      <div class="flex items-center gap-2 mr-2">
+        <i class="fas fa-filter text-primary-600 text-[10px]"></i>
+        <span class="text-[10px] font-black uppercase tracking-[0.2em] text-neutral-500">Active Filters:</span>
+      </div>
+      
+      @if (searchTerm()) {
+      <div class="flex items-center gap-3 px-4 py-2 rounded-xl bg-primary-600 text-white shadow-lg shadow-primary-600/20">
+        <span class="text-[10px] font-black uppercase tracking-widest">"{{ searchTerm() }}"</span>
+        <button (click)="clearSearch()" class="hover:text-primary-200 transition-colors">
+          <i class="fas fa-times text-xs"></i>
+        </button>
+      </div>
+      }
+
+      @for (filter of activeSelectedFilters(); track filter.value) {
+      <div class="flex items-center gap-3 px-4 py-2 rounded-xl bg-white text-neutral-900 border border-neutral-200 shadow-sm hover:border-primary-400 transition-all group">
+        <span class="text-[10px] font-black uppercase tracking-widest">{{ filter.label }}</span>
+        <button (click)="removeFilter(filter)" class="text-neutral-300 group-hover:text-primary-600 transition-colors">
+          <i class="fas fa-times-circle text-xs"></i>
+        </button>
+      </div>
+      }
+
+      <button (click)="clearAllFilters()" class="ml-auto text-[9px] font-black text-primary-600 uppercase tracking-widest hover:text-primary-700 hover:underline decoration-2 underline-offset-8 transition-all">
+        Clear All
+      </button>
+    </div>
+    }
 
     <!-- Programs Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">

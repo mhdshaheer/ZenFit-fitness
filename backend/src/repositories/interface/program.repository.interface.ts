@@ -9,7 +9,10 @@ export interface IProgramRepository {
   ): Promise<IProgram | null>;
   getAllPrograms(): Promise<IProgram[]>;
   getPrograms(trainerId: string): Promise<IProgram[]>;
-  getProgramsFilter(condition: FilterQuery<IProgram>): Promise<IProgram[]>;
+  getProgramsFilter(
+    condition: FilterQuery<IProgram>,
+    options?: { sort?: any }
+  ): Promise<IProgram[]>;
   findProgramById(programId: string): Promise<IProgram | null>;
   updateProgramById(
     programId: string,

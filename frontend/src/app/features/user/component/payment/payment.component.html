@@ -1,19 +1,41 @@
-<div class="bg-neutral-50 px-4 py-8 animate-fadeIn">
-  <div class="w-full">
+<div class="min-h-screen bg-neutral-50/50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+    <!-- Breadcrumb / Back button -->
+    <div class="mb-8 animate-fadeIn">
+      <button (click)="goBack()"
+        class="group flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-neutral-500 hover:text-primary-600 transition-all">
+        <div class="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center border border-neutral-100 group-hover:shadow-md transition-all">
+          <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+          </svg>
+        </div>
+        <span>Back to Program</span>
+      </button>
+    </div>
+
     <!-- Header -->
-    <div class="flex items-center gap-4 mb-4 animate-slideInDown">
+    <div class="flex items-center gap-4 mb-8 animate-slideInDown">
       <div
-        class="w-10 h-10 bg-primary-100 rounded-xl flex items-center justify-center text-primary-600 shadow-sm border border-primary-200">
-        <i class="fas fa-credit-card text-sm"></i>
+        class="w-12 h-12 bg-primary-100 rounded-2xl flex items-center justify-center text-primary-600 shadow-sm border border-primary-200">
+        <i class="fas fa-credit-card"></i>
       </div>
       <div>
-        <h1 class="text-2xl font-black text-neutral-900 tracking-tight uppercase">Checkout</h1>
-        <p class="text-[10px] font-black text-neutral-400 uppercase tracking-widest">Complete your program enrollment
+        <h1 class="text-3xl font-black text-neutral-900 tracking-tight uppercase">Checkout</h1>
+        <p class="text-[10px] font-black text-neutral-400 uppercase tracking-widest mt-0.5">Complete your program enrollment
         </p>
       </div>
     </div>
 
-    <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Loading State -->
+    @if (isLoading) {
+    <div class="flex flex-col items-center justify-center py-24 space-y-4">
+      <div class="w-12 h-12 border-4 border-primary-100 border-t-primary-600 rounded-full animate-spin"></div>
+      <p class="text-[10px] font-black text-neutral-400 uppercase tracking-widest animate-pulse">Initializing Secure Checkout...</p>
+    </div>
+    }
+
+    <div class="grid lg:grid-cols-3 gap-6" [class.hidden]="isLoading || !program">
+      @if (program) {
       <!-- Program Details - Left Section -->
       <div class="lg:col-span-2 space-y-6 animate-slideInUp">
         <!-- Main Program Card -->
@@ -50,7 +72,7 @@
               </div>
               <div>
                 <p class="text-[9px] font-black text-primary-700 uppercase tracking-widest mb-0.5">Duration</p>
-                <p class="text-sm font-black text-primary-900">{{ program.duration }}</p>
+                <p class="text-sm font-black text-primary-900">{{ program.duration }} Weeks</p>
               </div>
             </div>
 
@@ -83,6 +105,11 @@
                 <i class="fas fa-check-circle text-success-500 text-[10px]"></i>
                 <span class="text-xs font-bold text-neutral-600 line-clamp-1 truncate">{{ feature }}</span>
               </div>
+              }
+              @if (program.features.length === 0) {
+                <div class="flex items-center gap-3 text-neutral-400 text-xs italic">
+                  No additional features listed.
+                </div>
               }
             </div>
           </div>
@@ -169,14 +196,21 @@
               <span class="text-[8px] font-black text-neutral-400 uppercase tracking-widest">SSL Encrypted Secure
                 Payment</span>
             </div>
-            <p class="text-[8px] text-neutral-400 font-bold leading-relaxed max-w-[200px] uppercase">
-              By completing this purchase, you agree to ZenFit's <a href="#"
-                class="text-primary-600 underline">Terms</a> and <a href="#" class="text-primary-600 underline">Refund
-                Policy</a>.
-            </p>
           </div>
         </div>
       </div>
+      }
     </div>
+
+    @if (!isLoading && !program) {
+      <div class="text-center py-24 space-y-4">
+        <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mx-auto">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <h3 class="text-lg font-black text-neutral-900 uppercase tracking-widest">Error Loading Program</h3>
+        <p class="text-xs text-neutral-500 font-bold max-w-sm mx-auto">We couldn't retrieve the checkout details. Please try refreshing the page or contact support.</p>
+        <button (click)="getProgram(programId)" class="btn btn-secondary mt-4">Try Again</button>
+      </div>
+    }
   </div>
 </div>

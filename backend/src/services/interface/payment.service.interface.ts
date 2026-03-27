@@ -55,4 +55,5 @@ export interface IPaymentService {
   getTrainerPurchasedPrograms(
     filters: ITrainerPurchasedProgramFilters
   ): Promise<IApiResponse>;
+  verifyPayment(sessionId: string): Promise<boolean>;
 }

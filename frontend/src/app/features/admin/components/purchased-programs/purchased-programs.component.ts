@@ -1,9 +1,8 @@
 import { Component, inject, OnDestroy, OnInit } from '@angular/core';
 import {
+  IPurchasedProgramItem,
   PaginationResult,
-  PurchasedProgram,
   PurchasedProgramFilters,
-  PurchasedProgramsResponse,
 } from '../../../../interface/payment.interface';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { FormsModule } from '@angular/forms';
@@ -24,7 +23,7 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   private readonly _paymentService = inject(PaymentService);
   private readonly _destroy$ = new Subject<void>();
 
-  purchasedPrograms: PurchasedProgram[] = [];
+  purchasedPrograms: IPurchasedProgramItem[] = [];
   readonly Math = Math;
   pagination: PaginationResult = {
     total: 0,
@@ -43,7 +42,7 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
   };
 
   loading = false;
-  selectedProgram: PurchasedProgram | null = null;
+  selectedProgram: IPurchasedProgramItem | null = null;
   showDetailsModal = false;
 
   purchasedProgramColumns: TableColumn[] = [
@@ -55,7 +54,7 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
     { key: 'status', label: 'Signal Status', type: 'text', width: '150px' },
   ];
 
-  purchasedProgramActions: TableAction<PurchasedProgram>[] = [
+  purchasedProgramActions: TableAction<IPurchasedProgramItem>[] = [
     {
       label: 'Inspect Artifact',
       action: 'view',
@@ -84,7 +83,7 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
       .getPurchasedProgramsOnAdmin(this.filters)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
-        next: (response: PurchasedProgramsResponse) => {
+        next: (response) => {
           this.purchasedPrograms = response.data;
           this.pagination = response.pagination;
           this.loading = false;
@@ -111,13 +110,13 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
     this.loadPurchasedPrograms();
   }
 
-  onPurchaseAction(event: ActionEvent<PurchasedProgram>): void {
+  onPurchaseAction(event: ActionEvent<IPurchasedProgramItem>): void {
     if (event.action === 'view') {
       this.viewDetails(event.row);
     }
   }
 
-  viewDetails(program: PurchasedProgram): void {
+  viewDetails(program: IPurchasedProgramItem): void {
     this.selectedProgram = program;
     this.showDetailsModal = true;
   }

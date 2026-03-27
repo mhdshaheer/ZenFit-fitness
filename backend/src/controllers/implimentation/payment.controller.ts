@@ -303,4 +303,28 @@ export class PaymentController implements IPaymentController {
 
     res.status(HttpStatus.OK).json(result);
   }
+
+  async verifyPayment(req: Request, res: Response): Promise<void> {
+    const { sessionId } = req.params;
+    if (!sessionId) {
+      res.status(HttpStatus.BAD_REQUEST).json({
+        success: false,
+        message: "Session ID is required",
+      });
+      return;
+    }
+
+    const isVerified = await this._paymentService.verifyPayment(sessionId);
+    if (isVerified) {
+      res.status(HttpStatus.OK).json({
+        success: true,
+        message: "Payment verified successfully",
+      });
+    } else {
+      res.status(HttpStatus.OK).json({
+        success: false,
+        message: "Payment verification failed or status still pending",
+      });
+    }
+  }
 }
