@@ -42,6 +42,29 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'login',
+    redirectTo: 'auth/login',
+    pathMatch: 'full',
+  },
+  {
+    path: 'register',
+    redirectTo: 'auth/signup',
+    pathMatch: 'full',
+  },
+  {
+    path: 'signup',
+    redirectTo: 'auth/signup',
+    pathMatch: 'full',
+  },
+  {
+    path: 'not-authorized',
+    loadComponent: () => {
+      return import(
+        '../app/shared/components/not-authorized/not-authorized.component'
+      ).then((m) => m.NotAuthorizedComponent);
+    },
+  },
+  {
     path: 'not-found',
     loadComponent: () => {
       return import(

@@ -81,14 +81,14 @@
           </div>
 
           <div class="flex flex-col sm:flex-row gap-5">
-            <button (click)="toSignup()" class="btn btn-primary btn-lg group">
-              <span>Start Your Journey</span>
+            <button (click)="navigateToHome()" class="btn btn-primary btn-lg group">
+              <span>{{ isLoggedIn ? 'Go to Dashboard' : 'Start Your Journey' }}</span>
               <svg class="w-6 h-6 ml-2 transform group-hover:translate-x-1 transition-transform" fill="none"
                 stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3" />
               </svg>
             </button>
-            <button (click)="toLogin()" class="btn btn-secondary btn-lg">
+            <button *ngIf="!isLoggedIn" (click)="toLogin()" class="btn btn-secondary btn-lg">
               Sign In
             </button>
           </div>
@@ -183,10 +183,11 @@
           <p class="body-large text-white/80 max-w-2xl mx-auto">Ready to rewrite your story? Join ZenFit today and start
             your journey towards greatness.</p>
           <div class="flex flex-col sm:flex-row gap-5 justify-center pt-4">
-            <button (click)="toSignup()"
-              class="btn px-12 py-5 bg-white text-primary-700 hover:bg-neutral-50 rounded-[2rem] shadow-xl text-xl">Get
-              Started Now</button>
-            <button (click)="toLogin()"
+            <button (click)="navigateToHome()"
+              class="btn px-12 py-5 bg-white text-primary-700 hover:bg-neutral-50 rounded-[2rem] shadow-xl text-xl">
+              {{ isLoggedIn ? 'Back to Dashboard' : 'Get Started Now' }}
+            </button>
+            <button *ngIf="!isLoggedIn" (click)="toLogin()"
               class="btn px-12 py-5 bg-primary-700 text-white hover:bg-primary-800 rounded-[2rem] border border-white/20 text-xl">View
               Plans</button>
           </div>
