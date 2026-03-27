@@ -8,6 +8,7 @@ import { ISubCategory } from '../../../../interface/category.interface';
 import { FormsModule } from '@angular/forms';
 import { SearchBarComponent } from '../../../../shared/components/search-bar/search-bar.component';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { Location } from '@angular/common';
 
 interface IProgramType {
   label: string;
@@ -38,6 +39,7 @@ export class ProgramListComponent implements OnDestroy, OnInit {
   private readonly _route = inject(Router);
   private readonly _logger = inject(LoggerService);
   private readonly _cdr = inject(ChangeDetectorRef);
+  private readonly _location = inject(Location);
 
   private readonly _destroy$ = new Subject<void>();
 
@@ -141,6 +143,10 @@ export class ProgramListComponent implements OnDestroy, OnInit {
       this._logger.error('API call failed in getSubCategory:', err);
       this.allProgramsData.set([]);
     }
+  }
+
+  getBack() {
+    this._location.back();
   }
 
   onViewProgram(programId: string): void {

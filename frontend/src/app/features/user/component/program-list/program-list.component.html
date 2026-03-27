@@ -1,5 +1,18 @@
 <div class="animate-fadeIn py-8 md:py-12">
   <div class="container-custom">
+    <!-- Breadcrumb / Back button -->
+    <div class="mb-8">
+      <button (click)="getBack()"
+        class="group flex items-center gap-3 text-[10px] font-black uppercase tracking-widest text-neutral-500 hover:text-primary-600 transition-all">
+        <div class="w-10 h-10 rounded-2xl bg-white shadow-sm flex items-center justify-center border border-neutral-100 group-hover:shadow-md transition-all">
+          <svg class="w-5 h-5 transform group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+          </svg>
+        </div>
+        <span>Back</span>
+      </button>
+    </div>
+
     <!-- Header Section -->
     <div class="mb-12">
       <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-8">
