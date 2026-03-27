@@ -6,7 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { IPaymentCourse } from '../../../../interface/payment.interface';
 import { Subject, takeUntil } from 'rxjs';
-import { NgClass } from '@angular/common';
+import { NgClass, Location } from '@angular/common';
 
 interface IProgram {
   name: string;
@@ -38,13 +38,17 @@ export class PaymentComponent implements OnInit, OnDestroy {
   program: IProgram | null = null;
   isLoading = true;
 
-  // services
   private readonly _programService = inject(ProgramService);
   private readonly _loggerService = inject(LoggerService);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _paymentService = inject(PaymentService);
   private readonly _cdr = inject(ChangeDetectorRef);
+  private readonly _location = inject(Location);
   private readonly _destroy$ = new Subject<void>();
+
+  goBack(): void {
+    this._location.back();
+  }
 
   paymentMethods: PaymentMethod[] = [
     { id: 'card', name: 'Credit/Debit Card', icon: 'credit-card' },
