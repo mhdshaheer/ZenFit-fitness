@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core';
+import { Component, inject, OnDestroy, OnInit, ChangeDetectorRef } from '@angular/core';
 import { Program } from '../../../trainer/store/trainer.model';
 import { ProgramService } from '../../../../core/services/program.service';
 import { LoggerService } from '../../../../core/services/logger.service';
@@ -6,6 +6,8 @@ import { ActivatedRoute } from '@angular/router';
 import { PaymentService } from '../../../../core/services/payment.service';
 import { IPaymentCourse } from '../../../../interface/payment.interface';
 import { Subject, takeUntil } from 'rxjs';
+import { NgClass } from '@angular/common';
+
 interface IProgram {
   name: string;
   description: string;
@@ -23,7 +25,7 @@ interface PaymentMethod {
   name: string;
   icon: string;
 }
-import { NgClass } from '@angular/common';
+
 @Component({
   selector: 'zenfit-payment',
   imports: [NgClass],
@@ -32,31 +34,40 @@ import { NgClass } from '@angular/common';
 })
 export class PaymentComponent implements OnInit, OnDestroy {
   selectedPayment = 'card';
-  myProgram: Program[] = [];
-  programId!: string;
+  programId = '';
+  program: IProgram | null = null;
+  isLoading = true;
 
   // services
   private readonly _programService = inject(ProgramService);
   private readonly _loggerService = inject(LoggerService);
   private readonly _activatedRoute = inject(ActivatedRoute);
   private readonly _paymentService = inject(PaymentService);
+  private readonly _cdr = inject(ChangeDetectorRef);
   private readonly _destroy$ = new Subject<void>();
-  private _logger = inject(LoggerService)
-
-  program = {} as IProgram;
 
   paymentMethods: PaymentMethod[] = [
     { id: 'card', name: 'Credit/Debit Card', icon: 'credit-card' },
   ];
 
   ngOnInit() {
-    this.programId = this._activatedRoute.snapshot.paramMap.get('id')!;
-    this.getProgram(this.programId);
+    this._activatedRoute.paramMap
+      .pipe(takeUntil(this._destroy$))
+      .subscribe((paramMap) => {
+        const id = paramMap.get('id');
+        this._loggerService.info('Checkout Page Load ID:', id);
+        if (id) {
+          this.programId = id;
+          this.getProgram(id);
+        } else {
+          this.isLoading = false;
+          this._cdr.detectChanges();
+        }
+      });
   }
 
   selectPayment(methodId: string): void {
     this.selectedPayment = methodId;
-    this._logger.info(this.selectedPayment);
   }
 
   getDifficultyColor(difficulty: string): string {
@@ -68,13 +79,9 @@ export class PaymentComponent implements OnInit, OnDestroy {
     return colors[difficulty] || 'bg-gray-100 text-gray-800';
   }
 
-  getStars(rating: number): number[] {
-    return Array(5)
-      .fill(0)
-      .map((_, i) => (i < Math.floor(rating) ? 1 : 0));
-  }
-
   completePurchase(): void {
+    if (!this.program) return;
+    
     const course: IPaymentCourse = {
       courseId: this.programId,
       courseName: this.program.name,
@@ -85,36 +92,52 @@ export class PaymentComponent implements OnInit, OnDestroy {
       .createCheckout(course)
       .pipe(takeUntil(this._destroy$))
       .subscribe((res) => {
-        this._logger.info('to :', res.url);
-        window.location.href = res.url; // redirect to Stripe Checkout
+        window.location.href = res.url;
       });
   }
 
   getProgram(id: string) {
+    this.isLoading = true;
     this._programService
       .getProgramByProgramId(id)
       .pipe(takeUntil(this._destroy$))
       .subscribe({
-        next: (res) => {
-          this._loggerService.info('Program is :', res);
-          const category = JSON.parse(res.category);
+        next: (res: any) => {
+          this._loggerService.info('Program data received:', res);
+          
+          let categoryName = 'Uncategorized';
+          try {
+            if (res.category) {
+              const catObj = typeof res.category === 'string' ? JSON.parse(res.category) : res.category;
+              categoryName = catObj?.name || 'Uncategorized';
+            }
+          } catch (e) {
+            this._loggerService.warn('Category parsing error:', e);
+            if (typeof res.category === 'string') categoryName = res.category;
+          }
+
           this.program = {
             name: res.title,
-            category: category.name,
+            category: categoryName,
             description: res.description,
             difficulty: res.difficultyLevel,
             duration: res.duration,
             features: [],
             price: res.price,
-            rating: 0,
-            reviewCount: 0.0,
+            rating: 4.8,
+            reviewCount: 124,
           };
+          this.isLoading = false;
+          this._cdr.detectChanges();
         },
         error: (err) => {
-          this._loggerService.error('Failed to fetch program :', err);
+          this._loggerService.error('Failed to fetch program:', err);
+          this.isLoading = false;
+          this._cdr.detectChanges();
         },
       });
   }
+
   ngOnDestroy() {
     this._destroy$.next();
     this._destroy$.complete();
