@@ -81,6 +81,10 @@ export class PurchasedProgramsComponent implements OnInit, OnDestroy {
     this._router.navigate(['/user/slots', course.id]);
   }
 
+  navigateToChat(courseId: string): void {
+    this._router.navigate(['/user/chat', courseId]);
+  }
+
   viewProgramDetails(course: Course): void {
     this._router.navigate(['/user/program-details', course.id]);
   }

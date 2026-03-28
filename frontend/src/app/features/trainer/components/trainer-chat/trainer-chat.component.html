@@ -38,13 +38,13 @@
 
             <div class="relative flex-shrink-0">
               <div class="w-12 h-12 rounded-xl overflow-hidden shadow-sm border border-neutral-100">
-                @if (t.userId && typeof t.userId === 'object') {
-                @if (t.userId.profileImage) {
-                <img [src]="t.userId.profileImage" [alt]="t.userId.fullName" class="w-full h-full object-cover">
+                @if (t.userId && isObject(t.userId)) {
+                @if ($any(t.userId).profileImage) {
+                <img [src]="$any(t.userId).profileImage" [alt]="$any(t.userId).fullName" class="w-full h-full object-cover">
                 } @else {
                 <div
                   class="w-full h-full gradient-primary flex items-center justify-center text-white font-black text-sm uppercase">
-                  {{ getInitials(t.userId.fullName || t.userId.username) }}
+                  {{ getInitials($any(t.userId).fullName || $any(t.userId).username) }}
                 </div>
                 }
                 } @else {
@@ -63,8 +63,8 @@
             <div class="flex-1 min-w-0 text-left">
               <div class="flex items-center justify-between mb-0.5">
                 <span class="text-sm font-black text-neutral-900 truncate uppercase tracking-tighter">
-                  @if (t.userId && typeof t.userId === 'object') {
-                  {{ t.userId.fullName || t.userId.username }}
+                  @if (t.userId && isObject(t.userId)) {
+                  {{ $any(t.userId).fullName || $any(t.userId).username }}
                   } @else { Guest }
                 </span>
                 @if (t.lastMessageAt) {
@@ -115,14 +115,14 @@
             <div class="flex items-center gap-4">
               <div class="relative">
                 <div class="w-14 h-14 rounded-2xl overflow-hidden border-2 border-primary-100 shadow-md">
-                  @if (active.userId && typeof active.userId === 'object' && active.userId.profileImage) {
-                  <img [src]="active.userId.profileImage" [alt]="active.userId.fullName"
+                  @if (active.userId && isObject(active.userId) && $any(active.userId).profileImage) {
+                  <img [src]="$any(active.userId).profileImage" [alt]="$any(active.userId).fullName"
                     class="w-full h-full object-cover">
                   } @else {
                   <div
                     class="w-full h-full gradient-primary flex items-center justify-center text-white font-black text-lg uppercase">
-                    {{ active.userId && typeof active.userId === 'object' ? getInitials(active.userId.fullName ||
-                    active.userId.username) : 'C' }}
+                    {{ active.userId && isObject(active.userId) ? getInitials($any(active.userId).fullName ||
+                    $any(active.userId).username) : 'C' }}
                   </div>
                   }
                 </div>
@@ -131,8 +131,8 @@
               </div>
               <div>
                 <h3 class="heading-6 text-neutral-900 leading-tight uppercase tracking-tight">
-                  @if (active.userId && typeof active.userId === 'object') {
-                  {{ active.userId.fullName || active.userId.username }}
+                  @if (active.userId && isObject(active.userId)) {
+                  {{ $any(active.userId).fullName || $any(active.userId).username }}
                   } @else { Client }
                 </h3>
                 <div class="flex items-center gap-1.5 mt-1">
@@ -170,11 +170,11 @@
                 <div class="flex-shrink-0 mt-auto">
                   <div
                     class="w-8 h-8 rounded-lg overflow-hidden border border-neutral-100 shadow-sm bg-primary-50 flex items-center justify-center text-[10px] font-black text-primary-700">
-                    @if (m.senderId && typeof m.senderId === 'object' && m.senderId.profileImage) {
-                    <img [src]="m.senderId.profileImage" class="w-full h-full object-cover">
+                    @if (m.senderId && isObject(m.senderId) && $any(m.senderId).profileImage) {
+                    <img [src]="$any(m.senderId).profileImage" class="w-full h-full object-cover">
                     } @else {
-                    {{ m.senderId && typeof m.senderId === 'object' ? getInitials(m.senderId.fullName ||
-                    m.senderId.username) : 'C' }}
+                    {{ m.senderId && isObject(m.senderId) ? getInitials($any(m.senderId).fullName ||
+                    $any(m.senderId).username) : 'C' }}
                     }
                   </div>
                 </div>
@@ -236,7 +236,7 @@
               </button>
               <input [(ngModel)]="input" (keydown.enter)="send()"
                 class="flex-1 bg-transparent border-none focus:ring-0 body-base font-semibold text-neutral-900 placeholder:text-neutral-400 px-2"
-                placeholder="Message {{ active.userId && typeof active.userId === 'object' ? (active.userId.fullName || active.userId.username) : 'Client' }}..."
+                placeholder="Message {{ active.userId && isObject(active.userId) ? ($any(active.userId).fullName || $any(active.userId).username) : 'Client' }}..."
                 type="text" />
               <button (click)="send()" [disabled]="!input.trim()"
                 class="w-12 h-12 bg-primary-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-primary-500/20 hover:bg-primary-700 active:scale-95 disabled:grayscale disabled:opacity-20 transition-all group/send"

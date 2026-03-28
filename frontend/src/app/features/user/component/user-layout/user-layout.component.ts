@@ -122,6 +122,7 @@ export class UserLayoutComponent implements OnDestroy, OnInit {
       route: '/user/my-programs',
       icon: 'fas fa-dumbbell',
     },
+    { label: 'Chat', route: '/user/my-programs', icon: 'fas fa-comment-alt' },
     { label: 'Sessions', route: '/user/booked-slots', icon: 'fas fa-chart-line' },
     { label: 'Transactions', route: '/user/transaction-history', icon: 'fas fa-receipt' },
   ];
