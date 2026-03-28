@@ -130,6 +130,12 @@
             </svg>
             {{ isStartingMeeting ? 'Initializing...' : 'Stream Session' }}
           </button>
+          <button (click)="cancelSession(session)" class="btn btn-ghost w-full font-black text-[9px] uppercase tracking-widest text-error-500 mt-2 hover:bg-error-50 transition-all">
+            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M6 18L18 6M6 6l12 12" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Terminate Session
+          </button>
           } @else if (activeTab === 'past') {
           <button (click)="openFeedbackModal(session)"
             class="btn btn-ghost w-full ring-1 ring-neutral-200 bg-white shadow-sm font-black text-[10px] uppercase tracking-widest">
@@ -142,7 +148,10 @@
           </button>
           } @else {
           <div class="py-2 text-center">
-            <span class="text-[10px] font-black text-error-600 uppercase tracking-[0.2em]">Session Terminated</span>
+            <span class="text-[10px] font-black text-error-600 uppercase tracking-[0.2em] block">Session Terminated</span>
+            @if (session.cancelReason) {
+            <p class="text-[8px] font-bold text-neutral-400 mt-1 italic">Reason: {{ session.cancelReason }}</p>
+            }
           </div>
           }
         </div>

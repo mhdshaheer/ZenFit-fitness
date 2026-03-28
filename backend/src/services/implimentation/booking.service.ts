@@ -114,8 +114,12 @@ export class BookingService implements IBookingService {
       status: booking.status === 'booked' ? 'confirmed' : booking.status,
       createdAt: booking.createdAt,
       feedback: booking.feedback,
+      cancelReason: (booking as any).cancelReason,
       snapshot: booking.snapshot,
-    }));
+    })).map(b => {
+      console.log('DEBUG: Booked session status & reason:', b.status, b.cancelReason);
+      return b;
+    });
   }
 
   async getTrainerBookings(trainerId: string): Promise<Record<string, unknown>[]> {

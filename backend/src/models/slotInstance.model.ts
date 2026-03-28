@@ -11,6 +11,7 @@ export interface ISlotInstance extends Document {
     trainerId: Types.ObjectId;
     timezone: string;
     status: "OPEN" | "CLOSED" | "CANCELLED";
+    cancelReason?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -35,6 +36,7 @@ const SlotInstanceSchema = new Schema<ISlotInstance>(
             enum: ["OPEN", "CLOSED", "CANCELLED"],
             default: "OPEN",
         },
+        cancelReason: { type: String },
     },
     { timestamps: true }
 );

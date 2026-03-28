@@ -120,10 +120,12 @@ export class SlotInstanceController implements ISlotInstanceController {
                 .json({ message: HttpResponse.UNAUTHORIZED });
         }
         const instanceId = req.params.id;
+        const { reason } = req.body;
 
         const updated = await this._slotInstanceService.cancelInstance(
             instanceId,
-            trainerId
+            trainerId,
+            reason
         );
 
         return res.status(HttpStatus.OK).json(updated);

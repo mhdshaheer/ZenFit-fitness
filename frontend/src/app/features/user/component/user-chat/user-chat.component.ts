@@ -1,5 +1,5 @@
 import { CommonModule, Location } from "@angular/common";
-import { Component, inject, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewChecked } from "@angular/core";
+import { Component, inject, OnDestroy, OnInit, ViewChild, ElementRef, AfterViewChecked, ChangeDetectorRef } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute } from "@angular/router";
 import { ChatMessage, ChatService, ChatThread } from "../../../../core/services/chat.service";
@@ -24,6 +24,7 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
   private location = inject(Location);
   private destroy$ = new Subject<void>();
   private _logger = inject(LoggerService)
+  private _cdr = inject(ChangeDetectorRef);
 
   @ViewChild('messagesContainer') private messagesContainer!: ElementRef;
   private shouldScrollToBottom = false;
@@ -40,6 +41,10 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.location.back();
   }
 
+  isObject(val: any): boolean {
+    return val !== null && typeof val === 'object';
+  }
+
   ngOnInit(): void {
     const programId = this.route.snapshot.paramMap.get('programId')!;
     this.chat.initThread(programId).pipe(takeUntil(this.destroy$)).subscribe(res => {
@@ -48,6 +53,7 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
       this.socket.join(userId, 'user');
       this.socket.joinThread(this.thread._id, userId, 'user');
       this.loadMessages(this.thread._id);
+      this._cdr.detectChanges();
     });
 
     this.socket.onNewMessage().pipe(takeUntil(this.destroy$)).subscribe(m => {
@@ -74,6 +80,7 @@ export class UserChatComponent implements OnInit, OnDestroy, AfterViewChecked {
     this.chat.getMessages(threadId, 1, 50).pipe(takeUntil(this.destroy$)).subscribe(res => {
       this.messages = res.data;
       this.shouldScrollToBottom = true;
+      this._cdr.detectChanges();
     });
   }
 

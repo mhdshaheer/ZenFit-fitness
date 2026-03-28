@@ -51,6 +51,14 @@ export class BookingRepository
       { $match: matchStage },
       {
         $lookup: {
+          from: "slotinstances",
+          localField: "slotId",
+          foreignField: "_id",
+          as: "instanceDetails",
+        },
+      },
+      {
+        $lookup: {
           from: "feedbacks",
           let: {
             slotId: { $toString: "$slotId" },
@@ -99,6 +107,7 @@ export class BookingRepository
           createdAt: 1,
           snapshot: 1,
           feedback: 1,
+          cancelReason: { $ifNull: ["$cancelReason", { $arrayElemAt: ["$instanceDetails.cancelReason", 0] }] },
         },
       },
       { $sort: { "snapshot.slotDate": -1, "snapshot.startMinutes": 1 } },
@@ -206,6 +215,7 @@ export class BookingRepository
           difficultyLevel: { $ifNull: ["$programDetails.difficultyLevel", ""] },
           bookedCount: { $size: "$students" },
           status: "$status",
+          cancelReason: "$cancelReason",
           students: "$students",
         },
       },
@@ -238,12 +248,12 @@ export class BookingRepository
     return bookings;
   }
 
-  async cancelBookingsBySlotId(slotId: string): Promise<IBooking[]> {
+  async cancelBookingsBySlotId(slotId: string, reason?: string): Promise<IBooking[]> {
     const bookings = await this.model.find({
       slotId: new Types.ObjectId(slotId),
       status: "booked"
     }).populate('userId', 'fullName email');
-
+ 
     // Update all booked slots to cancelled
     await this.model.updateMany(
       {
@@ -251,7 +261,7 @@ export class BookingRepository
         status: "booked"
       },
       {
-        $set: { status: "cancelled" }
+        $set: { status: "cancelled", cancelReason: reason }
       }
     );
 

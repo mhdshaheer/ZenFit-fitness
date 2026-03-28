@@ -23,6 +23,7 @@ export interface IBooking extends Document {
   date: Date;
   day: string;
   status: "booked" | "cancelled" | "completed";
+  cancelReason?: string;
   snapshot: IBookingSnapshot;
   createdAt?: Date;
   updatedAt?: Date;
@@ -50,6 +51,7 @@ const BookingSchema = new Schema<IBooking>(
       default: "booked",
       index: true,
     },
+    cancelReason: { type: String },
     snapshot: {
       slotDate: { type: Date, required: true },
       startTime: { type: String, required: true },

@@ -39,7 +39,8 @@ export interface ISlotInstanceService {
     ): Promise<SlotInstancePaginatedResult>;
     cancelInstance(
         instanceId: string,
-        trainerId: string
+        trainerId: string,
+        reason?: string
     ): Promise<ISlotInstance>;
     cancelFutureInstancesForTemplate(
         templateId: string,

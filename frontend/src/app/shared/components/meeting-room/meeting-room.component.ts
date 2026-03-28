@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject, Input, Output, EventEmitter, ViewChild, ElementRef } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, Input, Output, EventEmitter, ViewChild, ElementRef, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Subject, takeUntil } from 'rxjs';
 import { MeetingService, MeetingState } from '../../../core/services/meeting.service';
@@ -20,6 +20,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
   private readonly _socketService = inject(SocketService);
   private readonly _toastService = inject(ToastService);
   private readonly _profileService = inject(ProfileService);
+  private readonly _cdr = inject(ChangeDetectorRef);
   private readonly _destroy$ = new Subject<void>();
   private _logger = inject(LoggerService);
 
@@ -97,12 +98,14 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe(state => {
         this.meetingState = state;
+        this._cdr.detectChanges();
       });
 
     this._meetingService.participants$
       .pipe(takeUntil(this._destroy$))
       .subscribe(participants => {
         this.participantCount = participants.length;
+        this._cdr.detectChanges();
       });
 
     // Subscribe to remote streams
@@ -110,6 +113,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this._destroy$))
       .subscribe(streams => {
         this.remoteStreams = streams;
+        this._cdr.detectChanges();
       });
   }
 
@@ -233,6 +237,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
     try {
       this.isInitializing = true;
       this._meetingService.updateMeetingState('waiting');
+      this._cdr.detectChanges();
 
       // Set current user ID (generate unique ID for this session)
       this.currentUserId = this.isHost ? 'host-' + Date.now() : 'user-' + Date.now();
@@ -248,6 +253,7 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
         if (this.localVideo?.nativeElement) {
           this.localVideo.nativeElement.srcObject = stream;
         }
+        this._cdr.detectChanges();
       }, 100);
 
       // Join the meeting room via Socket.IO
@@ -261,11 +267,13 @@ export class MeetingRoomComponent implements OnInit, OnDestroy {
 
       this._meetingService.updateMeetingState('active');
       this.isInitializing = false;
+      this._cdr.detectChanges();
     } catch (error: unknown) {
       this._logger.error('Failed to initialize meeting:', error);
       this.errorMessage = 'Failed to access camera/microphone. Please check permissions.';
       this._meetingService.updateMeetingState('ended');
       this.isInitializing = false;
+      this._cdr.detectChanges();
     }
   }
 

@@ -17,7 +17,7 @@ export interface IBookingRepository {
   getAllBookings(): Promise<IBooking[]>;
   getBookingsBySlotId(slotId: string): Promise<IBooking[]>;
   getBookingsForSlotOnDate(slotId: string, date: Date): Promise<IBooking[]>;
-  cancelBookingsBySlotId(slotId: string): Promise<IBooking[]>;
+  cancelBookingsBySlotId(slotId: string, reason?: string): Promise<IBooking[]>;
   findById(bookingId: string): Promise<IBooking | null>;
   cancelBookingById(bookingId: string): Promise<IBooking | null>;
   findActiveBookingByUserAndSlot(

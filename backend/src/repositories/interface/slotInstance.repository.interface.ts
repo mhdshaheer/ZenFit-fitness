@@ -53,7 +53,8 @@ export interface ISlotInstanceRepository {
     ): Promise<number>;
     updateStatus(
         instanceId: string,
-        status: ISlotInstance['status']
+        status: ISlotInstance['status'],
+        reason?: string
     ): Promise<ISlotInstance | null>;
     cancelUpcomingByTemplate(
         templateId: string,
