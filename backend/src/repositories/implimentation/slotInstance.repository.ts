@@ -138,11 +138,17 @@ export class SlotInstanceRepository
 
     async updateStatus(
         instanceId: string,
-        status: ISlotInstance["status"]
+        status: ISlotInstance["status"],
+        reason?: string
     ): Promise<ISlotInstance | null> {
+        const update: any = { status };
+        if (reason !== undefined) {
+            update.cancelReason = reason;
+        }
+
         return await this.model.findOneAndUpdate(
             { _id: new Types.ObjectId(instanceId) },
-            { $set: { status } },
+            { $set: update },
             { new: true }
         );
     }

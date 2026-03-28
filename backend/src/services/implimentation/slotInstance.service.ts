@@ -264,7 +264,8 @@ export class SlotInstanceService implements ISlotInstanceService {
 
         const updated = await this._instanceRepo.updateStatus(
             instanceId,
-            "CANCELLED"
+            "CANCELLED",
+            reason
         );
 
         if (!updated) {
@@ -272,7 +273,8 @@ export class SlotInstanceService implements ISlotInstanceService {
         }
 
         const affectedBookings = await this._bookingRepo.cancelBookingsBySlotId(
-            instanceId
+            instanceId,
+            reason
         );
 
         await this.notifyUsersOfInstanceCancellation(updated, affectedBookings, reason);
