@@ -246,7 +246,8 @@ export class SlotInstanceService implements ISlotInstanceService {
 
     async cancelInstance(
         instanceId: string,
-        trainerId: string
+        trainerId: string,
+        reason?: string
     ): Promise<ISlotInstance> {
         const instance = await this._instanceRepo.findById(instanceId);
         if (!instance) {
@@ -263,7 +264,8 @@ export class SlotInstanceService implements ISlotInstanceService {
 
         const updated = await this._instanceRepo.updateStatus(
             instanceId,
-            "CANCELLED"
+            "CANCELLED",
+            reason
         );
 
         if (!updated) {
@@ -271,10 +273,11 @@ export class SlotInstanceService implements ISlotInstanceService {
         }
 
         const affectedBookings = await this._bookingRepo.cancelBookingsBySlotId(
-            instanceId
+            instanceId,
+            reason
         );
 
-        await this.notifyUsersOfInstanceCancellation(updated, affectedBookings);
+        await this.notifyUsersOfInstanceCancellation(updated, affectedBookings, reason);
 
         return updated;
     }
@@ -321,7 +324,8 @@ export class SlotInstanceService implements ISlotInstanceService {
 
     private async notifyUsersOfInstanceCancellation(
         instance: ISlotInstance,
-        bookings: IBooking[]
+        bookings: IBooking[],
+        reason?: string
     ): Promise<void> {
         if (!bookings.length) {
             return;
@@ -340,7 +344,7 @@ export class SlotInstanceService implements ISlotInstanceService {
                 const programTitle =
                     booking.snapshot?.programTitle ?? "training session";
                 const title = "Session cancelled";
-                const message = `${programTitle} scheduled on ${formattedDate} at ${instance.startTime} has been cancelled. We'll notify you when a new slot is available.`;
+                const message = `${programTitle} scheduled on ${formattedDate} at ${instance.startTime} has been cancelled. ${reason ? `Reason: ${reason}. ` : ""}We'll notify you when a new slot is available.`;
 
                 return this._notificationService.createNotification(
                     receiverId,

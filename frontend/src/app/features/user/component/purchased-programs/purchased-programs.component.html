@@ -101,6 +101,11 @@
               <i class="fas fa-video mr-2 text-sm transition-transform group-hover/btn:scale-110"></i>
               <span class="font-black uppercase tracking-widest text-xs">Book Live Session</span>
             </button>
+            <button (click)="navigateToChat(course.id)"
+              class="btn btn-secondary w-full py-3.5 text-xs rounded-xl shadow-lg shadow-secondary-500/10 group/chat">
+              <i class="fas fa-comment-dots mr-2 text-sm transition-transform group-hover/chat:scale-110"></i>
+              <span class="font-black uppercase tracking-widest text-xs">Chat with Trainer</span>
+            </button>
             <button (click)="viewProgramDetails(course)"
               class="btn btn-ghost w-full py-3 text-xs font-black uppercase tracking-widest text-neutral-500 hover:text-neutral-900 transition-all">
               <i class="fas fa-book-open mr-2"></i>

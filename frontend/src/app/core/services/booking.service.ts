@@ -16,6 +16,7 @@ export interface BookedSlot {
   status: 'confirmed' | 'cancelled' | 'completed';
   createdAt: Date;
   feedback?: string;
+  cancelReason?: string;
 }
 
 export interface Student {
@@ -37,6 +38,7 @@ export interface TrainerSession {
   difficultyLevel: string;
   bookedCount: number;
   status?: 'OPEN' | 'CLOSED' | 'CANCELLED';
+  cancelReason?: string;
   students: Student[];
 }
 

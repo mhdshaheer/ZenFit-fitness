@@ -296,16 +296,27 @@ export class CreateSlotComponent implements OnInit, OnDestroy {
 
   submitTemplate(): void {
     if (this.templateForm.invalid) {
-      this._toastService.error('Please fix the highlighted errors');
+      this.templateForm.markAllAsTouched();
+      Swal.fire({
+        title: 'Form Incomplete',
+        text: 'Please fill all required fields before committing the blueprint.',
+        icon: 'error',
+        confirmButtonColor: '#111827',
+      });
       return;
     }
 
     const recurrenceType = this.templateForm.value
       .recurrenceType as RecurrenceType;
     const selectedDays = this.getSelectedDays();
-
     if (recurrenceType === 'WEEKLY' && selectedDays.length === 0) {
-      this._toastService.error('Select at least one day for weekly recurrence');
+      this.templateForm.markAllAsTouched();
+      Swal.fire({
+        title: 'Schedule Required',
+        text: 'Select at least one day for weekly recurrence.',
+        icon: 'error',
+        confirmButtonColor: '#111827',
+      });
       return;
     }
 

@@ -165,6 +165,10 @@ export class TrainerChatComponent implements OnInit, OnDestroy, AfterViewChecked
     });
   }
 
+  isObject(val: any): boolean {
+    return val !== null && typeof val === 'object';
+  }
+
   getInitials(name: string): string {
     if (!name) return '?';
     const parts = name.trim().split(' ');

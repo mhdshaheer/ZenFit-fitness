@@ -13,16 +13,17 @@
         </button>
 
         <div class="flex items-center gap-4 ml-2">
-          @if (thread && thread.trainerId && typeof thread.trainerId === 'object') {
+        <div class="flex items-center gap-4 ml-2">
+          @if (thread && thread.trainerId && isObject(thread.trainerId)) {
           <div class="relative">
             <div class="w-12 h-12 rounded-2xl overflow-hidden border-2 border-primary-100 shadow-md">
-              @if (thread.trainerId.profileImage) {
-              <img [src]="thread.trainerId.profileImage" [alt]="thread.trainerId.fullName"
+              @if ($any(thread.trainerId).profileImage) {
+              <img [src]="$any(thread.trainerId).profileImage" [alt]="$any(thread.trainerId).fullName"
                 class="w-full h-full object-cover">
               } @else {
               <div
                 class="w-full h-full gradient-primary flex items-center justify-center text-white font-black text-lg">
-                {{ getInitials(thread.trainerId.fullName || thread.trainerId.username) }}
+                {{ getInitials($any(thread.trainerId).fullName || $any(thread.trainerId).username) }}
               </div>
               }
             </div>
@@ -30,8 +31,8 @@
               class="absolute -bottom-1 -right-1 w-4 h-4 bg-success-500 border-2 border-white rounded-full shadow-sm animate-pulse"></span>
           </div>
           <div>
-            <h3 class="heading-6 text-neutral-900 leading-tight uppercase tracking-tight">{{ thread.trainerId.fullName
-              || thread.trainerId.username
+            <h3 class="heading-6 text-neutral-900 leading-tight uppercase tracking-tight">{{ $any(thread.trainerId).fullName
+              || $any(thread.trainerId).username
               }}</h3>
             <div class="flex items-center gap-1.5 mt-1">
               <span class="caption font-black text-primary-600 uppercase tracking-widest text-[9px]">Elite
@@ -101,10 +102,10 @@
           <div class="flex-shrink-0 mb-1">
             <div
               class="w-9 h-9 rounded-xl bg-primary-100 flex items-center justify-center text-primary-700 font-black text-xs shadow-sm overflow-hidden border border-primary-200">
-              @if (m.senderId && typeof m.senderId === 'object' && m.senderId.profileImage) {
-              <img [src]="m.senderId.profileImage" class="w-full h-full object-cover">
+              @if (m.senderId && isObject(m.senderId) && $any(m.senderId).profileImage) {
+              <img [src]="$any(m.senderId).profileImage" class="w-full h-full object-cover">
               } @else {
-              {{ (m.senderId && typeof m.senderId === 'object' ? getInitials(m.senderId.fullName || m.senderId.username)
+              {{ (m.senderId && isObject(m.senderId) ? getInitials($any(m.senderId).fullName || $any(m.senderId).username)
               :
               'T') }}
               }

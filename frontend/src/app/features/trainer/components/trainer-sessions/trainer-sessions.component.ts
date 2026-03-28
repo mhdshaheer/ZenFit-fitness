@@ -8,6 +8,8 @@ import { MeetingRoomComponent } from '../../../../shared/components/meeting-room
 import { ToastService } from '../../../../core/services/toast.service';
 import { FeedbackService } from '../../../../core/services/feedback.service';
 import { LoggerService } from '../../../../core/services/logger.service';
+import { SlotService } from '../../../../core/services/slot.service';
+import Swal from 'sweetalert2';
 
 @Component({
   selector: 'zenfit-trainer-sessions',
@@ -21,8 +23,9 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
   private readonly _meetingService = inject(MeetingService);
   private readonly _toastService = inject(ToastService);
   private readonly _feedbackService = inject(FeedbackService);
+  private readonly _slotService = inject(SlotService);
   private readonly _destroy$ = new Subject<void>();
-  private _logger = inject(LoggerService)
+  private readonly _logger = inject(LoggerService);
 
   sessions: TrainerSession[] = [];
   upcomingSessions: TrainerSession[] = [];
@@ -260,6 +263,42 @@ export class TrainerSessionsComponent implements OnInit, OnDestroy {
       this._toastService.error('Failed to submit feedback. Please try again.');
     } finally {
       this.isSubmittingFeedback = false;
+    }
+  }
+
+  async cancelSession(session: TrainerSession): Promise<void> {
+    const { value: reason, isConfirmed } = await Swal.fire({
+      title: 'Cancel Session',
+      input: 'textarea',
+      inputLabel: 'Cancellation Reason',
+      inputPlaceholder: 'Enter a message for booked users...',
+      inputAttributes: {
+        autocapitalize: 'off'
+      },
+      showCancelButton: true,
+      confirmButtonText: 'Confirm Cancellation',
+      confirmButtonColor: '#ef4444',
+      cancelButtonText: 'Keep Session',
+      showLoaderOnConfirm: true,
+      preConfirm: (value) => {
+        if (!value || value.trim().length < 5) {
+          Swal.showValidationMessage('Please provide a reason (min 5 chars)');
+          return false;
+        }
+        return value;
+      },
+      allowOutsideClick: () => !Swal.isLoading()
+    });
+
+    if (isConfirmed) {
+      try {
+        await firstValueFrom(this._slotService.cancelSlotInstance(session.slotId, reason));
+        this._toastService.success('Session cancelled and users notified.');
+        this.loadSessions();
+      } catch (error) {
+        this._logger.error('Error cancelling session:', error);
+        this._toastService.error('Failed to cancel session. Please try again.');
+      }
     }
   }
 }

@@ -71,6 +71,15 @@
         </div>
 
         <form [formGroup]="templateForm" (ngSubmit)="submitTemplate()" class="p-6 space-y-6">
+          @if (templateForm.invalid && templateForm.touched) {
+          <div class="p-3 rounded-lg bg-error-50 border border-error-100 flex items-center gap-3 animate-fadeIn">
+            <svg class="w-4 h-4 text-error-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            <p class="text-[9px] font-black text-error-600 uppercase tracking-widest">Required fields must be completed</p>
+          </div>
+          }
+
           <!-- Methodology Selection -->
           <div class="space-y-1.5">
             <label class="caption !text-[10px] text-neutral-400 ml-1">Protocol Methodology</label>
@@ -88,22 +97,31 @@
                 </svg>
               </div>
             </div>
+            @if (templateForm.get('programId')?.invalid && templateForm.get('programId')?.touched) {
+            <p class="text-[9px] text-error-500 mt-1 ml-1 font-bold animate-fadeIn">Methodology selection is required</p>
+            }
           </div>
 
           <!-- Parameters Grid -->
           <div class="grid grid-cols-2 gap-4">
             <div class="space-y-1.5">
               <label class="caption !text-[10px] text-neutral-400 ml-1">Temporal Zone</label>
-              <select formControlName="timezone" class="form-input !py-3 !text-xs appearance-none bg-neutral-50/50">
+               <select formControlName="timezone" class="form-input !py-3 !text-xs appearance-none bg-neutral-50/50">
                 @for (tz of timezoneOptions; track tz) {
                 <option [value]="tz">{{ tz }}</option>
                 }
               </select>
+              @if (templateForm.get('timezone')?.invalid && templateForm.get('timezone')?.touched) {
+              <p class="text-[9px] text-error-500 mt-1 ml-1 font-bold">Required</p>
+              }
             </div>
             <div class="space-y-1.5">
               <label class="caption !text-[10px] text-neutral-400 ml-1">Density (Max)</label>
               <input type="number" formControlName="capacity"
                 class="form-input !py-3 !text-xs bg-neutral-50/50 focus:bg-white" placeholder="10" />
+              @if (templateForm.get('capacity')?.invalid && templateForm.get('capacity')?.touched) {
+              <p class="text-[9px] text-error-500 mt-1 ml-1 font-bold">1-100 required</p>
+              }
             </div>
           </div>
 
@@ -113,10 +131,13 @@
               <label class="caption !text-[10px] text-neutral-400 ml-1">Sequence Start</label>
               <select formControlName="startTime" class="form-input !py-3 !text-xs appearance-none bg-neutral-50/50">
                 <option value="">Start</option>
-                @for (option of timeOptions; track option.value) {
+                 @for (option of timeOptions; track option.value) {
                 <option [value]="option.value">{{ option.display }}</option>
                 }
               </select>
+              @if (templateForm.get('startTime')?.invalid && templateForm.get('startTime')?.touched) {
+              <p class="text-[9px] text-error-500 mt-1 ml-1 font-bold">Required</p>
+              }
             </div>
             <div class="space-y-1.5">
               <label class="caption !text-[10px] text-neutral-400 ml-1">Sequence End</label>
@@ -127,6 +148,12 @@
                 <option [value]="option.value">{{ option.display }}</option>
                 }
               </select>
+              @if (templateForm.get('endTime')?.invalid && templateForm.get('endTime')?.touched) {
+              <p class="text-[9px] text-error-500 mt-1 ml-1 font-bold">Required</p>
+              }
+              @if (templateForm.hasError('endBeforeStart') && templateForm.get('endTime')?.touched) {
+              <p class="text-[9px] text-error-500 mt-1 ml-1 font-bold">Must be after start</p>
+              }
             </div>
           </div>
 
@@ -149,9 +176,12 @@
 
           <!-- Dynamic Logic Inputs -->
           @if (templateForm.value.recurrenceType === 'DAILY') {
-          <div class="space-y-1.5 animate-scaleIn">
+           <div class="space-y-1.5 animate-scaleIn">
             <label class="caption !text-[10px] text-neutral-400 ml-1">Interval Magnitude (Days)</label>
             <input type="number" formControlName="intervalDays" class="form-input !py-3 !text-xs bg-neutral-50/50" />
+            @if (templateForm.get('intervalDays')?.invalid && templateForm.get('intervalDays')?.touched) {
+            <p class="text-[9px] text-error-500 mt-1 ml-1 font-bold">1-30 required</p>
+            }
           </div>
           }
 
@@ -169,6 +199,9 @@
               </button>
               }
             </div>
+            @if (templateForm.value.recurrenceType === 'WEEKLY' && getSelectedDays().length === 0 && templateForm.touched) {
+            <p class="text-[9px] text-error-500 mt-1 ml-1 font-bold animate-fadeIn">Select at least one day</p>
+            }
           </div>
           }
 
