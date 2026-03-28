@@ -116,10 +116,10 @@ export class SlotService {
     );
   }
 
-  cancelSlotInstance(instanceId: string): Observable<ISlotInstancePublic> {
+  cancelSlotInstance(instanceId: string, reason?: string): Observable<ISlotInstancePublic> {
     return this._http.patch<ISlotInstancePublic>(
       `${this._instanceUrl}/${instanceId}/cancel`,
-      {},
+      { reason },
       { withCredentials: true }
     );
   }
