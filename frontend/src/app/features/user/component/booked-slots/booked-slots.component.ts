@@ -404,6 +404,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     try {
       this.isJoiningMeeting = true;
       this.joiningSlotId = slot.slotId;
+      this._cdr.detectChanges();
       this._logger.info('Joining meeting for slot:', slot);
 
       // Validate access first
@@ -411,6 +412,9 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
 
       if (!validation?.isValid || !validation?.canJoin) {
         this._toastService.warning(validation?.message || 'You cannot join this meeting. The meeting may not have started yet.');
+        this.isJoiningMeeting = false;
+        this.joiningSlotId = null;
+        this._cdr.detectChanges();
         return;
       }
 
@@ -434,6 +438,7 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     } finally {
       this.isJoiningMeeting = false;
       this.joiningSlotId = null;
+      this._cdr.detectChanges();
     }
   }
 
