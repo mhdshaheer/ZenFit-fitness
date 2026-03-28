@@ -215,6 +215,38 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     }
   }
 
+  private parseTimeString(timeString: string | undefined): { hours: number; minutes: number } {
+    if (!timeString) return { hours: 0, minutes: 0 };
+
+    const cleanTime = timeString.trim().toUpperCase();
+    let hours = 0;
+    let minutes = 0;
+
+    if (cleanTime.includes('AM') || cleanTime.includes('PM')) {
+      const match = cleanTime.match(/(\d+):?(\d+)?\s*(AM|PM)/);
+      if (match) {
+        hours = parseInt(match[1], 10);
+        minutes = parseInt(match[2] ?? '0', 10);
+        const period = match[3];
+        if (period === 'PM' && hours !== 12) hours += 12;
+        if (period === 'AM' && hours === 12) hours = 0;
+      }
+    } else {
+      const parts = cleanTime.split(':');
+      hours = parseInt(parts[0] || '0', 10);
+      minutes = parseInt(parts[1] || '0', 10);
+    }
+
+    return { hours, minutes };
+  }
+
+  private combineDateAndTime(date: Date, timeStr: string | undefined): Date {
+    const combined = new Date(date);
+    const { hours, minutes } = this.parseTimeString(timeStr);
+    combined.setHours(hours, minutes, 0, 0);
+    return combined;
+  }
+
   private getDayLabel(date: Date): string {
     return date.toLocaleDateString('en-US', { weekday: 'long' });
   }
@@ -288,7 +320,8 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
     const cancelled: SlotWithProgram[] = [];
 
     slots.forEach(slot => {
-      const slotDateTime = new Date(slot.date);
+      const slotStartTime = this.combineDateAndTime(slot.date, slot.startTime);
+      const slotEndTime = this.combineDateAndTime(slot.date, slot.endTime);
       const program = slot.programId ? programMap.get(slot.programId) : undefined;
 
       // Helper to extract category name safely from diverse backend formats
@@ -313,13 +346,15 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
         categoryOutput = 'Training';
       }
 
+      const isActuallyUpcoming = slotEndTime >= now;
+
       const slotWithProgram: SlotWithProgram = {
         ...slot,
         programName: program?.title || 'Fitness Program',
         programDuration: String(program?.duration || 'N/A'),
         programDifficulty: program?.difficultyLevel || 'Beginner',
         programCategory: categoryOutput,
-        isUpcoming: slotDateTime >= now
+        isUpcoming: isActuallyUpcoming
       };
 
       if (slot.status === 'cancelled') {
@@ -327,27 +362,33 @@ export class BookedSlotsComponent implements OnInit, OnDestroy {
         return;
       }
 
-      if (slotDateTime >= now) {
+      if (isActuallyUpcoming) {
         upcoming.push(slotWithProgram);
       } else {
         past.push(slotWithProgram);
       }
     });
 
-    // Sort upcoming by date ascending (nearest first)
-    this.upcomingSlots = upcoming.sort((a, b) =>
-      new Date(a.date).getTime() - new Date(b.date).getTime()
-    );
+    // Sort upcoming by actual start time ascending (nearest first)
+    this.upcomingSlots = upcoming.sort((a, b) => {
+      const timeA = this.combineDateAndTime(a.date, a.startTime).getTime();
+      const timeB = this.combineDateAndTime(b.date, b.startTime).getTime();
+      return timeA - timeB;
+    });
 
-    // Sort past by date descending (most recent first)
-    this.pastSlots = past.sort((a, b) =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    // Sort past by actual start time descending (most recent first)
+    this.pastSlots = past.sort((a, b) => {
+      const timeA = this.combineDateAndTime(a.date, a.startTime).getTime();
+      const timeB = this.combineDateAndTime(b.date, b.startTime).getTime();
+      return timeB - timeA;
+    });
 
-    // Sort cancelled by latest first
-    this.cancelledSlots = cancelled.sort((a, b) =>
-      new Date(b.date).getTime() - new Date(a.date).getTime()
-    );
+    // Sort cancelled by date/time descending
+    this.cancelledSlots = cancelled.sort((a, b) => {
+      const timeA = this.combineDateAndTime(a.date, a.startTime).getTime();
+      const timeB = this.combineDateAndTime(b.date, b.startTime).getTime();
+      return timeB - timeA;
+    });
 
     this.isLoading = false;
     this._cdr.detectChanges();
