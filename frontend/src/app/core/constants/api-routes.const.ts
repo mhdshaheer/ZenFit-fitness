@@ -38,6 +38,7 @@ export const AuthRoutes = {
   RESET_PASSWORD: '/reset-password',
   GOOGLE_SIGNUP: '/google-signup',
   PROTECTED: '/protected',
+  HEALTH: '/health',
 };
 
 export const CategoryRoutes = {
