@@ -35,6 +35,7 @@ export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
   submitted = signal(false);
   showPassword = signal(false);
+  showTestPassword = signal(false);
   error = toSignal(this._store.select(selectAuthError), { initialValue: null });
   isLoading = toSignal(this._store.select(selectAuthLoading), {
     initialValue: false,
@@ -83,5 +84,12 @@ export class LoginComponent implements OnInit {
     this._logger.info('clicked google login..');
     window.location.href = `${environment.apiUrl}/auth/google`;
     this._logger.info('after google login : page - signup-user');
+  }
+
+  fillTestCredentials() {
+    this.loginForm.patchValue({
+      email: 'testing@user.com',
+      password: 'User@007',
+    });
   }
 }
