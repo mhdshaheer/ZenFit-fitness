@@ -46,8 +46,17 @@ export class LandingPageComponent implements OnInit, OnDestroy {
   ];
 
   ngOnInit() {
+    this.pingBackend();
     this.loadPrograms();
     this.checkAuthStatus();
+  }
+
+  private pingBackend() {
+    // Silently wake up the backend server through AuthService
+    this._authService.ping().subscribe({
+      next: () => this._logger.info('Backend wake-up ping successful'),
+      error: () => this._logger.info('Backend wake-up ping initiated')
+    });
   }
 
   ngOnDestroy() {

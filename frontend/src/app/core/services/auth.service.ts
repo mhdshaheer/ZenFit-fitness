@@ -165,4 +165,8 @@ export class AuthService {
       { withCredentials: true }
     );
   }
+
+  ping(): Observable<any> {
+    return this._http.get(environment.apiUrl + AuthRoutes.HEALTH);
+  }
 }
